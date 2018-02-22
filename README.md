@@ -6,7 +6,8 @@ Clone the repository:
 
 ```
 $git clone git@github.com:mathurinm/CELER.git
- $conda env create --file environment.yml
+$cd CELER/
+$conda env create --file environment.yml
 $source activate celer-env
 $pip install --no-deps -e .
 ```
