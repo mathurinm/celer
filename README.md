@@ -6,8 +6,7 @@ Clone the repository:
 
 ```
 $git clone git@github.com:mathurinm/CELER.git
-$cd CELER/
-$conda env create --file environment.yml
+ $conda env create --file environment.yml
 $source activate celer-env
 $pip install --no-deps -e .
 ```
@@ -15,7 +14,6 @@ $pip install --no-deps -e .
 # Demos
 ```
 $source activate celer-env
-$cd CELER/
 $ipython
 %run examples/example_finance_path.py
 ```
