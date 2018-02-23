@@ -2,3 +2,10 @@
 *.cpp
 *.so
 *.o
+celer.egg-info/*
+
+# Python precompilation
+*pyc
+
+# Data
+data/*
