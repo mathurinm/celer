@@ -4,76 +4,8 @@ cimport numpy as np
 from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
 from scipy.linalg.cython_lapack cimport dposv
 from libc.math cimport fabs, sqrt, ceil
-from libc.stdlib cimport rand, srand
 cimport cython
-
-
-cdef int GEOM_GROWTH = 0
-cdef int LIN_GROWTH = 1
-
-cdef inline double fmax(double x, double y) nogil:
-    return x if x > y else y
-
-
-cdef inline double fmin(double x, double y) nogil:
-    return y if x > y else y
-
-
-cdef inline double fsign(double x) nogil :
-    if x == 0.:
-        return 0.
-    elif x > 0.:
-        return 1.
-    else:
-        return - 1.
-
-
-cdef inline double ST(double u, double x) nogil:
-    if x > u:
-        return x - u
-    elif x < - u:
-        return x + u
-    else:
-        return 0
-
-
-cdef double abs_max(int n, double * a) nogil:
-    cdef int ii
-    cdef double m = 0.
-    cdef double d
-    for ii in range(n):
-        d = fabs(a[ii])
-        if d > m:
-            m = d
-    return m
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef double primal_value(double alpha, int n_samples, double * R,
-                         int n_features, double * w) nogil:
-    cdef int inc = 1
-    # regularization term: alpha ||w||_1
-    cdef double p_obj = alpha * dasum(&n_features, w, &inc)
-    # R is passed as a pointer so no need to & it
-    p_obj += ddot(&n_samples, R, &inc, R, &inc) / 2.
-    return p_obj
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef double dual_value(int n_samples, double alpha, double norm_y2,
-                       double * theta,
-                       double * y):
-    cdef int i
-    cdef double d_obj = 0
-    for i in range(n_samples):
-        d_obj -= (y[i] / alpha - theta[i]) ** 2
-    d_obj *= 0.5 * alpha ** 2
-    d_obj += 0.5 * norm_y2
-    return d_obj
+from utils cimport fmax, primal_value, dual_value, ST, GEOM_GROWTH, LIN_GROWTH
 
 
 @cython.boundscheck(False)
@@ -83,7 +15,7 @@ cdef double compute_dual_scaling_sparse(int n_features, double * theta,
                           double[:] X_data, int[:] X_indices,
                           int[:] X_indptr, int ws_size, int * C) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
-    restricted to features in array C.
+    with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
     cdef double Xj_theta
     cdef double scal = 1.
@@ -237,8 +169,10 @@ def celer_sparse(double[:] X_data,
         scal = compute_dual_scaling_sparse(n_features, &theta[0],
                                    X_data, X_indices, X_indptr,
                                    n_features, &dummy_C[0])
-        tmp = 1. / scal
-        dscal(&n_samples, &tmp, &theta[0], &inc)
+
+        if scal > 1. :
+            tmp = 1. / scal
+            dscal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
                            &y[0])

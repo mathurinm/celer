@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from scipy import sparse
-from .dual_accel import celer_sparse
+from .sparse import celer_sparse
 
 
 def celer_path(X, y, alphas, max_iter=20, gap_freq=50,
