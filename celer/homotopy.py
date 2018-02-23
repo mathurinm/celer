@@ -2,20 +2,20 @@ import time
 import numpy as np
 from scipy import sparse
 from .sparse import celer_sparse
+from .dense import celer_dense
 
 
 def celer_path(X, y, alphas, max_iter=20, gap_freq=50,
                max_epochs_inner=50000, p0=10, verbose=1, verbose_inner=1,
                use_accel=0, tol=1e-6, safe=0):
 
-    """Compute Lasso path with Celer as inner solver on sparse X"""
+    """Compute Lasso path with Celer as inner solver"""
     n_alphas = len(alphas)
     n_samples, n_features = X.shape
     assert alphas[0] > alphas[-1]  # alphas must be given in decreasing order
 
     data_is_sparse = sparse.issparse(X)
     if not data_is_sparse:
-        raise ValueError("not implemented")
         if not np.isfortran(X):
             X = np.asfortranarray(X)
     else:
@@ -36,19 +36,27 @@ def celer_path(X, y, alphas, max_iter=20, gap_freq=50,
             print("#" * 60)
         if t > 1:
             beta_init = betas[t - 1].copy()
-            min_ws_size = max(len(np.where(beta_init != 0)[0]), 1)
+            p_t = max(len(np.where(beta_init != 0)[0]), 1)
         else:
             beta_init = betas[t]
-            min_ws_size = 10
+            p_t = 10
 
         alpha = alphas[t]
         t0 = time.time()
-        sol = celer_sparse(X.data, X.indices, X.indptr, y, alpha,
-                           beta_init, max_iter=max_iter, gap_freq=gap_freq,
-                           max_epochs_inner=max_epochs_inner, p0=min_ws_size,
-                           verbose=verbose,
-                           verbose_inner=verbose_inner,
-                           use_accel=use_accel, tol=tol, safe=safe)
+        if data_is_sparse:
+            sol = celer_sparse(X.data, X.indices, X.indptr, y, alpha,
+                               beta_init, max_iter=max_iter, gap_freq=gap_freq,
+                               max_epochs_inner=max_epochs_inner, p0=p_t,
+                               verbose=verbose,
+                               verbose_inner=verbose_inner,
+                               use_accel=use_accel, tol=tol, safe=safe)
+        else:
+            sol = celer_dense(X, y, alpha,
+                              beta_init, max_iter=max_iter, gap_freq=gap_freq,
+                              max_epochs_inner=max_epochs_inner, p0=p_t,
+                              verbose=verbose,
+                              verbose_inner=verbose_inner,
+                              use_accel=use_accel, tol=tol, safe=safe)
 
         all_times[t] = time.time() - t0
         betas[t], thetas[t], final_gaps[t] = sol[0], sol[1], sol[3][-1]
