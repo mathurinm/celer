@@ -50,6 +50,7 @@ def preprocess_finance(decompressed_path, X_path, y_path):
         sparse.save_npz(X_path, X_new)
         np.save(y_path, y)
 
+
 def download_preprocess_finance():
     if not os.path.exists('./data'):
         os.mkdir('./data')
@@ -65,6 +66,7 @@ def download_preprocess_finance():
     X_path = "./data/finance_data_preprocessed"
 
     preprocess_finance(decompressed_path, X_path, y_path)
+
 
 if __name__ == "__main__":
     download_preprocess_finance()
