@@ -256,7 +256,6 @@ def celer_sparse(double[:] X_data,
                                           &theta_inner[0], &y[0])
 
         if d_obj_from_inner > d_obj:
-            print("------ Inner dual point wins !!!----------")
             d_obj = d_obj_from_inner
             dcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
 
@@ -468,8 +467,8 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
 
                     # onesK now holds the solution in x to UtU dot x = onesK
                     if info_dposv != 0:
-                        print("linear system solving failed")
-                        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        if verbose:
+                            print("linear system solving failed")
                         # don't use accel for this iteration
                         for k in range(K - 2):
                             onesK[k] = 0
@@ -501,10 +500,9 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                     d_obj_accel *= 0.5 * alpha ** 2
                     d_obj_accel += 0.5 * norm_y2
 
-                    print("dobj accel: %.9f" % d_obj_accel)
-                    # print(np.asarray(z))
                     if d_obj_accel > d_obj:
-                        print("----------ACCELERATION WINS-----------")
+                        if verbose:
+                            print("----------ACCELERATION WINS-----------")
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
                         # theta_inner in outer loop)
@@ -525,8 +523,9 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                 print("Inner epoch %d, gap: %.2e" % (epoch, gap))
                 print("primal %.9f" % (gap + highest_d_obj))
             if gap < eps:
-                print("Inner: early exit at epoch %d, gap: %.2e < %.2e" % \
-                    (epoch, gap, eps))
+                if verbose:
+                    print("Inner: early exit at epoch %d, gap: %.2e < %.2e" % \
+                        (epoch, gap, eps))
                 break
 
         for k in range(ws_size):
