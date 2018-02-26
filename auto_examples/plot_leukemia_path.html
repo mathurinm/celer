@@ -1,0 +1,620 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Lasso path computation on Leukemia dataset &#8212; celer 0.1.dev0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.dev0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="celer 0.1.dev0 documentation" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          celer</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/mathurinm/celer">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lasso path computation on Leukemia dataset</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/plot_leukemia_path.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="section" id="lasso-path-computation-on-leukemia-dataset">
+<span id="sphx-glr-auto-examples-plot-leukemia-path-py"></span><h1>Lasso path computation on Leukemia dataset<a class="headerlink" href="#lasso-path-computation-on-leukemia-dataset" title="Permalink to this headline">¶</a></h1>
+<p>The example runs the Celer algorithm.</p>
+<img alt="../_images/sphx_glr_plot_leukemia_path_001.png" class="align-center" src="../_images/sphx_glr_plot_leukemia_path_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">Loading</span> <span class="n">data</span><span class="o">...</span>
+<span class="n">Starting</span> <span class="n">path</span> <span class="n">computation</span><span class="o">...</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.03e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.95e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.48e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">0.00e+00</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.25e-04</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.15e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.77e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.18e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.05e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.12e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.24e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.81e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.34e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.40e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.49e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.15e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.56e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.40e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.66e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.11e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.15e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.69e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.63e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.64e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.67e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.16e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.05e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.27e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.78e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.23e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.36e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.80e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.49e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.40e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.50e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.76e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.15e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.69e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.51e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.37e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.40e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.58e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.88e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.02e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.96e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.01e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.16e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.40e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.71e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.09e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.52e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.00e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.52e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.06e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.63e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.22e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.83e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.23e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.60e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.30e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.06e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.87e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.72e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.62e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.55e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.51e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.50e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.51e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.54e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.59e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.65e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.73e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.82e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.92e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.03e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.14e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.25e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.37e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.50e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.62e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.75e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.88e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.12e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.51e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.23e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.97e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.74e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.51e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.30e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.11e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.93e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.76e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.60e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.45e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.31e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.18e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.06e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.95e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.84e-03</span> <span class="o">&lt;</span> <span class="mf">1.00e-02</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.13</span> <span class="n">s</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.11e-16</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">0.00e+00</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.07e-06</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.18e-06</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.83e-06</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.54e-06</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.81e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.42e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.57e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.00e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.86e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.03e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.79e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.75e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.76e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.32e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.66e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.00e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.55e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.15e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.21e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.92e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.35e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.97e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.87e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.31e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.76e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.42e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.93e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.60e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.58e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.06e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.36e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.89e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.79e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.08e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.46e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.93e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.22e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.51e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.39e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.06e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.67e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.02e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.12e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.28e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.95e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.37e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.07e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.84e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.15e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.78e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.96e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.07e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.53e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.64e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.96e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.77e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.68e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.89e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.08e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.39e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.21e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.74e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.55e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.47e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.49e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.57e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.20e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.76e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.27e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.78e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.24e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.97e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.85e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.89e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.96e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.16e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.64e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.62e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.88e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.14e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.07e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.55e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.20e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.80e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.77e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.13e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.82e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.81e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.05e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.02e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.45e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.21e-05</span> <span class="o">&lt;</span> <span class="mf">1.00e-04</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.21</span> <span class="n">s</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.11e-16</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">0.00e+00</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.92e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.18e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.38e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.64e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.75e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.91e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.98e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.09e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.84e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.61e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.74e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.46e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.40e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.93e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.72e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.45e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.26e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.03e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.30e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.08e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.50e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.52e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.86e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.31e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.61e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.28e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.38e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.02e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.00e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.56e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.08e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.99e-08</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.71e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.33e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.02e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.39e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.29e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.57e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.25e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.47e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.91e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.83e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.64e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.73e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.82e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.56e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.40e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.55e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.65e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.57e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.67e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.60e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.88e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.60e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.14e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.09e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.09e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.65e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.25e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.79e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.68e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.80e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.62e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.19e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.33e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.67e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.99e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.58e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.94e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.86e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.98e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.63e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.03e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.18e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.30e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.77e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.59e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.64e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.52e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.42e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.90e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.94e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.63e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.76e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.86e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.75e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.23e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.55e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.42e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.55e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.88e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.55e-07</span> <span class="o">&lt;</span> <span class="mf">1.00e-06</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.28</span> <span class="n">s</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.11e-16</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">0.00e+00</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.55e-17</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.92e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.20e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.66e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.66e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.06e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.97e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.84e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.35e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.56e-11</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.74e-13</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.85e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.08e-13</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.05e-13</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.93e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.72e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.70e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.38e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.28e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.54e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.09e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.89e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.59e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.39e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.69e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.85e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.95e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.34e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.74e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.65e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.53e-10</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.59e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">1.52e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.32e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.59e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.69e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.24e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.21e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.19e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.33e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.85e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.16e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.85e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.73e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.20e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.68e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.10e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.84e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.62e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.61e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.96e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.96e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">3.90e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">2.42e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.14e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.35e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.60e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.83e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">4.76e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.85e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.07e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.59e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.95e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.72e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.50e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.05e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.43e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">5.33e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.34e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.01e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.94e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.10e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.07e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.02e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.53e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">7.59e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.49e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.67e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.36e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.95e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">6.43e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.49e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.96e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.89e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.61e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.45e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.08e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.62e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.90e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.83e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">8.99e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.58e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Early</span> <span class="n">exit</span><span class="p">,</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">9.54e-09</span> <span class="o">&lt;</span> <span class="mf">1.00e-08</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.32</span> <span class="n">s</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">lasso_path</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_mldata</span>
+
+<span class="kn">from</span> <span class="nn">celer</span> <span class="kn">import</span> <span class="n">celer_path</span>
+<span class="kn">from</span> <span class="nn">celer.plot_utils</span> <span class="kn">import</span> <span class="n">plot_path_hist</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">__doc__</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data...&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">fetch_mldata</span><span class="p">(</span><span class="s2">&quot;leukemia&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">y</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Starting path computation...&quot;</span><span class="p">)</span>
+<span class="n">alpha_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span>
+
+<span class="n">fine</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c1"># fine or coarse grid</span>
+<span class="n">n_alphas</span> <span class="o">=</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">fine</span> <span class="k">else</span> <span class="mi">10</span>
+<span class="n">alphas</span> <span class="o">=</span> <span class="n">alpha_max</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_alphas</span><span class="p">)</span>
+
+<span class="n">gap_freq</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">safe</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">verbose_inner</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># just do the timing:</span>
+<span class="c1"># If you want to draw the Fig, store the times in np.array [len(tols), 3]</span>
+<span class="n">tols</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">]</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tols</span><span class="p">)])</span>
+<span class="k">for</span> <span class="n">tol_ix</span><span class="p">,</span> <span class="n">tol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tols</span><span class="p">):</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">celer_path</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">gap_freq</span><span class="o">=</span><span class="n">gap_freq</span><span class="p">,</span>
+                     <span class="n">max_epochs_inner</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                     <span class="n">verbose_inner</span><span class="o">=</span><span class="n">verbose_inner</span><span class="p">,</span>
+                     <span class="n">use_accel</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Celer time: </span><span class="si">%.2f</span><span class="s1"> s&#39;</span> <span class="o">%</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">])</span>
+    <span class="c1"># if you need to recover the results uncomment the next line:</span>
+    <span class="n">betas</span><span class="p">,</span> <span class="n">thetas</span> <span class="o">=</span> <span class="n">res</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="c1"># _, coefs, dual_gaps</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">dual_gaps</span> <span class="o">=</span> <span class="n">lasso_path</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span> <span class="o">/</span> <span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+    <span class="n">coefs</span> <span class="o">=</span> <span class="n">coefs</span><span class="o">.</span><span class="n">T</span>
+
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">r&quot;\sc{CELER}&quot;</span><span class="p">,</span> <span class="s2">&quot;scikit-learn&quot;</span><span class="p">]</span>
+<span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_path_hist</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">tols</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  20.711 seconds)</p>
+<div class="sphx-glr-footer container">
+<div class="sphx-glr-download container">
+<a class="reference download internal" href="../_downloads/plot_leukemia_path.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_leukemia_path.py</span></code></a></div>
+<div class="sphx-glr-download container">
+<a class="reference download internal" href="../_downloads/plot_leukemia_path.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_leukemia_path.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+</div>
+
+<!-- Github "fork me" ribbon -->
+<a href="https://github.com/pierreablin/picard"><img style="position: absolute; top: 50px; right: 0; border: 0;"
+src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+alt="Fork me on GitHub"
+data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Mathurin Massias.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
