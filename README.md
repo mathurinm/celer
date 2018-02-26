@@ -1,4 +1,10 @@
 # CELER
+
+
+![](https://travis-ci.org/mathurinm/celer.svg?branch=master)
+![](https://codecov.io/gh/mathurinm/celer/branch/master/graphs/badge.svg?branch=master)
+
+
 Fast algorithm to solve the Lasso with dual extrapolation
 
 # Installation
