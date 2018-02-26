@@ -1,5 +1,5 @@
 # CELER
-
+Fast algorithm to solve the Lasso with dual extrapolation
 
 # Installation
 Clone the repository:
@@ -13,9 +13,16 @@ $pip install --no-deps -e .
 ```
 
 # Demos
+Lasso path computation on the Leukemia dataset (comparison with scikit-learn):
 ```
 $source activate celer-env
-$cd CELER/
+$ipython
+%run examples/example_leukemia_path.py
+```
+
+Lasso path computation on the Finance/log1p dataset (more significant, but it takes times to download the data, preprocess it, and compute the path):
+```
+$source activate celer-env
 $ipython
 %run examples/example_finance_path.py
 ```
