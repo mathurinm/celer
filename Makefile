@@ -7,7 +7,7 @@ NOSETESTS_OPTIONS := $(shell pip list | grep nose-timer > /dev/null && \
 					   echo '--with-timer --timer-top-n 50')
 CTAGS ?= ctags
 
-all: clean test
+all: clean inplace test
 
 clean-pyc:
 	find . -name "*.pyc" | xargs rm -f
