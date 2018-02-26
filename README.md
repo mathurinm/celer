@@ -1,12 +1,18 @@
-# CELER
+# celer
+
+
+![](https://travis-ci.org/mathurinm/celer.svg?branch=master)
+![](https://codecov.io/gh/mathurinm/celer/branch/master/graphs/badge.svg?branch=master)
+
+
 Fast algorithm to solve the Lasso with dual extrapolation
 
 # Installation
 Clone the repository:
 
 ```
-$git clone https://github.com/mathurinm/CELER.git
-$cd CELER/
+$git clone https://github.com/mathurinm/celer.git
+$cd celer/
 $conda env create --file environment.yml
 $source activate celer-env
 $pip install --no-deps -e .
