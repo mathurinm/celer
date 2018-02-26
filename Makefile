@@ -62,5 +62,5 @@ doc-plot:
 doc:
 	make -C doc html-noplot
 
-# test-manifest:
-# check-manifest --ignore doc,picard/*/tests,matlab_octave;
+test-manifest:
+	check-manifest --ignore doc,celer/*/tests;

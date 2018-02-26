@@ -1,0 +1,22 @@
+include *.rst
+include *.md
+include *.in
+include LICENSE
+include celer/__init__.py
+
+recursive-include examples *.py
+recursive-include examples *.txt
+
+recursive-include celer *.py
+recursive-include celer *.pyx
+recursive-include celer *.pxd
+
+### Exclude
+
+exclude Makefile
+exclude .coveragerc
+exclude *.yml
+exclude .mailmap
+recursive-exclude celer *.pyc
+
+recursive-exclude doc *

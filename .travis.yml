@@ -14,9 +14,6 @@ install:
     - python setup.py install
 script:
     - make
-    # - flake8 --count picard
-    # - cd matlab_octave
-    # - octave plot_ica_synth.m
-    # - cd ..
+    - flake8 --count celer
 after_success:
 - bash <(curl -s https://codecov.io/bash)
