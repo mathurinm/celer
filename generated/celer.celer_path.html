@@ -3,13 +3,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.celer_sparse &#8212; celer 0.1.dev0 documentation</title>
+    <title>celer.celer_path &#8212; celer 0.1.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.dev0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -26,7 +34,8 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head><body>
+  </head>
+  <body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -73,7 +82,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">celer.celer_sparse</a></li>
+<li><a class="reference internal" href="#">celer.celer_path</a></li>
 </ul>
 </ul>
 </li>
@@ -85,7 +94,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/celer.celer_sparse.rst.txt"
+  <a href="../_sources/generated/celer.celer_path.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -107,95 +116,78 @@
 
 <div class="container content-container">
   
-  <div class="section" id="celer-celer-sparse">
-<h1>celer.celer_sparse<a class="headerlink" href="#celer-celer-sparse" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="celer-celer-path">
+<h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="celer.celer_sparse">
-<code class="descclassname">celer.</code><code class="descname">celer_sparse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_sparse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the Lasso solution for sparse data X.</p>
+<dt id="celer.celer_path">
+<code class="descclassname">celer.</code><code class="descname">celer_path</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alphas</em>, <em>max_iter=20</em>, <em>gap_freq=50</em>, <em>max_epochs_inner=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=1</em>, <em>use_accel=0</em>, <em>tol=1e-06</em>, <em>safe=0</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Lasso path with Celer as inner solver</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X_data</strong> : array</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : {array-like, sparse matrix}, shape (n_samples, n_features)</p>
 <blockquote>
-<div><p>Contains the non-zero values of the sparse design matrix X.</p>
+<div><p>Training data. Pass directly as Fortran-contiguous data to avoid
+unnecessary memory duplication.</p>
 </div></blockquote>
-<p><strong>X_indices</strong> : array</p>
+<p><strong>y</strong> : ndarray, shape (n_samples,)</p>
 <blockquote>
-<div><p>Contains the indices of the non-zero values of X int their row.</p>
+<div><p>Target values</p>
 </div></blockquote>
-<p><strong>X_indptr</strong> : array, shape (n_features + 1,)</p>
+<p><strong>alphas</strong> : ndarray, shape (n_alphas,)</p>
 <blockquote>
-<div><p>Splits X_data into features.</p>
+<div><p>List of alphas where to compute the models.
+If <code class="docutils literal"><span class="pre">None</span></code> alphas are set automatically</p>
 </div></blockquote>
-<p><strong>y</strong> : array-like, shape (n_samples,)</p>
+<p><strong>max_iter</strong> : int, optional</p>
 <blockquote>
-<div><p>Observations vector.</p>
-</div></blockquote>
-<p><strong>alpha</strong> : float</p>
-<blockquote>
-<div><p>Value of the Lasso regularization parameter.</p>
-</div></blockquote>
-<p><strong>beta_init</strong> : array-like, shape (n_features,), optional</p>
-<blockquote>
-<div><p>Initial value for the coefficients vector.</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int</p>
-<blockquote>
-<div><p>Maximum number of outer loop (working set definition) iterations.</p>
-</div></blockquote>
-<p><strong>max_epoch_inner</strong> : int</p>
-<blockquote>
-<div><p>Maximumnumber of epochs for the coordinate descent solver called on
-the subproblems.</p>
+<div><p>The maximum number of iterations</p>
 </div></blockquote>
 <p><strong>gap_freq</strong> : int, optional</p>
 <blockquote>
-<div><p>Number of epochs between every gap computation in the inner solver.</p>
+<div><p>XXX</p>
 </div></blockquote>
-<p><strong>tol</strong> : float, optional</p>
+<p><strong>max_epochs_inner</strong> : int, optional</p>
 <blockquote>
-<div><p>Stoppping criterion. The solver stops when max_iter is reached or when
-the duality gap goes below tol.</p>
+<div><p>XXX</p>
 </div></blockquote>
 <p><strong>p0</strong> : int, optional</p>
 <blockquote>
-<div><p>Size of the first working set.</p>
+<div><p>XXX</p>
 </div></blockquote>
-<p><strong>verbose</strong> : (0, 1), optional</p>
+<p><strong>verbose</strong> : bool or integer</p>
 <blockquote>
-<div><p>Verbosity level of the outer loop.</p>
+<div><p>Amount of verbosity.</p>
 </div></blockquote>
-<p><strong>verbose_inner</strong> : (0, 1), optionnal</p>
+<p><strong>verbose_inner</strong> : bool or integer</p>
 <blockquote>
-<div><p>Verbosity level of the inner solver.</p>
+<div><p>Amount of verbosity in the inner solver.</p>
+</div></blockquote>
+<p><strong>use_accel</strong> : int</p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>tol</strong> : float, optional</p>
+<blockquote>
+<div><p>The tolerance for the optimization: if the updates are
+smaller than <code class="docutils literal"><span class="pre">tol</span></code>, the optimization code checks the
+dual gap for optimality and continues until it is smaller
+than <code class="docutils literal"><span class="pre">tol</span></code>.</p>
+</div></blockquote>
+<p><strong>safe</strong> : int</p>
+<blockquote>
+<div><p>XXX</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>beta</strong> : array, shape (n_features,)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>betas</strong> : array, shape (n_features, n_alphas)</p>
 <blockquote>
-<div><p>Estimated coefficient vector.</p>
+<div><p>Coefficients along the path.</p>
 </div></blockquote>
-<p>theta: array, shape (n_samples,)</p>
-<blockquote>
-<div><p>Best dual point encountered.</p>
-</div></blockquote>
-<p><strong>R</strong> : array, shape (n_samples,)</p>
-<blockquote>
-<div><p>Residuals.</p>
-</div></blockquote>
-<p><strong>gaps</strong> : array</p>
-<blockquote>
-<div><p>Duality gaps at each outer loop iteration.</p>
-</div></blockquote>
-<p><strong>times</strong> : array</p>
-<blockquote>
-<div><p>Time elapsed since entering the solver, at each outer loop iteration.</p>
-</div></blockquote>
-<p><strong>epochs</strong> : array</p>
+<p><strong>thetas</strong> : array, shape (n_samples, n_alphas)</p>
 <blockquote class="last">
-<div><p>Number of epochs needed to solve each subproblem.</p>
+<div><p>The dual variables along the path.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -221,7 +213,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.<br/>
     </p>
   </div>
 </footer>

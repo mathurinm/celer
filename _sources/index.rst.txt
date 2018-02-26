@@ -14,6 +14,7 @@ Installation
 
 We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_,
 and create a conda environment with::
+
     $ conda env create --file environment.yml
 
 
