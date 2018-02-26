@@ -2,14 +2,18 @@
 =======================================================
 Lasso path computation on Leukemia dataset
 =======================================================
+
 The example runs the Celer algorithm.
 """
 
-import numpy as np
 import time
+
+import numpy as np
 import matplotlib.pyplot as plt
+
 from sklearn.linear_model import lasso_path
 from sklearn.datasets import fetch_mldata
+
 from celer import celer_path
 from celer.plot_utils import plot_path_hist
 

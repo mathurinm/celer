@@ -2,6 +2,7 @@
 =======================================================
 Lasso path computation on Leukemia dataset
 =======================================================
+
 The example runs the Celer algorithm.
 """
 
