@@ -28,8 +28,8 @@ and it should not give any error message.
 Cite
 ----
 
-   [1] Mathurin Massias, Alexandre Gramfort and Joseph Salmon
-   Dual Extrapolation for Faster Lasso Solvers
+   [1] Mathurin Massias, Alexandre Gramfort and Joseph Salmon,
+   "Dual Extrapolation for Faster Lasso Solvers",
    ArXiv Preprint, 2018, https://arxiv.org/abs/1802.07481
 
 
