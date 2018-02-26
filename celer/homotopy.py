@@ -8,8 +8,59 @@ from .dense import celer_dense
 def celer_path(X, y, alphas, max_iter=20, gap_freq=50,
                max_epochs_inner=50000, p0=10, verbose=1, verbose_inner=1,
                use_accel=0, tol=1e-6, safe=0):
+    """Compute Lasso path with Celer as inner solver
 
-    """Compute Lasso path with Celer as inner solver"""
+    Parameters
+    ----------
+    X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        Training data. Pass directly as Fortran-contiguous data to avoid
+        unnecessary memory duplication.
+
+    y : ndarray, shape (n_samples,)
+        Target values
+
+    alphas : ndarray, shape (n_alphas,)
+        List of alphas where to compute the models.
+        If ``None`` alphas are set automatically
+
+    max_iter : int, optional
+        The maximum number of iterations
+
+    gap_freq : int, optional
+        XXX
+
+    max_epochs_inner : int, optional
+        XXX
+
+    p0 : int, optional
+        XXX
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    verbose_inner : bool or integer
+        Amount of verbosity in the inner solver.
+
+    use_accel : int
+        XXX
+
+    tol : float, optional
+        The tolerance for the optimization: if the updates are
+        smaller than ``tol``, the optimization code checks the
+        dual gap for optimality and continues until it is smaller
+        than ``tol``.
+
+    safe : int
+        XXX
+
+    Returns
+    -------
+    betas : array, shape (n_features, n_alphas)
+        Coefficients along the path.
+
+    thetas : array, shape (n_samples, n_alphas)
+        The dual variables along the path.
+    """
     n_alphas = len(alphas)
     n_samples, n_features = X.shape
     assert alphas[0] > alphas[-1]  # alphas must be given in decreasing order

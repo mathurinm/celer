@@ -6,12 +6,12 @@ API Documentation
 
 .. currentmodule:: celer
 
-Preconditioned ICA for Real Data
-================================
+CELER
+=====
 
 Functions
 
 .. autosummary::
    :toctree: generated/
 
-   celer_sparse
+   celer_path

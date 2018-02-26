@@ -12,7 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-# import sys
+import sys
 # import os
 import sphinx_gallery  # noqa
 import sphinx_bootstrap_theme
@@ -308,15 +308,20 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('https://docs.python.org/', None),
-                       }
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'sklearn': ('http://scikit-learn.org/stable', None),
+}
 
 sphinx_gallery_conf = {
-    'backreferences_dir': False,
+    'backreferences_dir': 'gen_modules/backreferences',
+    'doc_module': ('celer', 'numpy'),
     'examples_dirs': '../examples',
     'gallery_dirs': 'auto_examples',
     'reference_url': {
-        'celer': 'http://mathurinm.github.io/celer',
-        'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
+        'celer': None,
         }
 }
