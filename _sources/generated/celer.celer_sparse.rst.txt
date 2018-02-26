@@ -1,0 +1,6 @@
+celer.celer\_sparse
+===================
+
+.. currentmodule:: celer
+
+.. autofunction:: celer_sparse

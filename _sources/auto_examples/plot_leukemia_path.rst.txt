@@ -121,7 +121,7 @@ The example runs the Celer algorithm.
     Early exit, gap: 4.06e-03 < 1.00e-02
     Early exit, gap: 3.95e-03 < 1.00e-02
     Early exit, gap: 3.84e-03 < 1.00e-02
-    Celer time: 0.13 s
+    Celer time: 0.11 s
     Early exit, gap: -5.55e-17 < 1.00e-04
     Early exit, gap: -1.11e-16 < 1.00e-04
     Early exit, gap: -5.55e-17 < 1.00e-04
@@ -321,7 +321,7 @@ The example runs the Celer algorithm.
     Early exit, gap: 8.55e-07 < 1.00e-06
     Early exit, gap: 9.88e-07 < 1.00e-06
     Early exit, gap: 7.55e-07 < 1.00e-06
-    Celer time: 0.31 s
+    Celer time: 0.54 s
     Early exit, gap: -5.55e-17 < 1.00e-08
     Early exit, gap: -1.11e-16 < 1.00e-08
     Early exit, gap: -5.55e-17 < 1.00e-08
@@ -491,7 +491,7 @@ The example runs the Celer algorithm.
     fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  22.502 seconds)
+**Total running time of the script:** ( 0 minutes  25.275 seconds)
 
 
 
