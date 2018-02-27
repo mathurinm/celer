@@ -10,10 +10,11 @@ install:
     - source activate celer-env
     - conda install --yes --quiet nose coverage
     - pip install flake8 check-manifest
-    - pip install coverage coveralls
+    - pip install codecov
     - python setup.py install
 script:
     - make
+    - make test-coverage
     - flake8 --count celer
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+- codecov

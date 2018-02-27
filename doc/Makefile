@@ -90,9 +90,9 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 		  ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/picard.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/celer.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/picard.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/celer.qhc"
 
 .PHONY: latex
 latex:
