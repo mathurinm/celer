@@ -14,4 +14,5 @@ Functions
 .. autosummary::
    :toctree: generated/
 
+   celer
    celer_path

@@ -92,56 +92,8 @@ def celer_sparse(double[:] X_data,
                int growth=GEOM_GROWTH,
                int growth_factor=2,
                int return_ws_size=0,
-               int safe=0,
+               int prune=0,
                ):
-    """Compute the Lasso solution for sparse data X.
-
-    Parameters
-    ----------
-    X_data : array
-        Contains the non-zero values of the sparse design matrix X.
-    X_indices : array
-        Contains the indices of the non-zero values of X int their row.
-    X_indptr : array, shape (n_features + 1,)
-        Splits X_data into features.
-    y : array-like, shape (n_samples,)
-        Observations vector.
-    alpha : float
-        Value of the Lasso regularization parameter.
-    beta_init : array-like, shape (n_features,), optional
-        Initial value for the coefficients vector.
-    max_iter : int
-        Maximum number of outer loop (working set definition) iterations.
-    max_epoch_inner : int
-        Maximumnumber of epochs for the coordinate descent solver called on
-        the subproblems.
-    gap_freq : int, optional
-        Number of epochs between every gap computation in the inner solver.
-    tol : float, optional
-        Stoppping criterion. The solver stops when max_iter is reached or when
-        the duality gap goes below tol.
-    p0 : int, optional
-        Size of the first working set.
-    verbose : (0, 1), optional
-        Verbosity level of the outer loop.
-    verbose_inner : (0, 1), optionnal
-        Verbosity level of the inner solver.
-
-    Returns
-    -------
-    beta : array, shape (n_features,)
-        Estimated coefficient vector.
-    theta: array, shape (n_samples,)
-        Best dual point encountered.
-    R : array, shape (n_samples,)
-        Residuals.
-    gaps : array
-        Duality gaps at each outer loop iteration.
-    times : array
-        Time elapsed since entering the solver, at each outer loop iteration.
-    epochs : array
-        Number of epochs needed to solve each subproblem.
-    """
 
     cdef int n_features = beta_init.shape[0]
     cdef double t0 = time.time()
@@ -263,7 +215,7 @@ def celer_sparse(double[:] X_data,
                           X_data, X_indices, X_indptr,
                           &norms_X_col[0], &prios[0])
 
-        if safe:
+        if prune:
             for j in range(n_features):
                 if beta[j] != 0:
                     prios[j] = - 1
@@ -295,7 +247,7 @@ def celer_sparse(double[:] X_data,
 
         C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
         C.sort()
-        if safe:
+        if prune:
             tol_inner = tol
         else:
             tol_inner = tol_ratio_inner * gap
@@ -313,13 +265,11 @@ def celer_sparse(double[:] X_data,
 
     if return_ws_size:
         return (np.asarray(beta), np.asarray(theta),
-                np.asarray(R), np.asarray(gaps[:t + 1]),
-                np.asarray(times[:t + 1]), np.asarray(epochs[:t + 1]),
+                np.asarray(gaps[:t + 1]), np.asarray(times[:t + 1]),
                 np.asarray(ws_sizes[:t + 1]))
 
     return (np.asarray(beta), np.asarray(theta),
-            np.asarray(R), np.asarray(gaps[:t + 1]),
-            np.asarray(times[:t + 1]), np.asarray(epochs[:t + 1]))
+            np.asarray(gaps[:t + 1]), np.asarray(times[:t + 1]))
 
 
 @cython.boundscheck(False)

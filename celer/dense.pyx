@@ -70,7 +70,7 @@ def celer_dense(double[::1, :] X,
                 int growth=GEOM_GROWTH,
                 int growth_factor=2,
                 int return_ws_size=0,
-                int safe=0,
+                int prune=0,
                 ):
 
     cdef int n_features = beta_init.shape[0]
@@ -184,7 +184,7 @@ def celer_dense(double[::1, :] X,
         set_feature_prios_dense(n_samples, n_features, theta, X,
                                 &norms_X_col[0], &prios[0])
 
-        if safe:
+        if prune:
             for j in range(n_features):
                 if beta[j] != 0:
                     prios[j] = - 1
@@ -216,7 +216,7 @@ def celer_dense(double[::1, :] X,
 
         C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
         C.sort()
-        if safe:
+        if prune:
             tol_inner = tol
         else:
             tol_inner = tol_ratio_inner * gap
@@ -234,13 +234,13 @@ def celer_dense(double[::1, :] X,
 
     if return_ws_size:
         return (np.asarray(beta), np.asarray(theta),
-                np.asarray(R), np.asarray(gaps[:t + 1]),
-                np.asarray(times[:t + 1]), np.asarray(epochs[:t + 1]),
+                np.asarray(gaps[:t + 1]),
+                np.asarray(times[:t + 1]),
                 np.asarray(ws_sizes[:t + 1]))
 
     return (np.asarray(beta), np.asarray(theta),
-            np.asarray(R), np.asarray(gaps[:t + 1]),
-            np.asarray(times[:t + 1]), np.asarray(epochs[:t + 1]))
+            np.asarray(gaps[:t + 1]),
+            np.asarray(times[:t + 1]))
 
 
 @cython.boundscheck(False)

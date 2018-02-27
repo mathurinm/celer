@@ -31,7 +31,7 @@ def test_enet_path_positive():
     n_alphas = 10
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
-    # For mono output
-    betas, thetas = celer_path(X, y, alphas=alphas)
-
+    tol = 1e-6
+    betas, thetas, gaps = celer_path(X, y, alphas=alphas, tol=tol, verbose=1)
     assert True
+    # np.testing.assert_array_less(gaps, tol)
