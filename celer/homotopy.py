@@ -91,8 +91,8 @@ def celer_path(X, y, alphas=None, max_iter=20, gap_freq=10,
                     tol=tol, prune=prune)
 
         all_times[t] = time.time() - t0
-        betas[t], thetas[t], final_gaps[t] = sol[0], sol[1], sol[3][-1]
+        betas[t], thetas[t], final_gaps[t] = sol[0], sol[1], sol[2][-1]
         if final_gaps[t] > tol:
-            print("-----WARNING: solver did not converge, t = %d" % t)
-            print("gap = %.1e , tol = %.1e" % (final_gaps[t], tol))
+            print("-----WARNING: solver did not converge, t=%d" % t)
+            print("gap=%.1e, tol=%.1e" % (final_gaps[t], tol))
     return betas, thetas, final_gaps
