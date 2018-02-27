@@ -20,6 +20,7 @@ and create a conda environment with::
 
 To check if everything worked fine, you can do::
 
+    $ source activate celer-env
     $ python -c 'import celer'
 
 and it should not give any error message.

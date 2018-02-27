@@ -1,6 +1,5 @@
 import time
 import numpy as np
-from scipy import sparse
 from .wrapper import celer
 
 
