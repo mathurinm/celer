@@ -11,6 +11,11 @@ This algorithm uses an extrapolated dual point which enables a tight cntrol of o
 
 Installation
 ------------
+First clone the repository available at https://github.com/mathurinm/celer::
+
+    $ git clone https://github.com/mathurinm/celer.git
+    $ cd celer/
+
 
 We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_,
 and create a conda environment with::
@@ -25,7 +30,7 @@ To check if everything worked fine, you can do::
 
 and it should not give any error message.
 
-
+If you don't want to use Anaconda, the list of packages you need to install is in the `environment.yml` file.
 
 Cite
 ----
