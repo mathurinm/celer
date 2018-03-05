@@ -22,6 +22,10 @@ and create a conda environment with::
 
     $ conda env create --file environment.yml
 
+Then, you can compile the Cython code and install the package with::
+
+    $ source activate celer-env
+    $ pip install --no-deps -e .
 
 To check if everything worked fine, you can do::
 

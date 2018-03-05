@@ -137,6 +137,11 @@ and create a conda environment with:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ conda env create --file environment.yml
 </pre></div>
 </div>
+<p>Then, you can compile the Cython code and install the package with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ source activate celer-env
+$ pip install --no-deps -e .
+</pre></div>
+</div>
 <p>To check if everything worked fine, you can do:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ source activate celer-env
 $ python -c &#39;import celer&#39;
