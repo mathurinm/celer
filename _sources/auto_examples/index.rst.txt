@@ -13,7 +13,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on dense data. ">
 
 .. only:: html
 
@@ -30,6 +30,26 @@ Examples Gallery
    :hidden:
 
    /auto_examples/plot_leukemia_path
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on sparse data. ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_finance_path_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_finance_path.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_finance_path
 .. raw:: html
 
     <div style='clear:both'></div>
