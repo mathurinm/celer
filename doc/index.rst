@@ -7,7 +7,7 @@ Celer
 ======
 
 This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
-This algorithm uses an extrapolated dual point which enables a tight cntrol of optimality and quick feature identification.
+This algorithm uses an extrapolated dual point which enables a tight control of optimality and quick feature identification.
 
 Installation
 ------------
@@ -22,6 +22,10 @@ and create a conda environment with::
 
     $ conda env create --file environment.yml
 
+Then, you can compile the Cython code and install the package with::
+
+    $ source activate celer-env
+    $ pip install --no-deps -e .
 
 To check if everything worked fine, you can do::
 

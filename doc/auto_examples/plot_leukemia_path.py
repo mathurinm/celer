@@ -3,7 +3,7 @@
 Lasso path computation on Leukemia dataset
 =======================================================
 
-The example runs the Celer algorithm.
+The example runs the Celer algorithm on dense data.
 """
 
 import time
