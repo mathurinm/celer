@@ -27,7 +27,7 @@ print(__doc__)
 print("*** Warning: this example may take more than 10 minutes to run ***")
 
 X_fname = "./data/finance_data_preprocessed.npz"
-y_fname = "./data/finance_data_preprocessed.npz"
+y_fname = "./data/finance_target_preprocessed.npy"
 
 if not os.path.exists(X_fname):
     print("Downloading and preprocessing the Finance dataset...")

@@ -18,7 +18,8 @@ def download_finance(path):
 def decompress_finance(compressed_path, decompressed_path):
     decompressor = BZ2Decompressor()
     with open(decompressed_path, "wb") as f, open(compressed_path, "rb") as g:
-        f.write(decompressor.decompress(g.read()))
+        for data in iter(lambda: g.read(100 * 1024), b''):
+            f.write(decompressor.decompress(data))
 
 
 def preprocess_finance(decompressed_path, X_path, y_path):
