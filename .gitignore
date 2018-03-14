@@ -8,4 +8,8 @@ celer.egg-info/*
 *pyc
 
 # Data
-data/*
+examples/data/*
+
+
+doc/*
+coverage/*

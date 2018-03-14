@@ -5,6 +5,7 @@ Lasso path computation on Finance/log1p dataset
 
 The example runs the Celer algorithm on sparse data.
 """
+
 import time
 
 import numpy as np
