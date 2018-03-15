@@ -3,10 +3,15 @@
 Lasso path computation on Finance/log1p dataset
 =======================================================
 
-The example runs the Celer algorithm on sparse data.
+The example runs the Celer algorithm on the Finance dataset
+which is a large sparse dataset.
+
+Running time is here not compared with the scikit-learn
+implementation as it makes the example too long to run.
 """
 
 import time
+import os
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,17 +25,19 @@ from celer.plot_utils import plot_path_hist
 
 print(__doc__)
 
-print("Warning: this example may take more than 10 minutes to run")
-print("Loading data...")
-try:
-    X = sparse.load_npz("./data/finance_data_preprocessed.npz")
-    y = np.load("./data/finance_target_preprocessed.npy")
-except FileNotFoundError:
-    print("Warning: downloading and preprocessing the Finance dataset.")
-    print("This may take several minutes")
+print("*** Warning: this example may take more than 10 minutes to run ***")
+
+X_fname = "./data/finance_data_preprocessed.npz"
+y_fname = "./data/finance_target_preprocessed.npy"
+
+if not os.path.exists(X_fname):
+    print("Downloading and preprocessing the Finance dataset...")
+    print("*** Warning: This may take several minutes ***")
     download_preprocess_finance()
-    X = sparse.load_npz("./data/finance_data_preprocessed.npz")
-    y = np.load("./data/finance_target_preprocessed.npy")
+
+print("Loading data...")
+X = sparse.load_npz(X_fname)
+y = np.load(y_fname)
 
 print("Starting path computation...")
 alpha_max = np.max(np.abs(X.T.dot(y)))
