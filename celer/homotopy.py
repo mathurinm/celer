@@ -5,7 +5,8 @@ from .wrapper import celer
 
 def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
                gap_freq=10, max_epochs_inner=50000, p0=10, verbose=1,
-               verbose_inner=1, tol=1e-6, prune=0, return_thetas=False):
+               verbose_inner=1, tol=1e-6, prune=0, return_thetas=False,
+               **kwargs):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -71,8 +72,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
 
     thetas : array, shape (n_alphas, n_samples)
         The dual variables along the path.
-
-
     """
     if alphas is None:
         alpha_max = np.max(np.abs(X.T.dot(y)))

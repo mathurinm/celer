@@ -1,6 +1,8 @@
 import numpy as np
 
 from scipy import sparse
+from functools import partial
+from sklearn.linear_model import LassoCV
 
 from celer import celer_path
 
@@ -40,8 +42,8 @@ def test_celer_path_dense():
 
     tol = 1e-6
     alphas, coefs, gaps, thetas = celer_path(X, y, alphas=alphas, tol=tol,
-                                             return_thetas=True)
-    betas = coefs.T
+                                             return_thetas=True, verbose=False,
+                                             verbose_inner=False)
     np.testing.assert_array_less(gaps, tol)
 
 
@@ -55,6 +57,19 @@ def test_celer_path_sparse():
 
     tol = 1e-6
     alphas, coefs, gaps, thetas = celer_path(X, y, alphas=alphas, tol=tol,
-                                             return_thetas=True)
-    betas = coefs.T
+                                             return_thetas=True, verbose=False,
+                                             verbose_inner=False)
     np.testing.assert_array_less(gaps, tol)
+
+
+def test_LassoCV_compatibility():
+    """Test that our estimator is pluggable into sklearn's LassoCV."""
+    X, y, _, _ = build_dataset(n_samples=50, n_features=50, n_targets=1)
+    clf = LassoCV(eps=1e-2)
+    clf.path = partial(celer_path, verbose=0, verbose_inner=0)
+    clf.fit(X, y)
+
+    clf2 = LassoCV(eps=1e-2)
+    clf2.fit(X, y)
+
+    np.testing.assert_allclose(clf.coef_, clf2.coef_)
