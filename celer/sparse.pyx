@@ -208,7 +208,8 @@ def celer_sparse(double[:] X_data,
             print("Log gap %.2e" % gap)
 
         if gap < tol:
-            print("Early exit, gap: %.2e < %.2e" % (gap, tol))
+            if verbose:
+                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
         set_feature_prios_sparse(n_features, &theta[0],

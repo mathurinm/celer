@@ -178,7 +178,8 @@ def celer_dense(double[::1, :] X,
             print("Log gap %.2e" % gap)
 
         if gap < tol:
-            print("Early exit, gap: %.2e < %.2e" % (gap, tol))
+            if verbose:
+                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
         set_feature_prios_dense(n_samples, n_features, theta, X,
