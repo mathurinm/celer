@@ -365,7 +365,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                         # don't use accel for this iteration
                         for k in range(K - 2):
                             onesK[k] = 0
-                        onesK[-1] = 1
+                        onesK[K - 2] = 1
 
                     sum_z = 0
                     for k in range(K - 1):
@@ -379,7 +379,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                         for i in range(n_samples):
                             thetaccel[i] += onesK[k] * last_K_res[k, i]
 
-                    tmp = 1 / alpha
+                    tmp = 1. / alpha
                     dscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling_dense(

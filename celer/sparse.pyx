@@ -413,7 +413,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                         # don't use accel for this iteration
                         for k in range(K - 2):
                             onesK[k] = 0
-                        onesK[-1] = 1
+                        onesK[K - 2] = 1
 
                     sum_z = 0
                     for k in range(K - 1):

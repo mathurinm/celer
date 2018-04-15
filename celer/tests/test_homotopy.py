@@ -78,7 +78,7 @@ def test_celer_path_vs_lasso_path():
 
     alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params)
 
-    np.testing.assert_allclose(alphas1 / len(X), alphas2)
+    np.testing.assert_allclose(alphas1 / X.shape[0], alphas2)
     np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05)
 
 
