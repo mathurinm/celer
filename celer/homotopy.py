@@ -1,5 +1,11 @@
+# Author: Mathurin Massias <mathurin.massias@gmail.com>
+#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+# License: BSD 3 clause
+
 import time
 import numpy as np
+
 from .wrapper import celer
 
 

@@ -1,3 +1,8 @@
+# Author: Mathurin Massias <mathurin.massias@gmail.com>
+#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+# License: BSD 3 clause
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rc
