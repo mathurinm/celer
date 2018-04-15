@@ -68,7 +68,7 @@ def test_celer_path_sparse():
 
 
 def test_celer_path_vs_lasso_path():
-    """Test that our estimator is pluggable into sklearn's LassoCV."""
+    """Test that celer_path matches sklearn lasso_path."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
 
     params = dict(eps=1e-2, n_alphas=10, tol=1e-8)
@@ -87,16 +87,9 @@ def test_LassoCV_compatibility():
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
     clf = LassoCV(eps=1e-2)
     clf.path = partial(celer_path, verbose=0, verbose_inner=0)
-    # clf.path = partial(celer_path, use_accel=0)
-    # clf.path = celer_path
     clf.fit(X, y)
 
     clf2 = LassoCV(eps=1e-2)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(clf.coef_, clf2.coef_)
-
-
-if __name__ == '__main__':
-    test_celer_path_vs_lasso_path()
-    # test_LassoCV_compatibility()
+    np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
