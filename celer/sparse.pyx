@@ -3,17 +3,16 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-import numpy as np
 import time
 
+import numpy as np
 cimport numpy as np
 
 from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
 from scipy.linalg.cython_lapack cimport dposv
+
 from libc.math cimport fabs, sqrt, ceil
-
 cimport cython
-
 from utils cimport fmax, primal_value, dual_value, ST, GEOM_GROWTH, LIN_GROWTH
 
 
