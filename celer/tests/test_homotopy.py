@@ -85,11 +85,12 @@ def test_celer_path_vs_lasso_path():
 def test_LassoCV_compatibility():
     """Test that our estimator is pluggable into sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
-    clf = LassoCV(eps=1e-2)
+    params = dict(eps=1e-2, tol=1e-8)
+
+    clf = LassoCV(**params)
     clf.path = partial(celer_path, verbose=0, verbose_inner=0)
     clf.fit(X, y)
 
-    clf2 = LassoCV(eps=1e-2)
+    clf2 = LassoCV(**params)
     clf2.fit(X, y)
-
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
