@@ -79,14 +79,14 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
     thetas : array, shape (n_alphas, n_samples)
         The dual variables along the path.
     """
+    n_samples, n_features = X.shape
     if alphas is None:
-        alpha_max = np.max(np.abs(X.T.dot(y)))
+        alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
         alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas)
     else:
         alphas = np.sort(alphas)[::-1]
 
     n_alphas = len(alphas)
-    n_samples, n_features = X.shape
 
     coefs = np.zeros((n_features, n_alphas), order='F')  # sklearn API
     thetas = np.zeros((n_alphas, n_samples))

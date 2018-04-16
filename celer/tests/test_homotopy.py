@@ -39,10 +39,10 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
 
 def test_celer_path_dense():
     """Test Lasso path computation on dense data."""
-    X, y, _, _ = build_dataset(n_samples=50, n_features=50, n_targets=1)
-
-    alpha_max = np.max(np.abs(X.T.dot(y)))
-    n_alphas = 10
+    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
+    n_samples = X.shape[0]
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+    n_alphas = 5
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
     tol = 1e-6
@@ -56,7 +56,8 @@ def test_celer_path_sparse():
     """Test Lasso path computation on sparse data."""
     X, y, _, _ = build_dataset(n_samples=50, n_features=50, n_targets=1,
                                sparse_X=True)
-    alpha_max = np.max(np.abs(X.T.dot(y)))
+    n_samples = X.shape[0]
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
     n_alphas = 10
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
@@ -78,14 +79,14 @@ def test_celer_path_vs_lasso_path():
 
     alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params)
 
-    np.testing.assert_allclose(alphas1 / X.shape[0], alphas2)
-    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05)
+    np.testing.assert_allclose(alphas1, alphas2)
+    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05, atol=1e-6)
 
 
 def test_LassoCV_compatibility():
     """Test that our estimator is pluggable into sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
-    params = dict(eps=1e-2, tol=1e-8)
+    params = dict(eps=1, n_alphas=1, tol=1e-10, fit_intercept=False, cv=2)
 
     clf = LassoCV(**params)
     clf.path = partial(celer_path, verbose=0, verbose_inner=0)
@@ -93,4 +94,7 @@ def test_LassoCV_compatibility():
 
     clf2 = LassoCV(**params)
     clf2.fit(X, y)
+
+    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-05)
+    np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)

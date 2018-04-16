@@ -169,9 +169,9 @@ def celer_sparse(double[:] X_data,
                 for ii in range(startptr, endptr):
                     R[X_indices[ii]] -= beta[j] * X_data[ii]
 
-        # theta = R / alpha
+        # theta = R / (alpha * n_samples)
         dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / alpha
+        tmp = 1. / (alpha * n_samples)
         dscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling_sparse(n_features, &theta[0],
@@ -361,21 +361,21 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
-            # theta = R / alpha
+            # theta = R / (alpha * n_samples)
             dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-            tmp = 1. / alpha
+            tmp = 1. / (alpha * n_samples)
             dscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling_sparse(
                 n_features, &theta[0], X_data, X_indices, X_indptr,
                 ws_size, &C[0])
 
-            d_obj = 0.
-            for i in range(n_samples):
-                d_obj -= (y[i] / alpha - theta[i] / dual_scale) ** 2
+            if dual_scale > 1. :
+                tmp = 1. / dual_scale
+                dscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj *= 0.5 * alpha ** 2
-            d_obj += 0.5 * norm_y2
+            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
+                               &y[0])
 
             if use_accel: # also compute accelerated dual_point
                 if epoch // gap_freq < K:
@@ -427,23 +427,21 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                         for i in range(n_samples):
                             thetaccel[i] += onesK[k] * last_K_res[k, i]
 
-                    tmp = 1 / alpha
+                    tmp = 1 / (alpha * n_samples)
                     dscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling_sparse(
                         n_features, &thetaccel[0], X_data, X_indices, X_indptr,
                         ws_size, &C[0])
 
-                    d_obj_accel = 0.
-                    for i in range(n_samples):
-                        d_obj_accel -= (y[i] / alpha - thetaccel[i] / dual_scale_accel) ** 2
+                    if dual_scale_accel > 1. :
+                        tmp = 1. / dual_scale_accel
+                        dscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
-                    d_obj_accel *= 0.5 * alpha ** 2
-                    d_obj_accel += 0.5 * norm_y2
+                    d_obj_accel = dual_value(n_samples, alpha, norm_y2,
+                                             &thetaccel[0], &y[0])
 
                     if d_obj_accel > d_obj:
-                        if verbose:
-                            print("----------ACCELERATION WINS-----------")
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
                         # theta_inner in outer loop)
@@ -478,7 +476,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
             for ii in range(startptr, endptr):
                 beta[j] += R[X_indices[ii]] * X_data[ii] * invnorm_Xcols_2[j]
             # perform ST in place:
-            beta[j] = ST(alpha_invnorm_Xcols_2[j], beta[j])
+            beta[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, beta[j])
             tmp = beta[j] - old_beta_j
 
             # R -= (beta_j - old_beta_j) * X[:, j]

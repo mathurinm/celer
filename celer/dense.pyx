@@ -134,9 +134,9 @@ def celer_dense(double[::1, :] X,
                 tmp = - beta[j]
                 daxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
-        # theta = R / alpha
+        # theta = R / (n_samples * alpha)
         dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / alpha
+        tmp = 1. / (n_samples * alpha)
         dscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling_dense(n_samples, n_features, theta, X,
@@ -316,9 +316,9 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
-            # theta = R / alpha
+            # theta = R / (alpha * n_samples)
             dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-            tmp = 1. / alpha
+            tmp = 1. / (alpha * n_samples)
             dscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling_dense(
@@ -379,7 +379,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                         for i in range(n_samples):
                             thetaccel[i] += onesK[k] * last_K_res[k, i]
 
-                    tmp = 1. / alpha
+                    tmp = 1. / (alpha * n_samples)
                     dscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling_dense(
@@ -432,7 +432,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
             old_beta_j = beta[j]
             beta[j] += ddot(&n_samples, &X[0, j], &inc, &R[0], &inc) * invnorm_Xcols_2[j]
             # perform ST in place:
-            beta[j] = ST(alpha_invnorm_Xcols_2[j], beta[j])
+            beta[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, beta[j])
             tmp = beta[j] - old_beta_j
 
             # R -= (beta_j - old_beta_j) * X[:, j]
