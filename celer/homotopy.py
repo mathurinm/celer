@@ -93,14 +93,13 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
     dual_gaps = np.zeros(n_alphas)
     all_times = np.zeros(n_alphas)
 
-    # skip alpha_max and use decreasing alphas
-    thetas[0] = y / alphas[0]
-    for t in range(1, n_alphas):
+    # do not skip alphas[0], it is not always alpha_max
+    for t in range(n_alphas):
         if verbose:
             print("#" * 60)
             print(" ##### Computing %dth alpha" % (t + 1))
             print("#" * 60)
-        if t > 1:
+        if t > 0:
             beta_init = coefs[:, t - 1].copy()
             p_t = max(len(np.where(beta_init != 0)[0]), 1)
         else:
