@@ -157,7 +157,8 @@ def celer_sparse(double[:] X_data,
     cdef double d_obj_from_inner = 0
 
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
-
+    cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
+    
     for t in range(max_iter):
         dcopy(&n_samples, &y[0], &inc, &R[0], &inc)
         for j in range(n_features):
@@ -249,13 +250,17 @@ def celer_sparse(double[:] X_data,
 
             if t == 0:
                 ws_size = p0
-            if ws_size > n_features:
-                ws_size = n_features
+        if ws_size > n_features:
+            ws_size = n_features
 
         ws_sizes[t] = ws_size
 
-        C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
-        C.sort()
+        # if ws_size === n_features then argpartition will break:
+        if ws_size == n_features:
+            C = all_features
+        else:
+            C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
+            C.sort()
         if prune:
             tol_inner = tol
         else:

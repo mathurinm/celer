@@ -82,7 +82,13 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
             X = np.asfortranarray(X)
     else:
         if X.getformat() != 'csc' or not X.has_sorted_indices:
-            raise ValueError("Give X as csc matrix with sorted indices")
+            raise TypeError("Sparse X must be in column sparse format with "
+                            "sorted indices.")
+    # cython function only accepts float64 for X and y:
+    if X.dtype != 'float64':
+        X = X.astype(np.float64)
+    if y.dtype != 'float64':
+        y = y.astype(np.float64)
 
     n_features = X.shape[1]
     if beta_init is None:

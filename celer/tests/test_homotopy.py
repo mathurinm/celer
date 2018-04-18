@@ -7,6 +7,7 @@ import numpy as np
 
 from scipy import sparse
 from functools import partial
+from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
 
@@ -113,3 +114,5 @@ def test_dropin_lasso():
     clf2 = sklearn_Lasso(alpha=alpha, fit_intercept=False)
     clf2.fit(X, y)
     np.testing.assert_allclose(clf.coef_, clf2.coef_)
+
+    check_estimator(Lasso)
