@@ -40,6 +40,14 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
     return X, y, X_test, y_test
 
 
+def test_small_data():
+    X = np.array([[0., 0], [1, 1]])
+    y = np.array([0., 1])
+    alpha = 0.1
+    alphas, coefs, dual_gaps = celer_path(X, y, alphas=[alpha])
+    assert True
+
+
 def test_celer_path_dense():
     """Test Lasso path computation on dense data."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
@@ -101,17 +109,3 @@ def test_LassoCV_compatibility():
     np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-05)
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
-
-
-def test_dropin_lasso():
-    """Test that our Lasso class behaves as sklearn's Lasso."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
-
-    alpha_max = np.linalg.norm(X.T.dot(y))
-    alpha = alpha_max / 2.
-    clf = Lasso(alpha=alpha)
-    clf.fit(X, y)
-
-    clf2 = sklearn_Lasso(alpha=alpha, fit_intercept=False)
-    clf2.fit(X, y)
-    np.testing.assert_allclose(clf.coef_, clf2.coef_)
