@@ -57,8 +57,7 @@ def test_celer_path_dense():
 
 def test_celer_path_sparse():
     """Test Lasso path computation on sparse data."""
-    X, y, _, _ = build_dataset(n_samples=50, n_features=50, n_targets=1,
-                               sparse_X=True)
+    X, y, _, _ = build_dataset(n_samples=50, n_features=50, sparse_X=True)
     n_samples = X.shape[0]
     alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
     n_alphas = 10
@@ -73,12 +72,11 @@ def test_celer_path_sparse():
 
 def test_celer_path_vs_lasso_path():
     """Test that celer_path matches sklearn lasso_path."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
+    X, y, _, _ = build_dataset(n_samples=30, n_features=50)
 
     params = dict(eps=1e-2, n_alphas=10, tol=1e-8)
-    alphas1, coefs1, gaps1 = celer_path(X, y,
-                                        return_thetas=False, verbose=False,
-                                        **params)
+    alphas1, coefs1, gaps1 = celer_path(
+        X, y, return_thetas=False, verbose=False, **params)
 
     alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params)
 
@@ -88,7 +86,7 @@ def test_celer_path_vs_lasso_path():
 
 def test_LassoCV_compatibility():
     """Test that our estimator is pluggable into sklearn's LassoCV."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
+    X, y, _, _ = build_dataset(n_samples=30, n_features=50)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, fit_intercept=False, cv=2)
 
     clf = sklearn_LassoCV(**params)
@@ -105,9 +103,9 @@ def test_LassoCV_compatibility():
 
 def test_dropin_lasso():
     """Test that our Lasso class behaves as sklearn's Lasso."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
+    X, y, _, _ = build_dataset(n_samples=20, n_features=15)
 
-    alpha_max = np.linalg.norm(X.T.dot(y))
+    alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     alpha = alpha_max / 2.
     clf = Lasso(alpha=alpha)
     clf.fit(X, y)
