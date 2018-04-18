@@ -1,3 +1,8 @@
+# Author: Mathurin Massias <mathurin.massias@gmail.com>
+#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+# License: BSD 3 clause
+
 cimport cython
 from scipy.linalg.cython_blas cimport ddot, dasum
 from libc.math cimport fabs
@@ -49,7 +54,7 @@ cdef double primal_value(double alpha, int n_samples, double * R,
     # regularization term: alpha ||w||_1
     cdef double p_obj = alpha * dasum(&n_features, w, &inc)
     # R is passed as a pointer so no need to & it
-    p_obj += ddot(&n_samples, R, &inc, R, &inc) / 2.
+    p_obj += ddot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
     return p_obj
 
 
@@ -60,9 +65,9 @@ cdef double dual_value(int n_samples, double alpha, double norm_y2,
                        double * theta, double * y) nogil:
     """Theta must be feasible"""
     cdef int i
-    cdef double d_obj = 0
+    cdef double d_obj = 0.
     for i in range(n_samples):
-        d_obj -= (y[i] / alpha - theta[i]) ** 2
-    d_obj *= 0.5 * alpha ** 2
-    d_obj += 0.5 * norm_y2
+        d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
+    d_obj *= 0.5 * alpha ** 2 * n_samples
+    d_obj += norm_y2 / (2. * n_samples)
     return d_obj

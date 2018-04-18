@@ -1,11 +1,18 @@
+# Author: Mathurin Massias <mathurin.massias@gmail.com>
+#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+# License: BSD 3 clause
+
 import time
 import numpy as np
+
 from .wrapper import celer
 
 
-def celer_path(X, y, alphas=None, max_iter=20, gap_freq=10,
-               max_epochs_inner=50000, p0=10, verbose=1, verbose_inner=1,
-               tol=1e-6, prune=0):
+def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
+               gap_freq=10, max_epochs=50000, p0=10, verbose=0,
+               verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
+               **kwargs):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -17,7 +24,14 @@ def celer_path(X, y, alphas=None, max_iter=20, gap_freq=10,
     y : ndarray, shape (n_samples,)
         Target values
 
-    alphas : ndarray, shape (n_alphas,)
+    eps : float, optional
+        Length of the path. ```eps=1e-3`` means that
+        ``alpha_min = 1e-3 * alpha_max``
+
+    n_alphas : int, optional
+        Number of alphas along the regularization path
+
+    alphas : ndarray, optional
         List of alphas where to compute the models.
         If ``None`` alphas are set automatically
 
@@ -28,13 +42,13 @@ def celer_path(X, y, alphas=None, max_iter=20, gap_freq=10,
         Number of coordinate descent epochs between each duality gap
         computations.
 
-    max_epochs_inner : int, optional
+    max_epochs : int, optional
         Maximum number of CD epochs on the subproblem.
 
     p0 : int, optional
         First working set size.
 
-    verbose : bool or integer
+    verbose : bool or integer, optional
         Amount of verbosity.
 
     verbose_inner : bool or integer
@@ -45,54 +59,69 @@ def celer_path(X, y, alphas=None, max_iter=20, gap_freq=10,
         gap is smaller than ``tol`` or the maximum number of iteration is
         reached.
 
-    prune : 0 | 1
+    prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
+
+    return_thetas : bool, optional
+        If True, dual variables along the path are returned.
 
     Returns
     -------
-    betas : array, shape (n_alphas, n_features)
+    alpha : array, shape (n,_alphas,)
+        The alphas along the path where models are computed.
+
+    coefs : array, shape (n_features, n_alphas)
         Coefficients along the path.
+
+    dual_gaps : array, shape (n_alphas,)
+        Duality gaps returned by the solver along the path.
 
     thetas : array, shape (n_alphas, n_samples)
         The dual variables along the path.
-
-    final_gaps : array, shape (n_alphas,)
-        Duality gaps returned by the solver along the path.
+        (Is returned only when ``return_thetas`` is set to True).
     """
-    n_alphas = len(alphas)
     n_samples, n_features = X.shape
-    assert alphas[0] > alphas[-1]  # alphas must be given in decreasing order
+    if alphas is None:
+        alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+        alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas)
+    else:
+        alphas = np.sort(alphas)[::-1]
 
-    betas = np.zeros((n_alphas, n_features))
+    n_alphas = len(alphas)
+
+    coefs = np.zeros((n_features, n_alphas), order='F')  # sklearn API
     thetas = np.zeros((n_alphas, n_samples))
-    final_gaps = np.zeros(n_alphas)
+    dual_gaps = np.zeros(n_alphas)
     all_times = np.zeros(n_alphas)
 
-    # skip alpha_max and use decreasing alphas
-    thetas[0] = y / alphas[0]  # don't forget to set this one
-    for t in range(1, n_alphas):
+    # do not skip alphas[0], it is not always alpha_max
+    for t in range(n_alphas):
         if verbose:
             print("#" * 60)
             print(" ##### Computing %dth alpha" % (t + 1))
             print("#" * 60)
-        if t > 1:
-            beta_init = betas[t - 1].copy()
+        if t > 0:
+            beta_init = coefs[:, t - 1].copy()
             p_t = max(len(np.where(beta_init != 0)[0]), 1)
         else:
-            beta_init = betas[t]
+            beta_init = coefs[:, t].copy()
             p_t = 10
 
         alpha = alphas[t]
         t0 = time.time()
         sol = celer(X, y, alpha,
                     beta_init, max_iter=max_iter, gap_freq=gap_freq,
-                    max_epochs_inner=max_epochs_inner, p0=p_t,
+                    max_epochs=max_epochs, p0=p_t,
                     verbose=verbose, verbose_inner=verbose_inner,
                     tol=tol, prune=prune)
 
         all_times[t] = time.time() - t0
-        betas[t], thetas[t], final_gaps[t] = sol[0], sol[1], sol[2][-1]
-        if final_gaps[t] > tol:
+        coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+        if dual_gaps[t] > tol:
             print("-----WARNING: solver did not converge, t=%d" % t)
-            print("gap=%.1e, tol=%.1e" % (final_gaps[t], tol))
-    return betas, thetas, final_gaps
+            print("gap=%.1e, tol=%.1e" % (dual_gaps[t], tol))
+
+    if return_thetas:
+        return alphas, coefs, dual_gaps, thetas
+    else:
+        return alphas, coefs, dual_gaps
