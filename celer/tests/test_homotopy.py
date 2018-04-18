@@ -12,7 +12,7 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path
-from celer.dropin_sklearn import Lasso
+from celer.dropin_sklearn import Lasso, LassoCV
 
 
 def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
@@ -90,8 +90,7 @@ def test_LassoCV_compatibility():
     X, y, _, _ = build_dataset(n_samples=30, n_features=50)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, fit_intercept=False, cv=2)
 
-    clf = sklearn_LassoCV(**params)
-    clf.path = partial(celer_path, verbose=0, verbose_inner=0)
+    clf = LassoCV(**params)
     clf.fit(X, y)
 
     clf2 = sklearn_LassoCV(**params)
@@ -100,6 +99,8 @@ def test_LassoCV_compatibility():
     np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-05)
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
+
+    # check_estimator(LassoCV)
 
 
 def test_dropin_lasso():
