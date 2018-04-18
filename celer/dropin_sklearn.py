@@ -1,7 +1,4 @@
-import numpy as np
-
 from sklearn.linear_model import Lasso as Lasso_sklearn
-from sklearn.linear_model import LassoCV as LassoCV_sklearn
 
 from .homotopy import celer_path
 
