@@ -7,9 +7,11 @@ import numpy as np
 
 from scipy import sparse
 from functools import partial
-from sklearn.linear_model import LassoCV, lasso_path
+from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
+                                  Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path
+from celer.dropin_sklearn import Lasso
 
 
 def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
@@ -18,6 +20,7 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
     build an ill-posed linear regression problem with many noisy features and
     comparatively few samples
     """
+
     random_state = np.random.RandomState(0)
     if n_targets > 1:
         w = random_state.randn(n_features, n_targets)
@@ -88,13 +91,27 @@ def test_LassoCV_compatibility():
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, fit_intercept=False, cv=2)
 
-    clf = LassoCV(**params)
+    clf = sklearn_LassoCV(**params)
     clf.path = partial(celer_path, verbose=0, verbose_inner=0)
     clf.fit(X, y)
 
-    clf2 = LassoCV(**params)
+    clf2 = sklearn_LassoCV(**params)
     clf2.fit(X, y)
 
     np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-05)
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
+
+
+def test_dropin_lasso():
+    """Test that our Lasso class behaves as sklearn's Lasso."""
+    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
+
+    alpha_max = np.linalg.norm(X.T.dot(y))
+    alpha = alpha_max / 2.
+    clf = Lasso(alpha=alpha)
+    clf.fit(X, y)
+
+    clf2 = sklearn_Lasso(alpha=alpha, fit_intercept=False)
+    clf2.fit(X, y)
+    np.testing.assert_allclose(clf.coef_, clf2.coef_)

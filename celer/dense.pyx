@@ -60,7 +60,7 @@ def celer_dense(double[::1, :] X,
                 double alpha,
                 double[:] beta_init,
                 int max_iter,
-                int max_epochs_inner,
+                int max_epochs,
                 int gap_freq=10,
                 float tol_ratio_inner=0.3,
                 float tol=1e-6,
@@ -231,7 +231,7 @@ def celer_dense(double[::1, :] X,
             n_samples, n_features, ws_size, X,
             y, alpha, beta, R, C, theta_inner, invnorm_Xcols_2,
             alpha_invnorm_Xcols_2,
-            norm_y2, tol_inner, max_epochs=max_epochs_inner,
+            norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel)
 
@@ -399,8 +399,6 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                                              &thetaccel[0], &y[0])
 
                     if d_obj_accel > d_obj:
-                        if verbose:
-                            print("----------ACCELERATION WINS-----------")
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
                         # theta_inner in outer loop)
