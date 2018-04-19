@@ -11,8 +11,7 @@ from .wrapper import celer
 
 def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
-               verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               **kwargs):
+               verbose_inner=0, tol=1e-6, prune=0, return_thetas=False):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters

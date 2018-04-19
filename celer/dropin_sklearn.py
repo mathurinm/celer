@@ -106,7 +106,10 @@ class Lasso(Lasso_sklearn):
 
 
 class LassoCV(LassoCV_sklearn):
-    """LassoCV scikit-learn estimator based on CELER solver"""
+    """LassoCV scikit-learn estimator based on CELER solver
+
+    XXX needs a docstring
+    """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=False, max_iter=100,
