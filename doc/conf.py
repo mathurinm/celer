@@ -225,6 +225,8 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'celerdoc'
 
+numpydoc_show_class_members = False
+
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
