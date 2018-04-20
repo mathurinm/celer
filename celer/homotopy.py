@@ -24,7 +24,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         Target values
 
     eps : float, optional
-        Length of the path. ```eps=1e-3`` means that
+        Length of the path. ``eps=1e-3`` means that
         ``alpha_min = 1e-3 * alpha_max``
 
     n_alphas : int, optional
@@ -35,7 +35,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         If ``None`` alphas are set automatically
 
     max_iter : int, optional
-        The maximum number of iterations
+        The maximum number of iterations (subproblem definition)
 
     gap_freq : int, optional
         Number of coordinate descent epochs between each duality gap

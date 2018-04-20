@@ -56,7 +56,7 @@ for tol_ix, tol in enumerate(tols):
     _, coefs, gaps, thetas = res
     betas = coefs.T
 
-labels = [r"\sc{CELER}"]
+labels = [r"\sc{Celer}"]
 figsize = (7, 4)
 fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
 plt.show()
