@@ -122,10 +122,10 @@
 <em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=False</em>, <em>max_iter=100</em>, <em>tol=1e-06</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
 <dd><p>LassoCV scikit-learn estimator based on Celer solver</p>
 <p>The best model is selected by cross-validation.</p>
-<dl class="docutils">
-<dt>The optimization objective for Lasso is::</dt>
-<dd>(1 / (2 * n_samples)) * ||y - Xw||^2_2 + alpha * ||w||_1</dd>
-</dl>
+<p>The optimization objective for Lasso is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">beta</span><span class="o">||^</span><span class="mi">2</span><span class="n">_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">beta</span><span class="o">||</span><span class="n">_1</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -182,11 +182,6 @@ For integer/None inputs, sklearn <cite>KFold</cite> is used.</p>
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal"><span class="pre">celer_path</span></code></a>, <a class="reference internal" href="celer.Lasso.html#celer.Lasso" title="celer.Lasso"><code class="xref py py-obj docutils literal"><span class="pre">Lasso</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>For an example, see
-<a class="reference external" href="http://scikit-learn.org/stable/auto_examples/linear_model/plot_lasso_model_selection.html#sphx-glr-auto-examples-linear-model-plot-lasso-model-selection-py" title="(in scikit-learn v0.19.1)"><span class="xref std std-ref">examples/plot_lasso_cv.py</span></a>.
-To avoid unnecessary memory duplication the X argument of the fit method
-should be directly passed as a Fortran-contiguous numpy array.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -198,10 +193,10 @@ should be directly passed as a Fortran-contiguous numpy array.</p>
 <td>(float) The amount of penalization chosen by cross validation</td>
 </tr>
 <tr class="row-even"><td><strong>coef_</strong></td>
-<td>(array, shape (n_features,) | (n_targets, n_features)) parameter vector (w in the cost function formula)</td>
+<td>(array, shape (n_features,)) parameter vector (beta in the cost function formula)</td>
 </tr>
 <tr class="row-odd"><td><strong>intercept_</strong></td>
-<td>(float | array, shape (n_targets,)) independent term in decision function.</td>
+<td>(float) independent term in decision function.</td>
 </tr>
 <tr class="row-even"><td><strong>mse_path_</strong></td>
 <td>(array, shape (n_alphas, n_folds)) mean square error for the test set on each fold, varying alpha</td>
@@ -239,7 +234,7 @@ should be directly passed as a Fortran-contiguous numpy array.</p>
 <td>Get parameters for this estimator.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path</span></code>(X,&nbsp;y,&nbsp;alphas,&nbsp;**kwargs)</td>
-<td></td>
+<td>Compute Lasso path with Celer.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">predict</span></code>(X)</td>
 <td>Predict using the linear model</td>

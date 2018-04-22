@@ -22,7 +22,7 @@ X = np.asfortranarray(dataset.data.astype(float))
 y = dataset.target.astype(float)
 n_samples = len(y)
 
-model = LassoCV()
+model = LassoCV(fit_intercept=False)
 model.fit(X, y)
 
 print("Estimated regularization parameter alpha: %s" % model.alpha_)
