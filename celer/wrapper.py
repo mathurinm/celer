@@ -67,7 +67,7 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
     beta : array, shape (n_features,)
         Estimated coefficient vector.
 
-    theta: array, shape (n_samples,)
+    theta : array, shape (n_samples,)
         Dual point (potentially accelerated) when the solver exits.
 
     gaps : array

@@ -35,14 +35,14 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         If ``None`` alphas are set automatically
 
     max_iter : int, optional
-        The maximum number of iterations (subproblem definition)
+        The maximum number of iterations (subproblem definitions)
 
     gap_freq : int, optional
         Number of coordinate descent epochs between each duality gap
         computations.
 
     max_epochs : int, optional
-        Maximum number of CD epochs on the subproblem.
+        Maximum number of CD epochs on each subproblem.
 
     p0 : int, optional
         First working set size.

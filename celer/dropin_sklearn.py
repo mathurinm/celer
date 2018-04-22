@@ -9,7 +9,7 @@ class Lasso(Lasso_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - Xw||^2_2 + alpha * ||w||_1
+    (1 / (2 * n_samples)) * ||y - X beta||^2_2 + alpha * ||beta||_1
 
     Parameters
     ----------
@@ -20,23 +20,22 @@ class Lasso(Lasso_sklearn):
         ``Lasso`` object is not advised.
 
     max_iter : int, optional
-        The maximum number of iterations (subproblem definition)
+        The maximum number of iterations (subproblem definitions)
 
     gap_freq : int
         Number of coordinate descent epochs between each duality gap
         computations.
 
     max_epochs : int
-        Maximum number of CD epochs on the subproblem.
+        Maximum number of CD epochs on each subproblem.
 
     p0 : int
         First working set size.
 
     tol : float, optional
-        The tolerance for the optimization: if the updates are
-        smaller than ``tol``, the optimization code checks the
-        dual gap for optimality and continues until it is smaller
-        than ``tol``.
+        The tolerance for the optimization: the solver runs until the duality
+        gap is smaller than ``tol`` or the maximum number of iteration is
+        reached.
 
     verbose : bool or integer
         Amount of verbosity.
@@ -50,7 +49,7 @@ class Lasso(Lasso_sklearn):
     Attributes
     ----------
     coef_ : array, shape (n_features,)
-        parameter vector (w in the cost function formula)
+        parameter vector (beta in the cost function formula)
 
     sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
         ``sparse_coef_`` is a readonly property derived from ``coef_``
@@ -66,14 +65,11 @@ class Lasso(Lasso_sklearn):
     --------
     >>> from celer import Lasso
     >>> clf = Lasso(alpha=0.1)
-    >>> clf.fit([[0,0], [1, 1], [2, 2]], [0, 1, 2])
-    Lasso(alpha=0.1, copy_X=True, fit_intercept=True, max_iter=1000,
-       normalize=False, positive=False, precompute=False, random_state=None,
-       selection='cyclic', tol=0.0001, warm_start=False)
+    >>> clf.fit([[-1, -1], [0, 0], [1, 1]], [-1, 0, 1, ])
+    Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,
+    p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
     [0.85 0.  ]
-    >>> print(clf.intercept_)  # doctest: +ELLIPSIS
-    0.15...
 
     See also
     --------
@@ -101,6 +97,7 @@ class Lasso(Lasso_sklearn):
         self.return_n_iter = True
 
     def path(self, X, y, alphas, **kwargs):
+        """Compute Lasso path with Celer."""
         alphas, coefs, dual_gaps = celer_path(
             X, y, alphas=alphas, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
@@ -114,7 +111,8 @@ class LassoCV(LassoCV_sklearn):
     The best model is selected by cross-validation.
 
     The optimization objective for Lasso is::
-        (1 / (2 * n_samples)) * ||y - Xw||^2_2 + alpha * ||w||_1
+
+    (1 / (2 * n_samples)) * ||y - X beta||^2_2 + alpha * ||beta||_1
 
     Parameters
     ----------
@@ -158,28 +156,26 @@ class LassoCV(LassoCV_sklearn):
     ----------
     alpha_ : float
         The amount of penalization chosen by cross validation
-    coef_ : array, shape (n_features,) | (n_targets, n_features)
-        parameter vector (w in the cost function formula)
-    intercept_ : float | array, shape (n_targets,)
+
+    coef_ : array, shape (n_features,)
+        parameter vector (beta in the cost function formula)
+
+    intercept_ : float
         independent term in decision function.
+
     mse_path_ : array, shape (n_alphas, n_folds)
         mean square error for the test set on each fold, varying alpha
+
     alphas_ : numpy array, shape (n_alphas,)
         The grid of alphas used for fitting
+
     dual_gap_ : ndarray, shape ()
         The dual gap at the end of the optimization for the optimal alpha
         (``alpha_``).
+
     n_iter_ : int
         number of iterations run by the coordinate descent solver to reach
         the specified tolerance for the optimal alpha.
-
-    Notes
-    -----
-    For an example, see
-    :ref:`examples/plot_lasso_cv.py
-    <sphx_glr_auto_examples_linear_model_plot_lasso_model_selection.py>`.
-    To avoid unnecessary memory duplication the X argument of the fit method
-    should be directly passed as a Fortran-contiguous numpy array.
 
     See also
     --------
@@ -203,6 +199,7 @@ class LassoCV(LassoCV_sklearn):
         self.return_n_iter = True
 
     def path(self, X, y, alphas, **kwargs):
+        """Compute Lasso path with Celer."""
         alphas, coefs, dual_gaps = celer_path(
             X, y, alphas=alphas, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,

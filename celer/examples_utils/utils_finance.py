@@ -2,7 +2,6 @@ import os
 import numpy as np
 from scipy import sparse
 from sklearn import preprocessing
-from numpy.linalg import norm
 from sklearn.datasets import load_svmlight_file
 from download import download
 from bz2 import BZ2Decompressor
