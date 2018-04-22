@@ -1,0 +1,28 @@
+celer\.Lasso
+============
+
+.. currentmodule:: celer
+
+.. autoclass:: Lasso
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Lasso.__init__
+      ~Lasso.fit
+      ~Lasso.get_params
+      ~Lasso.path
+      ~Lasso.predict
+      ~Lasso.score
+      ~Lasso.set_params
+   
+   
+
+   
+   
+   

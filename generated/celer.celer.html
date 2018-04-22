@@ -121,8 +121,12 @@
 <h1>celer.celer<a class="headerlink" href="#celer-celer" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer">
-<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>beta_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs_inner=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=1</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>beta_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=1</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Lasso solution with the Celer algorithm.</p>
+<p>The minimized objective function is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">beta</span><span class="o">||</span><span class="n">_2</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">beta</span><span class="o">||</span><span class="n">_1</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -148,7 +152,7 @@ sparse format (CSC) to avoid unnecessary memory duplication.</p>
 <blockquote>
 <div><p>Maximum number of outer loop (working set definition) iterations.</p>
 </div></blockquote>
-<p><strong>max_epoch_inner</strong> : int, optional</p>
+<p><strong>max_epochs</strong> : int, optional</p>
 <blockquote>
 <div><p>Maximum number of epochs for the coordinate descent solver called on
 the subproblems.</p>

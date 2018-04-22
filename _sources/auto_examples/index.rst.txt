@@ -13,6 +13,26 @@ Examples Gallery
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the LassoCV scikit-learn like estimator using the Celer algorithm. ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_lasso_cv_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_lasso_cv.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_lasso_cv
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on dense data. ">
 
 .. only:: html

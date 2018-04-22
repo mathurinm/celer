@@ -84,7 +84,9 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">API Documentation</a><ul>
-<li><a class="reference internal" href="#celer">CELER</a></li>
+<li><a class="reference internal" href="#celer">CELER</a><ul>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -134,8 +136,23 @@
 <tr class="row-odd"><td><a class="reference internal" href="generated/celer.celer.html#celer.celer" title="celer.celer"><code class="xref py py-obj docutils literal"><span class="pre">celer</span></code></a>(X,&nbsp;y,&nbsp;alpha[,&nbsp;beta_init,&nbsp;max_iter,&nbsp;…])</td>
 <td>Compute the Lasso solution with the Celer algorithm.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal"><span class="pre">celer_path</span></code></a>(X,&nbsp;y[,&nbsp;alphas,&nbsp;max_iter,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal"><span class="pre">celer_path</span></code></a>(X,&nbsp;y[,&nbsp;eps,&nbsp;n_alphas,&nbsp;alphas,&nbsp;…])</td>
 <td>Compute Lasso path with Celer as inner solver.</td>
+</tr>
+</tbody>
+</table>
+<p>Estimators</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/celer.Lasso.html#celer.Lasso" title="celer.Lasso"><code class="xref py py-obj docutils literal"><span class="pre">Lasso</span></code></a>([alpha,&nbsp;max_iter,&nbsp;gap_freq,&nbsp;…])</td>
+<td>Lasso scikit-learn estimator based on CELER solver</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV"><code class="xref py py-obj docutils literal"><span class="pre">LassoCV</span></code></a>([eps,&nbsp;n_alphas,&nbsp;alphas,&nbsp;…])</td>
+<td>LassoCV scikit-learn estimator based on CELER solver</td>
 </tr>
 </tbody>
 </table>

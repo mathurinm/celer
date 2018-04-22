@@ -28,6 +28,7 @@
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="celer.Lasso" href="celer.Lasso.html" />
     <link rel="prev" title="celer.celer" href="celer.celer.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -120,7 +121,7 @@
 <h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer_path">
-<code class="descclassname">celer.</code><code class="descname">celer_path</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alphas=None</em>, <em>max_iter=20</em>, <em>gap_freq=10</em>, <em>max_epochs_inner=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=1</em>, <em>tol=1e-06</em>, <em>prune=0</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">celer.</code><code class="descname">celer_path</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>max_iter=20</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>return_thetas=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute Lasso path with Celer as inner solver.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -135,21 +136,30 @@ sparse format (CSC) to avoid unnecessary memory duplication.</p>
 <blockquote>
 <div><p>Target values</p>
 </div></blockquote>
-<p><strong>alphas</strong> : ndarray, shape (n_alphas,)</p>
+<p><strong>eps</strong> : float, optional</p>
+<blockquote>
+<div><p>Length of the path. <code class="docutils literal"><span class="pre">eps=1e-3</span></code> means that
+<code class="docutils literal"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
+</div></blockquote>
+<p><strong>n_alphas</strong> : int, optional</p>
+<blockquote>
+<div><p>Number of alphas along the regularization path</p>
+</div></blockquote>
+<p><strong>alphas</strong> : ndarray, optional</p>
 <blockquote>
 <div><p>List of alphas where to compute the models.
 If <code class="docutils literal"><span class="pre">None</span></code> alphas are set automatically</p>
 </div></blockquote>
 <p><strong>max_iter</strong> : int, optional</p>
 <blockquote>
-<div><p>The maximum number of iterations</p>
+<div><p>The maximum number of iterations (subproblem definition)</p>
 </div></blockquote>
 <p><strong>gap_freq</strong> : int, optional</p>
 <blockquote>
 <div><p>Number of coordinate descent epochs between each duality gap
 computations.</p>
 </div></blockquote>
-<p><strong>max_epochs_inner</strong> : int, optional</p>
+<p><strong>max_epochs</strong> : int, optional</p>
 <blockquote>
 <div><p>Maximum number of CD epochs on the subproblem.</p>
 </div></blockquote>
@@ -157,7 +167,7 @@ computations.</p>
 <blockquote>
 <div><p>First working set size.</p>
 </div></blockquote>
-<p><strong>verbose</strong> : bool or integer</p>
+<p><strong>verbose</strong> : bool or integer, optional</p>
 <blockquote>
 <div><p>Amount of verbosity.</p>
 </div></blockquote>
@@ -171,23 +181,32 @@ computations.</p>
 gap is smaller than <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is
 reached.</p>
 </div></blockquote>
-<p><strong>prune</strong> : 0 | 1</p>
+<p><strong>prune</strong> : 0 | 1, optional</p>
 <blockquote>
 <div><p>Whether or not to use pruning when growing working sets.</p>
 </div></blockquote>
+<p><strong>return_thetas</strong> : bool, optional</p>
+<blockquote>
+<div><p>If True, dual variables along the path are returned.</p>
+</div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>betas</strong> : array, shape (n_alphas, n_features)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>alpha</strong> : array, shape (n,_alphas,)</p>
+<blockquote>
+<div><p>The alphas along the path where models are computed.</p>
+</div></blockquote>
+<p><strong>coefs</strong> : array, shape (n_features, n_alphas)</p>
 <blockquote>
 <div><p>Coefficients along the path.</p>
 </div></blockquote>
-<p><strong>thetas</strong> : array, shape (n_alphas, n_samples)</p>
+<p><strong>dual_gaps</strong> : array, shape (n_alphas,)</p>
 <blockquote>
-<div><p>The dual variables along the path.</p>
-</div></blockquote>
-<p><strong>final_gaps</strong> : array, shape (n_alphas,)</p>
-<blockquote class="last">
 <div><p>Duality gaps returned by the solver along the path.</p>
+</div></blockquote>
+<p><strong>thetas</strong> : array, shape (n_alphas, n_samples)</p>
+<blockquote class="last">
+<div><p>The dual variables along the path.
+(Is returned only when <code class="docutils literal"><span class="pre">return_thetas</span></code> is set to True).</p>
 </div></blockquote>
 </td>
 </tr>

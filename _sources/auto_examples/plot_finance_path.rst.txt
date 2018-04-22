@@ -22,39 +22,7 @@ The example runs the Celer algorithm on sparse data.
 
     Warning: this example may take more than 10 minutes to run
     Loading data...
-    Warning: downloading and preprocessing the Finance dataset.
-    This may take several minutes
-    Downloading data from https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/log1p.E2006.train.bz2 (234.3 MB)
-
-    Successfully downloaded file to ./data/log1p.E2006.train.bz2
     Starting path computation...
-    Early exit, gap: 6.94e-03 < 1.00e-02
-    Early exit, gap: 6.01e-06 < 1.00e-02
-    Early exit, gap: 3.21e-03 < 1.00e-02
-    Early exit, gap: 2.85e-03 < 1.00e-02
-    Early exit, gap: 4.18e-03 < 1.00e-02
-    Early exit, gap: 3.34e-05 < 1.00e-02
-    Early exit, gap: 9.40e-03 < 1.00e-02
-    Early exit, gap: 3.52e-05 < 1.00e-02
-    Early exit, gap: 6.00e-03 < 1.00e-02
-    Early exit, gap: 5.38e-08 < 1.00e-04
-    Early exit, gap: 3.32e-07 < 1.00e-04
-    Early exit, gap: 3.50e-06 < 1.00e-04
-    Early exit, gap: 1.96e-07 < 1.00e-04
-    Early exit, gap: 4.76e-06 < 1.00e-04
-    Early exit, gap: 6.19e-07 < 1.00e-04
-    Early exit, gap: 3.63e-05 < 1.00e-04
-    Early exit, gap: 4.74e-05 < 1.00e-04
-    Early exit, gap: 6.45e-05 < 1.00e-04
-    Early exit, gap: 4.46e-08 < 1.00e-06
-    Early exit, gap: 3.32e-07 < 1.00e-06
-    Early exit, gap: 2.40e-07 < 1.00e-06
-    Early exit, gap: 7.31e-07 < 1.00e-06
-    Early exit, gap: 3.02e-07 < 1.00e-06
-    Early exit, gap: 5.80e-07 < 1.00e-06
-    Early exit, gap: 4.21e-07 < 1.00e-06
-    Early exit, gap: 2.55e-07 < 1.00e-06
-    Early exit, gap: 2.87e-07 < 1.00e-06
 
 
 
@@ -63,6 +31,7 @@ The example runs the Celer algorithm on sparse data.
 
 
 .. code-block:: python
+
 
     import time
 
@@ -91,7 +60,8 @@ The example runs the Celer algorithm on sparse data.
         y = np.load("./data/finance_target_preprocessed.npy")
 
     print("Starting path computation...")
-    alpha_max = np.max(np.abs(X.T.dot(y)))
+    n_samples = X.shape[0]
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 
     # construct fine or coarse grid of regularization parameters
     fine = False
@@ -107,19 +77,19 @@ The example runs the Celer algorithm on sparse data.
     results = np.zeros([1, len(tols)])
     for tol_ix, tol in enumerate(tols):
         t0 = time.time()
-        res = celer_path(X, y, alphas, max_iter=100, gap_freq=gap_freq,
-                         max_epochs_inner=50000, p0=100, verbose=verbose,
-                         verbose_inner=verbose_inner,
-                         tol=tol, prune=prune)
+        res = celer_path(X, y, alphas=alphas, max_iter=100, gap_freq=gap_freq,
+                         p0=100, verbose=verbose, verbose_inner=verbose_inner,
+                         tol=tol, prune=prune, return_thetas=True)
         results[0, tol_ix] = time.time() - t0
-        betas, thetas, gaps = res
+        _, coefs, gaps, thetas = res
+        betas = coefs.T
 
-    labels = [r"\sc{CELER}"]
+    labels = [r"\sc{Celer}"]
     figsize = (7, 4)
     fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
     plt.show()
 
-**Total running time of the script:** ( 9 minutes  47.754 seconds)
+**Total running time of the script:** ( 0 minutes  53.643 seconds)
 
 
 
