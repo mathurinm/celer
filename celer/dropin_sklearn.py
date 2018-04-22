@@ -79,7 +79,7 @@ class Lasso(Lasso_sklearn):
     References
     ----------
     .. [1] M. Massias, A. Gramfort, J. Salmon
-       "Celer: Dual Extrapolation for Faster Lasso Solvers”, ArXiv preprint,
+       "Celer: Dual Extrapolation for Faster Lasso Solvers", ArXiv preprint,
        2018, https://arxiv.org/abs/1802.07481
     """
 
