@@ -65,11 +65,13 @@ class Lasso(Lasso_sklearn):
     --------
     >>> from celer import Lasso
     >>> clf = Lasso(alpha=0.1)
-    >>> clf.fit([[-1, -1], [0, 0], [1, 1]], [-1, 0, 1, ])
+    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
     Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,
     p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
     [0.85 0.  ]
+    >>> print(clf.intercept)
+    0.15
 
     See also
     --------
@@ -92,7 +94,6 @@ class Lasso(Lasso_sklearn):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.fit_intercept = False
         self.return_n_iter = True
 
     def path(self, X, y, alphas, **kwargs):
@@ -194,7 +195,6 @@ class LassoCV(LassoCV_sklearn):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.fit_intercept = False
         self.return_n_iter = True
 
     def path(self, X, y, alphas, **kwargs):
