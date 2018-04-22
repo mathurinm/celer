@@ -86,9 +86,11 @@ class Lasso(Lasso_sklearn):
     """
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-6, prune=0):
+                 max_epochs=50000, p0=10, verbose=0, tol=1e-6, prune=0,
+                 fit_intercept=True):
         super(Lasso, self).__init__(
-            alpha=alpha, tol=tol, max_iter=max_iter)
+            alpha=alpha, tol=tol, max_iter=max_iter,
+            fit_intercept=fit_intercept)
         self.verbose = verbose
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
@@ -184,7 +186,7 @@ class LassoCV(LassoCV_sklearn):
     """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
-                 fit_intercept=False, max_iter=100,
+                 fit_intercept=True, max_iter=100,
                  tol=1e-6, cv=None, verbose=0, gap_freq=10,
                  max_epochs=50000, p0=10, prune=0,
                  normalize=False, precompute='auto'):

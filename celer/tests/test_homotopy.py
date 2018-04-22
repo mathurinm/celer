@@ -95,9 +95,12 @@ def test_LassoCV_compatibility():
     clf2 = sklearn_LassoCV(**params)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-05)
-    np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
-    np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
+    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_,
+                               rtol=1e-04)
+    np.testing.assert_allclose(clf.alpha_, clf2.alpha_,
+                               rtol=1e-05)
+    np.testing.assert_allclose(clf.coef_, clf2.coef_,
+                               rtol=1e-05)
 
     check_estimator(LassoCV)
 
