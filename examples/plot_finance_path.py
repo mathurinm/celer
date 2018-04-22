@@ -33,7 +33,8 @@ except FileNotFoundError:
     y = np.load("./data/finance_target_preprocessed.npy")
 
 print("Starting path computation...")
-alpha_max = np.max(np.abs(X.T.dot(y)))
+n_samples = X.shape[0]
+alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 
 # construct fine or coarse grid of regularization parameters
 fine = False

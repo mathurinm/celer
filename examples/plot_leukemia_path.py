@@ -29,11 +29,11 @@ y -= np.mean(y)
 y /= np.std(y)
 
 print("Starting path computation...")
-alpha_max = np.max(np.abs(X.T.dot(y)))
+alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 
 fine = True  # fine or coarse grid
 n_alphas = 100 if fine else 10
-alphas = alpha_max * np.logspace(0, -2, n_alphas) / n_samples
+alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
 gap_freq = 10
 prune = 1

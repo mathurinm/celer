@@ -26,10 +26,10 @@ y = dataset.target.astype(float)
 n_samples = len(y)
 
 y -= np.mean(y)
-y /= np.linalg.norm(y)
+y /= np.std(y)
 
 print("Starting path computation...")
-alpha_max = np.max(np.abs(X.T.dot(y)))
+alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 
 fine = True  # fine or coarse grid
 n_alphas = 100 if fine else 10
@@ -52,11 +52,11 @@ for tol_ix, tol in enumerate(tols):
     betas = coefs.T
 
     t0 = time.time()
-    _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas / n_samples)
+    _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
     results[1, tol_ix] = time.time() - t0
     coefs = coefs.T
 
-labels = [r"\sc{CELER}", "scikit-learn"]
+labels = [r"\sc{Celer}", "scikit-learn"]
 figsize = (7, 4)
 fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
 plt.show()
