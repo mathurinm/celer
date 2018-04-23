@@ -8,7 +8,7 @@ from scipy.linalg.cython_lapack cimport dposv
 
 from libc.math cimport fabs, sqrt, ceil
 cimport cython
-from utils cimport fmax, primal_value, dual_value, ST, GEOM_GROWTH, LIN_GROWTH
+from utils cimport fmax, primal_value, dual_value, ST
 
 
 @cython.boundscheck(False)
@@ -69,8 +69,6 @@ def celer_dense(double[::1, :] X,
                 int verbose=0,
                 int verbose_inner=0,
                 int use_accel=0,
-                int growth=GEOM_GROWTH,
-                int growth_factor=2,
                 int return_ws_size=0,
                 int prune=0,
                 ):
@@ -206,10 +204,7 @@ def celer_dense(double[::1, :] X,
                     prios[j] = -1.
                     ws_size += 1
 
-            if growth == LIN_GROWTH:
-                ws_size += growth_factor
-            elif growth == GEOM_GROWTH:
-                ws_size *= growth_factor
+            ws_size = min(n_features, 2 * ws_size)
 
             if t == 0:
                 ws_size = p0
