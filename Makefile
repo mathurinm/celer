@@ -30,7 +30,7 @@ inplace:
 	$(PYTHON) setup.py build_ext -i
 
 test-code:
-	$(PYTESTS) -m celer
+	$(PYTESTS) celer
 
 test-doc:
 	$(PYTESTS) $(shell find doc -name '*.rst' | sort)
