@@ -12,6 +12,7 @@ dependencies:
     - Cython>=0.26
     - scikit-learn>=0.18.0
     - tqdm
+    - nose
     - pytest
     - pytest-cov
 
