@@ -204,7 +204,7 @@ def celer_dense(double[::1, :] X,
                     prios[j] = -1.
                     ws_size += 1
 
-                ws_size = min(n_features, 2 * ws_size)
+            ws_size = min(n_features, 2 * ws_size)
 
             if t == 0:
                 ws_size = p0
