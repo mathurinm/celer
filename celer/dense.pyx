@@ -1,10 +1,12 @@
-import numpy as np
 import time
+
+import numpy as np
 cimport numpy as np
+
 from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
 from scipy.linalg.cython_lapack cimport dposv
+
 from libc.math cimport fabs, sqrt, ceil
-from libc.stdlib cimport rand, srand
 cimport cython
 from utils cimport fmax, primal_value, dual_value, ST, GEOM_GROWTH, LIN_GROWTH
 
@@ -58,7 +60,7 @@ def celer_dense(double[::1, :] X,
                 double alpha,
                 double[:] beta_init,
                 int max_iter,
-                int max_epochs_inner,
+                int max_epochs,
                 int gap_freq=10,
                 float tol_ratio_inner=0.3,
                 float tol=1e-6,
@@ -121,6 +123,7 @@ def celer_dense(double[::1, :] X,
     cdef double d_obj_from_inner = 0
 
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
+    cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
         # R = y - np.dot(X, beta)
@@ -132,9 +135,9 @@ def celer_dense(double[::1, :] X,
                 tmp = - beta[j]
                 daxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
-        # theta = R / alpha
+        # theta = R / (n_samples * alpha)
         dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / alpha
+        tmp = 1. / (n_samples * alpha)
         dscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling_dense(n_samples, n_features, theta, X,
@@ -178,7 +181,8 @@ def celer_dense(double[::1, :] X,
             print("Log gap %.2e" % gap)
 
         if gap < tol:
-            print("Early exit, gap: %.2e < %.2e" % (gap, tol))
+            if verbose:
+                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
         set_feature_prios_dense(n_samples, n_features, theta, X,
@@ -209,13 +213,16 @@ def celer_dense(double[::1, :] X,
 
             if t == 0:
                 ws_size = p0
-            if ws_size > n_features:
-                ws_size = n_features
+        if ws_size > n_features:
+            ws_size = n_features
 
         ws_sizes[t] = ws_size
-
-        C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
-        C.sort()
+        # if ws_size === n_features then argpartition will break:
+        if ws_size == n_features:
+            C = all_features
+        else:
+            C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
+            C.sort()
         if prune:
             tol_inner = tol
         else:
@@ -228,7 +235,7 @@ def celer_dense(double[::1, :] X,
             n_samples, n_features, ws_size, X,
             y, alpha, beta, R, C, theta_inner, invnorm_Xcols_2,
             alpha_invnorm_Xcols_2,
-            norm_y2, tol_inner, max_epochs=max_epochs_inner,
+            norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel)
 
@@ -313,9 +320,9 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
-            # theta = R / alpha
+            # theta = R / (alpha * n_samples)
             dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-            tmp = 1. / alpha
+            tmp = 1. / (alpha * n_samples)
             dscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling_dense(
@@ -362,7 +369,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                         # don't use accel for this iteration
                         for k in range(K - 2):
                             onesK[k] = 0
-                        onesK[-1] = 1
+                        onesK[K - 2] = 1
 
                     sum_z = 0
                     for k in range(K - 1):
@@ -376,7 +383,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                         for i in range(n_samples):
                             thetaccel[i] += onesK[k] * last_K_res[k, i]
 
-                    tmp = 1 / alpha
+                    tmp = 1. / (alpha * n_samples)
                     dscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling_dense(
@@ -396,8 +403,6 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                                              &thetaccel[0], &y[0])
 
                     if d_obj_accel > d_obj:
-                        if verbose:
-                            print("----------ACCELERATION WINS-----------")
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
                         # theta_inner in outer loop)
@@ -429,7 +434,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
             old_beta_j = beta[j]
             beta[j] += ddot(&n_samples, &X[0, j], &inc, &R[0], &inc) * invnorm_Xcols_2[j]
             # perform ST in place:
-            beta[j] = ST(alpha_invnorm_Xcols_2[j], beta[j])
+            beta[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, beta[j])
             tmp = beta[j] - old_beta_j
 
             # R -= (beta_j - old_beta_j) * X[:, j]

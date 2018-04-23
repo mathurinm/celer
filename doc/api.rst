@@ -16,3 +16,11 @@ Functions
 
    celer
    celer_path
+
+Estimators
+
+.. autosummary::
+   :toctree: generated/
+
+   Lasso
+   LassoCV

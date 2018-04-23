@@ -2,7 +2,6 @@ import os
 import numpy as np
 from scipy import sparse
 from sklearn import preprocessing
-from numpy.linalg import norm
 from sklearn.datasets import load_svmlight_file
 from download import download
 from bz2 import BZ2Decompressor
@@ -26,7 +25,7 @@ def preprocess_finance(decompressed_path, X_path, y_path):
     """Normalization performed:
     - X with only columns with >= 3 non zero elements, norm-1 columns, and
       a constant column to fit intercept
-    - y centered and set to norm 1"""
+    - y centered and set to std equal to 1"""
 
     n_features_total = 4272227
     with open(decompressed_path, 'rb') as f:
@@ -44,7 +43,7 @@ def preprocess_finance(decompressed_path, X_path, y_path):
         # center y
         y -= np.mean(y)
         # normalize y to get a first duality gap of 0.5
-        y /= norm(y, ord=2)
+        y /= np.std(y)
 
         # very important for sparse/sparse dot products: have sorted X.indices
         X_new.sort_indices()
@@ -70,4 +69,5 @@ def download_preprocess_finance():
 
 
 if __name__ == "__main__":
+    1 / 0
     download_preprocess_finance()

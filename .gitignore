@@ -13,3 +13,7 @@ examples/data/*
 
 doc/*
 coverage/*
+.coverage
+
+.DS_Store
+MANIFEST
