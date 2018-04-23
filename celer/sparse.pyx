@@ -13,7 +13,7 @@ from scipy.linalg.cython_lapack cimport dposv
 
 from libc.math cimport fabs, sqrt, ceil
 cimport cython
-from utils cimport fmax, primal_value, dual_value, ST, GEOM_GROWTH, LIN_GROWTH
+from utils cimport fmax, primal_value, dual_value, ST
 
 
 @cython.boundscheck(False)
@@ -97,8 +97,6 @@ def celer_sparse(double[:] X_data,
                int verbose=0,
                int verbose_inner=0,
                int use_accel=1,
-               int growth=GEOM_GROWTH,
-               int growth_factor=2,
                int return_ws_size=0,
                int prune=0,
                ):
@@ -158,7 +156,7 @@ def celer_sparse(double[:] X_data,
 
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
-    
+
     for t in range(max_iter):
         dcopy(&n_samples, &y[0], &inc, &R[0], &inc)
         for j in range(n_features):
@@ -243,10 +241,7 @@ def celer_sparse(double[:] X_data,
                     prios[j] = -1.
                     ws_size += 1
 
-            if growth == LIN_GROWTH:
-                ws_size += growth_factor
-            elif growth == GEOM_GROWTH:
-                ws_size *= growth_factor
+            ws_size = min(n_features, 2 * ws_size)
 
             if t == 0:
                 ws_size = p0
