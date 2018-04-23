@@ -4,8 +4,10 @@
 # License: BSD 3 clause
 
 import numpy as np
+import warnings
 
 from scipy import sparse
+from sklearn.exceptions import ConvergenceWarning
 
 from .sparse import celer_sparse
 from .dense import celer_dense
@@ -108,4 +110,14 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
                           verbose=verbose,
                           verbose_inner=verbose_inner,
                           use_accel=1, tol=tol, prune=prune)
+
+    final_gap = sol[2][-1]
+    if final_gap > tol:
+        warnings.warn('Objective did not converge.' +
+                      ' You might want' +
+                      ' to increase the number of iterations.' +
+                      ' Fitting data with very small alpha' +
+                      ' may cause precision problems.',
+                      ConvergenceWarning)
+
     return sol

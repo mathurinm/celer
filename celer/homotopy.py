@@ -116,9 +116,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
 
         all_times[t] = time.time() - t0
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
-        if dual_gaps[t] > tol:
-            print("-----WARNING: solver did not converge, t=%d" % t)
-            print("gap=%.1e, tol=%.1e" % (dual_gaps[t], tol))
 
     if return_thetas:
         return alphas, coefs, dual_gaps, thetas
