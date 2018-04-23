@@ -69,5 +69,4 @@ def download_preprocess_finance():
 
 
 if __name__ == "__main__":
-    1 / 0
     download_preprocess_finance()
