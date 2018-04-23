@@ -187,7 +187,7 @@ class LassoCV(LassoCV_sklearn):
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, max_iter=100,
-                 tol=1e-6, cv=None, verbose=0, gap_freq=10,
+                 tol=1e-4, cv=None, verbose=0, gap_freq=10,
                  max_epochs=50000, p0=10, prune=0,
                  normalize=False, precompute='auto'):
         super(LassoCV, self).__init__(
