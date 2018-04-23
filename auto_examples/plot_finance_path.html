@@ -165,15 +165,14 @@
 
 <span class="n">gap_freq</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">prune</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">verbose_inner</span> <span class="o">=</span> <span class="mi">0</span>
 
+<span class="c1"># tols = [1e-2, 1e-4]</span>
 <span class="n">tols</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">]</span>
 <span class="n">results</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tols</span><span class="p">)])</span>
 <span class="k">for</span> <span class="n">tol_ix</span><span class="p">,</span> <span class="n">tol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tols</span><span class="p">):</span>
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">res</span> <span class="o">=</span> <a href="../generated/celer.celer_path.html#celer.celer_path" title="View documentation for celer.celer_path"><span class="n">celer_path</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">gap_freq</span><span class="o">=</span><span class="n">gap_freq</span><span class="p">,</span>
-                     <span class="n">p0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">verbose_inner</span><span class="o">=</span><span class="n">verbose_inner</span><span class="p">,</span>
+                     <span class="n">p0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose_inner</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                      <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">prune</span><span class="o">=</span><span class="n">prune</span><span class="p">,</span> <span class="n">return_thetas</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">gaps</span><span class="p">,</span> <span class="n">thetas</span> <span class="o">=</span> <span class="n">res</span>
@@ -185,7 +184,7 @@
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  53.643 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 3 minutes  57.466 seconds)</p>
 <div class="sphx-glr-footer container">
 <div class="sphx-glr-download container">
 <a class="reference download internal" href="../_downloads/plot_finance_path.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_finance_path.py</span></code></a></div>

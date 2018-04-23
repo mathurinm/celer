@@ -22,7 +22,7 @@ using the Celer algorithm.
  Out::
 
     Loading data...
-    Estimated regularization parameter alpha: 0.188666950702
+    Estimated regularization parameter alpha: 0.032970086368
 
 
 
@@ -48,7 +48,7 @@ using the Celer algorithm.
     y = dataset.target.astype(float)
     n_samples = len(y)
 
-    model = LassoCV(fit_intercept=False)
+    model = LassoCV()
     model.fit(X, y)
 
     print("Estimated regularization parameter alpha: %s" % model.alpha_)
@@ -70,7 +70,7 @@ using the Celer algorithm.
     plt.axis('tight')
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.888 seconds)
+**Total running time of the script:** ( 0 minutes  0.990 seconds)
 
 
 

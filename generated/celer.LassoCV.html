@@ -119,7 +119,7 @@
 <h1>celer.LassoCV<a class="headerlink" href="#celer-lassocv" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.LassoCV">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=False</em>, <em>max_iter=100</em>, <em>tol=1e-06</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>max_iter=100</em>, <em>tol=1e-06</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
 <dd><p>LassoCV scikit-learn estimator based on Celer solver</p>
 <p>The best model is selected by cross-validation.</p>
 <p>The optimization objective for Lasso is:</p>
@@ -214,7 +214,7 @@ For integer/None inputs, sklearn <cite>KFold</cite> is used.</p>
 </table>
 <dl class="method">
 <dt id="celer.LassoCV.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=False</em>, <em>max_iter=100</em>, <em>tol=1e-06</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>max_iter=100</em>, <em>tol=1e-06</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
