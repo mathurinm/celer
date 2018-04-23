@@ -86,7 +86,7 @@ class Lasso(Lasso_sklearn):
     """
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-6, prune=0,
+                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
                  fit_intercept=True):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
