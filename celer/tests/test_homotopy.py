@@ -42,7 +42,7 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
 
 def test_celer_path_dense():
     """Test Lasso path computation on dense data."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=1)
+    X, y, _, _ = build_dataset(n_samples=30, n_features=50)
     n_samples = X.shape[0]
     alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
     n_alphas = 5
