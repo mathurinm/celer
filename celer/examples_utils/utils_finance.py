@@ -1,3 +1,8 @@
+# Author: Mathurin Massias <mathurin.massias@gmail.com>
+#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+# License: BSD 3 clause
+
 import os
 import numpy as np
 from scipy import sparse
@@ -8,6 +13,7 @@ from bz2 import BZ2Decompressor
 
 
 def download_finance(path):
+    """Download the Finance dataset from LIBSVM website."""
     url = "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets" \
         "/regression/log1p.E2006.train.bz2"
     path = download(url, path, replace=False)
@@ -15,6 +21,7 @@ def download_finance(path):
 
 
 def decompress_finance(compressed_path, decompressed_path):
+    """Decompress the Finance dataset."""
     decompressor = BZ2Decompressor()
     with open(decompressed_path, "wb") as f, open(compressed_path, "rb") as g:
         for data in iter(lambda: g.read(100 * 1024), b''):
@@ -22,11 +29,13 @@ def decompress_finance(compressed_path, decompressed_path):
 
 
 def preprocess_finance(decompressed_path, X_path, y_path):
-    """Normalization performed:
+    """Preprocess the Finance dataset for a Lasso problem.
+
+    Normalization performed:
     - X with only columns with >= 3 non zero elements, norm-1 columns, and
       a constant column to fit intercept
-    - y centered and set to std equal to 1"""
-
+    - y centered and set to std equal to 1
+    """
     n_features_total = 4272227
     with open(decompressed_path, 'rb') as f:
         X, y = load_svmlight_file(f, n_features_total)
@@ -52,6 +61,7 @@ def preprocess_finance(decompressed_path, X_path, y_path):
 
 
 def download_preprocess_finance():
+    """Download and preprocess the Finance dataset."""
     if not os.path.exists('./data'):
         os.mkdir('./data')
 
@@ -69,5 +79,4 @@ def download_preprocess_finance():
 
 
 if __name__ == "__main__":
-    1 / 0
     download_preprocess_finance()
