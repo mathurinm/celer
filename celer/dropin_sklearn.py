@@ -21,12 +21,6 @@ from sklearn.linear_model.coordinate_descent import _alpha_grid, _path_residuals
 
 from .homotopy import celer_path
 
-lines = inspect.getsource(_LinearModelCV)
-exec(lines)
-lines = inspect.getsource(_LassoCV)
-lines = lines.replace('LassoCV', 'LassoCV_sklearn')
-exec(lines)
-
 
 class Lasso(Lasso_sklearn):
     """Lasso scikit-learn estimator based on Celer solver
@@ -129,6 +123,13 @@ class Lasso(Lasso_sklearn):
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune)
         return (alphas, coefs, dual_gaps, [1])
+
+# Hack because model = Lasso() is hardcoded in _LinearModelCV definition
+lines = inspect.getsource(_LinearModelCV)
+exec(lines)  # when this is executed Lasso is our class, not sklearn's
+lines = inspect.getsource(_LassoCV)
+lines = lines.replace('LassoCV', 'LassoCV_sklearn')
+exec(lines)
 
 
 class LassoCV(LassoCV_sklearn):
