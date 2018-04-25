@@ -1,7 +1,32 @@
+# flake8: noqa F401
+import inspect
+import numpy as np
+
+from scipy import sparse
+from abc import ABCMeta, abstractmethod
+from sklearn.base import RegressorMixin
+from sklearn.linear_model.base import LinearModel
+from sklearn.utils import check_array
+from sklearn.externals import six
+from sklearn.utils.validation import column_or_1d
+from sklearn.model_selection import check_cv
+from sklearn.externals.joblib import Parallel, delayed
+from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
-                                  LassoCV as LassoCV_sklearn)
+                                  LassoCV as _LassoCV)
+from sklearn.linear_model.coordinate_descent import (LinearModelCV as
+                                                     _LinearModelCV)
+from sklearn.linear_model.coordinate_descent import (_alpha_grid,
+                                                     _path_residuals)
 
 from .homotopy import celer_path
+
+# Hack because `model = Lasso()` is hardcoded in _LinearModelCV definition
+lines = inspect.getsource(_LinearModelCV)
+exec(lines)  # when this is executed Lasso is our class, not sklearn's
+lines = inspect.getsource(_LassoCV)
+lines = lines.replace('LassoCV', 'LassoCV_sklearn')
+exec(lines)
 
 
 class Lasso(Lasso_sklearn):
