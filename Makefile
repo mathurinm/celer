@@ -33,7 +33,7 @@ test-code:
 	$(PYTESTS) celer
 
 test-doc:
-	$(PYTESTS) $(shell find doc -name '*.rst' | sort)
+	find doc -name '*.rst' | sort | $(PYTESTS)
 
 test-coverage:
 	rm -rf coverage .coverage
