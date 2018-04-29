@@ -37,7 +37,7 @@ test-doc:
 
 test-coverage:
 	rm -rf coverage .coverage
-	$(PYTESTS) celer --cov=celer --cov-report=html:coverage
+	$(PYTESTS) celer --cov=celer --cov-report html:coverage
 
 test: test-code test-doc test-manifest
 
