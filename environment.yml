@@ -12,6 +12,9 @@ dependencies:
     - Cython>=0.26
     - scikit-learn>=0.18.0
     - tqdm
+    - nose
+    - pytest
+    - pytest-cov
 
     - pip:
         - "https://api.github.com/repos/choldgraf/download/zipball/master"
