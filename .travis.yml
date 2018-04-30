@@ -19,7 +19,7 @@ install:
     - python setup.py install
 script:
     - make
-    - make test-coverage
+    - py.test --cov=celer -r sx --pyargs celer --cov-config .coveragerc
     - flake8 --count celer
 after_success:
   - codecov
