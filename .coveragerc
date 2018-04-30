@@ -1,0 +1,20 @@
+# Configuration for coverage.py
+
+[run]
+branch = True
+source = celer
+include = */celer/*
+omit = */setup.py
+       */celer/examples_utils/*
+       */celer/plot_utils.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
