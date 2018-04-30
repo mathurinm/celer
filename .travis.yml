@@ -22,4 +22,4 @@ script:
     - make test-coverage
     - flake8 --count celer
 after_success:
-- codecov
+  - codecov
