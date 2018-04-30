@@ -68,7 +68,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05, atol=1e-6)
 
 
-@pytest.mark.parametrize("sparse_X", [False])
+@pytest.mark.parametrize("sparse_X", [False, True])
 def test_dropin_LassoCV(sparse_X):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
