@@ -82,14 +82,15 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
     n_samples, n_features = X.shape
     if alphas is None:
         alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
-        alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas)
+        alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas,
+                                         dtype=X.dtype)
     else:
         alphas = np.sort(alphas)[::-1]
 
     n_alphas = len(alphas)
 
-    coefs = np.zeros((n_features, n_alphas), order='F')  # sklearn API
-    thetas = np.zeros((n_alphas, n_samples))
+    coefs = np.zeros((n_features, n_alphas), order='F', dtype=X.dtype)
+    thetas = np.zeros((n_alphas, n_samples), dtype=X.dtype)
     dual_gaps = np.zeros(n_alphas)
     all_times = np.zeros(n_alphas)
 
