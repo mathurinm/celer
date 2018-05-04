@@ -61,17 +61,17 @@ cdef void fused_scal(int * n, floating * alpha, floating * x,
 cdef void fused_posv(char * uplo, int * n, int * nrhs, floating * a,
                      int * lda, floating * b, int * ldb, int * info) nogil:
     if floating is double:
-        dposv(uplo, n, nrhs, a, lda, b, ldb, info_posv)
+        dposv(uplo, n, nrhs, a, lda, b, ldb, info)
     else:
-        sposv(uplo, n, nrhs, a, lda, b, ldb, info_posv)
+        sposv(uplo, n, nrhs, a, lda, b, ldb, info)
 
 
-cdef inline floating fmax(floating x, floating y) nogil:
-    return x if x > y else y
-
-
-cdef inline floating fmin(floating x, floating y) nogil:
-    return y if x > y else y
+# cdef inline floating fmax(floating x, floating y) nogil:
+#     return x if x > y else y
+#
+#
+# cdef inline floating fmin(floating x, floating y) nogil:
+#     return y if x > y else y
 
 
 cdef inline floating ST(floating u, floating x) nogil:
@@ -90,7 +90,7 @@ cdef floating primal_value(floating alpha, int n_samples, floating * R,
                          int n_features, floating * w) nogil:
     cdef int inc = 1
     # regularization term: alpha ||w||_1
-    cdef floating p_obj = alpha * dasum(&n_features, w, &inc)
+    cdef floating p_obj = alpha * fused_asum(&n_features, w, &inc)
     # R is passed as a pointer so no need to & it
     p_obj += fused_dot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
     return p_obj

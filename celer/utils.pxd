@@ -4,8 +4,8 @@
 # License: BSD 3 clause
 from cython cimport floating
 
-cdef floating fmax(floating, floating) nogil
-cdef floating fmin(floating, floating) nogil
+# cdef floating fmax(floating, floating) nogil
+# cdef floating fmin(floating, floating) nogil
 cdef floating ST(floating, floating) nogil
 cdef floating primal_value(floating, int, floating *, int, floating *) nogil
 cdef floating dual_value(int, floating, floating, floating *, floating *) nogil
@@ -18,4 +18,4 @@ cdef void fused_copy(int *, floating *, int *, floating *, int *) nogil
 cdef void fused_scal(int *, floating *, floating *, int *) nogil
 
 cdef void fused_posv(char *, int *, int *, floating *,
-                     int *, floating *, int *, int *)
+                     int *, floating *, int *, int *) nogil

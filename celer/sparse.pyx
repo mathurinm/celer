@@ -4,29 +4,28 @@
 # License: BSD 3 clause
 
 import time
-
 import numpy as np
 cimport numpy as np
-
-from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
-from scipy.linalg.cython_lapack cimport dposv
-
-from libc.math cimport fabs, sqrt, ceil
 cimport cython
-from utils cimport fmax, primal_value, dual_value, ST
+
+from cython cimport floating
+from libc.math cimport fabs, sqrt, ceil
+from utils cimport primal_value, dual_value, ST
+from utils cimport (fused_dot, fused_asum, fused_axpy, fused_nrm2,
+                    fused_copy, fused_scal, fused_posv)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef double compute_dual_scaling_sparse(int n_features, double * theta,
-                          double[:] X_data, int[:] X_indices,
+cdef floating compute_dual_scaling_sparse(int n_features, floating * theta,
+                          floating[:] X_data, int[:] X_indices,
                           int[:] X_indptr, int ws_size, int * C) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
-    cdef double Xj_theta
-    cdef double scal = 1.
+    cdef floating Xj_theta
+    cdef floating scal = 1.
     cdef int j
     cdef int Cj
     cdef int i
@@ -36,7 +35,7 @@ cdef double compute_dual_scaling_sparse(int n_features, double * theta,
         for j in range(n_features):
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
-            Xj_theta = 0
+            Xj_theta = 0.
             for i in range(startptr, endptr):
                 Xj_theta += X_data[i] * theta[X_indices[i]]
             Xj_theta = fabs(Xj_theta)
@@ -46,7 +45,7 @@ cdef double compute_dual_scaling_sparse(int n_features, double * theta,
             Cj = C[j]
             startptr = X_indptr[Cj]
             endptr = X_indptr[Cj + 1]
-            Xj_theta = 0
+            Xj_theta = 0.
             for i in range(startptr, endptr):
                 Xj_theta += X_data[i] * theta[X_indices[i]]
             Xj_theta = fabs(Xj_theta)
@@ -58,14 +57,14 @@ cdef double compute_dual_scaling_sparse(int n_features, double * theta,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef void set_feature_prios_sparse(int n_features, double * theta,
-                            double[:] X_data, int[:] X_indices,
+cdef void set_feature_prios_sparse(int n_features, floating * theta,
+                            floating[:] X_data, int[:] X_indices,
                             int[:] X_indptr,
-                            double * norms_X_col,
-                            double * prios) nogil:
+                            floating * norms_X_col,
+                            floating * prios) nogil:
     cdef int j
     cdef int i
-    cdef double Xj_theta
+    cdef floating Xj_theta
     cdef int startptr
     cdef int endptr
 
@@ -81,12 +80,12 @@ cdef void set_feature_prios_sparse(int n_features, double * theta,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def celer_sparse(double[:] X_data,
+def celer_sparse(floating[:] X_data,
                int[:] X_indices,
                int[:] X_indptr,
-               double[:] y,
-               double alpha,
-               double[:] beta_init,
+               floating[:] y,
+               floating alpha,
+               floating[:] beta_init,
                int max_iter,
                int max_epochs,
                int gap_freq=10,
@@ -100,30 +99,34 @@ def celer_sparse(double[:] X_data,
                int return_ws_size=0,
                int prune=0,
                ):
+    if floating is double:
+        dtype = np.float64
+    else:
+        dtype = np.float32
 
     cdef int n_features = beta_init.shape[0]
-    cdef double t0 = time.time()
+    cdef floating t0 = time.time()
     if p0 > n_features:
         p0 = n_features
 
     cdef int startptr, endptr
 
     cdef int n_samples = y.shape[0]
-    cdef double[:] beta = np.empty(n_features)
+    cdef floating[:] beta = np.empty(n_features, dtype=dtype)
     cdef int j  # features
     cdef int i  # samples
     cdef int ii
     cdef int t  # outer loop
     cdef int inc = 1
-    cdef double tmp
+    cdef floating tmp
     cdef int ws_size = 0
-    cdef double p_obj
-    cdef double d_obj
-    cdef double highest_d_obj
-    cdef double scal
-    cdef double gap
-    cdef double[:] prios = np.empty(n_features, dtype=float)
-    cdef double[:] norms_X_col = np.empty(n_features)
+    cdef floating p_obj
+    cdef floating d_obj
+    cdef floating highest_d_obj
+    cdef floating scal
+    cdef floating gap
+    cdef floating[:] prios = np.empty(n_features, dtype=dtype)
+    cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
 
     # compute norms_X_col
     for j in range(n_features):
@@ -134,31 +137,32 @@ def celer_sparse(double[:] X_data,
             tmp += X_data[i] ** 2
         norms_X_col[j] = sqrt(tmp)
 
-    cdef double norm_y2 = dnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef double[:] invnorm_Xcols_2 = np.empty(n_features)
-    cdef double[:] alpha_invnorm_Xcols_2 = np.empty(n_features)
+    cdef floating norm_y2 = fused_nrm2(&n_samples, &y[0], &inc) ** 2
+    cdef floating[:] invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
+    cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
 
     for j in range(n_features):
         beta[j] = beta_init[j]
         invnorm_Xcols_2[j] = 1. / norms_X_col[j] ** 2
         alpha_invnorm_Xcols_2[j] = alpha * invnorm_Xcols_2[j]
 
-    cdef double[:] times = np.zeros(max_iter)
-    cdef double[:] gaps = np.zeros(max_iter)
-    cdef double[:] epochs = np.zeros(max_iter)
-    cdef double[:] ws_sizes = np.zeros(max_iter)
+    cdef floating[:] times = np.zeros(max_iter, dtype=dtype)
+    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
+    cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
 
-    cdef double[:] R = np.zeros(n_samples)
-    cdef double[:] theta = np.zeros(n_samples)
-    cdef double[:] theta_inner = np.zeros(n_samples)  # passed to inner solver
+    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+    cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
+    cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
+    # passed to inner solver
     # and potentially used for screening if it gives a better d_obj
-    cdef double d_obj_from_inner = 0
+    cdef floating d_obj_from_inner = 0.
 
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        dcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+        fused_copy(&n_samples, &y[0], &inc, &R[0], &inc)
         for j in range(n_features):
             if beta[j] == 0.:
                 continue
@@ -169,9 +173,9 @@ def celer_sparse(double[:] X_data,
                     R[X_indices[ii]] -= beta[j] * X_data[ii]
 
         # theta = R / (alpha * n_samples)
-        dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
+        fused_copy(&n_samples, &R[0], &inc, &theta[0], &inc)
         tmp = 1. / (alpha * n_samples)
-        dscal(&n_samples, &tmp, &theta[0], &inc)
+        fused_scal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling_sparse(n_features, &theta[0],
                                    X_data, X_indices, X_indptr,
@@ -179,7 +183,7 @@ def celer_sparse(double[:] X_data,
 
         if scal > 1. :
             tmp = 1. / scal
-            dscal(&n_samples, &tmp, &theta[0], &inc)
+            fused_scal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
                            &y[0])
@@ -191,14 +195,14 @@ def celer_sparse(double[:] X_data,
                                        n_features, &dummy_C[0])
             if scal > 1.:
                 tmp = 1. / scal
-                dscal(&n_samples, &tmp, &theta_inner[0], &inc)
+                fused_scal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual_value(n_samples, alpha, norm_y2,
                                           &theta_inner[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
-            dcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
+            fused_copy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
@@ -285,25 +289,29 @@ def celer_sparse(double[:] X_data,
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
-                   double[:] X_data,
+                   floating[:] X_data,
                    int[:] X_indices,
                    int[:] X_indptr,
-                   double[:] y,
-                   double alpha,
-                   double[:] beta,
-                   double[:] R,
+                   floating[:] y,
+                   floating alpha,
+                   floating[:] beta,
+                   floating[:] R,
                    int[:] C,
-                   double[:] theta,
-                   double[:] invnorm_Xcols_2,
-                   double[:] alpha_invnorm_Xcols_2,
-                   double norm_y2,
-                   double eps,
+                   floating[:] theta,
+                   floating[:] invnorm_Xcols_2,
+                   floating[:] alpha_invnorm_Xcols_2,
+                   floating norm_y2,
+                   floating eps,
                    int max_epochs,
                    int gap_freq,
                    int verbose=0,
                    int K=6,
                    int use_accel=1,
                    ):
+    if floating is double:
+        dtype = np.float64
+    else:
+        dtype = np.float32
 
     cdef int startptr
     cdef int endptr
@@ -316,34 +324,34 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     cdef int epoch
     cdef int start
     cdef int stop
-    cdef double old_beta_j
-    cdef double beta_Cj
+    cdef floating old_beta_j
+    cdef floating beta_Cj
     cdef int inc = 1
     # gap related:
-    cdef double gap
-    cdef double[:] gaps = np.zeros(max_epochs // gap_freq)
+    cdef floating gap
+    cdef floating[:] gaps = np.zeros(max_epochs // gap_freq, dtype=dtype)
 
-    # cdef double[:] theta = np.empty(n_samples)
-    cdef double[:] thetaccel = np.empty(n_samples)
-    cdef double dual_scale
-    cdef double d_obj
-    cdef double highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
+    # cdef floating[:] theta = np.empty(n_samples)
+    cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
+    cdef floating dual_scale
+    cdef floating d_obj
+    cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
     # at first d_obj computation. highest_d_obj corresponds to theta = 0.
-    cdef double tmp
+    cdef floating tmp
     # acceleration variables:
-    cdef double[:, :] last_K_res = np.empty([K, n_samples])
-    cdef double[:, :] U = np.empty([K - 1, n_samples])
-    cdef double[:, :] UtU = np.empty([K - 1, K - 1])
-    cdef double[:] onesK = np.ones(K - 1)
-    cdef double dual_scale_accel
-    cdef double d_obj_accel
+    cdef floating[:, :] last_K_res = np.empty([K, n_samples], dtype=dtype)
+    cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
+    cdef floating[:, :] UtU = np.empty([K - 1, K - 1], dtype=dtype)
+    cdef floating[:] onesK = np.ones(K - 1, dtype=dtype)
+    cdef floating dual_scale_accel
+    cdef floating d_obj_accel
 
     # solving linear system in cython
     # doc at https://software.intel.com/en-us/node/468894
     cdef char char_U = 'U'
     cdef int Kminus1 = K - 1
     cdef int one = 1
-    cdef double sum_z
+    cdef floating sum_z
     cdef int info_dposv
 
     for i in range(n_samples):
@@ -362,9 +370,9 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
             # theta = R / (alpha * n_samples)
-            dcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
+            fused_copy(&n_samples, &R[0], &inc, &theta[0], &inc)
             tmp = 1. / (alpha * n_samples)
-            dscal(&n_samples, &tmp, &theta[0], &inc)
+            fused_scal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling_sparse(
                 n_features, &theta[0], X_data, X_indices, X_indptr,
@@ -372,7 +380,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
 
             if dual_scale > 1. :
                 tmp = 1. / dual_scale
-                dscal(&n_samples, &tmp, &theta[0], &inc)
+                fused_scal(&n_samples, &tmp, &theta[0], &inc)
 
             d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
                                &y[0])
@@ -380,20 +388,20 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
             if use_accel: # also compute accelerated dual_point
                 if epoch // gap_freq < K:
                     # last_K_res[it // f_gap] = R:
-                    dcopy(&n_samples, &R[0], &inc,
+                    fused_copy(&n_samples, &R[0], &inc,
                           &last_K_res[epoch // gap_freq, 0], &inc)
                 else:
                     for k in range(K - 1):
-                        dcopy(&n_samples, &last_K_res[k + 1, 0], &inc,
+                        fused_copy(&n_samples, &last_K_res[k + 1, 0], &inc,
                               &last_K_res[k, 0], &inc)
-                    dcopy(&n_samples, &R[0], &inc, &last_K_res[K - 1, 0], &inc)
+                    fused_copy(&n_samples, &R[0], &inc, &last_K_res[K - 1, 0], &inc)
                     for k in range(K - 1):
                         for i in range(n_samples):
                             U[k, i] = last_K_res[k + 1, i] - last_K_res[k, i]
 
                     for k in range(K - 1):
                         for jj in range(k, K - 1):
-                            UtU[k, jj] = ddot(&n_samples, &U[k, 0], &inc,
+                            UtU[k, jj] = fused_dot(&n_samples, &U[k, 0], &inc,
                                               &U[jj, 0], &inc)
                             UtU[jj, k] = UtU[k, jj]
 
@@ -402,7 +410,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                     for k in range(K - 1):
                         onesK[k] = 1
 
-                    dposv(&char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
+                    fused_posv(&char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
                            &onesK[0], &Kminus1,
                            &info_dposv)
 
@@ -428,7 +436,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                             thetaccel[i] += onesK[k] * last_K_res[k, i]
 
                     tmp = 1 / (alpha * n_samples)
-                    dscal(&n_samples, &tmp, &thetaccel[0], &inc)
+                    fused_scal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling_sparse(
                         n_features, &thetaccel[0], X_data, X_indices, X_indptr,
@@ -436,7 +444,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
 
                     if dual_scale_accel > 1. :
                         tmp = 1. / dual_scale_accel
-                        dscal(&n_samples, &tmp, &thetaccel[0], &inc)
+                        fused_scal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     d_obj_accel = dual_value(n_samples, alpha, norm_y2,
                                              &thetaccel[0], &y[0])
@@ -445,7 +453,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
                         # theta_inner in outer loop)
-                        dcopy(&n_samples, &thetaccel[0], &inc, &theta[0], &inc)
+                        fused_copy(&n_samples, &thetaccel[0], &inc, &theta[0], &inc)
 
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj

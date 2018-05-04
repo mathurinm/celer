@@ -7,7 +7,7 @@ cimport numpy as np
 from cython cimport floating
 
 from libc.math cimport fabs, sqrt, ceil
-from utils cimport fmax, primal_value, dual_value, ST
+from utils cimport primal_value, dual_value, ST
 from utils cimport (fused_dot, fused_asum, fused_axpy, fused_nrm2,
                     fused_copy, fused_scal, fused_posv)
 
@@ -74,14 +74,19 @@ def celer_dense(floating[::1, :] X,
                 int prune=0,
                 ):
 
+    if floating is double:
+        dtype = np.float64
+    else:
+        dtype = np.float32
+
     cdef int n_features = beta_init.shape[0]
-    cdef double t0 = time.time()
+    cdef floating t0 = time.time()
     if p0 > n_features:
         p0 = n_features
 
 
     cdef int n_samples = y.shape[0]
-    cdef floating[:] beta = np.empty(n_features)
+    cdef floating[:] beta = np.empty(n_features, dtype=dtype)
     cdef int j  # features
     cdef int i  # samples
     cdef int ii
@@ -94,32 +99,33 @@ def celer_dense(floating[::1, :] X,
     cdef floating highest_d_obj
     cdef floating scal
     cdef floating gap
-    cdef floating[:] prios = np.empty(n_features)
-    cdef floating[:] norms_X_col = np.empty(n_features)
+    cdef floating[:] prios = np.empty(n_features, dtype=dtype)
+    cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
 
     # compute norms_X_col
     for j in range(n_features):
         norms_X_col[j] = fused_nrm2(&n_samples, &X[0, j], &inc)
 
     cdef floating norm_y2 = fused_nrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating[:] invnorm_Xcols_2 = np.empty(n_features)
-    cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features)
+    cdef floating[:] invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
+    cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
 
     for j in range(n_features):
         beta[j] = beta_init[j]
         invnorm_Xcols_2[j] = 1. / norms_X_col[j] ** 2
         alpha_invnorm_Xcols_2[j] = alpha * invnorm_Xcols_2[j]
 
-    cdef double[:] times = np.zeros(max_iter)
-    cdef floating[:] gaps = np.zeros(max_iter)
-    cdef floating[:] epochs = np.zeros(max_iter)
-    cdef floating[:] ws_sizes = np.zeros(max_iter)
+    cdef floating[:] times = np.zeros(max_iter, dtype=dtype)
+    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
+    cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
 
-    cdef floating[:] R = np.zeros(n_samples)
-    cdef floating[:] theta = np.zeros(n_samples)
-    cdef floating[:] theta_inner = np.zeros(n_samples)  # passed to inner solver
+    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+    cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
+    cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
+    # passed to inner solver
     # and potentially used for screening if it gives a better d_obj
-    cdef floating d_obj_from_inner = 0
+    cdef floating d_obj_from_inner = 0.
 
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
@@ -267,6 +273,11 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                    int K=6,
                    int use_accel=1,
                    ):
+    if floating is double:
+        dtype = np.float64
+    else:
+        dtype = np.float32
+
     cdef int i # to iterate over samples.
     cdef int ii
     cdef int jj  # to iterate over features
@@ -280,19 +291,19 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
     cdef int inc = 1
     # gap related:
     cdef floating gap
-    cdef floating[:] gaps = np.zeros(max_epochs // gap_freq)
+    cdef floating[:] gaps = np.zeros(max_epochs // gap_freq, dtype=dtype)
 
-    cdef floating[:] thetaccel = np.empty(n_samples)
+    cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
     cdef floating dual_scale
     cdef floating d_obj
     cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
     # at first d_obj computation. highest_d_obj corresponds to theta = 0.
     cdef floating tmp
     # acceleration variables:
-    cdef floating[:, :] last_K_res = np.empty([K, n_samples])
-    cdef floating[:, :] U = np.empty([K - 1, n_samples])
-    cdef floating[:, :] UtU = np.empty([K - 1, K - 1])
-    cdef floating[:] onesK = np.ones(K - 1, dtype=y.dtype)
+    cdef floating[:, :] last_K_res = np.empty([K, n_samples], dtype=dtype)
+    cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
+    cdef floating[:, :] UtU = np.empty([K - 1, K - 1], dtype=dtype)
+    cdef floating[:] onesK = np.ones(K - 1, dtype=dtype)
     cdef floating dual_scale_accel
     cdef floating d_obj_accel
 
