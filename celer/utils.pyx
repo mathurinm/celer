@@ -4,8 +4,11 @@
 # License: BSD 3 clause
 
 cimport cython
-from scipy.linalg.cython_blas cimport ddot, dasum
+
+from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
+from scipy.linalg.cython_blas cimport sdot, sasum, saxpy, snrm2, scopy, sscal
 from libc.math cimport fabs
+from cython cimport floating
 
 
 cdef inline double fmax(double x, double y) nogil:
@@ -71,3 +74,48 @@ cdef double dual_value(int n_samples, double alpha, double norm_y2,
     d_obj *= 0.5 * alpha ** 2 * n_samples
     d_obj += norm_y2 / (2. * n_samples)
     return d_obj
+
+
+cdef floating fused_dot(int * n, floating * x, int * inc1, floating * y,
+                        int * inc2) nogil:
+    if floating is double:
+        return ddot(n, x, inc1, y, inc2)
+    else:
+        return sdot(n, x, inc1, y, inc2)
+
+
+cdef floating fused_asum(int * n, floating * x, int * inc) nogil:
+    if floating is double:
+        return dasum(n, x, inc)
+    else:
+        return sasum(n, x, inc)
+
+cdef void fused_axpy(int * n, floating * alpha, floating * x, int * incx,
+                     floating * y, int * incy) nogil:
+     if floating is double:
+         daxpy(n, alpha, x, incx, y, incy)
+     else:
+         saxpy(n, alpha, x, incx, y, incy)
+
+
+cdef floating fused_nrm2(int * n, floating * x, int * inc) nogil:
+     if floating is double:
+         return dnrm2(n, x, inc)
+     else:
+         return snrm2(n, x, inc)
+
+
+cdef void fused_copy(int * n, floating * x, int * incx, floating * y,
+                     int * incy) nogil:
+    if floating is double:
+        dcopy(n, x, incx, y, incy)
+    else:
+        scopy(n, x, incx, y, incy)
+
+
+cdef void fused_scal(int * n, floating * alpha, floating * x,
+                     int * incx) nogil:
+    if floating is double:
+        dscal(n, alpha, x, incx)
+    else:
+        sscal(n, alpha, x, incx)
