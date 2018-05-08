@@ -9,10 +9,10 @@ cimport numpy as np
 cimport cython
 
 from cython cimport floating
-from libc.math cimport fabs, sqrt, ceil
+from libc.math cimport fabs, sqrt
+
 from utils cimport primal_value, dual_value, ST
-from utils cimport (fdot, fasum, faxpy, fnrm2,
-                    fcopy, fscal, fposv)
+from utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 
 
 @cython.boundscheck(False)
@@ -162,6 +162,7 @@ def celer_sparse(floating[:] X_data,
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
+        # R = y - np.dot(X, beta)
         fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
         for j in range(n_features):
             if beta[j] == 0.:
@@ -206,6 +207,7 @@ def celer_sparse(floating[:] X_data,
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
+            # TODO implement a best_theta
 
         p_obj = primal_value(alpha, n_samples, &R[0], n_features, &beta[0])
         gap = p_obj - highest_d_obj

@@ -1,15 +1,19 @@
-cimport cython
+# Author: Mathurin Massias <mathurin.massias@gmail.com>
+#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+# License: BSD 3 clause
+
 import time
 import numpy as np
 cimport numpy as np
+cimport cython
 
-# from scipy.linalg.cython_blas cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal
 from cython cimport floating
+from libc.math cimport fabs, sqrt
 
-from libc.math cimport fabs, sqrt, ceil
 from utils cimport primal_value, dual_value, ST
-from utils cimport (fdot, fasum, faxpy, fnrm2,
-                    fcopy, fscal, fposv)
+from utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
+
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -172,6 +176,7 @@ def celer_dense(floating[::1, :] X,
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
+            # TODO implement a best_theta
 
         p_obj = primal_value(alpha, n_samples, &R[0], n_features, &beta[0])
         gap = p_obj - highest_d_obj
@@ -361,7 +366,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                             UtU[jj, k] = UtU[k, jj]
 
                     # refill onesK with ones because it has been overwritten
-                    # by *posv
+                    # by fposv
                     for k in range(K - 1):
                         onesK[k] = 1.
 

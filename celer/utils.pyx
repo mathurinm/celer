@@ -66,14 +66,6 @@ cdef void fposv(char * uplo, int * n, int * nrhs, floating * a,
         sposv(uplo, n, nrhs, a, lda, b, ldb, info)
 
 
-# cdef inline floating fmax(floating x, floating y) nogil:
-#     return x if x > y else y
-#
-#
-# cdef inline floating fmin(floating x, floating y) nogil:
-#     return y if x > y else y
-
-
 cdef inline floating ST(floating u, floating x) nogil:
     if x > u:
         return x - u
