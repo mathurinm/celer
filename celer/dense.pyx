@@ -3,13 +3,13 @@ import time
 import numpy as np
 cimport numpy as np
 
-# from scipy.linalg.cython_blas cimport fused_dot, fused_asum, fused_axpy, fused_nrm2, fused_copy, fused_scal
+# from scipy.linalg.cython_blas cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal
 from cython cimport floating
 
 from libc.math cimport fabs, sqrt, ceil
 from utils cimport primal_value, dual_value, ST
-from utils cimport (fused_dot, fused_asum, fused_axpy, fused_nrm2,
-                    fused_copy, fused_scal, fused_posv)
+from utils cimport (fdot, fasum, faxpy, fnrm2,
+                    fcopy, fscal, fposv)
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -27,13 +27,12 @@ cdef floating compute_dual_scaling_dense(int n_samples, int n_features,
     cdef int inc = 1
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
-            Xj_theta = fused_dot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
-            Xj_theta = fabs(Xj_theta)
+            Xj_theta = fabs(fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc))
             scal = max(scal, Xj_theta)
     else: # scaling wrt features in C only
         for j in range(ws_size):
             Cj = C[j]
-            Xj_theta = fabs(fused_dot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc))
+            Xj_theta = fabs(fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc))
             scal = max(scal, Xj_theta)
     return scal
 
@@ -49,7 +48,7 @@ cdef void set_feature_prios_dense(int n_samples, int n_features, floating[:] the
     cdef floating Xj_theta
 
     for j in range(n_features):
-        Xj_theta = fused_dot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+        Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
         prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
 
 
@@ -104,9 +103,9 @@ def celer_dense(floating[::1, :] X,
 
     # compute norms_X_col
     for j in range(n_features):
-        norms_X_col[j] = fused_nrm2(&n_samples, &X[0, j], &inc)
+        norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
 
-    cdef floating norm_y2 = fused_nrm2(&n_samples, &y[0], &inc) ** 2
+    cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
     cdef floating[:] invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
     cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
 
@@ -132,25 +131,25 @@ def celer_dense(floating[::1, :] X,
 
     for t in range(max_iter):
         # R = y - np.dot(X, beta)
-        fused_copy(&n_samples, &y[0], &inc, &R[0], &inc)
+        fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
         for j in range(n_features):
             if beta[j] == 0.:
                 continue
             else:
                 tmp = - beta[j]
-                fused_axpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
         # theta = R / (n_samples * alpha)
-        fused_copy(&n_samples, &R[0], &inc, &theta[0], &inc)
+        fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
         tmp = 1. / (n_samples * alpha)
-        fused_scal(&n_samples, &tmp, &theta[0], &inc)
+        fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling_dense(n_samples, n_features, theta, X,
             n_features, &dummy_C[0])
 
         if scal > 1.:
             tmp = 1. / scal
-            fused_scal(&n_samples, &tmp, &theta[0], &inc)
+            fscal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
                            &y[0])
@@ -162,14 +161,14 @@ def celer_dense(floating[::1, :] X,
 
             if scal > 1.:
                 tmp = 1. / scal
-                fused_scal(&n_samples, &tmp, &theta_inner[0], &inc)
+                fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual_value(n_samples, alpha, norm_y2,
                                           &theta_inner[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
-            fused_copy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
+            fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
@@ -323,41 +322,41 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
             continue
         else:
             tmp = - beta_Cj
-            fused_axpy(&n_samples, &tmp, &X[0, C[j]], &inc, &R[0], &inc)
+            faxpy(&n_samples, &tmp, &X[0, C[j]], &inc, &R[0], &inc)
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
             # theta = R / (alpha * n_samples)
-            fused_copy(&n_samples, &R[0], &inc, &theta[0], &inc)
+            fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
             tmp = 1. / (alpha * n_samples)
-            fused_scal(&n_samples, &tmp, &theta[0], &inc)
+            fscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling_dense(
                 n_samples, n_features, theta, X, ws_size, &C[0])
 
             if dual_scale > 1.:
                 tmp = 1 / dual_scale
-                fused_scal(&n_samples, &tmp, &theta[0], &inc)
+                fscal(&n_samples, &tmp, &theta[0], &inc)
 
             d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             if use_accel: # also compute accelerated dual_point
                 if epoch // gap_freq < K:
                     # last_K_res[it // f_gap] = R:
-                    fused_copy(&n_samples, &R[0], &inc,
+                    fcopy(&n_samples, &R[0], &inc,
                           &last_K_res[epoch // gap_freq, 0], &inc)
                 else:
                     for k in range(K - 1):
-                        fused_copy(&n_samples, &last_K_res[k + 1, 0], &inc,
+                        fcopy(&n_samples, &last_K_res[k + 1, 0], &inc,
                               &last_K_res[k, 0], &inc)
-                    fused_copy(&n_samples, &R[0], &inc, &last_K_res[K - 1, 0], &inc)
+                    fcopy(&n_samples, &R[0], &inc, &last_K_res[K - 1, 0], &inc)
                     for k in range(K - 1):
                         for i in range(n_samples):
                             U[k, i] = last_K_res[k + 1, i] - last_K_res[k, i]
 
                     for k in range(K - 1):
                         for jj in range(k, K - 1):
-                            UtU[k, jj] = fused_dot(&n_samples, &U[k, 0], &inc,
+                            UtU[k, jj] = fdot(&n_samples, &U[k, 0], &inc,
                                               &U[jj, 0], &inc)
                             UtU[jj, k] = UtU[k, jj]
 
@@ -366,7 +365,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                     for k in range(K - 1):
                         onesK[k] = 1.
 
-                    fused_posv(&char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
+                    fposv(&char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
                                &onesK[0], &Kminus1, &info_posv)
 
                     # onesK now holds the solution in x to UtU dot x = onesK
@@ -391,7 +390,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                             thetaccel[i] += onesK[k] * last_K_res[k, i]
 
                     tmp = 1. / (alpha * n_samples)
-                    fused_scal(&n_samples, &tmp, &thetaccel[0], &inc)
+                    fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling_dense(
                         n_samples, n_features, thetaccel, X, ws_size,
@@ -399,7 +398,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
 
                     if dual_scale_accel > 1.:
                         tmp = 1. / dual_scale_accel
-                        fused_scal(&n_samples, &tmp, &thetaccel[0], &inc)
+                        fscal(&n_samples, &tmp, &thetaccel[0], &inc)
                     # d_obj_accel = 0.
                     # for i in range(n_samples):
                     #     d_obj_accel -= (y[i] / alpha - thetaccel[i] / dual_scale_accel) ** 2
@@ -413,7 +412,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
                         # theta_inner in outer loop)
-                        fused_copy(&n_samples, &thetaccel[0], &inc, &theta[0], &inc)
+                        fcopy(&n_samples, &thetaccel[0], &inc, &theta[0], &inc)
 
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj
@@ -439,7 +438,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
             # update feature k in place, cyclically
             j = C[k]
             old_beta_j = beta[j]
-            beta[j] += fused_dot(&n_samples, &X[0, j], &inc, &R[0], &inc) * invnorm_Xcols_2[j]
+            beta[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) * invnorm_Xcols_2[j]
             # perform ST in place:
             beta[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, beta[j])
             tmp = beta[j] - old_beta_j
@@ -447,7 +446,7 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
             # R -= (beta_j - old_beta_j) * X[:, j]
             if tmp != 0.:
                 tmp = -tmp
-                fused_axpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))

@@ -12,7 +12,7 @@ from libc.math cimport fabs
 from cython cimport floating
 
 
-cdef floating fused_dot(int * n, floating * x, int * inc1, floating * y,
+cdef floating fdot(int * n, floating * x, int * inc1, floating * y,
                         int * inc2) nogil:
     if floating is double:
         return ddot(n, x, inc1, y, inc2)
@@ -20,14 +20,14 @@ cdef floating fused_dot(int * n, floating * x, int * inc1, floating * y,
         return sdot(n, x, inc1, y, inc2)
 
 
-cdef floating fused_asum(int * n, floating * x, int * inc) nogil:
+cdef floating fasum(int * n, floating * x, int * inc) nogil:
     if floating is double:
         return dasum(n, x, inc)
     else:
         return sasum(n, x, inc)
 
 
-cdef void fused_axpy(int * n, floating * alpha, floating * x, int * incx,
+cdef void faxpy(int * n, floating * alpha, floating * x, int * incx,
                      floating * y, int * incy) nogil:
     if floating is double:
         daxpy(n, alpha, x, incx, y, incy)
@@ -35,14 +35,14 @@ cdef void fused_axpy(int * n, floating * alpha, floating * x, int * incx,
         saxpy(n, alpha, x, incx, y, incy)
 
 
-cdef floating fused_nrm2(int * n, floating * x, int * inc) nogil:
+cdef floating fnrm2(int * n, floating * x, int * inc) nogil:
     if floating is double:
         return dnrm2(n, x, inc)
     else:
         return snrm2(n, x, inc)
 
 
-cdef void fused_copy(int * n, floating * x, int * incx, floating * y,
+cdef void fcopy(int * n, floating * x, int * incx, floating * y,
                      int * incy) nogil:
     if floating is double:
         dcopy(n, x, incx, y, incy)
@@ -50,7 +50,7 @@ cdef void fused_copy(int * n, floating * x, int * incx, floating * y,
         scopy(n, x, incx, y, incy)
 
 
-cdef void fused_scal(int * n, floating * alpha, floating * x,
+cdef void fscal(int * n, floating * alpha, floating * x,
                      int * incx) nogil:
     if floating is double:
         dscal(n, alpha, x, incx)
@@ -58,7 +58,7 @@ cdef void fused_scal(int * n, floating * alpha, floating * x,
         sscal(n, alpha, x, incx)
 
 
-cdef void fused_posv(char * uplo, int * n, int * nrhs, floating * a,
+cdef void fposv(char * uplo, int * n, int * nrhs, floating * a,
                      int * lda, floating * b, int * ldb, int * info) nogil:
     if floating is double:
         dposv(uplo, n, nrhs, a, lda, b, ldb, info)
@@ -90,9 +90,9 @@ cdef floating primal_value(floating alpha, int n_samples, floating * R,
                          int n_features, floating * w) nogil:
     cdef int inc = 1
     # regularization term: alpha ||w||_1
-    cdef floating p_obj = alpha * fused_asum(&n_features, w, &inc)
+    cdef floating p_obj = alpha * fasum(&n_features, w, &inc)
     # R is passed as a pointer so no need to & it
-    p_obj += fused_dot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
+    p_obj += fdot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
     return p_obj
 
 
