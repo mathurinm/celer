@@ -6,6 +6,8 @@
 import time
 import numpy as np
 
+from sklearn.utils import check_array
+
 from .wrapper import celer
 
 
@@ -79,17 +81,24 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         The dual variables along the path.
         (Is returned only when ``return_thetas`` is set to True).
     """
+
+    X = check_array(X, 'csc', dtype=[np.float64, np.float32],
+                    order='F', copy=False)
+    y = check_array(y, 'csc', dtype=X.dtype.type, order='F', copy=False,
+                    ensure_2d=False)
+
     n_samples, n_features = X.shape
     if alphas is None:
         alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
-        alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas)
+        alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas,
+                                         dtype=X.dtype)
     else:
         alphas = np.sort(alphas)[::-1]
 
     n_alphas = len(alphas)
 
-    coefs = np.zeros((n_features, n_alphas), order='F')  # sklearn API
-    thetas = np.zeros((n_alphas, n_samples))
+    coefs = np.zeros((n_features, n_alphas), order='F', dtype=X.dtype)
+    thetas = np.zeros((n_alphas, n_samples), dtype=X.dtype)
     dual_gaps = np.zeros(n_alphas)
     all_times = np.zeros(n_alphas)
 
