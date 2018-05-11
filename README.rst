@@ -15,9 +15,9 @@ Install the released version
 ============================
 
 Assuming you have a working Python environment, e.g. with Anaconda you
-can `install CELER with pip <https://pypi.python.org/pypi/celer/>`__.
+can `install celer with pip <https://pypi.python.org/pypi/celer/>`__.
 
-From a console or terminal install CELER with pip:
+From a console or terminal install celer with pip:
 
 ::
 
