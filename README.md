@@ -48,6 +48,6 @@ If you use this code, please cite:
 
 	Mathurin Massias, Alexandre Gramfort and Joseph Salmon
 	Dual Extrapolation for Faster Lasso Solvers
-	Arxiv preprint, 2018
+	To appear in ICML 2018
 
 Link: [https://arxiv.org/abs/1802.07481](https://arxiv.org/abs/1802.07481)
