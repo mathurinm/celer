@@ -115,7 +115,6 @@ def celer_sparse(floating[:] X_data,
     cdef floating[:] beta = np.empty(n_features, dtype=dtype)
     cdef int j  # features
     cdef int i  # samples
-    cdef int ii
     cdef int t  # outer loop
     cdef int inc = 1
     cdef floating tmp
@@ -170,8 +169,8 @@ def celer_sparse(floating[:] X_data,
             else:
                 startptr = X_indptr[j]
                 endptr = X_indptr[j + 1]
-                for ii in range(startptr, endptr):
-                    R[X_indices[ii]] -= beta[j] * X_data[ii]
+                for i in range(startptr, endptr):
+                    R[X_indices[i]] -= beta[j] * X_data[i]
 
         # theta = R / (alpha * n_samples)
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
@@ -319,13 +318,9 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     cdef int endptr
 
     cdef int i # to iterate over samples.
-    cdef int ii
-    cdef int jj  # to iterate over features
-    cdef int j
+    cdef int j  # to iterate over features
     cdef int k
     cdef int epoch
-    cdef int start
-    cdef int stop
     cdef floating old_beta_j
     cdef floating beta_Cj
     cdef int inc = 1
@@ -365,8 +360,8 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
         else:
             startptr = X_indptr[C[j]]
             endptr = X_indptr[C[j] + 1]
-            for ii in range(startptr, endptr):
-                R[X_indices[ii]] -= beta_Cj * X_data[ii]
+            for i in range(startptr, endptr):
+                R[X_indices[i]] -= beta_Cj * X_data[i]
 
 
     for epoch in range(max_epochs):
@@ -402,10 +397,10 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                             U[k, i] = last_K_res[k + 1, i] - last_K_res[k, i]
 
                     for k in range(K - 1):
-                        for jj in range(k, K - 1):
-                            UtU[k, jj] = fdot(&n_samples, &U[k, 0], &inc,
-                                              &U[jj, 0], &inc)
-                            UtU[jj, k] = UtU[k, jj]
+                        for j in range(k, K - 1):
+                            UtU[k, j] = fdot(&n_samples, &U[k, 0], &inc,
+                                              &U[j, 0], &inc)
+                            UtU[j, k] = UtU[k, j]
 
                     # refill onesK with ones because it has been overwritten
                     # by dposv
@@ -483,16 +478,16 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
             old_beta_j = beta[j]
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
-            for ii in range(startptr, endptr):
-                beta[j] += R[X_indices[ii]] * X_data[ii] * invnorm_Xcols_2[j]
+            for i in range(startptr, endptr):
+                beta[j] += R[X_indices[i]] * X_data[i] * invnorm_Xcols_2[j]
             # perform ST in place:
             beta[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, beta[j])
             tmp = beta[j] - old_beta_j
 
             # R -= (beta_j - old_beta_j) * X[:, j]
             if tmp != 0.:
-                for ii in range(startptr, endptr):
-                    R[X_indices[ii]] -= tmp *  X_data[ii]
+                for i in range(startptr, endptr):
+                    R[X_indices[i]] -= tmp *  X_data[i]
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))

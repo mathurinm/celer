@@ -92,7 +92,6 @@ def celer_dense(floating[::1, :] X,
     cdef floating[:] beta = np.empty(n_features, dtype=dtype)
     cdef int j  # features
     cdef int i  # samples
-    cdef int ii
     cdef int t  # outer loop
     cdef int inc = 1
     cdef floating tmp
@@ -283,13 +282,9 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
         dtype = np.float32
 
     cdef int i # to iterate over samples.
-    cdef int ii
-    cdef int jj  # to iterate over features
-    cdef int j
+    cdef int j  # to iterate over features
     cdef int k
     cdef int epoch
-    cdef int start
-    cdef int stop
     cdef floating old_beta_j
     cdef floating beta_Cj
     cdef int inc = 1
@@ -360,10 +355,10 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
                             U[k, i] = last_K_res[k + 1, i] - last_K_res[k, i]
 
                     for k in range(K - 1):
-                        for jj in range(k, K - 1):
-                            UtU[k, jj] = fdot(&n_samples, &U[k, 0], &inc,
-                                              &U[jj, 0], &inc)
-                            UtU[jj, k] = UtU[k, jj]
+                        for j in range(k, K - 1):
+                            UtU[k, j] = fdot(&n_samples, &U[k, 0], &inc,
+                                              &U[j, 0], &inc)
+                            UtU[j, k] = UtU[k, j]
 
                     # refill onesK with ones because it has been overwritten
                     # by fposv
