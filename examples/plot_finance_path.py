@@ -16,7 +16,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 from scipy import sparse
 
 from celer import celer_path
@@ -49,7 +48,7 @@ n_alphas = 100 if fine else 10
 alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
 gap_freq = 10
-prune = 1
+prune = 0
 verbose = 0
 verbose_inner = 0
 
