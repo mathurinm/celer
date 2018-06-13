@@ -15,7 +15,7 @@ from .dense import celer_dense
 
 def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
-          tol=1e-6, prune=1):
+          tol=1e-6, prune=0):
     """
     Compute the Lasso solution with the Celer algorithm.
 

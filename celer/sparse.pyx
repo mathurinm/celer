@@ -229,17 +229,6 @@ def celer_sparse(floating[:] X_data,
                           &norms_X_col[0], &prios[0])
 
         if prune:
-            for j in range(n_features):
-                if beta[j] != 0:
-                    prios[j] = - 1
-            if t == 0:
-                ws_size = p0
-            else:
-                for j in range(ws_size):
-                    prios[C[j]] = -1
-                ws_size = min(n_features, 2 * ws_size)
-
-        else:
             ws_size = 0
             for j in range(n_features):
                 if beta[j] != 0:
@@ -250,6 +239,18 @@ def celer_sparse(floating[:] X_data,
 
             if t == 0:
                 ws_size = p0
+
+        else:
+            for j in range(n_features):
+                if beta[j] != 0:
+                    prios[j] = - 1
+            if t == 0:
+                ws_size = p0
+            else:
+                for j in range(ws_size):
+                    prios[C[j]] = -1
+                ws_size = min(n_features, 2 * ws_size)
+
         if ws_size > n_features:
             ws_size = n_features
 
@@ -262,9 +263,9 @@ def celer_sparse(floating[:] X_data,
             C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
             C.sort()
         if prune:
-            tol_inner = tol
-        else:
             tol_inner = tol_ratio_inner * gap
+        else:
+            tol_inner = tol
 
         if verbose:
             print("Solving subproblem with %d constraints" % len(C))
