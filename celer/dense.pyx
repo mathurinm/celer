@@ -122,7 +122,6 @@ def celer_dense(floating[::1, :] X,
     cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
     cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
 
-    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
     # passed to inner solver
@@ -132,16 +131,17 @@ def celer_dense(floating[::1, :] X,
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
-    for t in range(max_iter):
-        # R = y - np.dot(X, beta)
-        fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
-        for j in range(n_features):
-            if beta[j] == 0.:
-                continue
-            else:
-                tmp = - beta[j]
-                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+    # R = y - np.dot(X, beta)
+    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+    for j in range(n_features):
+        if beta[j] == 0.:
+            continue
+        else:
+            tmp = - beta[j]
+            faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
+    for t in range(max_iter):
         # theta = R / (n_samples * alpha)
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
         tmp = 1. / (n_samples * alpha)
@@ -316,15 +316,15 @@ cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
     cdef floating sum_z
     cdef int info_posv
 
-    for i in range(n_samples):
-        R[i] = y[i]
-    for j in range(ws_size):
-        beta_Cj = beta[C[j]]
-        if beta_Cj == 0.:
-            continue
-        else:
-            tmp = - beta_Cj
-            faxpy(&n_samples, &tmp, &X[0, C[j]], &inc, &R[0], &inc)
+    # for i in range(n_samples):
+    #     R[i] = y[i]
+    # for j in range(ws_size):
+    #     beta_Cj = beta[C[j]]
+    #     if beta_Cj == 0.:
+    #         continue
+    #     else:
+    #         tmp = - beta_Cj
+    #         faxpy(&n_samples, &tmp, &X[0, C[j]], &inc, &R[0], &inc)
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:

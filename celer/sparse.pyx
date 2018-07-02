@@ -150,7 +150,6 @@ def celer_sparse(floating[:] X_data,
     cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
     cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
 
-    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
     # passed to inner solver
@@ -160,18 +159,19 @@ def celer_sparse(floating[:] X_data,
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
-    for t in range(max_iter):
-        # R = y - np.dot(X, beta)
-        fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
-        for j in range(n_features):
-            if beta[j] == 0.:
-                continue
-            else:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                for i in range(startptr, endptr):
-                    R[X_indices[i]] -= beta[j] * X_data[i]
+    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+    # R = y - np.dot(X, beta)
+    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+    for j in range(n_features):
+        if beta[j] == 0.:
+            continue
+        else:
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            for i in range(startptr, endptr):
+                R[X_indices[i]] -= beta[j] * X_data[i]
 
+    for t in range(max_iter):
         # theta = R / (alpha * n_samples)
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
         tmp = 1. / (alpha * n_samples)
@@ -352,17 +352,17 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     cdef floating sum_z
     cdef int info_dposv
 
-    for i in range(n_samples):
-        R[i] = y[i]
-    for j in range(ws_size):
-        beta_Cj = beta[C[j]]
-        if beta_Cj == 0.:
-            continue
-        else:
-            startptr = X_indptr[C[j]]
-            endptr = X_indptr[C[j] + 1]
-            for i in range(startptr, endptr):
-                R[X_indices[i]] -= beta_Cj * X_data[i]
+    # for i in range(n_samples):
+    #     R[i] = y[i]
+    # for j in range(ws_size):
+    #     beta_Cj = beta[C[j]]
+    #     if beta_Cj == 0.:
+    #         continue
+    #     else:
+    #         startptr = X_indptr[C[j]]
+    #         endptr = X_indptr[C[j] + 1]
+    #         for i in range(startptr, endptr):
+    #             R[X_indices[i]] -= beta_Cj * X_data[i]
 
 
     for epoch in range(max_epochs):
