@@ -68,7 +68,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
 
     Returns
     -------
-    alpha : array, shape (n,_alphas,)
+    alphas : array, shape (n,_alphas,)
         The alphas along the path where models are computed.
 
     coefs : array, shape (n_features, n_alphas)
