@@ -81,7 +81,7 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
 @cython.wraparound(False)
 @cython.cdivision(True)
 def celer_sparse(
-    floating[:] X_data, int[:] X_indices, int[:] X_indptr, X_mean,
+    floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
     floating[:] y, floating alpha,  floating[:] w_init, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
@@ -267,8 +267,8 @@ def celer_sparse(
             print("Solving subproblem with %d constraints" % len(C))
         # calling inner solver which will modify w and R inplace
         epochs[t] = inner_solver_sparse(
-            n_samples, n_features, ws_size, X_data, X_indices, X_indptr,
-            y, alpha, w, R, C, theta_inner, norms_X_col,
+            n_samples, n_features, ws_size, X_data, X_indices, X_indptr, X_mean,
+            y, alpha, center, w, R, C, theta_inner, norms_X_col,
             norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel)
@@ -287,8 +287,8 @@ def celer_sparse(
 @cython.cdivision(True)
 cpdef int inner_solver_sparse(
     int n_samples, int n_features, int ws_size,
-    floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating[:] y, floating alpha, floating[:] w, floating[:] R,
+    floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
+    floating[:] y, floating alpha, bint center, floating[:] w, floating[:] R,
     int[:] C, floating[:] theta, floating[:] norms_X_col,
     floating norm_y2, floating eps, int max_epochs, int gap_freq,
     int verbose=0, int K=6, int use_accel=1):
