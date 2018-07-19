@@ -6,12 +6,9 @@
 import numpy as np
 import warnings
 
-from scipy import sparse
 from sklearn.exceptions import ConvergenceWarning
 
-from .sparse import celer_sparse
-from .dense import celer_dense
-
+from .homotopy import celer_path
 
 def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
@@ -78,42 +75,22 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     times : array
         Time elapsed since entering the solver, at each outer loop iteration.
     """
-    data_is_sparse = sparse.issparse(X)
-    if not data_is_sparse:
-        if not np.isfortran(X):
-            X = np.asfortranarray(X)
-    else:
-        if X.getformat() != 'csc':
-            raise TypeError("Sparse X must be in column sparse format.")
-        if not X.has_sorted_indices:
-            X.sort_indices()
 
-    n_features = X.shape[1]
-    if w_init is None:
-        w_init = np.zeros(n_features)
+    alphas, coefs, _, thetas, all_gaps, all_times = celer_path(
+        X, y, alphas=np.array(alpha), coef_init=w_init,
+        monitor=True)
 
-    if data_is_sparse:
-        sol = celer_sparse(X.data, X.indices, X.indptr, y, alpha,
-                           w_init, max_iter=max_iter, gap_freq=gap_freq,
-                           max_epochs=max_epochs, p0=p0,
-                           verbose=verbose,
-                           verbose_inner=verbose_inner,
-                           use_accel=1, tol=tol, prune=prune)
-    else:
-        sol = celer_dense(X, y, alpha,
-                          w_init, max_iter=max_iter, gap_freq=gap_freq,
-                          max_epochs=max_epochs, p0=p0,
-                          verbose=verbose,
-                          verbose_inner=verbose_inner,
-                          use_accel=1, tol=tol, prune=prune)
+    w = coefs.T[0]
+    theta = thetas[0]
+    gaps = all_gaps[0]
+    times = all_times[0]
 
-    final_gap = sol[2][-1]
-    if final_gap > tol:
-        warnings.warn('Objective did not converge.' +
-                      ' You might want' +
-                      ' to increase the number of iterations.' +
-                      ' Fitting data with very small alpha' +
-                      ' may cause precision problems.',
-                      ConvergenceWarning)
+    # if final_gap > tol:
+    #     warnings.warn('Objective did not converge.' +
+    #                   ' You might want' +
+    #                   ' to increase the number of iterations.' +
+    #                   ' Fitting data with very small alpha' +
+    #                   ' may cause precision problems.',
+    #                   ConvergenceWarning)
 
-    return sol
+    return w, theta, gaps, times
