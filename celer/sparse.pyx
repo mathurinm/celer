@@ -80,25 +80,14 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def celer_sparse(floating[:] X_data,
-               int[:] X_indices,
-               int[:] X_indptr,
-               floating[:] y,
-               floating alpha,
-               floating[:] w_init,
-               int max_iter,
-               int max_epochs,
-               int gap_freq=10,
-               float tol_ratio_inner=0.3,
-               float tol=1e-6,
-               int p0=100,
-               int screening=0,
-               int verbose=0,
-               int verbose_inner=0,
-               int use_accel=1,
-               int return_ws_size=0,
-               int prune=0,
-               ):
+def celer_sparse(
+    floating[:] X_data, int[:] X_indices, int[:] X_indptr,
+    floating[:] y, floating alpha,  floating[:] w_init, int max_iter,
+    int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
+    float tol=1e-6, int p0=100, int screening=0, int verbose=0,
+    int verbose_inner=0, int use_accel=1,  int return_ws_size=0,
+    int prune=0):
+    
     if floating is double:
         dtype = np.float64
     else:
@@ -129,6 +118,7 @@ def celer_sparse(floating[:] X_data,
 
     # compute norms_X_col
     for j in range(n_features):
+        w[j] = w_init[j]
         startptr = X_indptr[j]
         endptr = X_indptr[j + 1]
         tmp = 0.
@@ -137,13 +127,6 @@ def celer_sparse(floating[:] X_data,
         norms_X_col[j] = sqrt(tmp)
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating[:] invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
-    cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
-
-    for j in range(n_features):
-        w[j] = w_init[j]
-        invnorm_Xcols_2[j] = 1. / norms_X_col[j] ** 2
-        alpha_invnorm_Xcols_2[j] = alpha * invnorm_Xcols_2[j]
 
     cdef floating[:] times = np.zeros(max_iter, dtype=dtype)
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
@@ -272,8 +255,7 @@ def celer_sparse(floating[:] X_data,
         # calling inner solver which will modify w and R inplace
         epochs[t] = inner_solver_sparse(
             n_samples, n_features, ws_size, X_data, X_indices, X_indptr,
-            y, alpha, w, R, C, theta_inner, invnorm_Xcols_2,
-            alpha_invnorm_Xcols_2,
+            y, alpha, w, R, C, theta_inner, norms_X_col,
             norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel)
@@ -290,26 +272,14 @@ def celer_sparse(floating[:] X_data,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
-                   floating[:] X_data,
-                   int[:] X_indices,
-                   int[:] X_indptr,
-                   floating[:] y,
-                   floating alpha,
-                   floating[:] w,
-                   floating[:] R,
-                   int[:] C,
-                   floating[:] theta,
-                   floating[:] invnorm_Xcols_2,
-                   floating[:] alpha_invnorm_Xcols_2,
-                   floating norm_y2,
-                   floating eps,
-                   int max_epochs,
-                   int gap_freq,
-                   int verbose=0,
-                   int K=6,
-                   int use_accel=1,
-                   ):
+cpdef int inner_solver_sparse(
+    int n_samples, int n_features, int ws_size,
+    floating[:] X_data, int[:] X_indices, int[:] X_indptr,
+    floating[:] y, floating alpha, floating[:] w, floating[:] R,
+    int[:] C, floating[:] theta, floating[:] norms_X_col,
+    floating norm_y2, floating eps, int max_epochs, int gap_freq,
+    int verbose=0, int K=6, int use_accel=1):
+
     if floating is double:
         dtype = np.float64
     else:
@@ -351,18 +321,6 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     cdef int one = 1
     cdef floating sum_z
     cdef int info_dposv
-
-    # for i in range(n_samples):
-    #     R[i] = y[i]
-    # for j in range(ws_size):
-    #     w_Cj = w[C[j]]
-    #     if w_Cj == 0.:
-    #         continue
-    #     else:
-    #         startptr = X_indptr[C[j]]
-    #         endptr = X_indptr[C[j] + 1]
-    #         for i in range(startptr, endptr):
-    #             R[X_indices[i]] -= w_Cj * X_data[i]
 
 
     for epoch in range(max_epochs):
@@ -480,9 +438,9 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
             for i in range(startptr, endptr):
-                w[j] += R[X_indices[i]] * X_data[i] * invnorm_Xcols_2[j]
+                w[j] += R[X_indices[i]] * X_data[i] / norms_X_col[j] ** 2
             # perform ST in place:
-            w[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, w[j])
+            w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
             tmp = w[j] - old_w_j
 
             # R -= (w_j - old_w_j) * X[:, j]
