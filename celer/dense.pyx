@@ -109,13 +109,9 @@ def celer_dense(floating[::1, :] X,
         norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating[:] invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
-    cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
 
     for j in range(n_features):
         w[j] = w_init[j]
-        invnorm_Xcols_2[j] = 1. / norms_X_col[j] ** 2
-        alpha_invnorm_Xcols_2[j] = alpha * invnorm_Xcols_2[j]
 
     cdef floating[:] times = np.zeros(max_iter, dtype=dtype)
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
@@ -240,8 +236,7 @@ def celer_dense(floating[::1, :] X,
         # calling inner solver which will modify w and R inplace
         epochs[t] = inner_solver_dense(
             n_samples, n_features, ws_size, X,
-            y, alpha, w, R, C, theta_inner, invnorm_Xcols_2,
-            alpha_invnorm_Xcols_2,
+            y, alpha, w, R, C, theta_inner, norms_X_col,
             norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel)
@@ -263,8 +258,8 @@ def celer_dense(floating[::1, :] X,
 cpdef int inner_solver_dense(
     int n_samples, int n_features, int ws_size,  floating[::1, :] X,
     floating[:] y, floating alpha, floating[:] w, floating[:] R,
-    int[:] C, floating[:] theta, floating[:] invnorm_Xcols_2,
-    floating[:] alpha_invnorm_Xcols_2, floating norm_y2, floating eps,
+    int[:] C, floating[:] theta, floating[:] norms_X_col,
+    floating norm_y2, floating eps,
     int max_epochs, int gap_freq, int verbose=0, int K=6,
     int use_accel=1):
     if floating is double:
@@ -419,9 +414,9 @@ cpdef int inner_solver_dense(
             # update feature k in place, cyclically
             j = C[k]
             old_w_j = w[j]
-            w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) * invnorm_Xcols_2[j]
+            w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / norms_X_col[j] ** 2
             # perform ST in place:
-            w[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, w[j])
+            w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
             tmp = w[j] - old_w_j
 
             # R -= (w_j - old_w_j) * X[:, j]
