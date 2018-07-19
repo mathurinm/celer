@@ -34,7 +34,7 @@ class Lasso(Lasso_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X beta||^2_2 + alpha * ||beta||_1
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * ||w||_1
 
     Parameters
     ----------
@@ -74,7 +74,7 @@ class Lasso(Lasso_sklearn):
     Attributes
     ----------
     coef_ : array, shape (n_features,)
-        parameter vector (beta in the cost function formula)
+        parameter vector (w in the cost function formula)
 
     sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
         ``sparse_coef_`` is a readonly property derived from ``coef_``
@@ -139,7 +139,7 @@ class LassoCV(LassoCV_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X beta||^2_2 + alpha * ||beta||_1
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * ||w||_1
 
     Parameters
     ----------
@@ -185,7 +185,7 @@ class LassoCV(LassoCV_sklearn):
         The amount of penalization chosen by cross validation
 
     coef_ : array, shape (n_features,)
-        parameter vector (beta in the cost function formula)
+        parameter vector (w in the cost function formula)
 
     intercept_ : float
         independent term in decision function.

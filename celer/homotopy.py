@@ -109,16 +109,16 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
             print(" ##### Computing %dth alpha" % (t + 1))
             print("#" * 60)
         if t > 0:
-            beta_init = coefs[:, t - 1].copy()
-            p_t = max(len(np.where(beta_init != 0)[0]), 1)
+            w_init = coefs[:, t - 1].copy()
+            p_t = max(len(np.where(w_init != 0)[0]), 1)
         else:
-            beta_init = coefs[:, t].copy()
+            w_init = coefs[:, t].copy()
             p_t = 10
 
         alpha = alphas[t]
         t0 = time.time()
         sol = celer(X, y, alpha,
-                    beta_init, max_iter=max_iter, gap_freq=gap_freq,
+                    w_init, max_iter=max_iter, gap_freq=gap_freq,
                     max_epochs=max_epochs, p0=p_t,
                     verbose=verbose, verbose_inner=verbose_inner,
                     tol=tol, prune=prune)
