@@ -3,7 +3,10 @@
 Lasso path computation on Leukemia dataset
 =======================================================
 
-The example runs the Celer algorithm on dense data.
+The example runs the Celer algorithm on the Leukemia
+dataset which is dense dataset.
+
+Running time is compared with the scikit-learn implementation.
 """
 
 import time
@@ -49,7 +52,6 @@ for tol_ix, tol in enumerate(tols):
     results[0, tol_ix] = time.time() - t0
     print('Celer time: %.2f s' % results[0, tol_ix])
     _, coefs, gaps, thetas = res
-    betas = coefs.T
 
     t0 = time.time()
     _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)

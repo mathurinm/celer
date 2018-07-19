@@ -22,7 +22,7 @@ using the Celer algorithm.
  Out::
 
     Loading data...
-    Estimated regularization parameter alpha: 0.032970086368
+    Estimated regularization parameter alpha: 0.03074801289382602
 
 
 
@@ -70,7 +70,7 @@ using the Celer algorithm.
     plt.axis('tight')
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.990 seconds)
+**Total running time of the script:** ( 0 minutes  0.576 seconds)
 
 
 

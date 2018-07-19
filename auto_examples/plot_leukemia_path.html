@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Lasso path computation on Leukemia dataset &#8212; celer 0.1.dev0 documentation</title>
+    <title>Lasso path computation on Leukemia dataset &#8212; celer 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1.dev0',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -47,7 +47,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -117,15 +117,17 @@
   
   <div class="section" id="lasso-path-computation-on-leukemia-dataset">
 <span id="sphx-glr-auto-examples-plot-leukemia-path-py"></span><h1>Lasso path computation on Leukemia dataset<a class="headerlink" href="#lasso-path-computation-on-leukemia-dataset" title="Permalink to this headline">¶</a></h1>
-<p>The example runs the Celer algorithm on dense data.</p>
+<p>The example runs the Celer algorithm on the Leukemia
+dataset which is dense dataset.</p>
+<p>Running time is compared with the scikit-learn implementation.</p>
 <img alt="../_images/sphx_glr_plot_leukemia_path_001.png" class="align-center" src="../_images/sphx_glr_plot_leukemia_path_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">Loading</span> <span class="n">data</span><span class="o">...</span>
 <span class="n">Starting</span> <span class="n">path</span> <span class="n">computation</span><span class="o">...</span>
-<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.15</span> <span class="n">s</span>
-<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.22</span> <span class="n">s</span>
-<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.32</span> <span class="n">s</span>
-<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.39</span> <span class="n">s</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.12</span> <span class="n">s</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.24</span> <span class="n">s</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.44</span> <span class="n">s</span>
+<span class="n">Celer</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.64</span> <span class="n">s</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -174,7 +176,6 @@
     <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Celer time: </span><span class="si">%.2f</span><span class="s1"> s&#39;</span> <span class="o">%</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">])</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">gaps</span><span class="p">,</span> <span class="n">thetas</span> <span class="o">=</span> <span class="n">res</span>
-    <span class="n">betas</span> <span class="o">=</span> <span class="n">coefs</span><span class="o">.</span><span class="n">T</span>
 
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">dual_gaps</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.lasso_path.html#sklearn.linear_model.lasso_path" title="View documentation for sklearn.linear_model.lasso_path"><span class="n">lasso_path</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">)</span>
@@ -187,7 +188,7 @@
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  23.077 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  22.327 seconds)</p>
 <div class="sphx-glr-footer container">
 <div class="sphx-glr-download container">
 <a class="reference download internal" href="../_downloads/plot_leukemia_path.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_leukemia_path.py</span></code></a></div>

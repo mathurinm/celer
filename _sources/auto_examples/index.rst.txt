@@ -33,7 +33,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on dense data. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on the Leukemia dataset which is dense dataset.">
 
 .. only:: html
 
@@ -53,7 +53,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on sparse data. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on the Finance dataset which is a large sparse dataset.">
 
 .. only:: html
 

@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Lasso path computation on Finance/log1p dataset &#8212; celer 0.1.dev0 documentation</title>
+    <title>Lasso path computation on Finance/log1p dataset &#8212; celer 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1.dev0',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -47,7 +47,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -117,10 +117,13 @@
   
   <div class="section" id="lasso-path-computation-on-finance-log1p-dataset">
 <span id="sphx-glr-auto-examples-plot-finance-path-py"></span><h1>Lasso path computation on Finance/log1p dataset<a class="headerlink" href="#lasso-path-computation-on-finance-log1p-dataset" title="Permalink to this headline">¶</a></h1>
-<p>The example runs the Celer algorithm on sparse data.</p>
+<p>The example runs the Celer algorithm on the Finance dataset
+which is a large sparse dataset.</p>
+<p>Running time is here not compared with the scikit-learn
+implementation as it makes the example too long to run.</p>
 <img alt="../_images/sphx_glr_plot_finance_path_001.png" class="align-center" src="../_images/sphx_glr_plot_finance_path_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="ne">Warning</span><span class="p">:</span> <span class="n">this</span> <span class="n">example</span> <span class="n">may</span> <span class="n">take</span> <span class="n">more</span> <span class="n">than</span> <span class="mi">10</span> <span class="n">minutes</span> <span class="n">to</span> <span class="n">run</span>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="o">***</span> <span class="ne">Warning</span><span class="p">:</span> <span class="n">this</span> <span class="n">example</span> <span class="n">may</span> <span class="n">take</span> <span class="n">more</span> <span class="n">than</span> <span class="mi">10</span> <span class="n">minutes</span> <span class="n">to</span> <span class="n">run</span> <span class="o">***</span>
 <span class="n">Loading</span> <span class="n">data</span><span class="o">...</span>
 <span class="n">Starting</span> <span class="n">path</span> <span class="n">computation</span><span class="o">...</span>
 </pre></div>
@@ -129,10 +132,10 @@
 <div class="line"><br /></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-
 
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
 
@@ -142,17 +145,19 @@
 
 <span class="k">print</span><span class="p">(</span><span class="n">__doc__</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Warning: this example may take more than 10 minutes to run&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data...&quot;</span><span class="p">)</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">X</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.load_npz.html#scipy.sparse.load_npz" title="View documentation for scipy.sparse.load_npz"><span class="n">sparse</span><span class="o">.</span><span class="n">load_npz</span></a><span class="p">(</span><span class="s2">&quot;./data/finance_data_preprocessed.npz&quot;</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html#numpy.load" title="View documentation for numpy.load"><span class="n">np</span><span class="o">.</span><span class="n">load</span></a><span class="p">(</span><span class="s2">&quot;./data/finance_target_preprocessed.npy&quot;</span><span class="p">)</span>
-<span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Warning: downloading and preprocessing the Finance dataset.&quot;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;This may take several minutes&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;*** Warning: this example may take more than 10 minutes to run ***&quot;</span><span class="p">)</span>
+
+<span class="n">X_fname</span> <span class="o">=</span> <span class="s2">&quot;./data/finance_data_preprocessed.npz&quot;</span>
+<span class="n">y_fname</span> <span class="o">=</span> <span class="s2">&quot;./data/finance_target_preprocessed.npy&quot;</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">X_fname</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Downloading and preprocessing the Finance dataset...&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;*** Warning: This may take several minutes ***&quot;</span><span class="p">)</span>
     <span class="n">download_preprocess_finance</span><span class="p">()</span>
-    <span class="n">X</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.load_npz.html#scipy.sparse.load_npz" title="View documentation for scipy.sparse.load_npz"><span class="n">sparse</span><span class="o">.</span><span class="n">load_npz</span></a><span class="p">(</span><span class="s2">&quot;./data/finance_data_preprocessed.npz&quot;</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html#numpy.load" title="View documentation for numpy.load"><span class="n">np</span><span class="o">.</span><span class="n">load</span></a><span class="p">(</span><span class="s2">&quot;./data/finance_target_preprocessed.npy&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data...&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.load_npz.html#scipy.sparse.load_npz" title="View documentation for scipy.sparse.load_npz"><span class="n">sparse</span><span class="o">.</span><span class="n">load_npz</span></a><span class="p">(</span><span class="n">X_fname</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html#numpy.load" title="View documentation for numpy.load"><span class="n">np</span><span class="o">.</span><span class="n">load</span></a><span class="p">(</span><span class="n">y_fname</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Starting path computation...&quot;</span><span class="p">)</span>
 <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -164,19 +169,19 @@
 <span class="n">alphas</span> <span class="o">=</span> <span class="n">alpha_max</span> <span class="o">*</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.logspace.html#numpy.logspace" title="View documentation for numpy.logspace"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_alphas</span><span class="p">)</span>
 
 <span class="n">gap_freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">prune</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">prune</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">verbose_inner</span> <span class="o">=</span> <span class="mi">0</span>
 
-<span class="c1"># tols = [1e-2, 1e-4]</span>
 <span class="n">tols</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">]</span>
 <span class="n">results</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tols</span><span class="p">)])</span>
 <span class="k">for</span> <span class="n">tol_ix</span><span class="p">,</span> <span class="n">tol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tols</span><span class="p">):</span>
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">res</span> <span class="o">=</span> <a href="../generated/celer.celer_path.html#celer.celer_path" title="View documentation for celer.celer_path"><span class="n">celer_path</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">gap_freq</span><span class="o">=</span><span class="n">gap_freq</span><span class="p">,</span>
-                     <span class="n">p0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose_inner</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                     <span class="n">p0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">verbose_inner</span><span class="o">=</span><span class="n">verbose_inner</span><span class="p">,</span>
                      <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">prune</span><span class="o">=</span><span class="n">prune</span><span class="p">,</span> <span class="n">return_thetas</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">gaps</span><span class="p">,</span> <span class="n">thetas</span> <span class="o">=</span> <span class="n">res</span>
-    <span class="n">betas</span> <span class="o">=</span> <span class="n">coefs</span><span class="o">.</span><span class="n">T</span>
 
 <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">r&quot;\sc{Celer}&quot;</span><span class="p">]</span>
 <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
@@ -184,7 +189,7 @@
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 3 minutes  57.466 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 4 minutes  45.420 seconds)</p>
 <div class="sphx-glr-footer container">
 <div class="sphx-glr-download container">
 <a class="reference download internal" href="../_downloads/plot_finance_path.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_finance_path.py</span></code></a></div>

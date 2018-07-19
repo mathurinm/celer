@@ -34,6 +34,10 @@ To check if everything worked fine, you can do::
 
 and it should not give any error message.
 
+From a Python shell you can just do::
+
+    >>> import celer
+
 If you don't want to use Anaconda, the list of packages you need to install is in the `environment.yml` file.
 
 Cite

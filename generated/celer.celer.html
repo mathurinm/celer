@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.celer &#8212; celer 0.1.dev0 documentation</title>
+    <title>celer.celer &#8212; celer 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1.dev0',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -121,10 +121,10 @@
 <h1>celer.celer<a class="headerlink" href="#celer-celer" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer">
-<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>beta_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=1</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>w_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Lasso solution with the Celer algorithm.</p>
 <p>The minimized objective function is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">beta</span><span class="o">||</span><span class="n">_2</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">beta</span><span class="o">||</span><span class="n">_1</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||</span><span class="n">_2</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -144,7 +144,7 @@ sparse format (CSC) to avoid unnecessary memory duplication.</p>
 <blockquote>
 <div><p>Value of the Lasso regularization parameter.</p>
 </div></blockquote>
-<p><strong>beta_init</strong> : array-like, shape (n_features,), optional</p>
+<p><strong>w_init</strong> : array-like, shape (n_features,), optional</p>
 <blockquote>
 <div><p>Initial value for the coefficients vector.</p>
 </div></blockquote>
@@ -184,7 +184,7 @@ below <code class="docutils literal"><span class="pre">tol</span></code> or the 
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>beta</strong> : array, shape (n_features,)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>w</strong> : array, shape (n_features,)</p>
 <blockquote>
 <div><p>Estimated coefficient vector.</p>
 </div></blockquote>

@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.Lasso &#8212; celer 0.1.dev0 documentation</title>
+    <title>celer.Lasso &#8212; celer 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1.dev0',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -48,7 +48,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -120,10 +120,10 @@
 <h1>celer.Lasso<a class="headerlink" href="#celer-lasso" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.Lasso">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>fit_intercept=True</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lasso scikit-learn estimator based on Celer solver</p>
 <p>The optimization objective for Lasso is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">beta</span><span class="o">||^</span><span class="mi">2</span><span class="n">_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">beta</span><span class="o">||</span><span class="n">_1</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2</span><span class="n">_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -185,8 +185,8 @@ reached.</p>
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id1">[R11]</a></td><td>M. Massias, A. Gramfort, J. Salmon
-“Celer: Dual Extrapolation for Faster Lasso Solvers”, ArXiv preprint,
-2018, <a class="reference external" href="https://arxiv.org/abs/1802.07481">https://arxiv.org/abs/1802.07481</a></td></tr>
+“Celer: Dual Extrapolation for Faster Lasso Solvers”, ICML 2018,
+<a class="reference external" href="https://arxiv.org/abs/1802.07481">https://arxiv.org/abs/1802.07481</a></td></tr>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
@@ -220,7 +220,7 @@ reached.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>coef_</strong></td>
-<td>(array, shape (n_features,)) parameter vector (beta in the cost function formula)</td>
+<td>(array, shape (n_features,)) parameter vector (w in the cost function formula)</td>
 </tr>
 <tr class="row-even"><td><strong>intercept_</strong></td>
 <td>(float) constant term in decision function.</td>
@@ -232,7 +232,7 @@ reached.</p>
 </table>
 <dl class="method">
 <dt id="celer.Lasso.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>fit_intercept=True</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
