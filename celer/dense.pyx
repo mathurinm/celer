@@ -260,24 +260,13 @@ def celer_dense(floating[::1, :] X,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef int inner_solver_dense(int n_samples, int n_features, int ws_size,
-                   floating[::1, :] X,
-                   floating[:] y,
-                   floating alpha,
-                   floating[:] w,
-                   floating[:] R,
-                   int[:] C,
-                   floating[:] theta,
-                   floating[:] invnorm_Xcols_2,
-                   floating[:] alpha_invnorm_Xcols_2,
-                   floating norm_y2,
-                   floating eps,
-                   int max_epochs,
-                   int gap_freq,
-                   int verbose=0,
-                   int K=6,
-                   int use_accel=1,
-                   ):
+cpdef int inner_solver_dense(
+    int n_samples, int n_features, int ws_size,  floating[::1, :] X,
+    floating[:] y, floating alpha, floating[:] w, floating[:] R,
+    int[:] C, floating[:] theta, floating[:] invnorm_Xcols_2,
+    floating[:] alpha_invnorm_Xcols_2, floating norm_y2, floating eps,
+    int max_epochs, int gap_freq, int verbose=0, int K=6,
+    int use_accel=1):
     if floating is double:
         dtype = np.float64
     else:
