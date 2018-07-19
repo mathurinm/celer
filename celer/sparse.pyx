@@ -81,8 +81,8 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
 @cython.wraparound(False)
 @cython.cdivision(True)
 def celer_sparse(
-    floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating[:] y, floating alpha, floating[:] w_init, int max_iter,
+    floating[:] X_data, int[:] X_indices, int[:] X_indptr, X_mean,
+    floating[:] y, floating alpha,  floating[:] w_init, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
     int verbose_inner=0, int use_accel=1,  int return_ws_size=0,
@@ -113,18 +113,43 @@ def celer_sparse(
     cdef floating highest_d_obj
     cdef floating scal
     cdef floating gap
+    cdef bint center = False
+    cdef floating X_mean_j
+    # cdef floating normalize_sum = 0.0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
+    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
 
-    # compute norms_X_col
+    # center = X_mean.any()
+    for j in range(n_features):
+        if X_mean[j]:
+            center = True
+            break
+
+    # compute norms_X_col and R
+    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
     for j in range(n_features):
         w[j] = w_init[j]
         startptr = X_indptr[j]
         endptr = X_indptr[j + 1]
+        X_mean_j = X_mean[j]
         tmp = 0.
         for i in range(startptr, endptr):
-            tmp += X_data[i] ** 2
+            tmp += (X_data[i] - X_mean_j) ** 2
+        tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
         norms_X_col[j] = sqrt(tmp)
+
+        # R -= np.dot(X[:, j], w)
+        if w[j] == 0.:
+            continue
+        else:
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            for i in range(startptr, endptr):
+                R[X_indices[i]] -= w[j] * X_data[i]
+        if center:
+            for i in range(n_samples):
+                R[i] += X_mean_j * w[j]
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
@@ -141,18 +166,6 @@ def celer_sparse(
 
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
-
-    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
-    # R = y - np.dot(X, w)
-    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
-    for j in range(n_features):
-        if w[j] == 0.:
-            continue
-        else:
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            for i in range(startptr, endptr):
-                R[X_indices[i]] -= w[j] * X_data[i]
 
     for t in range(max_iter):
         # theta = R / (alpha * n_samples)
@@ -306,6 +319,7 @@ cpdef int inner_solver_sparse(
     cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
     # at first d_obj computation. highest_d_obj corresponds to theta = 0.
     cdef floating tmp
+    cdef floating R_sum
     # acceleration variables:
     cdef floating[:, :] last_K_res = np.empty([K, n_samples], dtype=dtype)
     cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
@@ -435,18 +449,27 @@ cpdef int inner_solver_sparse(
             # update feature k in place, cyclically
             j = C[k]
             old_w_j = w[j]
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
+            X_mean_j = X_mean[j]
+            startptr, endptr = X_indptr[j], X_indptr[j + 1]
             for i in range(startptr, endptr):
                 w[j] += R[X_indices[i]] * X_data[i] / norms_X_col[j] ** 2
+            if center:
+                R_sum = 0.
+                for i in range(n_samples):
+                    R_sum += R[i]
+                w[j] -= R_sum * X_mean_j / norms_X_col[j] ** 2
+
             # perform ST in place:
             w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
-            tmp = w[j] - old_w_j
 
-            # R -= (w_j - old_w_j) * X[:, j]
+            # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
+            tmp = w[j] - old_w_j
             if tmp != 0.:
                 for i in range(startptr, endptr):
                     R[X_indices[i]] -= tmp *  X_data[i]
+                if center:
+                    for i in range(n_samples):
+                        R[i] += X_mean_j * tmp
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))

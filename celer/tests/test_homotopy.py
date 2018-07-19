@@ -69,6 +69,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
 
 
 @pytest.mark.parametrize("sparse_X", [False, True])
+# @pytest.mark.parametrize("sparse_X", [False])
 def test_dropin_LassoCV(sparse_X):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
@@ -91,6 +92,7 @@ def test_dropin_LassoCV(sparse_X):
 
 
 @pytest.mark.parametrize("sparse_X", [False, True])
+# @pytest.mark.parametrize("sparse_X", [False])
 def test_dropin_lasso(sparse_X):
     """Test that our Lasso class behaves as sklearn's Lasso."""
     X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
