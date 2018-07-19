@@ -82,12 +82,12 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
 @cython.cdivision(True)
 def celer_sparse(
     floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating[:] y, floating alpha,  floating[:] w_init, int max_iter,
+    floating[:] y, floating alpha, floating[:] w_init, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
     int verbose_inner=0, int use_accel=1,  int return_ws_size=0,
     int prune=0):
-    
+
     if floating is double:
         dtype = np.float64
     else:

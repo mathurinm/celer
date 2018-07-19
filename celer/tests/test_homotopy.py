@@ -11,7 +11,7 @@ from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
 
-from celer import celer_path
+from celer import celer_path, celer
 from celer.dropin_sklearn import Lasso, LassoCV
 
 
@@ -105,3 +105,14 @@ def test_dropin_lasso(sparse_X):
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
 
     check_estimator(Lasso)
+
+
+def test_celer_single_alpha():
+    X, y, _, _ = build_dataset(n_samples=20, n_features=100)
+    alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+
+    tol = 1e-6
+    w, theta, gaps, times = celer(X, y, alpha_max / 10., tol=tol)
+    np.testing.assert_array_less(gaps[-1], tol)
+    np.testing.assert_equal(w.shape[0], X.shape[1])
+    np.testing.assert_equal(theta.shape[0], X.shape[0])
