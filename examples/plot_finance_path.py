@@ -61,7 +61,6 @@ for tol_ix, tol in enumerate(tols):
                      tol=tol, prune=prune, return_thetas=True)
     results[0, tol_ix] = time.time() - t0
     _, coefs, gaps, thetas = res
-    betas = coefs.T
 
 labels = [r"\sc{Celer}"]
 figsize = (7, 4)

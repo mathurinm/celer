@@ -13,7 +13,7 @@ from .sparse import celer_sparse
 from .dense import celer_dense
 
 
-def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
+def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
           tol=1e-6, prune=0):
     """
@@ -21,7 +21,7 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
 
     The minimized objective function is::
 
-        ||y - X beta||_2^2 / (2 * n_samples) + alpha * ||beta||_1
+        ||y - X w||_2^2 / (2 * n_samples) + alpha * ||w||_1
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
     alpha : float
         Value of the Lasso regularization parameter.
 
-    beta_init : array-like, shape (n_features,), optional
+    w_init : array-like, shape (n_features,), optional
         Initial value for the coefficients vector.
 
     max_iter : int, optional
@@ -66,7 +66,7 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
 
     Returns
     -------
-    beta : array, shape (n_features,)
+    w : array, shape (n_features,)
         Estimated coefficient vector.
 
     theta : array, shape (n_samples,)
@@ -89,19 +89,19 @@ def celer(X, y, alpha, beta_init=None, max_iter=100, gap_freq=10,
             X.sort_indices()
 
     n_features = X.shape[1]
-    if beta_init is None:
-        beta_init = np.zeros(n_features)
+    if w_init is None:
+        w_init = np.zeros(n_features)
 
     if data_is_sparse:
         sol = celer_sparse(X.data, X.indices, X.indptr, y, alpha,
-                           beta_init, max_iter=max_iter, gap_freq=gap_freq,
+                           w_init, max_iter=max_iter, gap_freq=gap_freq,
                            max_epochs=max_epochs, p0=p0,
                            verbose=verbose,
                            verbose_inner=verbose_inner,
                            use_accel=1, tol=tol, prune=prune)
     else:
         sol = celer_dense(X, y, alpha,
-                          beta_init, max_iter=max_iter, gap_freq=gap_freq,
+                          w_init, max_iter=max_iter, gap_freq=gap_freq,
                           max_epochs=max_epochs, p0=p0,
                           verbose=verbose,
                           verbose_inner=verbose_inner,

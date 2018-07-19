@@ -85,7 +85,7 @@ def celer_sparse(floating[:] X_data,
                int[:] X_indptr,
                floating[:] y,
                floating alpha,
-               floating[:] beta_init,
+               floating[:] w_init,
                int max_iter,
                int max_epochs,
                int gap_freq=10,
@@ -104,7 +104,7 @@ def celer_sparse(floating[:] X_data,
     else:
         dtype = np.float32
 
-    cdef int n_features = beta_init.shape[0]
+    cdef int n_features = w_init.shape[0]
     cdef floating t0 = time.time()
     if p0 > n_features:
         p0 = n_features
@@ -112,7 +112,7 @@ def celer_sparse(floating[:] X_data,
     cdef int startptr, endptr
 
     cdef int n_samples = y.shape[0]
-    cdef floating[:] beta = np.empty(n_features, dtype=dtype)
+    cdef floating[:] w = np.empty(n_features, dtype=dtype)
     cdef int j  # features
     cdef int i  # samples
     cdef int t  # outer loop
@@ -141,7 +141,7 @@ def celer_sparse(floating[:] X_data,
     cdef floating[:] alpha_invnorm_Xcols_2 = np.empty(n_features, dtype=dtype)
 
     for j in range(n_features):
-        beta[j] = beta_init[j]
+        w[j] = w_init[j]
         invnorm_Xcols_2[j] = 1. / norms_X_col[j] ** 2
         alpha_invnorm_Xcols_2[j] = alpha * invnorm_Xcols_2[j]
 
@@ -160,16 +160,16 @@ def celer_sparse(floating[:] X_data,
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
-    # R = y - np.dot(X, beta)
+    # R = y - np.dot(X, w)
     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
     for j in range(n_features):
-        if beta[j] == 0.:
+        if w[j] == 0.:
             continue
         else:
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
             for i in range(startptr, endptr):
-                R[X_indices[i]] -= beta[j] * X_data[i]
+                R[X_indices[i]] -= w[j] * X_data[i]
 
     for t in range(max_iter):
         # theta = R / (alpha * n_samples)
@@ -208,7 +208,7 @@ def celer_sparse(floating[:] X_data,
             highest_d_obj = d_obj
             # TODO implement a best_theta
 
-        p_obj = primal_value(alpha, n_samples, &R[0], n_features, &beta[0])
+        p_obj = primal_value(alpha, n_samples, &R[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
         gaps[t] = gap
         times[t] = time.time() - t0
@@ -231,7 +231,7 @@ def celer_sparse(floating[:] X_data,
         if prune:
             ws_size = 0
             for j in range(n_features):
-                if beta[j] != 0:
+                if w[j] != 0:
                     prios[j] = -1.
                     ws_size += 1
 
@@ -242,7 +242,7 @@ def celer_sparse(floating[:] X_data,
 
         else:
             for j in range(n_features):
-                if beta[j] != 0:
+                if w[j] != 0:
                     prios[j] = - 1
             if t == 0:
                 ws_size = p0
@@ -269,21 +269,21 @@ def celer_sparse(floating[:] X_data,
 
         if verbose:
             print("Solving subproblem with %d constraints" % len(C))
-        # calling inner solver which will modify beta and R inplace
+        # calling inner solver which will modify w and R inplace
         epochs[t] = inner_solver_sparse(
             n_samples, n_features, ws_size, X_data, X_indices, X_indptr,
-            y, alpha, beta, R, C, theta_inner, invnorm_Xcols_2,
+            y, alpha, w, R, C, theta_inner, invnorm_Xcols_2,
             alpha_invnorm_Xcols_2,
             norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel)
 
     if return_ws_size:
-        return (np.asarray(beta), np.asarray(theta),
+        return (np.asarray(w), np.asarray(theta),
                 np.asarray(gaps[:t + 1]), np.asarray(times[:t + 1]),
                 np.asarray(ws_sizes[:t + 1]))
 
-    return (np.asarray(beta), np.asarray(theta),
+    return (np.asarray(w), np.asarray(theta),
             np.asarray(gaps[:t + 1]), np.asarray(times[:t + 1]))
 
 
@@ -296,7 +296,7 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
                    int[:] X_indptr,
                    floating[:] y,
                    floating alpha,
-                   floating[:] beta,
+                   floating[:] w,
                    floating[:] R,
                    int[:] C,
                    floating[:] theta,
@@ -322,8 +322,8 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     cdef int j  # to iterate over features
     cdef int k
     cdef int epoch
-    cdef floating old_beta_j
-    cdef floating beta_Cj
+    cdef floating old_w_j
+    cdef floating w_Cj
     cdef int inc = 1
     # gap related:
     cdef floating gap
@@ -355,14 +355,14 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
     # for i in range(n_samples):
     #     R[i] = y[i]
     # for j in range(ws_size):
-    #     beta_Cj = beta[C[j]]
-    #     if beta_Cj == 0.:
+    #     w_Cj = w[C[j]]
+    #     if w_Cj == 0.:
     #         continue
     #     else:
     #         startptr = X_indptr[C[j]]
     #         endptr = X_indptr[C[j] + 1]
     #         for i in range(startptr, endptr):
-    #             R[X_indices[i]] -= beta_Cj * X_data[i]
+    #             R[X_indices[i]] -= w_Cj * X_data[i]
 
 
     for epoch in range(max_epochs):
@@ -459,9 +459,9 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
             # CAUTION: I have not yet written the code to include a best_theta.
             # This is of no consequence as long as screening is not performed. Otherwise dgap and theta might disagree.
 
-            # we pass full beta and will ignore zero values
+            # we pass full w and will ignore zero values
             gap = primal_value(alpha, n_samples, &R[0], n_features,
-                               &beta[0]) - highest_d_obj
+                               &w[0]) - highest_d_obj
             gaps[epoch / gap_freq] = gap
 
             if verbose:
@@ -476,16 +476,16 @@ cpdef int inner_solver_sparse(int n_samples, int n_features, int ws_size,
         for k in range(ws_size):
             # update feature k in place, cyclically
             j = C[k]
-            old_beta_j = beta[j]
+            old_w_j = w[j]
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
             for i in range(startptr, endptr):
-                beta[j] += R[X_indices[i]] * X_data[i] * invnorm_Xcols_2[j]
+                w[j] += R[X_indices[i]] * X_data[i] * invnorm_Xcols_2[j]
             # perform ST in place:
-            beta[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, beta[j])
-            tmp = beta[j] - old_beta_j
+            w[j] = ST(alpha_invnorm_Xcols_2[j] * n_samples, w[j])
+            tmp = w[j] - old_w_j
 
-            # R -= (beta_j - old_beta_j) * X[:, j]
+            # R -= (w_j - old_w_j) * X[:, j]
             if tmp != 0.:
                 for i in range(startptr, endptr):
                     R[X_indices[i]] -= tmp *  X_data[i]
