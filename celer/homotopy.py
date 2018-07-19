@@ -13,10 +13,11 @@ from .sparse import celer_sparse
 from .dense import celer_dense
 
 
-def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
+def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
+               coef_init=None, max_iter=20,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
                verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               monitor=False, coef_init=None):
+               monitor=False, X_offset=None, X_scale=None):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -68,6 +69,10 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
 
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
+
+    X_offset : TODO
+
+    X_scale: TODO
 
     Returns
     -------

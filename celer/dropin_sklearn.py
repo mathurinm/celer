@@ -128,7 +128,8 @@ class Lasso(Lasso_sklearn):
         alphas, coefs, dual_gaps = celer_path(
             X, y, alphas=alphas, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, tol=self.tol, prune=self.prune)
+            verbose=self.verbose, tol=self.tol, prune=self.prune,
+            fit_intercept=self.fit_intercept)
         return (alphas, coefs, dual_gaps, [1])
 
 
