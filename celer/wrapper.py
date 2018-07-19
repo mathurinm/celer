@@ -4,11 +4,12 @@
 # License: BSD 3 clause
 
 import numpy as np
-import warnings
+# import warnings
 
-from sklearn.exceptions import ConvergenceWarning
+# from sklearn.exceptions import ConvergenceWarning
 
 from .homotopy import celer_path
+
 
 def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
@@ -77,7 +78,7 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     """
 
     alphas, coefs, _, thetas, all_gaps, all_times = celer_path(
-        X, y, alphas=np.array(alpha), coef_init=w_init, gap_freq=gap_freq,
+        X, y, alphas=np.array([alpha]), coef_init=w_init, gap_freq=gap_freq,
         max_epochs=max_epochs, p0=p0, verbose=verbose,
         verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
         monitor=True)
