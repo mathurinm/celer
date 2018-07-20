@@ -101,7 +101,8 @@ def test_dropin_lasso(sparse_X, fit_intercept):
 
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     alpha = alpha_max / 2.
-    params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10)
+    params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
+                  normalize=True)
     clf = Lasso(**params)
     clf.fit(X, y)
 
