@@ -72,9 +72,13 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
-    X_offset : TODO
+    X_offset : np.array, shape (n_features,), optional
+        Used to center sparse X without breaking sparsity. Mean of each column.
+        See sklearn.linear_model.base._preprocess_data().
 
-    X_scale: TODO
+    X_scale: np.array, shape (n_features,), optional
+        Used to scale centered sparse X without breaking sparsity. Norm of each
+        centered column. See sklearn.linear_model.base._preprocess_data().
 
     Returns
     -------

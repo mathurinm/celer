@@ -95,7 +95,7 @@ class Lasso(Lasso_sklearn):
     p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
     [0.85 0.  ]
-    >>> print(clf.intercept)
+    >>> print(clf.intercept_)
     0.15
 
     See also

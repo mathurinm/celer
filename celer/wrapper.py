@@ -4,16 +4,13 @@
 # License: BSD 3 clause
 
 import numpy as np
-# import warnings
-
-# from sklearn.exceptions import ConvergenceWarning
 
 from .homotopy import celer_path
 
 
 def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
-          tol=1e-6, prune=0, fit_intercept=False):
+          tol=1e-6, prune=0):
     """
     Compute the Lasso solution with the Celer algorithm.
 
@@ -62,9 +59,6 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     prune : (0, 1), optional
         Whether or not to use pruning when growing the working sets.
 
-    fit_intercept : bool, optional
-        Whether or not to fit an intercept.
-
     Returns
     -------
     w : array, shape (n_features,)
@@ -90,13 +84,5 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     theta = thetas[0]
     gaps = all_gaps[0]
     times = all_times[0]
-
-    # if final_gap > tol:
-    #     warnings.warn('Objective did not converge.' +
-    #                   ' You might want' +
-    #                   ' to increase the number of iterations.' +
-    #                   ' Fitting data with very small alpha' +
-    #                   ' may cause precision problems.',
-    #                   ConvergenceWarning)
 
     return w, theta, gaps, times

@@ -71,7 +71,6 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
 
 @pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
                                                             [False, True]))
-# @pytest.mark.parametrize("sparse_X", [False])
 def test_dropin_LassoCV(sparse_X, fit_intercept):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
@@ -96,7 +95,6 @@ def test_dropin_LassoCV(sparse_X, fit_intercept):
 
 @pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
                                                             [False, True]))
-# @pytest.mark.parametrize("sparse_X", [False])
 def test_dropin_lasso(sparse_X, fit_intercept):
     """Test that our Lasso class behaves as sklearn's Lasso."""
     X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
@@ -110,6 +108,8 @@ def test_dropin_lasso(sparse_X, fit_intercept):
     clf2 = sklearn_Lasso(**params)
     clf2.fit(X, y)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
+    if fit_intercept:
+        np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
     check_estimator(Lasso)
 
