@@ -6,6 +6,7 @@
 import numpy as np
 import pytest
 
+from itertools import product
 from scipy import sparse
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
@@ -68,12 +69,14 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05, atol=1e-6)
 
 
-@pytest.mark.parametrize("sparse_X", [False, True])
+@pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
+                                                            [False, True]))
 # @pytest.mark.parametrize("sparse_X", [False])
-def test_dropin_LassoCV(sparse_X):
+def test_dropin_LassoCV(sparse_X, fit_intercept):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
-    params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2)
+    params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
+                  fit_intercept=fit_intercept)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
@@ -91,18 +94,20 @@ def test_dropin_LassoCV(sparse_X):
     check_estimator(LassoCV)
 
 
-@pytest.mark.parametrize("sparse_X", [False, True])
+@pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
+                                                            [False, True]))
 # @pytest.mark.parametrize("sparse_X", [False])
-def test_dropin_lasso(sparse_X):
+def test_dropin_lasso(sparse_X, fit_intercept):
     """Test that our Lasso class behaves as sklearn's Lasso."""
     X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
 
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     alpha = alpha_max / 2.
-    clf = Lasso(alpha=alpha)
+    params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10)
+    clf = Lasso(**params)
     clf.fit(X, y)
 
-    clf2 = sklearn_Lasso(alpha=alpha)
+    clf2 = sklearn_Lasso(**params)
     clf2.fit(X, y)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
 
