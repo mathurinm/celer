@@ -68,8 +68,13 @@ class Lasso(Lasso_sklearn):
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
 
-    fit_intercept : bool
+    fit_intercept : bool, optional, default True
         Whether or not to fit an intercept.
+
+    normalize : bool, optional, default False
+        This parameter is ignored when ``fit_intercept`` is set to False.
+        If True,  the regressors X will be normalized before regression by
+        subtracting the mean and dividing by the l2-norm.
 
     Attributes
     ----------
@@ -95,7 +100,7 @@ class Lasso(Lasso_sklearn):
     p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
     [0.85 0.  ]
-    >>> print(clf.intercept)
+    >>> print(clf.intercept_)
     0.15
 
     See also
@@ -112,10 +117,10 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
-                 fit_intercept=True):
+                 fit_intercept=True, normalize=True):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept)
+            fit_intercept=fit_intercept, normalize=normalize)
         self.verbose = verbose
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
@@ -128,7 +133,9 @@ class Lasso(Lasso_sklearn):
         alphas, coefs, dual_gaps = celer_path(
             X, y, alphas=alphas, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, tol=self.tol, prune=self.prune)
+            verbose=self.verbose, tol=self.tol, prune=self.prune,
+            X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps, [1])
 
 
@@ -158,6 +165,11 @@ class LassoCV(LassoCV_sklearn):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
+
+    normalize : bool, optional, default False
+        This parameter is ignored when ``fit_intercept`` is set to False.
+        If True,  the regressors X will be normalized before regression by
+        subtracting the mean and dividing by the l2-norm.
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions).
@@ -217,7 +229,8 @@ class LassoCV(LassoCV_sklearn):
                  normalize=False, precompute='auto'):
         super(LassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
-            tol=tol, cv=cv, fit_intercept=fit_intercept, verbose=verbose)
+            tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
+             verbose=verbose)
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
@@ -229,5 +242,7 @@ class LassoCV(LassoCV_sklearn):
         alphas, coefs, dual_gaps = celer_path(
             X, y, alphas=alphas, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, tol=self.tol, prune=self.prune)
+            verbose=self.verbose, tol=self.tol, prune=self.prune,
+            X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps)

@@ -4,19 +4,22 @@
 # License: BSD 3 clause
 
 import time
+import warnings
 import numpy as np
 
 from scipy import sparse
 from sklearn.utils import check_array
+from sklearn.exceptions import ConvergenceWarning
 
 from .sparse import celer_sparse
 from .dense import celer_dense
 
 
-def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
+def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
+               coef_init=None, max_iter=20,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
                verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               monitor=False, coef_init=None):
+               monitor=False, X_offset=None, X_scale=None):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -69,6 +72,14 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
+    X_offset : np.array, shape (n_features,), optional
+        Used to center sparse X without breaking sparsity. Mean of each column.
+        See sklearn.linear_model.base._preprocess_data().
+
+    X_scale: np.array, shape (n_features,), optional
+        Used to scale centered sparse X without breaking sparsity. Norm of each
+        centered column. See sklearn.linear_model.base._preprocess_data().
+
     Returns
     -------
     alphas : array, shape (n,_alphas,)
@@ -85,13 +96,22 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         (Is returned only when ``return_thetas`` is set to True).
     """
     data_is_sparse = sparse.issparse(X)
-
+    # Contrary to sklearn we always check input
     X = check_array(X, 'csc', dtype=[np.float64, np.float32],
                     order='F', copy=False)
     y = check_array(y, 'csc', dtype=X.dtype.type, order='F', copy=False,
                     ensure_2d=False)
 
     n_samples, n_features = X.shape
+
+    if X_offset is not None:
+        # As sparse matrices are not actually centered we need this
+        # to be passed to the CD solver.
+        X_sparse_scaling = X_offset / X_scale
+        X_sparse_scaling = np.asarray(X_sparse_scaling, dtype=X.dtype)
+    else:
+        X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
+
     if alphas is None:
         alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
         alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas,
@@ -129,7 +149,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         t0 = time.time()
         if data_is_sparse:
             sol = celer_sparse(
-                X.data, X.indices, X.indptr, y, alpha, w_init,
+                X.data, X.indices, X.indptr, X_sparse_scaling, y, alpha,
+                w_init,
                 max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
                 p0=p0, verbose=verbose, verbose_inner=verbose_inner,
                 use_accel=1, tol=tol, prune=prune)
@@ -144,6 +165,14 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None, max_iter=20,
         if monitor:
             gaps_per_alpha.append(sol[2])
             times_per_alpha.append(sol[3])
+
+        if dual_gaps[t] > tol:
+            warnings.warn('Objective did not converge.' +
+                          ' You might want' +
+                          ' to increase the number of iterations.' +
+                          ' Fitting data with very small alpha' +
+                          ' may cause precision problems.',
+                          ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps
     if return_thetas:

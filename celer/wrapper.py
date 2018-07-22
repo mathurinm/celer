@@ -4,9 +4,6 @@
 # License: BSD 3 clause
 
 import numpy as np
-# import warnings
-
-# from sklearn.exceptions import ConvergenceWarning
 
 from .homotopy import celer_path
 
@@ -87,13 +84,5 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     theta = thetas[0]
     gaps = all_gaps[0]
     times = all_times[0]
-
-    # if final_gap > tol:
-    #     warnings.warn('Objective did not converge.' +
-    #                   ' You might want' +
-    #                   ' to increase the number of iterations.' +
-    #                   ' Fitting data with very small alpha' +
-    #                   ' may cause precision problems.',
-    #                   ConvergenceWarning)
 
     return w, theta, gaps, times
