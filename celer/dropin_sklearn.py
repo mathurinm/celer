@@ -71,7 +71,7 @@ class Lasso(Lasso_sklearn):
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    normalize : bool, optional (default=True)
+    normalize : bool, optional (default=False)
         This parameter is ignored when ``fit_intercept`` is set to False.
         If True,  the regressors X will be normalized before regression by
         subtracting the mean and dividing by the l2-norm.
@@ -117,7 +117,7 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
-                 fit_intercept=True, normalize=True):
+                 fit_intercept=True, normalize=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, normalize=normalize)
@@ -166,7 +166,7 @@ class LassoCV(LassoCV_sklearn):
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
 
-    normalize : bool, optional, default False
+    normalize : bool, optional (default=False)
         This parameter is ignored when ``fit_intercept`` is set to False.
         If True,  the regressors X will be normalized before regression by
         subtracting the mean and dividing by the l2-norm.
@@ -238,7 +238,7 @@ class LassoCV(LassoCV_sklearn):
     """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
-                 fit_intercept=True, normalize=True, max_iter=100,
+                 fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, gap_freq=10,
                  max_epochs=50000, p0=10, prune=0, precompute='auto'):
         super(LassoCV, self).__init__(
