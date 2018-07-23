@@ -28,6 +28,7 @@
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="celer.LassoCV" href="celer.LassoCV.html" />
     <link rel="prev" title="celer.celer_path" href="celer.celer_path.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -120,7 +121,7 @@
 <h1>celer.Lasso<a class="headerlink" href="#celer-lasso" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.Lasso">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lasso scikit-learn estimator based on Celer solver</p>
 <p>The optimization objective for Lasso is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2</span><span class="n">_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
@@ -130,48 +131,46 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>alpha</strong> : float, optional</p>
-<blockquote>
-<div><p>Constant that multiplies the L1 term. Defaults to 1.0.
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Constant that multiplies the L1 term. Defaults to 1.0.
 <code class="docutils literal"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> is equivalent to an ordinary least square.
 For numerical reasons, using <code class="docutils literal"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> with the
 <code class="docutils literal"><span class="pre">Lasso</span></code> object is not advised.</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int, optional</p>
-<blockquote>
-<div><p>The maximum number of iterations (subproblem definitions)</p>
-</div></blockquote>
-<p><strong>gap_freq</strong> : int</p>
-<blockquote>
-<div><p>Number of coordinate descent epochs between each duality gap
+</dd>
+<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The maximum number of iterations (subproblem definitions)</p>
+</dd>
+<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of coordinate descent epochs between each duality gap
 computations.</p>
-</div></blockquote>
-<p><strong>max_epochs</strong> : int</p>
-<blockquote>
-<div><p>Maximum number of CD epochs on each subproblem.</p>
-</div></blockquote>
-<p><strong>p0</strong> : int</p>
-<blockquote>
-<div><p>First working set size.</p>
-</div></blockquote>
-<p><strong>tol</strong> : float, optional</p>
-<blockquote>
-<div><p>The tolerance for the optimization: the solver runs until the duality
+</dd>
+<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Maximum number of CD epochs on each subproblem.</p>
+</dd>
+<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">First working set size.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer</span></dt>
+<dd><p class="first last">Amount of verbosity.</p>
+</dd>
+<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The tolerance for the optimization: the solver runs until the duality
 gap is smaller than <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is
 reached.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool or integer</p>
-<blockquote>
-<div><p>Amount of verbosity.</p>
-</div></blockquote>
-<p><strong>prune</strong> : 0 | 1, optional</p>
-<blockquote>
-<div><p>Whether or not to use pruning when growing working sets.</p>
-</div></blockquote>
-<p><strong>fit_intercept</strong> : bool</p>
-<blockquote class="last">
-<div><p>Whether or not to fit an intercept.</p>
-</div></blockquote>
+</dd>
+<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0 | 1, optional</span></dt>
+<dd><p class="first last">Whether or not to use pruning when growing working sets.</p>
+</dd>
+<dt><strong>fit_intercept</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=True)</span></dt>
+<dd><p class="first last">Whether or not to fit an intercept.</p>
+</dd>
+<dt><strong>normalize</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">This parameter is ignored when <code class="docutils literal"><span class="pre">fit_intercept</span></code> is set to False.
+If True,  the regressors X will be normalized before regression by
+subtracting the mean and dividing by the l2-norm.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -181,10 +180,10 @@ reached.</p>
 <p class="last"><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal"><span class="pre">celer_path</span></code></a>, <a class="reference internal" href="celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV"><code class="xref py py-obj docutils literal"><span class="pre">LassoCV</span></code></a></p>
 </div>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r11" rules="none">
+<table class="docutils citation" frame="void" id="r9848a8cfb00c-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[R11]</a></td><td>M. Massias, A. Gramfort, J. Salmon
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>M. Massias, A. Gramfort, J. Salmon
 “Celer: Dual Extrapolation for Faster Lasso Solvers”, ICML 2018,
 <a class="reference external" href="https://arxiv.org/abs/1802.07481">https://arxiv.org/abs/1802.07481</a></td></tr>
 </tbody>
@@ -197,42 +196,36 @@ reached.</p>
 <span class="go">p0=10, prune=0, tol=1e-06, verbose=0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
 <span class="go">[0.85 0.  ]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">intercept</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">intercept_</span><span class="p">)</span>
 <span class="go">0.15</span>
 </pre></div>
 </div>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">sparse_coef_</span></code></td>
-<td>sparse representation of the fitted <code class="docutils literal"><span class="pre">coef_</span></code></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="15%" />
-<col width="85%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>coef_</strong></td>
-<td>(array, shape (n_features,)) parameter vector (w in the cost function formula)</td>
-</tr>
-<tr class="row-even"><td><strong>intercept_</strong></td>
-<td>(float) constant term in decision function.</td>
-</tr>
-<tr class="row-odd"><td><strong>n_iter_</strong></td>
-<td>(int) number of subproblems solved by celer to reach the specified tolerance.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>coef_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features,)</span></dt>
+<dd><p class="first last">parameter vector (w in the cost function formula)</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal"><span class="pre">sparse_coef_</span></code> <span class="classifier-delimiter">:</span> <span class="classifier">scipy.sparse matrix, shape (n_features, 1)</span></dt>
+<dd><p class="first last">sparse representation of the fitted <code class="docutils literal"><span class="pre">coef_</span></code></p>
+</dd>
+<dt><strong>intercept_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">constant term in decision function.</p>
+</dd>
+<dt><strong>n_iter_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">number of subproblems solved by celer to reach
+the specified tolerance.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="celer.Lasso.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>

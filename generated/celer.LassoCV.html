@@ -28,6 +28,7 @@
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="celer.Lasso" href="celer.Lasso.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -119,7 +120,7 @@
 <h1>celer.LassoCV<a class="headerlink" href="#celer-lassocv" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.LassoCV">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
 <dd><p>LassoCV scikit-learn estimator based on Celer solver</p>
 <p>The best model is selected by cross-validation.</p>
 <p>The optimization objective for Lasso is:</p>
@@ -130,50 +131,64 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>eps</strong> : float, optional</p>
-<blockquote>
-<div><p>Length of the path. <code class="docutils literal"><span class="pre">eps=1e-3</span></code> means that
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>eps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Length of the path. <code class="docutils literal"><span class="pre">eps=1e-3</span></code> means that
 <code class="docutils literal"><span class="pre">alpha_min</span> <span class="pre">/</span> <span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1e-3</span></code>.</p>
-</div></blockquote>
-<p><strong>n_alphas</strong> : int, optional</p>
-<blockquote>
-<div><p>Number of alphas along the regularization path.</p>
-</div></blockquote>
-<p><strong>alphas</strong> : numpy array, optional</p>
-<blockquote>
-<div><p>List of alphas where to compute the models.
+</dd>
+<dt><strong>n_alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of alphas along the regularization path.</p>
+</dd>
+<dt><strong>alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy array, optional</span></dt>
+<dd><p class="first last">List of alphas where to compute the models.
 If <code class="docutils literal"><span class="pre">None</span></code> alphas are set automatically</p>
-</div></blockquote>
-<p><strong>fit_intercept</strong> : boolean, default True</p>
-<blockquote>
-<div><p>whether to calculate the intercept for this model. If set
+</dd>
+<dt><strong>fit_intercept</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default True</span></dt>
+<dd><p class="first last">whether to calculate the intercept for this model. If set
 to false, no intercept will be used in calculations
 (e.g. data is expected to be already centered).</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int, optional</p>
-<blockquote>
-<div><p>The maximum number of iterations (subproblem definitions).</p>
-</div></blockquote>
-<p><strong>tol</strong> : float, optional</p>
-<blockquote>
-<div><p>The tolerance for the optimization: the solver runs until the duality
+</dd>
+<dt><strong>normalize</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">This parameter is ignored when <code class="docutils literal"><span class="pre">fit_intercept</span></code> is set to False.
+If True,  the regressors X will be normalized before regression by
+subtracting the mean and dividing by the l2-norm.</p>
+</dd>
+<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The maximum number of iterations (subproblem definitions).</p>
+</dd>
+<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The tolerance for the optimization: the solver runs until the duality
 gap is smaller than <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is
 reached.</p>
-</div></blockquote>
-<p><strong>cv</strong> : int, cross-validation generator or an iterable, optional</p>
-<blockquote>
-<div><p>Determines the cross-validation splitting strategy.
+</dd>
+<dt><strong>cv</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, cross-validation generator or an iterable, optional</span></dt>
+<dd><p class="first last">Determines the cross-validation splitting strategy.
 Possible inputs for cv are:
 - None, to use the default 3-fold cross-validation,
 - integer, to specify the number of folds.
 - An object to be used as a cross-validation generator.
 - An iterable yielding train/test splits.
 For integer/None inputs, sklearn <cite>KFold</cite> is used.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool or integer</p>
-<blockquote class="last">
-<div><p>Amount of verbosity.</p>
-</div></blockquote>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer</span></dt>
+<dd><p class="first last">Amount of verbosity.</p>
+</dd>
+<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional (default=10)</span></dt>
+<dd><p class="first last">In the inner loop, the duality gap is computed every <cite>gap_freq</cite>
+coordinate descent epochs.</p>
+</dd>
+<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional (default=50000)</span></dt>
+<dd><p class="first last">Maximum number of coordinate descent epochs when solving a subproblem.</p>
+</dd>
+<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional (default=10)</span></dt>
+<dd><p class="first last">Number of features in the first working set.</p>
+</dd>
+<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">Whether to use pruning when growing the working sets.</p>
+</dd>
+<dt><strong>precompute</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ignored parameter, kept for sklearn compatibility.</span></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -182,39 +197,42 @@ For integer/None inputs, sklearn <cite>KFold</cite> is used.</p>
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal"><span class="pre">celer_path</span></code></a>, <a class="reference internal" href="celer.Lasso.html#celer.Lasso" title="celer.Lasso"><code class="xref py py-obj docutils literal"><span class="pre">Lasso</span></code></a></p>
 </div>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="11%" />
-<col width="89%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><strong>alpha_</strong></td>
-<td>(float) The amount of penalization chosen by cross validation</td>
-</tr>
-<tr class="row-even"><td><strong>coef_</strong></td>
-<td>(array, shape (n_features,)) parameter vector (w in the cost function formula)</td>
-</tr>
-<tr class="row-odd"><td><strong>intercept_</strong></td>
-<td>(float) independent term in decision function.</td>
-</tr>
-<tr class="row-even"><td><strong>mse_path_</strong></td>
-<td>(array, shape (n_alphas, n_folds)) mean square error for the test set on each fold, varying alpha</td>
-</tr>
-<tr class="row-odd"><td><strong>alphas_</strong></td>
-<td>(numpy array, shape (n_alphas,)) The grid of alphas used for fitting</td>
-</tr>
-<tr class="row-even"><td><strong>dual_gap_</strong></td>
-<td>(ndarray, shape ()) The dual gap at the end of the optimization for the optimal alpha (<code class="docutils literal"><span class="pre">alpha_</span></code>).</td>
-</tr>
-<tr class="row-odd"><td><strong>n_iter_</strong></td>
-<td>(int) number of iterations run by the coordinate descent solver to reach the specified tolerance for the optimal alpha.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>alpha_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">The amount of penalization chosen by cross validation</p>
+</dd>
+<dt><strong>coef_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features,)</span></dt>
+<dd><p class="first last">parameter vector (w in the cost function formula)</p>
+</dd>
+<dt><strong>intercept_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">independent term in decision function.</p>
+</dd>
+<dt><strong>mse_path_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_alphas, n_folds)</span></dt>
+<dd><p class="first last">mean square error for the test set on each fold, varying alpha</p>
+</dd>
+<dt><strong>alphas_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy array, shape (n_alphas,)</span></dt>
+<dd><p class="first last">The grid of alphas used for fitting</p>
+</dd>
+<dt><strong>dual_gap_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, shape ()</span></dt>
+<dd><p class="first last">The dual gap at the end of the optimization for the optimal alpha
+(<code class="docutils literal"><span class="pre">alpha_</span></code>).</p>
+</dd>
+<dt><strong>n_iter_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">number of iterations run by the coordinate descent solver to reach
+the specified tolerance for the optimal alpha.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="celer.LassoCV.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>normalize=False</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>

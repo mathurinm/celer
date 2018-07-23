@@ -131,75 +131,63 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : {array-like, sparse matrix}, shape (n_samples, n_features)</p>
-<blockquote>
-<div><p>Training data. Pass directly as Fortran-contiguous data or column
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt>
+<dd><p class="first last">Training data. Pass directly as Fortran-contiguous data or column
 sparse format (CSC) to avoid unnecessary memory duplication.</p>
-</div></blockquote>
-<p><strong>y</strong> : array-like, shape (n_samples,)</p>
-<blockquote>
-<div><p>Observation vector.</p>
-</div></blockquote>
-<p><strong>alpha</strong> : float</p>
-<blockquote>
-<div><p>Value of the Lasso regularization parameter.</p>
-</div></blockquote>
-<p><strong>w_init</strong> : array-like, shape (n_features,), optional</p>
-<blockquote>
-<div><p>Initial value for the coefficients vector.</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int, optional</p>
-<blockquote>
-<div><p>Maximum number of outer loop (working set definition) iterations.</p>
-</div></blockquote>
-<p><strong>max_epochs</strong> : int, optional</p>
-<blockquote>
-<div><p>Maximum number of epochs for the coordinate descent solver called on
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (n_samples,)</span></dt>
+<dd><p class="first last">Observation vector.</p>
+</dd>
+<dt><strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Value of the Lasso regularization parameter.</p>
+</dd>
+<dt><strong>w_init</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (n_features,), optional</span></dt>
+<dd><p class="first last">Initial value for the coefficients vector.</p>
+</dd>
+<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Maximum number of outer loop (working set definition) iterations.</p>
+</dd>
+<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of epochs between every gap computation in the inner solver.</p>
+</dd>
+<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Maximum number of epochs for the coordinate descent solver called on
 the subproblems.</p>
-</div></blockquote>
-<p><strong>gap_freq</strong> : int, optional</p>
-<blockquote>
-<div><p>Number of epochs between every gap computation in the inner solver.</p>
-</div></blockquote>
-<p><strong>p0</strong> : int, optional</p>
-<blockquote>
-<div><p>Size of the first working set.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : (0, 1), optional</p>
-<blockquote>
-<div><p>Verbosity level of the outer loop.</p>
-</div></blockquote>
-<p><strong>verbose_inner</strong> : (0, 1), optional</p>
-<blockquote>
-<div><p>Verbosity level of the inner solver.</p>
-</div></blockquote>
-<p><strong>tol</strong> : float, optional</p>
-<blockquote>
-<div><p>Optimization tolerance: the solver stops when the duality gap goes
+</dd>
+<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Size of the first working set.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
+<dd><p class="first last">Verbosity level of the outer loop.</p>
+</dd>
+<dt><strong>verbose_inner</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
+<dd><p class="first last">Verbosity level of the inner solver.</p>
+</dd>
+<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Optimization tolerance: the solver stops when the duality gap goes
 below <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is reached.</p>
-</div></blockquote>
-<p><strong>prune</strong> : (0, 1), optional</p>
-<blockquote>
-<div><p>Whether or not to use pruning when growing the working sets.</p>
-</div></blockquote>
+</dd>
+<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
+<dd><p class="first last">Whether or not to use pruning when growing the working sets.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>w</strong> : array, shape (n_features,)</p>
-<blockquote>
-<div><p>Estimated coefficient vector.</p>
-</div></blockquote>
-<p><strong>theta</strong> : array, shape (n_samples,)</p>
-<blockquote>
-<div><p>Dual point (potentially accelerated) when the solver exits.</p>
-</div></blockquote>
-<p><strong>gaps</strong> : array</p>
-<blockquote>
-<div><p>Duality gap at each outer loop iteration.</p>
-</div></blockquote>
-<p><strong>times</strong> : array</p>
-<blockquote class="last">
-<div><p>Time elapsed since entering the solver, at each outer loop iteration.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>w</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features,)</span></dt>
+<dd><p class="first last">Estimated coefficient vector.</p>
+</dd>
+<dt><strong>theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_samples,)</span></dt>
+<dd><p class="first last">Dual point (potentially accelerated) when the solver exits.</p>
+</dd>
+<dt><strong>gaps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
+<dd><p class="first last">Duality gap at each outer loop iteration.</p>
+</dd>
+<dt><strong>times</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
+<dd><p class="first last">Time elapsed since entering the solver, at each outer loop iteration.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>

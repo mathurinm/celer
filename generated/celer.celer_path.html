@@ -121,93 +121,94 @@
 <h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer_path">
-<code class="descclassname">celer.</code><code class="descname">celer_path</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>max_iter=20</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>return_thetas=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">celer.</code><code class="descname">celer_path</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>coef_init=None</em>, <em>max_iter=20</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>return_thetas=False</em>, <em>monitor=False</em>, <em>X_offset=None</em>, <em>X_scale=None</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute Lasso path with Celer as inner solver.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : {array-like, sparse matrix}, shape (n_samples, n_features)</p>
-<blockquote>
-<div><p>Training data. Pass directly as Fortran-contiguous data or column
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt>
+<dd><p class="first last">Training data. Pass directly as Fortran-contiguous data or column
 sparse format (CSC) to avoid unnecessary memory duplication.</p>
-</div></blockquote>
-<p><strong>y</strong> : ndarray, shape (n_samples,)</p>
-<blockquote>
-<div><p>Target values</p>
-</div></blockquote>
-<p><strong>eps</strong> : float, optional</p>
-<blockquote>
-<div><p>Length of the path. <code class="docutils literal"><span class="pre">eps=1e-3</span></code> means that
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, shape (n_samples,)</span></dt>
+<dd><p class="first last">Target values</p>
+</dd>
+<dt><strong>eps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Length of the path. <code class="docutils literal"><span class="pre">eps=1e-3</span></code> means that
 <code class="docutils literal"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
-</div></blockquote>
-<p><strong>n_alphas</strong> : int, optional</p>
-<blockquote>
-<div><p>Number of alphas along the regularization path</p>
-</div></blockquote>
-<p><strong>alphas</strong> : ndarray, optional</p>
-<blockquote>
-<div><p>List of alphas where to compute the models.
+</dd>
+<dt><strong>n_alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of alphas along the regularization path</p>
+</dd>
+<dt><strong>alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, optional</span></dt>
+<dd><p class="first last">List of alphas where to compute the models.
 If <code class="docutils literal"><span class="pre">None</span></code> alphas are set automatically</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int, optional</p>
-<blockquote>
-<div><p>The maximum number of iterations (subproblem definitions)</p>
-</div></blockquote>
-<p><strong>gap_freq</strong> : int, optional</p>
-<blockquote>
-<div><p>Number of coordinate descent epochs between each duality gap
+</dd>
+<dt><strong>coef_init</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, shape (n_features,) | None, optional, (defualt=None)</span></dt>
+<dd><p class="first last">Initial value of coefficients. If None, np.zeros(n_features) is used.</p>
+</dd>
+<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The maximum number of iterations (subproblem definitions)</p>
+</dd>
+<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of coordinate descent epochs between each duality gap
 computations.</p>
-</div></blockquote>
-<p><strong>max_epochs</strong> : int, optional</p>
-<blockquote>
-<div><p>Maximum number of CD epochs on each subproblem.</p>
-</div></blockquote>
-<p><strong>p0</strong> : int, optional</p>
-<blockquote>
-<div><p>First working set size.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool or integer, optional</p>
-<blockquote>
-<div><p>Amount of verbosity.</p>
-</div></blockquote>
-<p><strong>verbose_inner</strong> : bool or integer</p>
-<blockquote>
-<div><p>Amount of verbosity in the inner solver.</p>
-</div></blockquote>
-<p><strong>tol</strong> : float, optional</p>
-<blockquote>
-<div><p>The tolerance for the optimization: the solver runs until the duality
+</dd>
+<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Maximum number of CD epochs on each subproblem.</p>
+</dd>
+<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">First working set size.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer, optional</span></dt>
+<dd><p class="first last">Amount of verbosity.</p>
+</dd>
+<dt><strong>verbose_inner</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer</span></dt>
+<dd><p class="first last">Amount of verbosity in the inner solver.</p>
+</dd>
+<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The tolerance for the optimization: the solver runs until the duality
 gap is smaller than <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is
 reached.</p>
-</div></blockquote>
-<p><strong>prune</strong> : 0 | 1, optional</p>
-<blockquote>
-<div><p>Whether or not to use pruning when growing working sets.</p>
-</div></blockquote>
-<p><strong>return_thetas</strong> : bool, optional</p>
-<blockquote>
-<div><p>If True, dual variables along the path are returned.</p>
-</div></blockquote>
+</dd>
+<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0 | 1, optional</span></dt>
+<dd><p class="first last">Whether or not to use pruning when growing working sets.</p>
+</dd>
+<dt><strong>return_thetas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If True, dual variables along the path are returned.</p>
+</dd>
+<dt><strong>monitor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">Whether to return timings and gaps for each alpha. Used only for single
+alpha.</p>
+</dd>
+<dt><strong>X_offset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">np.array, shape (n_features,), optional</span></dt>
+<dd><p class="first last">Used to center sparse X without breaking sparsity. Mean of each column.
+See sklearn.linear_model.base._preprocess_data().</p>
+</dd>
+<dt><strong>X_scale: np.array, shape (n_features,), optional</strong></dt>
+<dd><p class="first last">Used to scale centered sparse X without breaking sparsity. Norm of each
+centered column. See sklearn.linear_model.base._preprocess_data().</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>alphas</strong> : array, shape (n,_alphas,)</p>
-<blockquote>
-<div><p>The alphas along the path where models are computed.</p>
-</div></blockquote>
-<p><strong>coefs</strong> : array, shape (n_features, n_alphas)</p>
-<blockquote>
-<div><p>Coefficients along the path.</p>
-</div></blockquote>
-<p><strong>dual_gaps</strong> : array, shape (n_alphas,)</p>
-<blockquote>
-<div><p>Duality gaps returned by the solver along the path.</p>
-</div></blockquote>
-<p><strong>thetas</strong> : array, shape (n_alphas, n_samples)</p>
-<blockquote class="last">
-<div><p>The dual variables along the path.
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n,_alphas,)</span></dt>
+<dd><p class="first last">The alphas along the path where models are computed.</p>
+</dd>
+<dt><strong>coefs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features, n_alphas)</span></dt>
+<dd><p class="first last">Coefficients along the path.</p>
+</dd>
+<dt><strong>dual_gaps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_alphas,)</span></dt>
+<dd><p class="first last">Duality gaps returned by the solver along the path.</p>
+</dd>
+<dt><strong>thetas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_alphas, n_samples)</span></dt>
+<dd><p class="first last">The dual variables along the path.
 (Is returned only when <code class="docutils literal"><span class="pre">return_thetas</span></code> is set to True).</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
