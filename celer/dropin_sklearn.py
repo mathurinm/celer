@@ -57,21 +57,21 @@ class Lasso(Lasso_sklearn):
     p0 : int
         First working set size.
 
+    verbose : bool or integer
+        Amount of verbosity.
+
     tol : float, optional
         The tolerance for the optimization: the solver runs until the duality
         gap is smaller than ``tol`` or the maximum number of iteration is
         reached.
 
-    verbose : bool or integer
-        Amount of verbosity.
-
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
 
-    fit_intercept : bool, optional, default True
+    fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    normalize : bool, optional, default False
+    normalize : bool, optional (default=True)
         This parameter is ignored when ``fit_intercept`` is set to False.
         If True,  the regressors X will be normalized before regression by
         subtracting the mean and dividing by the l2-norm.
@@ -191,6 +191,21 @@ class LassoCV(LassoCV_sklearn):
     verbose : bool or integer
         Amount of verbosity.
 
+    gap_freq : int, optional (default=10)
+        In the inner loop, the duality gap is computed every `gap_freq`
+        coordinate descent epochs.
+
+    max_epochs : int, optional (default=50000)
+        Maximum number of coordinate descent epochs when solving a subproblem.
+
+    p0 : int, optional (default=10)
+        Number of features in the first working set.
+
+    prune : bool, optional (default=False)
+        Whether to use pruning when growing the working sets.
+
+    precompute : ignored parameter, kept for sklearn compatibility.
+
     Attributes
     ----------
     alpha_ : float
@@ -223,10 +238,9 @@ class LassoCV(LassoCV_sklearn):
     """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
-                 fit_intercept=True, max_iter=100,
+                 fit_intercept=True, normalize=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, gap_freq=10,
-                 max_epochs=50000, p0=10, prune=0,
-                 normalize=False, precompute='auto'):
+                 max_epochs=50000, p0=10, prune=0, precompute='auto'):
         super(LassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,

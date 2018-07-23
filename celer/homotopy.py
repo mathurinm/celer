@@ -42,6 +42,9 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         List of alphas where to compute the models.
         If ``None`` alphas are set automatically
 
+    coef_init : ndarray, shape (n_features,) | None, optional, (defualt=None)
+        Initial value of coefficients. If None, np.zeros(n_features) is used.
+
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
 
@@ -71,6 +74,10 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
+
+    monitor : bool, optional (default=False)
+        Whether to return timings and gaps for each alpha. Used only for single
+        alpha.
 
     X_offset : np.array, shape (n_features,), optional
         Used to center sparse X without breaking sparsity. Mean of each column.
