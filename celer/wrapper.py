@@ -36,12 +36,12 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     max_iter : int, optional
         Maximum number of outer loop (working set definition) iterations.
 
+    gap_freq : int, optional
+        Number of epochs between every gap computation in the inner solver.
+
     max_epochs : int, optional
         Maximum number of epochs for the coordinate descent solver called on
         the subproblems.
-
-    gap_freq : int, optional
-        Number of epochs between every gap computation in the inner solver.
 
     p0 : int, optional
         Size of the first working set.
