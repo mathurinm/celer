@@ -9,7 +9,6 @@ from pkgutil import walk_packages
 from inspect import getsource
 
 import celer
-from mne.utils import _doc_special_members
 
 # copied from sklearn.fixes
 if hasattr(inspect, 'signature'):  # py35
@@ -116,7 +115,7 @@ def test_docstring_parameters():
             module = getattr(module, submod)
         classes = inspect.getmembers(module, inspect.isclass)
         for cname, cls in classes:
-            if cname.startswith('_') and cname not in _doc_special_members:
+            if cname.startswith('_'):
                 continue
             with warnings.catch_warnings(record=True) as w:
                 cdoc = docscrape.ClassDoc(cls)
