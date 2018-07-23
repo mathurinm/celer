@@ -53,7 +53,8 @@ def get_name(func):
 
 # functions to ignore args / docstring of
 _docstring_ignores = [
-    "celer.dropin_sklearn.path",
+    "celer.dropin_sklearn.Lasso.path",
+    "celer.dropin_sklearn.LassoCV.path",
     ]
 _tab_ignores = []
 
