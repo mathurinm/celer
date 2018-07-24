@@ -67,11 +67,16 @@ If you use this code, please cite:
 
 ::
 
-    Mathurin Massias, Alexandre Gramfort and Joseph Salmon
-    Celer: Fast solver for the Lasso with dual extrapolation
-    To appear in ICML 2018
+    @InProceedings{pmlr-v80-massias18a,
+      title = 	 {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
+      author = 	 {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
+      booktitle = 	 {Proceedings of the 35th International Conference on Machine Learning},
+      pages = 	 {3321--3330},
+      year = 	 {2018},
+      volume = 	 {80},
+    }
 
-Link: https://arxiv.org/abs/1802.07481
+ArXiv link: https://arxiv.org/abs/1802.07481
 
 .. |image0| image:: https://travis-ci.org/mathurinm/celer.svg?branch=master
    :target: https://travis-ci.org/mathurinm/celer/
