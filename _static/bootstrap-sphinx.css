@@ -18,7 +18,7 @@
 
   
   
-    @import url("./bootswatch-3.3.6/united/bootstrap.min.css");
+    @import url("./bootswatch-3.3.7/united/bootstrap.min.css");
   
 
 
@@ -91,6 +91,10 @@ table {
 
 div.highlight {
   background: none;
+}
+
+a.headerlink {
+  margin-left: 0.25em;
 }
 
 a.footnote-reference {
