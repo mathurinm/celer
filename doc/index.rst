@@ -43,9 +43,23 @@ If you don't want to use Anaconda, the list of packages you need to install is i
 Cite
 ----
 
-   [1] Mathurin Massias, Alexandre Gramfort and Joseph Salmon,
-   "Dual Extrapolation for Faster Lasso Solvers",
-   ArXiv Preprint, 2018, https://arxiv.org/abs/1802.07481
+If you use this code, please cite:
+
+.. code-block:: None
+
+    @InProceedings{pmlr-v80-massias18a,
+                   title = {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
+                   author = {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
+                   booktitle = {Proceedings of the 35th International Conference on Machine Learning},
+                   pages = {3321--3330},
+                   year = {2018},
+                   volume = {80},
+   }
+
+
+ArXiv link: https://arxiv.org/abs/1802.07481
+
+ICML link: http://proceedings.mlr.press/v80/massias18a.html
 
 
 API

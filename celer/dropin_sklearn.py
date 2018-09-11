@@ -111,8 +111,8 @@ class Lasso(Lasso_sklearn):
     References
     ----------
     .. [1] M. Massias, A. Gramfort, J. Salmon
-       "Celer: Dual Extrapolation for Faster Lasso Solvers", ICML 2018,
-       https://arxiv.org/abs/1802.07481
+       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      http://proceedings.mlr.press/v80/massias18a.html
     """
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
