@@ -129,7 +129,6 @@ def test_celer_single_alpha(sparse_X):
 
 @pytest.mark.parametrize("sparse_X", [True, False])
 def test_zero_column(sparse_X):
-    sparse_X = True
     X, y, _, _ = build_dataset(n_samples=60, n_features=50, sparse_X=sparse_X)
     n_zero_columns = 20
     if sparse_X:
