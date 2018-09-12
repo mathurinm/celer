@@ -19,7 +19,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
                verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               monitor=False, X_offset=None, X_scale=None):
+               monitor=False, X_offset=None, X_scale=None, scale_gap=False):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -87,6 +87,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         Used to scale centered sparse X without breaking sparsity. Norm of each
         centered column. See sklearn.linear_model.base._preprocess_data().
 
+    scale_gap: bool or integer. Used to scale the duality gap by the norm of y.
+
     Returns
     -------
     alphas : array, shape (n_alphas,)
@@ -153,6 +155,13 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
         alpha = alphas[t]
         t0 = time.time()
+
+        if scale_gap:
+            if np.any(y):
+                tol = tol / np.linalg.norm(y)
+            else:
+                print('Cannot scale - y is all zero.')
+
         if data_is_sparse:
             sol = celer_sparse(
                 X.data, X.indices, X.indptr, X_sparse_scaling, y, alpha,
