@@ -80,6 +80,9 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
     cdef int endptr
 
     for j in range(n_features):
+        if norms_X_col[j] == 0.:
+            prios[j] = 10000
+            continue
         Xj_theta = 0
         startptr = X_indptr[j]
         endptr = X_indptr[j + 1]
@@ -459,6 +462,8 @@ cpdef int inner_solver_sparse(
         for k in range(ws_size):
             # update feature k in place, cyclically
             j = C[k]
+            if norms_X_col[j] == 0.:
+                continue
             old_w_j = w[j]
             X_mean_j = X_mean[j]
             startptr, endptr = X_indptr[j], X_indptr[j + 1]

@@ -52,6 +52,9 @@ cdef void set_feature_prios_dense(int n_samples, int n_features, floating[:] the
     cdef floating Xj_theta
 
     for j in range(n_features):
+        if norms_X_col[j] == 0.:
+            prios[j] = 10000
+            continue
         Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
         prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
 
@@ -413,6 +416,8 @@ cpdef int inner_solver_dense(
         for k in range(ws_size):
             # update feature k in place, cyclically
             j = C[k]
+            if norms_X_col[j] == 0.:
+                continue
             old_w_j = w[j]
             w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / norms_X_col[j] ** 2
             # perform ST in place:
