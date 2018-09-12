@@ -147,10 +147,9 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         else:
             if coef_init is not None:
                 w_init = coef_init.copy()
-                p0 = max((w_init != 0.).sum(), 10)
+                p0 = max((w_init != 0.).sum(), p0)
             else:
                 w_init = np.zeros(n_features, dtype=X.dtype)
-                p0 = 10
 
         alpha = alphas[t]
         t0 = time.time()
