@@ -87,7 +87,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         Used to scale centered sparse X without breaking sparsity. Norm of each
         centered column. See sklearn.linear_model.base._preprocess_data().
 
-    scale_gap: bool or integer. Used to scale the duality gap by the norm of y.
+    scale_gap: bool, optional
+        Used to scale the duality gap by the norm of y.
 
     Returns
     -------
@@ -157,10 +158,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         t0 = time.time()
 
         if scale_gap:
-            if np.any(y):
-                tol = tol / np.linalg.norm(y)
-            else:
-                print('Cannot scale - y is all zero.')
+            tol = tol * np.linalg.norm(y)
 
         if data_is_sparse:
             sol = celer_sparse(

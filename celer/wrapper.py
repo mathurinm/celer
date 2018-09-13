@@ -59,7 +59,8 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     prune : (0, 1), optional
         Whether or not to use pruning when growing the working sets.
 
-    scale_gap: bool or integer. Used to scale the duality gap by the norm of y.
+    scale_gap: bool, optional
+        Used to scale the duality gap by the norm of y.
 
     Returns
     -------
