@@ -140,8 +140,7 @@ class Lasso(Lasso_sklearn):
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune,
             X_scale=kwargs.get('X_scale', None),
-            X_offset=kwargs.get('X_offset', None),
-            coef_init=self.coef_)
+            X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps, [1])
 
 
