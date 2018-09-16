@@ -76,10 +76,6 @@ class Lasso(Lasso_sklearn):
         If True,  the regressors X will be normalized before regression by
         subtracting the mean and dividing by the l2-norm.
 
-    warm_start: bool, optional (default=False)
-        If True, the regression will use the prior value of the attribute
-        coef_ as an initilization point.
-
     Attributes
     ----------
     coef_ : array, shape (n_features,)
@@ -121,11 +117,10 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
-                 fit_intercept=True, normalize=False, warm_start=False):
+                 fit_intercept=True, normalize=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, normalize=normalize,
-            warm_start=warm_start)
+            fit_intercept=fit_intercept, normalize=normalize)
         self.verbose = verbose
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
@@ -140,8 +135,7 @@ class Lasso(Lasso_sklearn):
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune,
             X_scale=kwargs.get('X_scale', None),
-            X_offset=kwargs.get('X_offset', None),
-            coef_init=self.coef_)
+            X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps, [1])
 
 
