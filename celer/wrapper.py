@@ -10,7 +10,7 @@ from .homotopy import celer_path
 
 def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
-          tol=1e-6, prune=0, scale_gap=False):
+          tol=1e-6, prune=0):
     """
     Compute the Lasso solution with the Celer algorithm.
 
@@ -59,9 +59,6 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     prune : (0, 1), optional
         Whether or not to use pruning when growing the working sets.
 
-    scale_gap: bool, optional
-        Used to scale the duality gap by the norm of y.
-
     Returns
     -------
     w : array, shape (n_features,)
@@ -81,7 +78,7 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
         X, y, alphas=np.array([alpha]), coef_init=w_init, gap_freq=gap_freq,
         max_epochs=max_epochs, p0=p0, verbose=verbose,
         verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
-        monitor=True, scale_gap=scale_gap)
+        monitor=True)
 
     w = coefs.T[0]
     theta = thetas[0]
