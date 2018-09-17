@@ -172,8 +172,6 @@ def test_warm_start(sparse_X):
         reg2.fit(X, y)
         nws_iters.append(reg2.n_iter_)
 
-    print(ws_iters)
-    print(nws_iters)
     assert ws_iters <= nws_iters
 
 
