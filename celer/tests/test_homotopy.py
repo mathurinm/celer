@@ -5,7 +5,6 @@
 
 import numpy as np
 import pytest
-import time
 
 from itertools import product
 from scipy import sparse
@@ -148,37 +147,34 @@ def test_zero_column(sparse_X):
 @pytest.mark.parametrize("sparse_X", [False, True])
 def test_warm_start(sparse_X):
     """Test Lasso path convergence."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    X, y, _, _ = build_dataset(
+        n_samples=100, n_features=1000, sparse_X=sparse_X)
     n_samples, n_features = X.shape
     alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
-    n_alphas = 10
+    n_alphas = 100
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
     tol = 1e-6
 
-    reg1 = Lasso(alpha=alphas[0], tol=tol, warm_start=True)
-    reg2 = Lasso(alpha=alphas[0], tol=tol, warm_start=False)
+    reg1 = Lasso(alpha=alphas[0], tol=tol, warm_start=True,
+                 return_n_iter=True)
+    reg2 = Lasso(alpha=alphas[0], tol=tol, warm_start=False,
+                 return_n_iter=True)
     reg1.coef_ = np.zeros(n_features)
 
-    reg1.fit(X, y)
-    reg2.fit(X, y)
+    ws_iters = []
+    nws_iters = []
 
-    ws_time_start = time.time()
-
-    for k in range(1, len(alphas)):
-        coef1 = reg1.coef_
-        reg1 = Lasso(alpha=alphas[k], tol=tol, warm_start=True)
-        reg1.coef_ = coef1
-
+    for alpha in alphas:
+        reg1.set_params(alpha=alpha)
         reg1.fit(X, y)
-
-    ws_time = time.time() - ws_time_start
-
-    nws_time_start = time.time()
-
-    for k in range(1, len(alphas)):
-        reg2 = Lasso(alpha=alphas[k], tol=tol, warm_start=False)
+        ws_iters.append(reg1.n_iter_)
+        reg2.set_params(alpha=alpha)
         reg2.fit(X, y)
+        nws_iters.append(reg2.n_iter_)
 
-    nws_time = time.time() - nws_time_start
+    print(ws_iters)
+    print(nws_iters)
+    assert ws_iters <= nws_iters
 
-    assert ws_time < nws_time
+
+test_warm_start(True)

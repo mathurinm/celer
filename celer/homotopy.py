@@ -19,7 +19,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
                verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               monitor=False, X_offset=None, X_scale=None):
+               monitor=False, X_offset=None, X_scale=None,
+               return_n_iter=False):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -74,6 +75,9 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
+
+    return_n_iters: bool, optional
+        If True, number of iterations along the path are returned.
 
     monitor : bool, optional (default=False)
         Whether to return timings and gaps for each alpha. Used only for single
@@ -132,6 +136,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     thetas = np.zeros((n_alphas, n_samples), dtype=X.dtype)
     dual_gaps = np.zeros(n_alphas)
     all_times = np.zeros(n_alphas)
+    if return_n_iter:
+        n_iters = np.zeros(n_alphas)
     if monitor:
         gaps_per_alpha, times_per_alpha = [], []
 
@@ -153,7 +159,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
         alpha = alphas[t]
         t0 = time.time()
-
         if data_is_sparse:
             sol = celer_sparse(
                 X.data, X.indices, X.indptr, X_sparse_scaling, y, alpha,
@@ -169,6 +174,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
         all_times[t] = time.time() - t0
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+        if return_n_iter:
+            n_iters[t] = len(sol[2])
         if monitor:
             gaps_per_alpha.append(sol[2])
             times_per_alpha.append(sol[3])
@@ -184,6 +191,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     results = alphas, coefs, dual_gaps
     if return_thetas:
         results += (thetas,)
+    if return_n_iter:
+        results += (n_iters,)
         if monitor:
             results += (gaps_per_alpha, times_per_alpha)
 
