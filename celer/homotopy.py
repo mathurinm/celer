@@ -193,7 +193,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         results += (thetas,)
     if return_n_iter:
         results += (n_iters,)
-        if monitor:
-            results += (gaps_per_alpha, times_per_alpha)
+    if monitor:
+        results += (gaps_per_alpha, times_per_alpha)
 
     return results

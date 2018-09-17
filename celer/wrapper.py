@@ -74,15 +74,15 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
         Time elapsed since entering the solver, at each outer loop iteration.
     """
 
-    alphas, coefs, _, thetas, all_gaps, all_times = celer_path(
+    results = celer_path(
         X, y, alphas=np.array([alpha]), coef_init=w_init, gap_freq=gap_freq,
         max_epochs=max_epochs, p0=p0, verbose=verbose,
         verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
         monitor=True)
 
-    w = coefs.T[0]
-    theta = thetas[0]
-    gaps = all_gaps[0]
-    times = all_times[0]
+    w = results[1].T[0]
+    theta = results[3][0]
+    gaps = results[4][0]
+    times = results[5][0]
 
     return w, theta, gaps, times
