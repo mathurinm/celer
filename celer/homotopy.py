@@ -76,7 +76,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
-    return_n_iters: bool, optional
+    return_n_iter: bool, optional
         If True, number of iterations along the path are returned.
 
     monitor : bool, optional (default=False)

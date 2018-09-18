@@ -92,8 +92,7 @@ class Lasso(Lasso_sklearn):
         constant term in decision function.
 
     n_iter_ : int
-        number of subproblems solved by celer to reach
-        the specified tolerance.
+        Number of subproblems solved by Celer to reach the specified tolerance.
 
     Examples
     --------
@@ -121,8 +120,7 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
-                 fit_intercept=True, normalize=False, warm_start=False,
-                 return_n_iter=False):
+                 fit_intercept=True, normalize=False, warm_start=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, normalize=normalize,
@@ -132,9 +130,8 @@ class Lasso(Lasso_sklearn):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.return_n_iter = return_n_iter
 
-    def path(self, X, y, alphas, coef_init=None, **kwargs):
+    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
         results = celer_path(
             X, y, alphas=alphas, max_iter=self.max_iter,
@@ -143,12 +140,9 @@ class Lasso(Lasso_sklearn):
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None),
             coef_init=coef_init,
-            return_n_iter=self.return_n_iter)
+            return_n_iter=return_n_iter)
 
-        if not self.return_n_iter:
-            return results + ([1],)
-        else:
-            return results
+        return results
 
 
 class LassoCV(LassoCV_sklearn):
@@ -261,7 +255,6 @@ class LassoCV(LassoCV_sklearn):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.return_n_iter = True
 
     def path(self, X, y, alphas, **kwargs):
         """Compute Lasso path with Celer."""
