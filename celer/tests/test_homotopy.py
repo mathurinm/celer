@@ -5,6 +5,7 @@
 
 import numpy as np
 import pytest
+import warnings
 
 from itertools import product
 from scipy import sparse
@@ -59,10 +60,16 @@ def test_celer_path(sparse_X):
 
 def test_convergence_warning():
     X, y, _, _ = build_dataset(n_samples=10, n_features=10)
-    tol = - 1
+    tol = - 1  # gap canot be negative, a covnergence warning should be raised
     alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
     clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
-    np.testing.assert_raises(ConvergenceWarning, clf.fit, X, y)
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        clf.fit(X, y)
+        assert len(w) == 1
+        assert issubclass(w[-1].category, ConvergenceWarning)
 
 
 @pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
