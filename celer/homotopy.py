@@ -137,7 +137,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     dual_gaps = np.zeros(n_alphas)
     all_times = np.zeros(n_alphas)
     if return_n_iter:
-        n_iters = np.zeros(n_alphas)
+        n_iters = np.zeros(n_alphas, dtype=int)
     if monitor:
         gaps_per_alpha, times_per_alpha = [], []
 
