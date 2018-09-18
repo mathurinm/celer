@@ -162,24 +162,22 @@ def test_zero_column(sparse_X):
     np.testing.assert_equal(theta.shape[0], X.shape[0])
 
 
-@pytest.mark.parametrize("sparse_X", [False, True])
-def test_warm_start(sparse_X):
+def test_warm_start():
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(
-        n_samples=100, n_features=1000, sparse_X=sparse_X)
+        n_samples=100, n_features=100, sparse_X=True)
     n_samples, n_features = X.shape
     alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
     n_alphas = 10
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
-    reg1 = Lasso(tol=1e-6, warm_start=True)
+    reg1 = Lasso(tol=1e-6, warm_start=True, p0=10)
     reg1.coef_ = np.zeros(n_features)
 
     for alpha in alphas:
         reg1.set_params(alpha=alpha)
         reg1.fit(X, y)
-        print(reg1.n_iter_)
         # refitting with warm start should take only 1 iter:
         reg1.fit(X, y)
         # hack because assert_array_less does strict comparison...
-        np.testing.assert_array_less(0.99, reg1.n_iter_)
+        np.testing.assert_array_less(reg1.n_iter_, 1.01)
