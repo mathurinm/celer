@@ -9,7 +9,6 @@ import warnings
 
 from itertools import product
 from scipy import sparse
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
@@ -72,14 +71,6 @@ def test_convergence_warning():
         clf.fit(X, y)
         assert len(w) == 1
         assert issubclass(w[-1].category, ConvergenceWarning)
-
-
-def test_convergence_warning():
-    X, y, _, _ = build_dataset(n_samples=10, n_features=10)
-    tol = - 1
-    alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
-    clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
-    np.testing.assert_raises(ConvergenceWarning, clf.fit, X, y)
 
 
 @pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
