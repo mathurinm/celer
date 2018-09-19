@@ -33,14 +33,14 @@ cdef floating compute_dual_scaling_dense(int n_samples, int n_features,
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
-            if positive == 0.:
+            if not positive:
                 Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     else: # scaling wrt features in C only
         for j in range(ws_size):
             Cj = C[j]
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc)
-            if positive == 0.:
+            if not positive:
                 Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     return scal

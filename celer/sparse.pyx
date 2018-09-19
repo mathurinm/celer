@@ -46,7 +46,7 @@ cdef floating compute_dual_scaling_sparse(
                 Xj_theta += X_data[i] * theta[X_indices[i]]
             if center:
                 Xj_theta -= theta_sum * X_mean[j]
-            if positive == 0:
+            if not positive:
                 Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     else: # scaling wrt features in C only
@@ -59,7 +59,7 @@ cdef floating compute_dual_scaling_sparse(
                 Xj_theta += X_data[i] * theta[X_indices[i]]
             if center:
                 Xj_theta -= theta_sum * X_mean[j]
-            if positive == 0:
+            if not positive:
                 Xj_theta = fabs(Xj_theta)
             Xj_theta = fabs(Xj_theta)
 
