@@ -88,10 +88,10 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
         verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
         monitor=True, return_n_iter=return_n_iter)
 
-    w = results[1].T
-    theta = results[3]
-    gaps = results[4]
-    times = results[5]
+    w = results[1].T[0]
+    theta = results[3][0]
+    gaps = results[4][0]
+    times = results[5][0]
 
     res = (w, theta, gaps, times)
     if return_n_iter:
