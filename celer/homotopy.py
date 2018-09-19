@@ -19,7 +19,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
                verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               monitor=False, X_offset=None, X_scale=None):
+               monitor=False, X_offset=None, X_scale=None, positive=False):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -72,6 +72,9 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
 
+    positive : bool, optional (default=False)
+        When set to True, forces the coefficients to be positive.
+
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
@@ -120,7 +123,10 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
 
     if alphas is None:
-        alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+        if positive:
+            alpha_max = np.max(X.T.dot(y)) / n_samples
+        else:
+            alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
         alphas = alpha_max * np.logspace(0, np.log10(eps), n_alphas,
                                          dtype=X.dtype)
     else:
@@ -159,12 +165,13 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                 w_init,
                 max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
                 p0=p0, verbose=verbose, verbose_inner=verbose_inner,
-                use_accel=1, tol=tol, prune=prune)
+                use_accel=1, tol=tol, prune=prune, positive=positive)
         else:
             sol = celer_dense(
                 X, y, alpha, w_init, max_iter=max_iter, gap_freq=gap_freq,
                 max_epochs=max_epochs, p0=p0, verbose=verbose,
-                verbose_inner=verbose_inner, use_accel=1, tol=tol, prune=prune)
+                verbose_inner=verbose_inner, use_accel=1, tol=tol, prune=prune,
+                positive=positive)
 
         all_times[t] = time.time() - t0
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
