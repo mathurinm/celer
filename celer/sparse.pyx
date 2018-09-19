@@ -21,7 +21,7 @@ from utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 cdef floating compute_dual_scaling_sparse(
     int n_features, int n_samples, floating * theta, floating[:] X_data,
     int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
-    floating[:] X_mean, bint center) nogil:
+    floating[:] X_mean, bint center, bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
@@ -46,7 +46,8 @@ cdef floating compute_dual_scaling_sparse(
                 Xj_theta += X_data[i] * theta[X_indices[i]]
             if center:
                 Xj_theta -= theta_sum * X_mean[j]
-            Xj_theta = fabs(Xj_theta)
+            if positive == 0:
+                Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     else: # scaling wrt features in C only
         for j in range(ws_size):
@@ -58,7 +59,8 @@ cdef floating compute_dual_scaling_sparse(
                 Xj_theta += X_data[i] * theta[X_indices[i]]
             if center:
                 Xj_theta -= theta_sum * X_mean[j]
-
+            if positive == 0:
+                Xj_theta = fabs(Xj_theta)
             Xj_theta = fabs(Xj_theta)
 
             scal = max(scal, Xj_theta)
@@ -72,7 +74,8 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
                             floating[:] X_data, int[:] X_indices,
                             int[:] X_indptr,
                             floating * norms_X_col,
-                            floating * prios) nogil:
+                            floating * prios,
+                            bint positive) nogil:
     cdef int j
     cdef int i
     cdef floating Xj_theta
@@ -88,7 +91,12 @@ cdef void set_feature_prios_sparse(int n_features, floating * theta,
         endptr = X_indptr[j + 1]
         for i in range(startptr, endptr):
             Xj_theta += theta[X_indices[i]] * X_data[i]
-        prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
+
+        if positive:
+            prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]
+        else:
+            prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
+
 
 
 @cython.boundscheck(False)
@@ -100,7 +108,7 @@ def celer_sparse(
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
     int verbose_inner=0, int use_accel=1,  int return_ws_size=0,
-    int prune=0):
+    int prune=0, bint positive=0):
 
     if floating is double:
         dtype = np.float64
@@ -189,7 +197,7 @@ def celer_sparse(
 
         scal = compute_dual_scaling_sparse(
             n_features, n_samples, &theta[0], X_data, X_indices, X_indptr,
-            n_features, &dummy_C[0], X_mean, center)
+            n_features, &dummy_C[0], X_mean, center, positive)
 
         if scal > 1. :
             tmp = 1. / scal
@@ -202,7 +210,7 @@ def celer_sparse(
         if t != 0:
             scal = compute_dual_scaling_sparse(
                 n_features, n_samples, &theta_inner[0], X_data, X_indices,
-                X_indptr, n_features, &dummy_C[0], X_mean, center)
+                X_indptr, n_features, &dummy_C[0], X_mean, center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
@@ -236,7 +244,7 @@ def celer_sparse(
 
         set_feature_prios_sparse(n_features, &theta[0],
                           X_data, X_indices, X_indptr,
-                          &norms_X_col[0], &prios[0])
+                          &norms_X_col[0], &prios[0], positive)
 
         if prune:
             ws_size = 0
@@ -285,7 +293,7 @@ def celer_sparse(
             y, alpha, center, w, R, C, theta_inner, norms_X_col,
             norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
-            use_accel=use_accel)
+            use_accel=use_accel, positive=positive)
 
     if return_ws_size:
         return (np.asarray(w), np.asarray(theta),
@@ -305,7 +313,7 @@ cpdef int inner_solver_sparse(
     floating[:] y, floating alpha, bint center, floating[:] w, floating[:] R,
     int[:] C, floating[:] theta, floating[:] norms_X_col,
     floating norm_y2, floating eps, int max_epochs, int gap_freq,
-    int verbose=0, int K=6, int use_accel=1):
+    int verbose=0, int K=6, int use_accel=1, bint positive=0):
 
     if floating is double:
         dtype = np.float64
@@ -360,7 +368,7 @@ cpdef int inner_solver_sparse(
 
             dual_scale = compute_dual_scaling_sparse(
                 n_features, n_samples, &theta[0], X_data, X_indices, X_indptr,
-                ws_size, &C[0], X_mean, center)
+                ws_size, &C[0], X_mean, center, positive)
 
             if dual_scale > 1. :
                 tmp = 1. / dual_scale
@@ -424,7 +432,8 @@ cpdef int inner_solver_sparse(
 
                     dual_scale_accel = compute_dual_scaling_sparse(
                         n_features, n_samples, &thetaccel[0], X_data,
-                        X_indices, X_indptr, ws_size, &C[0], X_mean, center)
+                        X_indices, X_indptr, ws_size, &C[0], X_mean, center,
+                        positive)
 
                     if dual_scale_accel > 1. :
                         tmp = 1. / dual_scale_accel
@@ -476,7 +485,10 @@ cpdef int inner_solver_sparse(
                 w[j] -= R_sum * X_mean_j / norms_X_col[j] ** 2
 
             # perform ST in place:
-            w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
+            if positive and w[j] <= 0.:
+                w[j] = 0.
+            else:
+                w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
 
             # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
             tmp = w[j] - old_w_j
