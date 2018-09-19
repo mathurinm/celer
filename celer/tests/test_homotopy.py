@@ -75,7 +75,7 @@ def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
-                  fit_intercept=fit_intercept)
+                  fit_intercept=fit_intercept, positive=positive)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
@@ -105,7 +105,7 @@ def test_dropin_lasso(sparse_X, fit_intercept, positive):
 
     alpha = alpha_max / 2.
     params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
-                  normalize=True)
+                  normalize=True, positive=positive)
     clf = Lasso(**params)
     clf.fit(X, y)
 
