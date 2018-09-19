@@ -76,9 +76,9 @@ class Lasso(Lasso_sklearn):
         If True,  the regressors X will be normalized before regression by
         subtracting the mean and dividing by the l2-norm.
 
-    warm_start: bool, optional (default=False)
-        If True, the regression will use the prior value of the attribute
-        coef_ as an initilization point.
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
 
     Attributes
     ----------
