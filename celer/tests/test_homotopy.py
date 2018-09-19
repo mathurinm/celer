@@ -142,3 +142,28 @@ def test_zero_column(sparse_X):
     np.testing.assert_array_less(gaps[-1], tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
+
+
+@pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
+                                                            [False, True]))
+def test_positive_lasso(sparse_X, fit_intercept):
+    """Test that our Lasso class behaves as sklearn's Lasso."""
+    X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
+
+    alpha_max = (X.T.dot(y)).max() / X.shape[0]
+    alpha = alpha_max / 2.
+    params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
+                  normalize=True, positive=True)
+    clf = Lasso(**params)
+    clf.fit(X, y)
+
+    clf2 = sklearn_Lasso(**params)
+    clf2.fit(X, y)
+
+    assert (clf.coef_ >= 0.).all()
+
+    np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
+    if fit_intercept:
+        np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
+
+    check_estimator(Lasso)
