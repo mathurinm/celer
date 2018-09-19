@@ -76,9 +76,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
-    return_n_iter: bool, optional
-        If True, number of iterations along the path are returned.
-
     monitor : bool, optional (default=False)
         Whether to return timings and gaps for each alpha. Used only for single
         alpha.
@@ -90,6 +87,9 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     X_scale: np.array, shape (n_features,), optional
         Used to scale centered sparse X without breaking sparsity. Norm of each
         centered column. See sklearn.linear_model.base._preprocess_data().
+
+    return_n_iter: bool, optional
+        If True, number of iterations along the path are returned.
 
     Returns
     -------
