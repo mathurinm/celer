@@ -10,7 +10,7 @@ from .homotopy import celer_path
 
 def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
-          tol=1e-6, prune=0):
+          tol=1e-6, prune=0, return_n_iter=False):
     """
     Compute the Lasso solution with the Celer algorithm.
 
@@ -59,6 +59,10 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     prune : (0, 1), optional
         Whether or not to use pruning when growing the working sets.
 
+    return_n_iter : bool, optional (default=False)
+        Whether or not to return the number of iterations (ie the number of
+        subproblems solved).
+
     Returns
     -------
     w : array, shape (n_features,)
@@ -72,17 +76,25 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
 
     times : array
         Time elapsed since entering the solver, at each outer loop iteration.
+
+    n_iter : int
+        Number of iterations (subproblems solved). Returned only if
+        return_n_iter is True.
     """
 
-    alphas, coefs, _, thetas, all_gaps, all_times = celer_path(
+    results = celer_path(
         X, y, alphas=np.array([alpha]), coef_init=w_init, gap_freq=gap_freq,
         max_epochs=max_epochs, p0=p0, verbose=verbose,
         verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
-        monitor=True)
+        monitor=True, return_n_iter=return_n_iter)
 
-    w = coefs.T[0]
-    theta = thetas[0]
-    gaps = all_gaps[0]
-    times = all_times[0]
+    w = results[1].T[0]
+    theta = results[3][0]
+    gaps = results[4][0]
+    times = results[5][0]
 
-    return w, theta, gaps, times
+    res = (w, theta, gaps, times)
+    if return_n_iter:
+        res += (len(times),)
+
+    return res

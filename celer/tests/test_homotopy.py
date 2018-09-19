@@ -5,9 +5,11 @@
 
 import numpy as np
 import pytest
+import warnings
 
 from itertools import product
 from scipy import sparse
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
@@ -48,10 +50,26 @@ def test_celer_path(sparse_X):
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
     tol = 1e-6
-    alphas, coefs, gaps, thetas = celer_path(X, y, alphas=alphas, tol=tol,
-                                             return_thetas=True, verbose=False,
-                                             verbose_inner=False)
+    alphas, coefs, gaps, thetas, n_iters = celer_path(
+        X, y, alphas=alphas, tol=tol, return_thetas=True, verbose=False,
+        verbose_inner=False, return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
+    # hack because array_less wants strict inequality
+    np.testing.assert_array_less(0.99, n_iters)
+
+
+def test_convergence_warning():
+    X, y, _, _ = build_dataset(n_samples=10, n_features=10)
+    tol = - 1  # gap canot be negative, a covnergence warning should be raised
+    alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
+    clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        clf.fit(X, y)
+        assert len(w) == 1
+        assert issubclass(w[-1].category, ConvergenceWarning)
 
 
 @pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
@@ -121,7 +139,8 @@ def test_celer_single_alpha(sparse_X):
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, gaps, times = celer(X, y, alpha_max / 10., tol=tol)
+    w, theta, n_iter, gaps, times = celer(X, y, alpha_max / 10., tol=tol,
+                                          return_n_iter=True)
     np.testing.assert_array_less(gaps[-1], tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
@@ -142,3 +161,24 @@ def test_zero_column(sparse_X):
     np.testing.assert_array_less(gaps[-1], tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
+
+
+def test_warm_start():
+    """Test Lasso path convergence."""
+    X, y, _, _ = build_dataset(
+        n_samples=100, n_features=100, sparse_X=True)
+    n_samples, n_features = X.shape
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+    n_alphas = 10
+    alphas = alpha_max * np.logspace(0, -2, n_alphas)
+
+    reg1 = Lasso(tol=1e-6, warm_start=True, p0=10)
+    reg1.coef_ = np.zeros(n_features)
+
+    for alpha in alphas:
+        reg1.set_params(alpha=alpha)
+        reg1.fit(X, y)
+        # refitting with warm start should take only 1 iter:
+        reg1.fit(X, y)
+        # hack because assert_array_less does strict comparison...
+        np.testing.assert_array_less(reg1.n_iter_, 1.01)
