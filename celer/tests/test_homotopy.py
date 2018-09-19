@@ -38,14 +38,15 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
     return X, y, X_test, y_test
 
 
-@pytest.mark.parametrize("sparse_X", [False, True])
-def test_celer_path(sparse_X):
+@pytest.mark.parametrize("sparse_X, alphas", product([False, True], [None, 1]))
+def test_celer_path(sparse_X, alphas):
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     n_samples = X.shape[0]
-    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
-    n_alphas = 10
-    alphas = alpha_max * np.logspace(0, -2, n_alphas)
+    if alphas is not None:
+        alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+        n_alphas = 10
+        alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
     tol = 1e-6
     alphas, coefs, gaps, thetas = celer_path(X, y, alphas=alphas, tol=tol,
