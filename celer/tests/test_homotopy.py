@@ -69,7 +69,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05, atol=1e-6)
 
 
-@pytest.mark.parametrize("sparse_X, fit_intercept", "positive",
+@pytest.mark.parametrize("sparse_X, fit_intercept, positive",
                          product([False, True], [False, True], [False, True]))
 def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
@@ -93,7 +93,7 @@ def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
     check_estimator(LassoCV)
 
 
-@pytest.mark.parametrize("sparse_X, fit_intercept", "positive",
+@pytest.mark.parametrize("sparse_X, fit_intercept, positive",
                          product([False, True], [False, True], [False, True]))
 def test_dropin_lasso(sparse_X, fit_intercept, positive):
     """Test that our Lasso class behaves as sklearn's Lasso."""
