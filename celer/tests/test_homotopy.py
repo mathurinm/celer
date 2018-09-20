@@ -40,8 +40,9 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
     return X, y, X_test, y_test
 
 
-@pytest.mark.parametrize("sparse_X, alphas", product([False, True], [None, 1]))
-def test_celer_path(sparse_X, alphas):
+@pytest.mark.parametrize("sparse_X, alphas, positive",
+                         product([False, True], [None, 1], [False, True]))
+def test_celer_path(sparse_X, alphas, positive):
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     n_samples = X.shape[0]
@@ -53,7 +54,7 @@ def test_celer_path(sparse_X, alphas):
     tol = 1e-6
     alphas, coefs, gaps, thetas, n_iters = celer_path(
         X, y, alphas=alphas, tol=tol, return_thetas=True, verbose=False,
-        verbose_inner=False, return_n_iter=True)
+        verbose_inner=False, positive=positive, return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
