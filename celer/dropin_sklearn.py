@@ -79,6 +79,10 @@ class Lasso(Lasso_sklearn):
         If True,  the regressors X will be normalized before regression by
         subtracting the mean and dividing by the l2-norm.
 
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+
     Attributes
     ----------
     coef_ : array, shape (n_features,)
@@ -91,8 +95,7 @@ class Lasso(Lasso_sklearn):
         constant term in decision function.
 
     n_iter_ : int
-        number of subproblems solved by celer to reach
-        the specified tolerance.
+        Number of subproblems solved by Celer to reach the specified tolerance.
 
     Examples
     --------
@@ -120,29 +123,31 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, gap_freq=10,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
-                 fit_intercept=True, positive=False, normalize=False):
+                 fit_intercept=True, normalize=False, warm_start=False,
+                 positive=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, normalize=normalize)
+            fit_intercept=fit_intercept, normalize=normalize,
+            warm_start=warm_start)
         self.verbose = verbose
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.return_n_iter = True
         self.positive = positive
 
-
-    def path(self, X, y, alphas, **kwargs):
+    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
-        alphas, coefs, dual_gaps = celer_path(
-            X, y, alphas=alphas, max_iter=self.max_iter,
+        results = celer_path(
+            X, y, alphas=alphas, coef_init=coef_init,
+            max_iter=self.max_iter, return_n_iter=return_n_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune,
             positive=self.positive,
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
-        return (alphas, coefs, dual_gaps, [1])
+
+        return results
 
 
 class LassoCV(LassoCV_sklearn):
@@ -254,18 +259,17 @@ class LassoCV(LassoCV_sklearn):
         super(LassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
-             verbose=verbose)
+            verbose=verbose)
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.return_n_iter = True
         self.positive = positive
 
-    def path(self, X, y, alphas, **kwargs):
+    def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute Lasso path with Celer."""
         alphas, coefs, dual_gaps = celer_path(
-            X, y, alphas=alphas, max_iter=self.max_iter,
+            X, y, alphas=alphas, coef_init=coef_init, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune,
             positive=self.positive,
