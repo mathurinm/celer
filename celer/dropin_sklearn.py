@@ -71,9 +71,6 @@ class Lasso(Lasso_sklearn):
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    positive : bool, optional (default=False)
-        When set to True, forces the coefficients to be positive.
-
     normalize : bool, optional (default=False)
         This parameter is ignored when ``fit_intercept`` is set to False.
         If True,  the regressors X will be normalized before regression by
@@ -82,6 +79,9 @@ class Lasso(Lasso_sklearn):
     warm_start : bool, optional (default=False)
         When set to True, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
+
+    positive : bool, optional (default=False)
+        When set to True, forces the coefficients to be positive.
 
     Attributes
     ----------
@@ -215,10 +215,10 @@ class LassoCV(LassoCV_sklearn):
     prune : bool, optional (default=False)
         Whether to use pruning when growing the working sets.
 
+    precompute : ignored parameter, kept for sklearn compatibility.
+
     positive : bool, optional (default=False)
         When set to True, forces the coefficients to be positive.
-
-    precompute : ignored parameter, kept for sklearn compatibility.
 
     Attributes
     ----------

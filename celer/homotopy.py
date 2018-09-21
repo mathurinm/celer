@@ -73,9 +73,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
 
-    positive : bool, optional (default=False)
-        When set to True, forces the coefficients to be positive.
-
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
@@ -93,6 +90,9 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
     return_n_iter: bool, optional
         If True, number of iterations along the path are returned.
+
+    positive : bool, optional (default=False)
+        When set to True, forces the coefficients to be positive.
 
     Returns
     -------
