@@ -9,6 +9,7 @@ import warnings
 
 from itertools import product
 from scipy import sparse
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
