@@ -40,19 +40,21 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
     return X, y, X_test, y_test
 
 
-@pytest.mark.parametrize("sparse_X", [False, True])
-def test_celer_path(sparse_X):
+@pytest.mark.parametrize("sparse_X, alphas, positive",
+                         product([False, True], [None, 1], [False, True]))
+def test_celer_path(sparse_X, alphas, positive):
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     n_samples = X.shape[0]
-    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
-    n_alphas = 10
-    alphas = alpha_max * np.logspace(0, -2, n_alphas)
+    if alphas is not None:
+        alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+        n_alphas = 10
+        alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
     tol = 1e-6
     alphas, coefs, gaps, thetas, n_iters = celer_path(
         X, y, alphas=alphas, tol=tol, return_thetas=True, verbose=False,
-        verbose_inner=False, return_n_iter=True)
+        verbose_inner=False, positive=positive, return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
@@ -87,13 +89,13 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     np.testing.assert_allclose(coefs1, coefs2, rtol=1e-05, atol=1e-6)
 
 
-@pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
-                                                            [False, True]))
-def test_dropin_LassoCV(sparse_X, fit_intercept):
+@pytest.mark.parametrize("sparse_X, fit_intercept, positive",
+                         product([False, True], [False, True], [False, True]))
+def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
-                  fit_intercept=fit_intercept)
+                  fit_intercept=fit_intercept, positive=positive)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
@@ -111,16 +113,19 @@ def test_dropin_LassoCV(sparse_X, fit_intercept):
     check_estimator(LassoCV)
 
 
-@pytest.mark.parametrize("sparse_X, fit_intercept", product([False, True],
-                                                            [False, True]))
-def test_dropin_lasso(sparse_X, fit_intercept):
+@pytest.mark.parametrize("sparse_X, fit_intercept, positive",
+                         product([False, True], [False, True], [False, True]))
+def test_dropin_lasso(sparse_X, fit_intercept, positive):
     """Test that our Lasso class behaves as sklearn's Lasso."""
     X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
+    if not positive:
+        alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+    else:
+        alpha_max = X.T.dot(y).max() / X.shape[0]
 
-    alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     alpha = alpha_max / 2.
     params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
-                  normalize=True)
+                  normalize=True, positive=positive)
     clf = Lasso(**params)
     clf.fit(X, y)
 

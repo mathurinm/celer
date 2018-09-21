@@ -20,7 +20,8 @@ from utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 @cython.cdivision(True)
 cdef floating compute_dual_scaling_dense(int n_samples, int n_features,
                                          floating[:] theta, floating[::1, :] X,
-                                         int ws_size, int * C) nogil:
+                                         int ws_size, int * C,
+                                         bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
@@ -31,12 +32,16 @@ cdef floating compute_dual_scaling_dense(int n_samples, int n_features,
     cdef int inc = 1
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
-            Xj_theta = fabs(fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc))
+            Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+            if not positive:
+                Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     else: # scaling wrt features in C only
         for j in range(ws_size):
             Cj = C[j]
-            Xj_theta = fabs(fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc))
+            Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc)
+            if not positive:
+                Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     return scal
 
@@ -46,7 +51,7 @@ cdef floating compute_dual_scaling_dense(int n_samples, int n_features,
 @cython.cdivision(True)
 cdef void set_feature_prios_dense(int n_samples, int n_features, floating[:] theta,
                                   floating[::1, :] X,  floating * norms_X_col,
-                                  floating * prios) nogil:
+                                  floating * prios, bint positive) nogil:
     cdef int j
     cdef int inc = 1
     cdef floating Xj_theta
@@ -56,7 +61,10 @@ cdef void set_feature_prios_dense(int n_samples, int n_features, floating[:] the
             prios[j] = 10000
             continue
         Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
-        prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
+        if positive:
+            prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]
+        else:
+            prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
 
 
 @cython.boundscheck(False)
@@ -78,6 +86,7 @@ def celer_dense(floating[::1, :] X,
                 int use_accel=0,
                 int return_ws_size=0,
                 int prune=0,
+                bint positive=0,
                 ):
 
     if floating is double:
@@ -147,7 +156,7 @@ def celer_dense(floating[::1, :] X,
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling_dense(n_samples, n_features, theta, X,
-            n_features, &dummy_C[0])
+            n_features, &dummy_C[0], positive)
 
         if scal > 1.:
             tmp = 1. / scal
@@ -158,8 +167,9 @@ def celer_dense(floating[::1, :] X,
 
         # also test dual point returned by inner solver after 1st iter:
         if t != 0:
-            scal = compute_dual_scaling_dense(
-                n_samples, n_features, theta_inner, X, n_features, &dummy_C[0])
+            scal = compute_dual_scaling_dense(n_samples, n_features,
+                                              theta_inner, X, n_features,
+                                              &dummy_C[0], positive)
 
             if scal > 1.:
                 tmp = 1. / scal
@@ -193,7 +203,7 @@ def celer_dense(floating[::1, :] X,
             break
 
         set_feature_prios_dense(n_samples, n_features, theta, X,
-                                &norms_X_col[0], &prios[0])
+                                &norms_X_col[0], &prios[0], positive)
 
         if prune:
             ws_size = 0
@@ -242,7 +252,7 @@ def celer_dense(floating[::1, :] X,
             y, alpha, w, R, C, theta_inner, norms_X_col,
             norm_y2, tol_inner, max_epochs=max_epochs,
             gap_freq=gap_freq, verbose=verbose_inner,
-            use_accel=use_accel)
+            use_accel=use_accel, positive=positive)
 
     if return_ws_size:
         return (np.asarray(w), np.asarray(theta),
@@ -264,7 +274,7 @@ cpdef int inner_solver_dense(
     int[:] C, floating[:] theta, floating[:] norms_X_col,
     floating norm_y2, floating eps,
     int max_epochs, int gap_freq, int verbose=0, int K=6,
-    int use_accel=1):
+    int use_accel=1, bint positive=0):
     if floating is double:
         dtype = np.float64
     else:
@@ -311,7 +321,7 @@ cpdef int inner_solver_dense(
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling_dense(
-                n_samples, n_features, theta, X, ws_size, &C[0])
+                n_samples, n_features, theta, X, ws_size, &C[0], positive)
 
             if dual_scale > 1.:
                 tmp = 1 / dual_scale
@@ -373,7 +383,7 @@ cpdef int inner_solver_dense(
 
                     dual_scale_accel = compute_dual_scaling_dense(
                         n_samples, n_features, thetaccel, X, ws_size,
-                        &C[0])
+                        &C[0], positive)
 
                     if dual_scale_accel > 1.:
                         tmp = 1. / dual_scale_accel
@@ -421,7 +431,10 @@ cpdef int inner_solver_dense(
             old_w_j = w[j]
             w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / norms_X_col[j] ** 2
             # perform ST in place:
-            w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
+            if positive and w[j] <= 0.:
+                w[j] = 0.
+            else:
+                w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
             tmp = w[j] - old_w_j
 
             # R -= (w_j - old_w_j) * X[:, j]
