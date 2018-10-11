@@ -243,7 +243,6 @@ def celer_dense(floating[::1, :] X,
         else:
             tol_inner = tol
 
-
         if verbose:
             print("Solving subproblem with %d constraints" % len(C))
         # calling inner solver which will modify w and R inplace
@@ -355,7 +354,7 @@ cpdef int inner_solver_dense(
                         onesK[k] = 1.
 
                     fposv(&char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
-                               &onesK[0], &Kminus1, &info_posv)
+                          &onesK[0], &Kminus1, &info_posv)
 
                     # onesK now holds the solution in x to UtU dot x = onesK
                     if info_posv != 0:
@@ -388,12 +387,7 @@ cpdef int inner_solver_dense(
                     if dual_scale_accel > 1.:
                         tmp = 1. / dual_scale_accel
                         fscal(&n_samples, &tmp, &thetaccel[0], &inc)
-                    # d_obj_accel = 0.
-                    # for i in range(n_samples):
-                    #     d_obj_accel -= (y[i] / alpha - thetaccel[i] / dual_scale_accel) ** 2
-                    #
-                    # d_obj_accel *= 0.5 * alpha ** 2
-                    # d_obj_accel += 0.5 * norm_y2
+
                     d_obj_accel = dual_value(n_samples, alpha, norm_y2,
                                              &thetaccel[0], &y[0])
 
@@ -430,6 +424,7 @@ cpdef int inner_solver_dense(
                 continue
             old_w_j = w[j]
             w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / norms_X_col[j] ** 2
+            
             # perform ST in place:
             if positive and w[j] <= 0.:
                 w[j] = 0.

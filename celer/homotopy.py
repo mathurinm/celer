@@ -11,8 +11,7 @@ from scipy import sparse
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
-from .sparse import celer_sparse
-from .dense import celer_dense
+from .sparse import celer
 
 
 def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
@@ -109,7 +108,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         The dual variables along the path.
         (Is returned only when ``return_thetas`` is set to True).
     """
-    data_is_sparse = sparse.issparse(X)
+    is_sparse = sparse.issparse(X)
     # Contrary to sklearn we always check input
     X = check_array(X, 'csc', dtype=[np.float64, np.float32],
                     order='F', copy=False)
@@ -147,6 +146,16 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     if monitor:
         gaps_per_alpha, times_per_alpha = [], []
 
+    if is_sparse:
+        X = np.empty([1, 1], order='F')
+        X_data = X.data
+        X_indptr = X.indptr
+        X_indices = X.indices
+    else:
+        X_data = np.empty([1])
+        X_indices = np.empty([1], dtype=np.int32)
+        X_indptr = np.empty([1], dtype=np.int32)
+
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
         if verbose:
@@ -165,19 +174,19 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
 
         alpha = alphas[t]
         t0 = time.time()
-        if data_is_sparse:
-            sol = celer_sparse(
-                X.data, X.indices, X.indptr, X_sparse_scaling, y, alpha,
-                w_init,
-                max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
-                p0=p0, verbose=verbose, verbose_inner=verbose_inner,
-                use_accel=1, tol=tol, prune=prune, positive=positive)
-        else:
-            sol = celer_dense(
-                X, y, alpha, w_init, max_iter=max_iter, gap_freq=gap_freq,
-                max_epochs=max_epochs, p0=p0, verbose=verbose,
-                verbose_inner=verbose_inner, use_accel=1, tol=tol, prune=prune,
-                positive=positive)
+        sol = celer(
+            is_sparse,
+            X, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
+            w_init,
+            max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
+            p0=p0, verbose=verbose, verbose_inner=verbose_inner,
+            use_accel=1, tol=tol, prune=prune, positive=positive)
+        # else:
+        #     sol = celer_dense(
+        #         X, y, alpha, w_init, max_iter=max_iter, gap_freq=gap_freq,
+        #         max_epochs=max_epochs, p0=p0, verbose=verbose,
+        #         verbose_inner=verbose_inner, use_accel=1, tol=tol, prune=prune,
+        #         positive=positive)
 
         all_times[t] = time.time() - t0
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
