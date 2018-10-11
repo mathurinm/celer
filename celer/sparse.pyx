@@ -113,7 +113,6 @@ cdef void set_feature_prios(
             prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
 
 
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
@@ -532,9 +531,9 @@ cpdef int inner_solver(
                     if center:
                         for i in range(n_samples):
                             R[i] += X_mean_j * tmp
-                    else:
-                        tmp = -tmp
-                        faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+                else:
+                    tmp = -tmp
+                    faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))

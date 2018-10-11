@@ -147,11 +147,12 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         gaps_per_alpha, times_per_alpha = [], []
 
     if is_sparse:
-        X = np.empty([1, 1], order='F')
+        X_dense = np.empty([1, 1], order='F')
         X_data = X.data
         X_indptr = X.indptr
         X_indices = X.indices
     else:
+        X_dense = X
         X_data = np.empty([1])
         X_indices = np.empty([1], dtype=np.int32)
         X_indptr = np.empty([1], dtype=np.int32)
@@ -176,7 +177,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         t0 = time.time()
         sol = celer(
             is_sparse,
-            X, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
+            X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
             w_init,
             max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
             p0=p0, verbose=verbose, verbose_inner=verbose_inner,
