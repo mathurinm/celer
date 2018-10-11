@@ -147,13 +147,13 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         gaps_per_alpha, times_per_alpha = [], []
 
     if is_sparse:
-        X_dense = np.empty([1, 1], order='F')
+        X_dense = np.empty([1, 1], order='F', dtype=X.data.dtype)
         X_data = X.data
         X_indptr = X.indptr
         X_indices = X.indices
     else:
         X_dense = X
-        X_data = np.empty([1])
+        X_data = np.empty([1], dtype=X.dtype)
         X_indices = np.empty([1], dtype=np.int32)
         X_indptr = np.empty([1], dtype=np.int32)
 
