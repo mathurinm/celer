@@ -10,7 +10,8 @@ from sklearn.utils import check_array
 from sklearn.externals import six
 from sklearn.utils.validation import column_or_1d
 from sklearn.model_selection import check_cv
-from sklearn.externals.joblib import Parallel, delayed
+from sklearn.externals.joblib import Parallel, delayed, effective_n_jobs
+from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
                                   LassoCV as _LassoCV)
