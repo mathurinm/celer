@@ -112,7 +112,7 @@ cdef void set_feature_prios(
         if positive:
             prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]
         else:
-            prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
+            prios[j] = (1. - fabs(Xj_theta)) / norms_X_col[j]
 
         if prios[j] > radius:
             screened[j] = True
@@ -215,6 +215,8 @@ def celer(
 
     cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
+    cdef floating[:] theta_to_use  # the one giving highest d_obj
+
     # passed to inner solver
     # and potentially used for screening if it gives a better d_obj
     cdef floating d_obj_from_inner = 0.
@@ -255,7 +257,9 @@ def celer(
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
-            fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
+            theta_to_use = theta_inner
+        else:
+            theta_to_use = theta
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
@@ -279,7 +283,8 @@ def celer(
 
         radius = sqrt(2 * gap) / alpha
         set_feature_prios(
-            is_sparse, n_samples, n_features, &theta[0], X, X_data, X_indices,
+            is_sparse, n_samples, n_features, &theta_to_use[0], X, X_data,
+            X_indices,
             X_indptr, &norms_X_col[0], &prios[0], &screened[0], radius,
             &n_screened, positive)
 
