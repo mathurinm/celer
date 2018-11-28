@@ -22,7 +22,7 @@ cdef:
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating compute_dual_scaling(
-    bint sparse, int n_features, int n_samples, floating * theta,
+    bint is_sparse, int n_features, int n_samples, floating * theta,
     floating[::1, :] X, floating[:] X_data,
     int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
     floating[:] X_mean, bint center, bint positive) nogil:
@@ -38,14 +38,14 @@ cdef floating compute_dual_scaling(
     cdef int startptr
     cdef int endptr
 
-    if sparse:
+    if is_sparse:
         if center:
             for i in range(n_samples):
                 theta_sum += theta[i]
 
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
-            if sparse:
+            if is_sparse:
                 startptr = X_indptr[j]
                 endptr = X_indptr[j + 1]
                 Xj_theta = 0.
@@ -62,7 +62,7 @@ cdef floating compute_dual_scaling(
     else: # scaling wrt features in C only
         for j in range(ws_size):
             Cj = C[j]
-            if sparse:
+            if is_sparse:
                 startptr = X_indptr[Cj]
                 endptr = X_indptr[Cj + 1]
                 Xj_theta = 0.
@@ -84,7 +84,7 @@ cdef floating compute_dual_scaling(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_feature_prios(
-    bint sparse, int n_samples, int n_features, floating * theta,
+    bint is_sparse, int n_samples, int n_features, floating * theta,
     floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating * norms_X_col, floating * prios, bint positive) nogil:
@@ -98,7 +98,7 @@ cdef void set_feature_prios(
         if norms_X_col[j] == 0.:
             prios[j] = 10000
             continue
-        if sparse:
+        if is_sparse:
             Xj_theta = 0
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
@@ -117,7 +117,7 @@ cdef void set_feature_prios(
 @cython.wraparound(False)
 @cython.cdivision(True)
 def celer(
-    bint sparse, floating[::1, :] X,
+    bint is_sparse, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
     floating[:] y, floating alpha, floating[:] w_init, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
@@ -157,7 +157,7 @@ def celer(
     cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
     cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
 
-    if sparse:
+    if is_sparse:
         # center = X_mean.any()
         for j in range(n_features):
             if X_mean[j]:
@@ -168,7 +168,7 @@ def celer(
     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
     for j in range(n_features):
         w[j] = w_init[j]
-        if sparse:
+        if is_sparse:
             startptr = X_indptr[j]
             endptr = X_indptr[j + 1]
             X_mean_j = X_mean[j]
@@ -184,7 +184,7 @@ def celer(
         if w[j] == 0.:
             continue
         else:
-            if sparse:
+            if is_sparse:
                 startptr = X_indptr[j]
                 endptr = X_indptr[j + 1]
                 for i in range(startptr, endptr):
@@ -220,7 +220,7 @@ def celer(
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = compute_dual_scaling(
-            sparse,
+            is_sparse,
             n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
             n_features, &dummy_C[0], X_mean, center, positive)
 
@@ -234,7 +234,7 @@ def celer(
         # also test dual point returned by inner solver after 1st iter:
         if t != 0:
             scal = compute_dual_scaling(
-                sparse,
+                is_sparse,
                 n_features, n_samples, &theta_inner[0], X, X_data, X_indices,
                 X_indptr, n_features, &dummy_C[0], X_mean, center, positive)
             if scal > 1.:
@@ -269,7 +269,7 @@ def celer(
             break
 
         set_feature_prios(
-            sparse, n_samples, n_features, &theta[0], X, X_data, X_indices, X_indptr,
+            is_sparse, n_samples, n_features, &theta[0], X, X_data, X_indices, X_indptr,
             &norms_X_col[0], &prios[0], positive)
 
         if prune:
@@ -314,7 +314,7 @@ def celer(
             print("Solving subproblem with %d constraints" % len(C))
         # calling inner solver which will modify w and R inplace
         epochs[t] = inner_solver(
-            sparse,
+            is_sparse,
             n_samples, n_features, ws_size, X, X_data, X_indices, X_indptr, X_mean,
             y, alpha, center, w, R, C, theta_inner, norms_X_col,
             norm_y2, tol_inner, max_epochs=max_epochs,
@@ -336,7 +336,7 @@ def celer(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef int inner_solver(
-    bint sparse,
+    bint is_sparse,
     int n_samples, int n_features, int ws_size, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
     floating[:] y, floating alpha, bint center, floating[:] w, floating[:] R,
@@ -396,7 +396,7 @@ cpdef int inner_solver(
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling(
-                sparse,
+                is_sparse,
                 n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
                 ws_size, &C[0], X_mean, center, positive)
 
@@ -459,7 +459,7 @@ cpdef int inner_solver(
                     fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling(
-                        sparse,
+                        is_sparse,
                         n_features, n_samples, &thetaccel[0], X, X_data,
                         X_indices, X_indptr, ws_size, &C[0], X_mean, center,
                         positive)
@@ -503,7 +503,7 @@ cpdef int inner_solver(
             if norms_X_col[j] == 0.:
                 continue
             old_w_j = w[j]
-            if sparse:
+            if is_sparse:
                 X_mean_j = X_mean[j]
                 startptr, endptr = X_indptr[j], X_indptr[j + 1]
                 for i in range(startptr, endptr):
@@ -525,7 +525,7 @@ cpdef int inner_solver(
             # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
             tmp = w[j] - old_w_j
             if tmp != 0.:
-                if sparse:
+                if is_sparse:
                     for i in range(startptr, endptr):
                         R[X_indices[i]] -= tmp *  X_data[i]
                     if center:

@@ -11,7 +11,7 @@ from scipy import sparse
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
-from .sparse import celer
+from .lasso_fast import celer
 
 
 def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
