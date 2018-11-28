@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.Lasso &#8212; celer 0.2 documentation</title>
+    <title>celer.Lasso &#8212; celer 0.3dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2',
+        VERSION:     '0.3dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -121,7 +121,7 @@
 <h1>celer.Lasso<a class="headerlink" href="#celer-lasso" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.Lasso">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>warm_start=False</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lasso scikit-learn estimator based on Celer solver</p>
 <p>The optimization objective for Lasso is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2</span><span class="n">_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
@@ -169,6 +169,13 @@ reached.</p>
 <dd><p class="first last">This parameter is ignored when <code class="docutils literal"><span class="pre">fit_intercept</span></code> is set to False.
 If True,  the regressors X will be normalized before regression by
 subtracting the mean and dividing by the l2-norm.</p>
+</dd>
+<dt><strong>warm_start</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">When set to True, reuse the solution of the previous call to fit as
+initialization, otherwise, just erase the previous solution.</p>
+</dd>
+<dt><strong>positive</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">When set to True, forces the coefficients to be positive.</p>
 </dd>
 </dl>
 </td>
@@ -219,8 +226,7 @@ subtracting the mean and dividing by the l2-norm.</p>
 <dd><p class="first last">constant term in decision function.</p>
 </dd>
 <dt><strong>n_iter_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">number of subproblems solved by celer to reach
-the specified tolerance.</p>
+<dd><p class="first last">Number of subproblems solved by Celer to reach the specified tolerance.</p>
 </dd>
 </dl>
 </td>
@@ -229,7 +235,7 @@ the specified tolerance.</p>
 </table>
 <dl class="method">
 <dt id="celer.Lasso.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>warm_start=False</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
@@ -248,7 +254,7 @@ the specified tolerance.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path</span></code>(X,&nbsp;y,&nbsp;alphas,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path</span></code>(X,&nbsp;y,&nbsp;alphas[,&nbsp;coef_init,&nbsp;return_n_iter])</td>
 <td>Compute Lasso path with Celer.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">predict</span></code>(X)</td>

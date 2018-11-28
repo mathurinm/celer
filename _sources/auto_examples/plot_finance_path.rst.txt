@@ -1,4 +1,8 @@
+.. note::
+    :class: sphx-glr-download-link-note
 
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_finance_path.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_plot_finance_path.py:
 
@@ -17,12 +21,14 @@ implementation as it makes the example too long to run.
 
 
 .. image:: /auto_examples/images/sphx_glr_plot_finance_path_001.png
-    :align: center
+    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out::
+ Out:
+
+ .. code-block:: none
 
     *** Warning: this example may take more than 10 minutes to run ***
     Loading data...
@@ -94,13 +100,17 @@ implementation as it makes the example too long to run.
     fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
     plt.show()
 
-**Total running time of the script:** ( 4 minutes  45.420 seconds)
+**Total running time of the script:** ( 5 minutes  29.114 seconds)
 
+
+.. _sphx_glr_download_auto_examples_plot_finance_path.py:
 
 
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
 
 
   .. container:: sphx-glr-download

@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.LassoCV &#8212; celer 0.2 documentation</title>
+    <title>celer.LassoCV &#8212; celer 0.3dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2',
+        VERSION:     '0.3dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -48,7 +48,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -120,7 +120,7 @@
 <h1>celer.LassoCV<a class="headerlink" href="#celer-lassocv" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.LassoCV">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">LassoCV</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>precompute='auto'</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
 <dd><p>LassoCV scikit-learn estimator based on Celer solver</p>
 <p>The best model is selected by cross-validation.</p>
 <p>The optimization objective for Lasso is:</p>
@@ -188,6 +188,9 @@ coordinate descent epochs.</p>
 </dd>
 <dt><strong>precompute</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ignored parameter, kept for sklearn compatibility.</span></dt>
 <dd></dd>
+<dt><strong>positive</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">When set to True, forces the coefficients to be positive.</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -232,7 +235,7 @@ the specified tolerance for the optimal alpha.</p>
 </table>
 <dl class="method">
 <dt id="celer.LassoCV.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>precompute='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>max_iter=100</em>, <em>tol=0.0001</em>, <em>cv=None</em>, <em>verbose=0</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>prune=0</em>, <em>precompute='auto'</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
@@ -251,7 +254,7 @@ the specified tolerance for the optimal alpha.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path</span></code>(X,&nbsp;y,&nbsp;alphas,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path</span></code>(X,&nbsp;y,&nbsp;alphas[,&nbsp;coef_init])</td>
 <td>Compute Lasso path with Celer.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">predict</span></code>(X)</td>

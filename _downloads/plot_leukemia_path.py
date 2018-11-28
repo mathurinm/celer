@@ -54,7 +54,7 @@ for tol_ix, tol in enumerate(tols):
     _, coefs, gaps, thetas = res
 
     t0 = time.time()
-    _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
+    # _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
     results[1, tol_ix] = time.time() - t0
     coefs = coefs.T
 

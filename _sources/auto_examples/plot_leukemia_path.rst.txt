@@ -1,4 +1,8 @@
+.. note::
+    :class: sphx-glr-download-link-note
 
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_leukemia_path.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_plot_leukemia_path.py:
 
@@ -12,28 +16,6 @@ dataset which is dense dataset.
 
 Running time is compared with the scikit-learn implementation.
 
-
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_leukemia_path_001.png
-    :align: center
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out::
-
-    Loading data...
-    Starting path computation...
-    Celer time: 0.12 s
-    Celer time: 0.24 s
-    Celer time: 0.44 s
-    Celer time: 0.64 s
-
-
-
-
-|
 
 
 .. code-block:: python
@@ -84,7 +66,7 @@ Running time is compared with the scikit-learn implementation.
         _, coefs, gaps, thetas = res
 
         t0 = time.time()
-        _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
+        # _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
         results[1, tol_ix] = time.time() - t0
         coefs = coefs.T
 
@@ -93,13 +75,17 @@ Running time is compared with the scikit-learn implementation.
     fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  22.327 seconds)
+**Total running time of the script:** ( 0 minutes  0.000 seconds)
 
+
+.. _sphx_glr_download_auto_examples_plot_leukemia_path.py:
 
 
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
 
 
   .. container:: sphx-glr-download

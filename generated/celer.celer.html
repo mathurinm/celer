@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.celer &#8212; celer 0.2 documentation</title>
+    <title>celer.celer &#8212; celer 0.3dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2',
+        VERSION:     '0.3dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -121,7 +121,7 @@
 <h1>celer.celer<a class="headerlink" href="#celer-celer" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer">
-<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>w_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>w_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>positive=False</em>, <em>return_n_iter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Lasso solution with the Celer algorithm.</p>
 <p>The minimized objective function is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||</span><span class="n">_2</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
@@ -171,6 +171,13 @@ below <code class="docutils literal"><span class="pre">tol</span></code> or the 
 <dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
 <dd><p class="first last">Whether or not to use pruning when growing the working sets.</p>
 </dd>
+<dt><strong>positive</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">When set to True, forces the coefficients to be positive.</p>
+</dd>
+<dt><strong>return_n_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
+<dd><p class="first last">Whether or not to return the number of iterations (ie the number of
+subproblems solved).</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -186,6 +193,10 @@ below <code class="docutils literal"><span class="pre">tol</span></code> or the 
 </dd>
 <dt><strong>times</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
 <dd><p class="first last">Time elapsed since entering the solver, at each outer loop iteration.</p>
+</dd>
+<dt><strong>n_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of iterations (subproblems solved). Returned only if
+return_n_iter is True.</p>
 </dd>
 </dl>
 </td>
