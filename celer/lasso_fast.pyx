@@ -14,6 +14,8 @@ from libc.math cimport fabs, sqrt
 from utils cimport primal_value, dual_value, ST
 from utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 
+ctypedef np.uint8_t uint8
+
 cdef:
     int inc = 1
 
@@ -85,9 +87,9 @@ cdef floating compute_dual_scaling(
 @cython.cdivision(True)
 cdef void set_feature_prios(
     bint is_sparse, int n_samples, int n_features, floating * theta,
-    floating[::1, :] X,
-    floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating * norms_X_col, floating * prios, bint positive) nogil:
+    floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
+    floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
+    int * n_screened, bint positive) nogil:
     cdef int j
     cdef int i
     cdef floating Xj_theta
@@ -95,7 +97,7 @@ cdef void set_feature_prios(
     cdef int endptr
 
     for j in range(n_features):
-        if norms_X_col[j] == 0.:
+        if screened[j]:
             prios[j] = 10000
             continue
         if is_sparse:
@@ -111,6 +113,10 @@ cdef void set_feature_prios(
             prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]
         else:
             prios[j] = fabs(fabs(Xj_theta) - 1.) / norms_X_col[j]
+
+        if prios[j] > radius:
+            screened[j] = True
+            n_screened += 1
 
 
 @cython.boundscheck(False)
@@ -150,12 +156,15 @@ def celer(
     cdef floating highest_d_obj
     cdef floating scal
     cdef floating gap
+    cdef floating radius
+    cdef int n_screened = 0
     cdef bint center = False
     cdef floating X_mean_j
     # cdef floating normalize_sum = 0.0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
     cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+    cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
 
     if is_sparse:
         # center = X_mean.any()
@@ -268,9 +277,11 @@ def celer(
                 print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
+        radius = sqrt(2 * gap) / alpha
         set_feature_prios(
-            is_sparse, n_samples, n_features, &theta[0], X, X_data, X_indices, X_indptr,
-            &norms_X_col[0], &prios[0], positive)
+            is_sparse, n_samples, n_features, &theta[0], X, X_data, X_indices,
+            X_indptr, &norms_X_col[0], &prios[0], &screened[0], radius,
+            &n_screened, positive)
 
         if prune:
             ws_size = 0
@@ -279,7 +290,7 @@ def celer(
                     prios[j] = -1.
                     ws_size += 1
 
-            ws_size = min(n_features, 2 * ws_size)
+            ws_size = min(n_features - n_screened, 2 * ws_size)
 
             if t == 0:
                 ws_size = p0
@@ -293,10 +304,10 @@ def celer(
             else:
                 for j in range(ws_size):
                     prios[C[j]] = -1
-                ws_size = min(n_features, 2 * ws_size)
+                ws_size = min(n_features - n_screened, 2 * ws_size)
 
-        if ws_size > n_features:
-            ws_size = n_features
+        if ws_size > n_features - n_screened:
+            ws_size = n_features - n_screened
 
         ws_sizes[t] = ws_size
         # if ws_size === n_features then argpartition will break:
