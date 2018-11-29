@@ -116,7 +116,7 @@ cdef void set_feature_prios(
 
         if prios[j] > radius:
             screened[j] = True
-            n_screened += 1
+            n_screened[0] += 1
 
 
 @cython.boundscheck(False)
