@@ -151,6 +151,7 @@ def celer(
     cdef int inc = 1
     cdef floating tmp
     cdef int ws_size = 0
+    cdef int nnz = 0
     cdef floating p_obj
     cdef floating d_obj
     cdef floating highest_d_obj
@@ -308,7 +309,8 @@ def celer(
                 ws_size = p0
             else:
                 for j in range(ws_size):
-                    prios[C[j]] = -1
+                    if not screened[C[j]]:
+                        prios[C[j]] = -1
                 ws_size = min(n_features - n_screened, 2 * ws_size)
 
         if ws_size > n_features - n_screened:
