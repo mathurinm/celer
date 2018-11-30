@@ -26,7 +26,7 @@ cdef:
 cdef floating compute_dual_scaling(
     bint is_sparse, int n_features, int n_samples, floating * theta,
     floating[::1, :] X, floating[:] X_data,
-    int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
+    int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
     floating[:] X_mean, bint center, bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
@@ -47,6 +47,8 @@ cdef floating compute_dual_scaling(
 
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
+            if screened[j]:
+                continue
             if is_sparse:
                 startptr = X_indptr[j]
                 endptr = X_indptr[j + 1]
@@ -116,7 +118,7 @@ cdef void set_feature_prios(
 
         if prios[j] > radius:
             screened[j] = True
-            n_screened += 1
+            n_screened[0] += 1
 
 
 @cython.boundscheck(False)
@@ -128,7 +130,7 @@ def celer(
     floating[:] y, floating alpha, floating[:] w_init, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
-    int verbose_inner=0, int use_accel=1,  int return_ws_size=0,
+    int verbose_inner=0, int use_accel=1, int return_ws_size=0,
     int prune=0, bint positive=0):
 
     if floating is double:
@@ -151,6 +153,7 @@ def celer(
     cdef int inc = 1
     cdef floating tmp
     cdef int ws_size = 0
+    cdef int nnz = 0
     cdef floating p_obj
     cdef floating d_obj
     cdef floating highest_d_obj
@@ -233,7 +236,7 @@ def celer(
         scal = compute_dual_scaling(
             is_sparse,
             n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-            n_features, &dummy_C[0], X_mean, center, positive)
+            n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
 
         if scal > 1. :
             tmp = 1. / scal
@@ -247,7 +250,8 @@ def celer(
             scal = compute_dual_scaling(
                 is_sparse,
                 n_features, n_samples, &theta_inner[0], X, X_data, X_indices,
-                X_indptr, n_features, &dummy_C[0], X_mean, center, positive)
+                X_indptr, n_features, &dummy_C[0], &screened[0], X_mean,
+                center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
@@ -281,7 +285,7 @@ def celer(
                 print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
-        radius = sqrt(2 * gap) / alpha
+        radius = sqrt(2 * gap / n_samples) / alpha
         set_feature_prios(
             is_sparse, n_samples, n_features, &theta_to_use[0], X, X_data,
             X_indices,
@@ -289,32 +293,35 @@ def celer(
             &n_screened, positive)
 
         if prune:
-            ws_size = 0
+            nnz = 0
             for j in range(n_features):
                 if w[j] != 0:
                     prios[j] = -1.
-                    ws_size += 1
-
-            ws_size = min(n_features - n_screened, 2 * ws_size)
+                    nnz += 1
 
             if t == 0:
-                ws_size = p0
+                ws_size = p0 if nnz == 0 else nnz
+            else:
+                ws_size = 2 * nnz
 
         else:
             for j in range(n_features):
                 if w[j] != 0:
-                    prios[j] = - 1
+                    prios[j] = - 1  # include active features
             if t == 0:
                 ws_size = p0
             else:
                 for j in range(ws_size):
-                    prios[C[j]] = -1
-                ws_size = min(n_features - n_screened, 2 * ws_size)
+                    if not screened[C[j]]:
+                        # include previous features, if not screened
+                        prios[C[j]] = -1
+                ws_size = 2 * ws_size
 
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
 
         ws_sizes[t] = ws_size
+
         # if ws_size === n_features then argpartition will break:
         if ws_size == n_features:
             C = all_features
@@ -375,6 +382,7 @@ cpdef int inner_solver(
     cdef floating old_w_j
     cdef floating w_Cj
     cdef int inc = 1
+    cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
     # gap related:
     cdef floating gap
     cdef floating[:] gaps = np.zeros(max_epochs // gap_freq, dtype=dtype)
@@ -414,7 +422,7 @@ cpdef int inner_solver(
             dual_scale = compute_dual_scaling(
                 is_sparse,
                 n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-                ws_size, &C[0], X_mean, center, positive)
+                ws_size, &C[0], &dummy_screened[0], X_mean, center, positive)
 
             if dual_scale > 1. :
                 tmp = 1. / dual_scale
@@ -475,10 +483,9 @@ cpdef int inner_solver(
                     fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling(
-                        is_sparse,
-                        n_features, n_samples, &thetaccel[0], X, X_data,
-                        X_indices, X_indptr, ws_size, &C[0], X_mean, center,
-                        positive)
+                        is_sparse, n_features, n_samples, &thetaccel[0], X,
+                        X_data, X_indices, X_indptr, ws_size, &C[0],
+                        &dummy_screened[0], X_mean, center, positive)
 
                     if dual_scale_accel > 1. :
                         tmp = 1. / dual_scale_accel
