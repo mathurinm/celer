@@ -215,7 +215,6 @@ def celer(
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
     cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
     cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
-    cdef int[:] screens = np.zeros(max_iter, dtype=np.int32)
 
     cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
@@ -275,7 +274,16 @@ def celer(
         gaps[t] = gap
         times[t] = time.time() - t0
 
+        if verbose:
+            print("############ Iteration %d  #################" % t)
+            print("Primal {:.10f}".format(p_obj))
+            print("Dual {:.10f}".format(highest_d_obj))
+            print("Log gap %.2e" % gap)
 
+        if gap < tol:
+            if verbose:
+                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
+            break
 
         radius = sqrt(2 * gap / n_samples) / alpha
         set_feature_prios(
@@ -312,19 +320,7 @@ def celer(
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
 
-        screens[t] = n_screened
         ws_sizes[t] = ws_size
-
-        if verbose:
-            print("############ Iteration %d  #################" % t)
-            print("Primal {:.10f}".format(p_obj))
-            print("Dual {:.10f}".format(highest_d_obj))
-            print("Log gap %.2e" % gap)
-
-        if gap < tol:
-            if verbose:
-                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
-            break
 
         # if ws_size === n_features then argpartition will break:
         if ws_size == n_features:
@@ -352,8 +348,7 @@ def celer(
         return (np.asarray(w), np.asarray(theta),
                 np.asarray(gaps[:t + 1]),
                 np.asarray(times[:t + 1]),
-                np.asarray(ws_sizes[:t + 1]),
-                np.asarray(screens[:t + 1]))
+                np.asarray(ws_sizes[:t + 1]))
 
     return (np.asarray(w), np.asarray(theta),
             np.asarray(gaps[:t + 1]),
