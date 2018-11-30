@@ -10,19 +10,19 @@ using the Celer algorithm.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.datasets import fetch_mldata
+from sklearn.datasets import fetch_openml
 
 from celer import LassoCV
 
 print(__doc__)
 
 print("Loading data...")
-dataset = fetch_mldata("leukemia")
+dataset = fetch_openml("leukemia")
 X = np.asfortranarray(dataset.data.astype(float))
-y = dataset.target.astype(float)
+y = 2 * ((dataset.target == "AML") - 0.5)
 n_samples = len(y)
 
-model = LassoCV()
+model = LassoCV(cv=3)
 model.fit(X, y)
 
 print("Estimated regularization parameter alpha: %s" % model.alpha_)

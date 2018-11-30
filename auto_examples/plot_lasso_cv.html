@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Run LassoCV for cross-validation on Leukemia dataset &#8212; celer 0.3 documentation</title>
+    <title>Run LassoCV for cross-validation on Leukemia dataset &#8212; celer 0.3.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3',
+        VERSION:     '0.3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -47,7 +47,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -126,7 +126,7 @@ using the Celer algorithm.</p>
 <img alt="../_images/sphx_glr_plot_lasso_cv_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_lasso_cv_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none"><div class="highlight"><pre><span></span>Loading data...
-Estimated regularization parameter alpha: 0.03074801289382602
+Estimated regularization parameter alpha: 87.26245965609873
 </pre></div>
 </div>
 <div class="line-block">
@@ -135,19 +135,19 @@ Estimated regularization parameter alpha: 0.03074801289382602
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_mldata.html#sklearn.datasets.fetch_mldata" title="View documentation for sklearn.datasets.fetch_mldata"><span class="n">fetch_mldata</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_openml.html#sklearn.datasets.fetch_openml" title="View documentation for sklearn.datasets.fetch_openml"><span class="n">fetch_openml</span></a>
 
 <span class="kn">from</span> <span class="nn">celer</span> <span class="kn">import</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="View documentation for celer.LassoCV"><span class="n">LassoCV</span></a>
 
 <span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data...&quot;</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_mldata.html#sklearn.datasets.fetch_mldata" title="View documentation for sklearn.datasets.fetch_mldata"><span class="n">fetch_mldata</span></a><span class="p">(</span><span class="s2">&quot;leukemia&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_openml.html#sklearn.datasets.fetch_openml" title="View documentation for sklearn.datasets.fetch_openml"><span class="n">fetch_openml</span></a><span class="p">(</span><span class="s2">&quot;leukemia&quot;</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.asfortranarray.html#numpy.asfortranarray" title="View documentation for numpy.asfortranarray"><span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span></a><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">((</span><span class="n">dataset</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s2">&quot;AML&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="View documentation for celer.LassoCV"><span class="n">LassoCV</span></a><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="View documentation for celer.LassoCV"><span class="n">LassoCV</span></a><span class="p">(</span><span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Estimated regularization parameter alpha: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="o">.</span><span class="n">alpha_</span><span class="p">)</span>
@@ -170,7 +170,7 @@ Estimated regularization parameter alpha: 0.03074801289382602
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.487 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.807 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-lasso-cv-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_lasso_cv.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_lasso_cv.py</span></code></a></div>

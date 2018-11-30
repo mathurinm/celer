@@ -33,7 +33,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on the Leukemia dataset which is dense dataset.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on the Leukemia dataset which is a dense dataset.">
 
 .. only:: html
 
