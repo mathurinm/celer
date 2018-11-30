@@ -130,7 +130,7 @@ def celer(
     floating[:] y, floating alpha, floating[:] w_init, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
-    int verbose_inner=0, int use_accel=1,  int return_ws_size=0,
+    int verbose_inner=0, int use_accel=1, int return_ws_size=0,
     int prune=0, bint positive=0):
 
     if floating is double:
@@ -215,6 +215,7 @@ def celer(
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
     cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
     cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
+    cdef int[:] screens = np.zeros(max_iter, dtype=np.int32)
 
     cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
@@ -274,18 +275,9 @@ def celer(
         gaps[t] = gap
         times[t] = time.time() - t0
 
-        if verbose:
-            print("############ Iteration %d  #################" % t)
-            print("Primal {:.10f}".format(p_obj))
-            print("Dual {:.10f}".format(highest_d_obj))
-            print("Log gap %.2e" % gap)
 
-        if gap < tol:
-            if verbose:
-                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
-            break
 
-        radius = sqrt(2 * gap) / alpha
+        radius = sqrt(2 * gap / n_samples) / alpha
         set_feature_prios(
             is_sparse, n_samples, n_features, &theta_to_use[0], X, X_data,
             X_indices,
@@ -320,7 +312,20 @@ def celer(
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
 
+        screens[t] = n_screened
         ws_sizes[t] = ws_size
+
+        if verbose:
+            print("############ Iteration %d  #################" % t)
+            print("Primal {:.10f}".format(p_obj))
+            print("Dual {:.10f}".format(highest_d_obj))
+            print("Log gap %.2e" % gap)
+
+        if gap < tol:
+            if verbose:
+                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
+            break
+
         # if ws_size === n_features then argpartition will break:
         if ws_size == n_features:
             C = all_features
@@ -347,7 +352,8 @@ def celer(
         return (np.asarray(w), np.asarray(theta),
                 np.asarray(gaps[:t + 1]),
                 np.asarray(times[:t + 1]),
-                np.asarray(ws_sizes[:t + 1]))
+                np.asarray(ws_sizes[:t + 1]),
+                np.asarray(screens[:t + 1]))
 
     return (np.asarray(w), np.asarray(theta),
             np.asarray(gaps[:t + 1]),
