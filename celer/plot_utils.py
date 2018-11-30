@@ -8,22 +8,25 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 import seaborn as sns
 
-rc('font', **{'family': 'sans-serif',
-              'sans-serif': ['Computer Modern Roman']})
-params = {'axes.labelsize': 12,
-          'font.size': 12,
-          'legend.fontsize': 12,
-          'xtick.labelsize': 10,
-          'ytick.labelsize': 10,
-          'text.usetex': True,
-          'figure.figsize': (8, 6)}
-plt.rcParams.update(params)
 
-sns.set_context("poster")
-sns.set_style("ticks")
+def configure_plt():
+    rc('font', **{'family': 'sans-serif',
+                  'sans-serif': ['Computer Modern Roman']})
+    params = {'axes.labelsize': 12,
+              'font.size': 12,
+              'legend.fontsize': 12,
+              'xtick.labelsize': 10,
+              'ytick.labelsize': 10,
+              'text.usetex': True,
+              'figure.figsize': (8, 6)}
+    plt.rcParams.update(params)
+
+    sns.set_context("poster")
+    sns.set_style("ticks")
 
 
 def plot_path_hist(results, labels, tols, figsize, ylim=None):
+    configure_plt()
     sns.set_palette('colorblind')
     n_competitors = len(results)
     fig, ax = plt.subplots(figsize=figsize)
