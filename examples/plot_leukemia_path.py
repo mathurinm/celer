@@ -4,7 +4,7 @@ Lasso path computation on Leukemia dataset
 =======================================================
 
 The example runs the Celer algorithm on the Leukemia
-dataset which is dense dataset.
+dataset which is a dense dataset.
 
 Running time is compared with the scikit-learn implementation.
 """
@@ -25,7 +25,7 @@ print(__doc__)
 print("Loading data...")
 dataset = fetch_openml("leukemia")
 X = np.asfortranarray(dataset.data.astype(float))
-y = 2 * ((dataset.target == "AML") - 0.5)
+y = 2 * ((dataset.target != "AML") - 0.5)
 n_samples = len(y)
 
 y -= np.mean(y)
@@ -59,6 +59,6 @@ for tol_ix, tol in enumerate(tols):
     coefs = coefs.T
 
 labels = [r"\sc{Celer}", "scikit-learn"]
-figsize = (7, 4)
+figsize = (7.1, 4.3)
 fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
 plt.show()
