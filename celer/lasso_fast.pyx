@@ -26,7 +26,7 @@ cdef:
 cdef floating compute_dual_scaling(
     bint is_sparse, int n_features, int n_samples, floating * theta,
     floating[::1, :] X, floating[:] X_data,
-    int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
+    int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
     floating[:] X_mean, bint center, bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
@@ -47,6 +47,8 @@ cdef floating compute_dual_scaling(
 
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
+            if screened[j]:
+                continue
             if is_sparse:
                 startptr = X_indptr[j]
                 endptr = X_indptr[j + 1]
@@ -234,7 +236,7 @@ def celer(
         scal = compute_dual_scaling(
             is_sparse,
             n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-            n_features, &dummy_C[0], X_mean, center, positive)
+            n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
 
         if scal > 1. :
             tmp = 1. / scal
@@ -248,7 +250,8 @@ def celer(
             scal = compute_dual_scaling(
                 is_sparse,
                 n_features, n_samples, &theta_inner[0], X, X_data, X_indices,
-                X_indptr, n_features, &dummy_C[0], X_mean, center, positive)
+                X_indptr, n_features, &dummy_C[0], &screened[0], X_mean,
+                center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
@@ -378,6 +381,7 @@ cpdef int inner_solver(
     cdef floating old_w_j
     cdef floating w_Cj
     cdef int inc = 1
+    cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
     # gap related:
     cdef floating gap
     cdef floating[:] gaps = np.zeros(max_epochs // gap_freq, dtype=dtype)
@@ -417,7 +421,7 @@ cpdef int inner_solver(
             dual_scale = compute_dual_scaling(
                 is_sparse,
                 n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-                ws_size, &C[0], X_mean, center, positive)
+                ws_size, &C[0], &dummy_screened[0], X_mean, center, positive)
 
             if dual_scale > 1. :
                 tmp = 1. / dual_scale
@@ -478,10 +482,9 @@ cpdef int inner_solver(
                     fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     dual_scale_accel = compute_dual_scaling(
-                        is_sparse,
-                        n_features, n_samples, &thetaccel[0], X, X_data,
-                        X_indices, X_indptr, ws_size, &C[0], X_mean, center,
-                        positive)
+                        is_sparse, n_features, n_samples, &thetaccel[0], X,
+                        X_data, X_indices, X_indptr, ws_size, &C[0],
+                        &dummy_screened[0], X_mean, center, positive)
 
                     if dual_scale_accel > 1. :
                         tmp = 1. / dual_scale_accel
