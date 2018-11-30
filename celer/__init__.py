@@ -4,4 +4,4 @@ from .homotopy import celer_path
 from .wrapper import celer
 from .dropin_sklearn import Lasso, LassoCV
 
-__version__ = '0.3'
+__version__ = '0.3.1dev'
