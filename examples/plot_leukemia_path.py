@@ -15,7 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.linear_model import lasso_path
-from sklearn.datasets import fetch_mldata
+from sklearn.datasets import fetch_openml
 
 from celer import celer_path
 from celer.plot_utils import plot_path_hist
@@ -23,9 +23,9 @@ from celer.plot_utils import plot_path_hist
 print(__doc__)
 
 print("Loading data...")
-dataset = fetch_mldata("leukemia")
+dataset = fetch_openml("leukemia")
 X = np.asfortranarray(dataset.data.astype(float))
-y = dataset.target.astype(float)
+y = 2 * ((dataset.target == "AML") - 0.5)
 n_samples = len(y)
 
 y -= np.mean(y)
