@@ -290,28 +290,29 @@ def celer(
             &n_screened, positive)
 
         if prune:
-            ws_size = 0
+            nnz = 0
             for j in range(n_features):
                 if w[j] != 0:
                     prios[j] = -1.
-                    ws_size += 1
-
-            ws_size = min(n_features - n_screened, 2 * ws_size)
+                    nnz += 1
 
             if t == 0:
-                ws_size = p0
+                ws_size = p0 if nnz == 0 else nnz
+            else:
+                ws_size = 2 * nnz
 
         else:
             for j in range(n_features):
                 if w[j] != 0:
-                    prios[j] = - 1
+                    prios[j] = - 1  # include active features
             if t == 0:
                 ws_size = p0
             else:
                 for j in range(ws_size):
                     if not screened[C[j]]:
+                        # include previous features, if not screened
                         prios[C[j]] = -1
-                ws_size = min(n_features - n_screened, 2 * ws_size)
+                ws_size = 2 * ws_size
 
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
