@@ -11,7 +11,7 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
 install:
-  - conda env create -n tes-env python=${PYTHON_VERSION}
+  - conda create -n celer-env python=${PYTHON_VERSION}
   - conda env update --file environment.yml
   - source activate celer-env
   - conda install --yes --quiet pytest pytest-cov coverage
