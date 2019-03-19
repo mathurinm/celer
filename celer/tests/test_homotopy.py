@@ -40,6 +40,13 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
     return X, y, X_test, y_test
 
 
+def test_python3():
+    np.testing.assert_allclose(1 / 2, 0.5)
+
+
+def test_python2():
+    np.testing.assert_allclose(1 / 3, 0)
+
 @pytest.mark.parametrize("sparse_X, alphas, positive",
                          product([False, True], [None, 1], [False, True]))
 def test_celer_path(sparse_X, alphas, positive):
