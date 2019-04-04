@@ -345,12 +345,12 @@ def celer(
             use_accel=use_accel, positive=positive)
 
     if return_ws_size:
-        return (np.asarray(w), np.asarray(theta),
+        return (np.asarray(w), np.asarray(theta_to_use),
                 np.asarray(gaps[:t + 1]),
                 np.asarray(times[:t + 1]),
                 np.asarray(ws_sizes[:t + 1]))
 
-    return (np.asarray(w), np.asarray(theta),
+    return (np.asarray(w), np.asarray(theta_to_use),
             np.asarray(gaps[:t + 1]),
             np.asarray(times[:t + 1]))
 
