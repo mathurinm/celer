@@ -127,7 +127,8 @@ cdef void set_feature_prios(
 def celer(
     bint is_sparse, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, floating[:] w_init, int max_iter,
+    floating[:] y, floating alpha, floating[:] w_init,
+    floating[:] norms_X_col, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
     int verbose_inner=0, int use_accel=1, int return_ws_size=0,
@@ -165,7 +166,7 @@ def celer(
     cdef floating X_mean_j
     # cdef floating normalize_sum = 0.0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
+    # cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
     cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
 
@@ -180,17 +181,17 @@ def celer(
     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
     for j in range(n_features):
         w[j] = w_init[j]
-        if is_sparse:
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            X_mean_j = X_mean[j]
-            tmp = 0.
-            for i in range(startptr, endptr):
-                tmp += (X_data[i] - X_mean_j) ** 2
-            tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
-            norms_X_col[j] = sqrt(tmp)
-        else:
-            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+        # if is_sparse:
+        #     startptr = X_indptr[j]
+        #     endptr = X_indptr[j + 1]
+        #     X_mean_j = X_mean[j]
+        #     tmp = 0.
+        #     for i in range(startptr, endptr):
+        #         tmp += (X_data[i] - X_mean_j) ** 2
+        #     tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
+        #     norms_X_col[j] = sqrt(tmp)
+        # else:
+        #     norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
 
         # R -= np.dot(X[:, j], w)
         if w[j] == 0.:
