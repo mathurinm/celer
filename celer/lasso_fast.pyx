@@ -23,11 +23,35 @@ cdef:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
+cpdef void compute_norms_X_col(
+        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
+        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr, floating[:] X_mean):
+    cdef int j, startptr, endptr
+    cdef floating tmp, X_mean_j
+
+    for j in range(n_features):
+        if is_sparse:
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            X_mean_j = X_mean[j]
+            tmp = 0.
+            for i in range(startptr, endptr):
+                tmp += (X_data[i] - X_mean_j) ** 2
+            tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
+            norms_X_col[j] = sqrt(tmp)
+        else:
+            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
 cdef floating compute_dual_scaling(
-    bint is_sparse, int n_features, int n_samples, floating * theta,
-    floating[::1, :] X, floating[:] X_data,
-    int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
-    floating[:] X_mean, bint center, bint positive) nogil:
+        bint is_sparse, int n_features, int n_samples, floating * theta,
+        floating[::1, :] X, floating[:] X_data,
+        int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
+        floating[:] X_mean, bint center, bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
@@ -193,7 +217,7 @@ def celer(
         # else:
         #     norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
 
-        # R -= np.dot(X[:, j], w)
+        # R -= np.dot(X[:, j], w):
         if w[j] == 0.:
             continue
         else:
