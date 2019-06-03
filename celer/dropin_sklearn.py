@@ -4,7 +4,7 @@ import numpy as np
 
 from scipy import sparse
 from abc import ABCMeta, abstractmethod
-from sklearn.base import RegressorMixin
+from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.linear_model.base import LinearModel
 from sklearn.utils import check_array
 from sklearn.externals import six
