@@ -3,7 +3,6 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-import time
 import warnings
 import numpy as np
 
@@ -172,7 +171,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                 w_init = np.zeros(n_features, dtype=X.dtype)
 
         alpha = alphas[t]
-        t0 = time.time()
         sol = celer(
             is_sparse,
             X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
@@ -198,6 +196,5 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         results += (thetas,)
     if return_n_iter:
         results += (n_iters,)
-
 
     return results
