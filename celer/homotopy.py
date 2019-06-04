@@ -177,7 +177,8 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                 is_sparse, R, y, w, X_sparse_scaling.any(), n_samples,
                 n_features, X_dense, X_data, X_indices, X_indptr,
                 X_sparse_scaling)
-            theta = np.zeros(n_samples, dtype=X.dtype)  # TODO fix
+            theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
+            # theta = np.zeros(n_samples, dtype=X.dtype)  # TODO fix
 
         alpha = alphas[t]
         # celer modifies w and theta in place:

@@ -183,7 +183,7 @@ def test_warm_start():
     for alpha in alphas:
         reg1.set_params(alpha=alpha)
         reg1.fit(X, y)
-        # refitting with warm start should take only 1 iter:
+        # refitting with warm start should take less than 2 iters:
         reg1.fit(X, y)
         # hack because assert_array_less does strict comparison...
-        np.testing.assert_array_less(reg1.n_iter_, 1.01)
+        np.testing.assert_array_less(reg1.n_iter_, 2.01)

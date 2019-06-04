@@ -226,25 +226,25 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        # theta = R / (alpha * n_samples)
-        fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / (alpha * n_samples)
-        fscal(&n_samples, &tmp, &theta[0], &inc)
-
-        scal = compute_dual_scaling(
-            is_sparse,
-            n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-            n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
-
-        if scal > 1. :
-            tmp = 1. / scal
+        if t != 0:
+            # theta = R / (alpha * n_samples)
+            fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
+            tmp = 1. / (alpha * n_samples)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
-                           &y[0])
+            scal = compute_dual_scaling(
+                is_sparse,
+                n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
+                n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
 
-        # also test dual point returned by inner solver after 1st iter:
-        if t != 0:
+            if scal > 1. :
+                tmp = 1. / scal
+                fscal(&n_samples, &tmp, &theta[0], &inc)
+
+            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
+                            &y[0])
+
+            # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
                 is_sparse,
                 n_features, n_samples, &theta_inner[0], X, X_data, X_indices,
@@ -256,6 +256,9 @@ def celer(
 
             d_obj_from_inner = dual_value(n_samples, alpha, norm_y2,
                                           &theta_inner[0], &y[0])
+        else:
+            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
+                                &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
