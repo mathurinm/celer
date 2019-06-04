@@ -58,11 +58,7 @@ cdef floating compute_dual_scaling(
     cdef floating Xj_theta
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
-    cdef int j
-    cdef int Cj
-    cdef int i
-    cdef int startptr
-    cdef int endptr
+    cdef int i, j, Cj, startptr, endptr
 
     if is_sparse:
         if center:
@@ -116,11 +112,8 @@ cdef void set_feature_prios(
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
     int * n_screened, bint positive) nogil:
-    cdef int j
-    cdef int i
+    cdef int i, j, startptr, endptr
     cdef floating Xj_theta
-    cdef int startptr
-    cdef int endptr
 
     for j in range(n_features):
         if screened[j]:
@@ -164,27 +157,20 @@ def celer(
         dtype = np.float32
 
     cdef int n_features = w_init.shape[0]
+    cdef int n_samples = y.shape[0]
     cdef floating t0 = time.time()
     if p0 > n_features:
         p0 = n_features
 
-    cdef int startptr, endptr
+    cdef int i, j, t, startptr, endptr
 
-    cdef int n_samples = y.shape[0]
     cdef floating[:] w = np.empty(n_features, dtype=dtype)
-    cdef int j  # features
-    cdef int i  # samples
-    cdef int t  # outer loop
     cdef int inc = 1
     cdef floating tmp
     cdef int ws_size = 0
     cdef int nnz = 0
-    cdef floating p_obj
-    cdef floating d_obj
-    cdef floating highest_d_obj
+    cdef floating p_obj, d_obj, highest_d_obj, gap, radius
     cdef floating scal
-    cdef floating gap
-    cdef floating radius
     cdef int n_screened = 0
     cdef bint center = False
     cdef floating X_mean_j
@@ -385,12 +371,7 @@ cpdef int inner_solver(
     else:
         dtype = np.float32
 
-    cdef int startptr
-    cdef int endptr
-
-    cdef int i # to iterate over samples.
-    cdef int j  # to iterate over features
-    cdef int k
+    cdef int i, j, k, startptr, endptr
     cdef int epoch
     cdef floating old_w_j
     cdef floating X_mean_j
@@ -398,13 +379,11 @@ cpdef int inner_solver(
     cdef int inc = 1
     cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
     # gap related:
-    cdef floating gap
     cdef floating[:] gaps = np.zeros(max_epochs // gap_freq, dtype=dtype)
 
     # cdef floating[:] theta = np.empty(n_samples)
     cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
-    cdef floating dual_scale
-    cdef floating d_obj
+    cdef floating gap, d_obj, d_obj_accel, dual_scale, dual_scale_accel
     cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
     # at first d_obj computation. highest_d_obj corresponds to theta = 0.
     cdef floating tmp
@@ -414,8 +393,6 @@ cpdef int inner_solver(
     cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
     cdef floating[:, :] UtU = np.empty([K - 1, K - 1], dtype=dtype)
     cdef floating[:] onesK = np.ones(K - 1, dtype=dtype)
-    cdef floating dual_scale_accel
-    cdef floating d_obj_accel
 
     # solving linear system in cython
     # doc at https://software.intel.com/en-us/node/468894
