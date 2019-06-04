@@ -171,14 +171,13 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                 p0 = max((w != 0.).sum(), p0)
             else:
                 w = np.zeros(n_features, dtype=X.dtype)
-            # initialize residuals, afterwards celer() updates them inplace
+            # initialize R and theta, afterwards celer() updates them inplace
             R = np.zeros(n_samples, dtype=X.dtype)
             compute_residuals(
                 is_sparse, R, y, w, X_sparse_scaling.any(), n_samples,
                 n_features, X_dense, X_data, X_indices, X_indptr,
                 X_sparse_scaling)
             theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
-            # theta = np.zeros(n_samples, dtype=X.dtype)  # TODO fix
 
         alpha = alphas[t]
         # celer modifies w and theta in place:
