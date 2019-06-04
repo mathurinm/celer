@@ -406,6 +406,7 @@ cpdef int inner_solver(
     cdef int k
     cdef int epoch
     cdef floating old_w_j
+    cdef floating X_mean_j
     cdef floating w_Cj
     cdef int inc = 1
     cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
