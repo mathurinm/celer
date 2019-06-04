@@ -14,6 +14,7 @@ dependencies:
     - tqdm
     - nose
     - numpydoc
+    - pip
     - pytest
     - pytest-cov
 
