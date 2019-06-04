@@ -188,14 +188,12 @@ def celer(
     cdef int n_screened = 0
     cdef bint center = False
     cdef floating X_mean_j
-    # cdef floating normalize_sum = 0.0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    # cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
     cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
 
     if is_sparse:
-        # center = X_mean.any()
+        # center = X_mean.any():
         for j in range(n_features):
             if X_mean[j]:
                 center = True
@@ -205,17 +203,6 @@ def celer(
     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
     for j in range(n_features):
         w[j] = w_init[j]
-        # if is_sparse:
-        #     startptr = X_indptr[j]
-        #     endptr = X_indptr[j + 1]
-        #     X_mean_j = X_mean[j]
-        #     tmp = 0.
-        #     for i in range(startptr, endptr):
-        #         tmp += (X_data[i] - X_mean_j) ** 2
-        #     tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
-        #     norms_X_col[j] = sqrt(tmp)
-        # else:
-        #     norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
 
         # R -= np.dot(X[:, j], w):
         if w[j] == 0.:

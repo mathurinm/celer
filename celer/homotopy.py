@@ -151,13 +151,11 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         X_data = X.data
         X_indptr = X.indptr
         X_indices = X.indices
-        # norms_X_col = sparse.linalg.norm(X, axis=0)
     else:
         X_dense = X
         X_data = np.empty([1], dtype=X.dtype)
         X_indices = np.empty([1], dtype=np.int32)
         X_indptr = np.empty([1], dtype=np.int32)
-        # norms_X_col = np.linalg.norm(X, axis=0)
     norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
     compute_norms_X_col(is_sparse, norms_X_col, n_samples, n_features,
                         X_dense, X_data, X_indices, X_indptr,
