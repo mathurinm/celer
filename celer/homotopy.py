@@ -10,7 +10,7 @@ from scipy import sparse
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
-from .lasso_fast import celer, compute_norms_X_col
+from .lasso_fast import celer, compute_norms_X_col, compute_residuals
 
 
 def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
@@ -149,6 +149,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         X_data = np.empty([1], dtype=X.dtype)
         X_indices = np.empty([1], dtype=np.int32)
         X_indptr = np.empty([1], dtype=np.int32)
+
     norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
     compute_norms_X_col(is_sparse, norms_X_col, n_samples, n_features,
                         X_dense, X_data, X_indices, X_indptr,
@@ -161,20 +162,29 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
             print(" ##### Computing %dth alpha" % (t + 1))
             print("#" * 60)
         if t > 0:
-            w_init = coefs[:, t - 1].copy()
-            p0 = max(len(np.where(w_init != 0)[0]), 1)
+            w = coefs[:, t - 1].copy()
+            theta = thetas[t - 1].copy()
+            p0 = max(len(np.where(w != 0)[0]), 1)
         else:
             if coef_init is not None:
-                w_init = coef_init.copy()
-                p0 = max((w_init != 0.).sum(), p0)
+                w = coef_init.copy()
+                p0 = max((w != 0.).sum(), p0)
             else:
-                w_init = np.zeros(n_features, dtype=X.dtype)
+                w = np.zeros(n_features, dtype=X.dtype)
+            # initialize R and theta, afterwards celer() updates them inplace
+            R = np.zeros(n_samples, dtype=X.dtype)
+            compute_residuals(
+                is_sparse, R, y, w, X_sparse_scaling.any(), n_samples,
+                n_features, X_dense, X_data, X_indices, X_indptr,
+                X_sparse_scaling)
+            theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
 
         alpha = alphas[t]
+        # celer modifies w and theta in place:
         sol = celer(
             is_sparse,
             X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
-            w_init, norms_X_col,
+            w, R, theta, norms_X_col,
             max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
             p0=p0, verbose=verbose, verbose_inner=verbose_inner,
             use_accel=1, tol=tol, prune=prune, positive=positive)

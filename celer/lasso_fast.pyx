@@ -1,6 +1,4 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
-#         Alexandre Gramfort <alexandre.gramfort@inria.fr>
-#         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
 import numpy as np
@@ -41,6 +39,36 @@ cpdef void compute_norms_X_col(
             norms_X_col[j] = sqrt(tmp)
         else:
             norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
+        floating[:] w, bint center, int n_samples,
+        int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr, floating[:] X_mean):
+
+    cdef int j, startptr, endptr
+    cdef floating tmp, X_mean_j
+
+    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+    for j in range(n_features):
+        if w[j] == 0.:
+            continue
+        else:
+            if is_sparse:
+                startptr = X_indptr[j]
+                endptr = X_indptr[j + 1]
+                for i in range(startptr, endptr):
+                    R[X_indices[i]] -= w[j] * X_data[i]
+                if center:
+                    X_mean_j = X_mean[j]
+                    for i in range(n_samples):
+                        R[i] += X_mean_j * w[j]
+            else:
+                tmp = - w[j]
+                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
 
 @cython.boundscheck(False)
@@ -143,18 +171,19 @@ cdef void set_feature_prios(
 def celer(
     bint is_sparse, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, floating[:] w_init,
-    floating[:] norms_X_col, int max_iter,
+    floating[:] y, floating alpha, floating[:] w, floating[:] R,
+    floating[:] theta, floating[:] norms_X_col, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
     int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0):
+    """R and w are modified in place and assumed to match."""
 
     if floating is double:
         dtype = np.float64
     else:
         dtype = np.float32
 
-    cdef int n_features = w_init.shape[0]
+    cdef int n_features = w.shape[0]
     cdef int n_samples = y.shape[0]
 
     if p0 > n_features:
@@ -162,7 +191,6 @@ def celer(
 
     cdef int i, j, t, startptr, endptr
 
-    cdef floating[:] w = np.empty(n_features, dtype=dtype)
     cdef int inc = 1
     cdef floating tmp
     cdef int ws_size = 0
@@ -173,7 +201,7 @@ def celer(
     cdef bint center = False
     cdef floating X_mean_j
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+    # cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
 
     if is_sparse:
@@ -183,34 +211,10 @@ def celer(
                 center = True
                 break
 
-    # compute norms_X_col and R
-    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
-    for j in range(n_features):
-        w[j] = w_init[j]
-
-        # R -= np.dot(X[:, j], w):
-        if w[j] == 0.:
-            continue
-        else:
-            if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                for i in range(startptr, endptr):
-                    R[X_indices[i]] -= w[j] * X_data[i]
-                if center:
-                    X_mean_j = X_mean[j]
-                    for i in range(n_samples):
-                        R[i] += X_mean_j * w[j]
-            else:
-                tmp = - w[j]
-                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
-
-
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
 
-    cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_to_use  # the one giving highest d_obj
 
@@ -222,25 +226,25 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        # theta = R / (alpha * n_samples)
-        fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / (alpha * n_samples)
-        fscal(&n_samples, &tmp, &theta[0], &inc)
-
-        scal = compute_dual_scaling(
-            is_sparse,
-            n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-            n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
-
-        if scal > 1. :
-            tmp = 1. / scal
+        if t != 0:
+            # theta = R / (alpha * n_samples)
+            fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
+            tmp = 1. / (alpha * n_samples)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
-                           &y[0])
+            scal = compute_dual_scaling(
+                is_sparse,
+                n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
+                n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
 
-        # also test dual point returned by inner solver after 1st iter:
-        if t != 0:
+            if scal > 1. :
+                tmp = 1. / scal
+                fscal(&n_samples, &tmp, &theta[0], &inc)
+
+            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
+                            &y[0])
+
+            # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
                 is_sparse,
                 n_features, n_samples, &theta_inner[0], X, X_data, X_indices,
@@ -252,6 +256,9 @@ def celer(
 
             d_obj_from_inner = dual_value(n_samples, alpha, norm_y2,
                                           &theta_inner[0], &y[0])
+        else:
+            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
+                                &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
