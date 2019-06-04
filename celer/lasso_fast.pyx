@@ -23,11 +23,35 @@ cdef:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
+cpdef void compute_norms_X_col(
+        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
+        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr, floating[:] X_mean):
+    cdef int j, startptr, endptr
+    cdef floating tmp, X_mean_j
+
+    for j in range(n_features):
+        if is_sparse:
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            X_mean_j = X_mean[j]
+            tmp = 0.
+            for i in range(startptr, endptr):
+                tmp += (X_data[i] - X_mean_j) ** 2
+            tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
+            norms_X_col[j] = sqrt(tmp)
+        else:
+            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
 cdef floating compute_dual_scaling(
-    bint is_sparse, int n_features, int n_samples, floating * theta,
-    floating[::1, :] X, floating[:] X_data,
-    int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
-    floating[:] X_mean, bint center, bint positive) nogil:
+        bint is_sparse, int n_features, int n_samples, floating * theta,
+        floating[::1, :] X, floating[:] X_data,
+        int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
+        floating[:] X_mean, bint center, bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
@@ -127,7 +151,8 @@ cdef void set_feature_prios(
 def celer(
     bint is_sparse, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, floating[:] w_init, int max_iter,
+    floating[:] y, floating alpha, floating[:] w_init,
+    floating[:] norms_X_col, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
     int verbose_inner=0, int use_accel=1, int return_ws_size=0,
@@ -163,14 +188,12 @@ def celer(
     cdef int n_screened = 0
     cdef bint center = False
     cdef floating X_mean_j
-    # cdef floating normalize_sum = 0.0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef floating[:] norms_X_col = np.empty(n_features, dtype=dtype)
     cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
 
     if is_sparse:
-        # center = X_mean.any()
+        # center = X_mean.any():
         for j in range(n_features):
             if X_mean[j]:
                 center = True
@@ -180,19 +203,8 @@ def celer(
     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
     for j in range(n_features):
         w[j] = w_init[j]
-        if is_sparse:
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            X_mean_j = X_mean[j]
-            tmp = 0.
-            for i in range(startptr, endptr):
-                tmp += (X_data[i] - X_mean_j) ** 2
-            tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
-            norms_X_col[j] = sqrt(tmp)
-        else:
-            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
 
-        # R -= np.dot(X[:, j], w)
+        # R -= np.dot(X[:, j], w):
         if w[j] == 0.:
             continue
         else:
@@ -202,6 +214,7 @@ def celer(
                 for i in range(startptr, endptr):
                     R[X_indices[i]] -= w[j] * X_data[i]
                 if center:
+                    X_mean_j = X_mean[j]
                     for i in range(n_samples):
                         R[i] += X_mean_j * w[j]
             else:
@@ -380,6 +393,7 @@ cpdef int inner_solver(
     cdef int k
     cdef int epoch
     cdef floating old_w_j
+    cdef floating X_mean_j
     cdef floating w_Cj
     cdef int inc = 1
     cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)

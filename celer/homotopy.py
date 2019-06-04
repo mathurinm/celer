@@ -11,7 +11,7 @@ from scipy import sparse
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
-from .lasso_fast import celer
+from .lasso_fast import celer, compute_norms_X_col
 
 
 def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
@@ -156,6 +156,10 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         X_data = np.empty([1], dtype=X.dtype)
         X_indices = np.empty([1], dtype=np.int32)
         X_indptr = np.empty([1], dtype=np.int32)
+    norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
+    compute_norms_X_col(is_sparse, norms_X_col, n_samples, n_features,
+                        X_dense, X_data, X_indices, X_indptr,
+                        X_sparse_scaling)
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
@@ -178,7 +182,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
         sol = celer(
             is_sparse,
             X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
-            w_init,
+            w_init, norms_X_col,
             max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
             p0=p0, verbose=verbose, verbose_inner=verbose_inner,
             use_accel=1, tol=tol, prune=prune, positive=positive)
