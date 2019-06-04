@@ -74,11 +74,8 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     theta : array, shape (n_samples,)
         Dual point (potentially accelerated) when the solver exits.
 
-    gaps : array
-        Duality gap at each outer loop iteration.
-
-    times : array
-        Time elapsed since entering the solver, at each outer loop iteration.
+    gap : float
+        Final duality gap.
 
     n_iter : int
         Number of iterations (subproblems solved). Returned only if
@@ -89,15 +86,15 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
         X, y, alphas=np.array([alpha]), coef_init=w_init, gap_freq=gap_freq,
         max_epochs=max_epochs, p0=p0, verbose=verbose,
         verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
-        monitor=True, return_n_iter=return_n_iter, positive=positive)
+        return_n_iter=return_n_iter, positive=positive)
 
     w = results[1].T[0]
+    gap = results[2][0]
     theta = results[3][0]
-    gaps = results[4][0]
-    times = results[5][0]
 
-    res = (w, theta, gaps, times)
+    res = (w, theta, gap)
     if return_n_iter:
-        res += (len(times),)
+        n_iter = results[4][0]
+        res += (n_iter,)
 
     return res
