@@ -144,8 +144,8 @@ def test_celer_single_alpha(sparse_X):
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, n_iter, gaps, times = celer(X, y, alpha_max / 10., tol=tol,
-                                          return_n_iter=True)
+    w, theta, n_iter, gaps = celer(X, y, alpha_max / 10., tol=tol,
+                                   return_n_iter=True)
     np.testing.assert_array_less(gaps[-1], tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
@@ -161,8 +161,8 @@ def test_zero_column(sparse_X):
         X[:, :n_zero_columns].fill(0.)
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     tol = 1e-6
-    w, theta, gaps, times = celer(X, y, alpha_max / 10., tol=tol, p0=50,
-                                  prune=0, verbose=1, verbose_inner=1)
+    w, theta, gaps = celer(X, y, alpha_max / 10., tol=tol, p0=50,
+                           prune=0, verbose=1, verbose_inner=1)
     np.testing.assert_array_less(gaps[-1], tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])

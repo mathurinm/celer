@@ -3,7 +3,6 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-import time
 import numpy as np
 cimport numpy as np
 cimport cython
@@ -148,8 +147,7 @@ def celer(
     floating[:] norms_X_col, int max_iter,
     int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
     float tol=1e-6, int p0=100, int screening=0, int verbose=0,
-    int verbose_inner=0, int use_accel=1, int return_ws_size=0,
-    int prune=0, bint positive=0):
+    int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0):
 
     if floating is double:
         dtype = np.float64
@@ -158,7 +156,7 @@ def celer(
 
     cdef int n_features = w_init.shape[0]
     cdef int n_samples = y.shape[0]
-    cdef floating t0 = time.time()
+
     if p0 > n_features:
         p0 = n_features
 
@@ -210,10 +208,7 @@ def celer(
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
-    cdef floating[:] times = np.zeros(max_iter, dtype=dtype)
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
-    cdef int[:] epochs = np.zeros(max_iter, dtype=np.int32)
-    cdef int[:] ws_sizes = np.zeros(max_iter, dtype=np.int32)
 
     cdef floating[:] theta = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
@@ -271,7 +266,6 @@ def celer(
         p_obj = primal_value(alpha, n_samples, &R[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
         gaps[t] = gap
-        times[t] = time.time() - t0
 
         if verbose:
             print("############ Iteration %d  #################" % t)
@@ -319,7 +313,6 @@ def celer(
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
 
-        ws_sizes[t] = ws_size
 
         # if ws_size === n_features then argpartition will break:
         if ws_size == n_features:
@@ -335,7 +328,7 @@ def celer(
         if verbose:
             print("Solving subproblem with %d constraints" % len(C))
         # calling inner solver which will modify w and R inplace
-        epochs[t] = inner_solver(
+        inner_solver(
             is_sparse,
             n_samples, n_features, ws_size, X, X_data, X_indices, X_indptr, X_mean,
             y, alpha, center, w, R, C, theta_inner, norms_X_col,
@@ -343,21 +336,15 @@ def celer(
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel, positive=positive)
 
-    if return_ws_size:
-        return (np.asarray(w), np.asarray(theta_to_use),
-                np.asarray(gaps[:t + 1]),
-                np.asarray(times[:t + 1]),
-                np.asarray(ws_sizes[:t + 1]))
 
     return (np.asarray(w), np.asarray(theta_to_use),
-            np.asarray(gaps[:t + 1]),
-            np.asarray(times[:t + 1]))
+            np.asarray(gaps[:t + 1]))
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef int inner_solver(
+cpdef void inner_solver(
     bint is_sparse,
     int n_samples, int n_features, int ws_size, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
@@ -500,7 +487,6 @@ cpdef int inner_solver(
             # we pass full w and will ignore zero values
             gap = primal_value(alpha, n_samples, &R[0], n_features,
                                &w[0]) - highest_d_obj
-            gaps[epoch / gap_freq] = gap
 
             if verbose:
                 print("Inner epoch %d, gap: %.2e" % (epoch, gap))
@@ -552,4 +538,3 @@ cpdef int inner_solver(
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))
 
-    return epoch

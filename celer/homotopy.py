@@ -144,7 +144,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     if return_n_iter:
         n_iters = np.zeros(n_alphas, dtype=int)
     if monitor:
-        gaps_per_alpha, times_per_alpha = [], []
+        gaps_per_alpha = []
 
     if is_sparse:
         X_dense = np.empty([1, 1], order='F', dtype=X.data.dtype)
@@ -193,7 +193,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
             n_iters[t] = len(sol[2])
         if monitor:
             gaps_per_alpha.append(sol[2])
-            times_per_alpha.append(sol[3])
 
         if dual_gaps[t] > tol:
             warnings.warn('Objective did not converge.' +
@@ -209,6 +208,6 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     if return_n_iter:
         results += (n_iters,)
     if monitor:
-        results += (gaps_per_alpha, times_per_alpha)
+        results += (gaps_per_alpha,)
 
     return results

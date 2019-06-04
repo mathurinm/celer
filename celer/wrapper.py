@@ -94,10 +94,9 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     w = results[1].T[0]
     theta = results[3][0]
     gaps = results[4][0]
-    times = results[5][0]
 
-    res = (w, theta, gaps, times)
+    res = (w, theta, gaps)
     if return_n_iter:
-        res += (len(times),)
+        res += (len(gaps),)
 
     return res
