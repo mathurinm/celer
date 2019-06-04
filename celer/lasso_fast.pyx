@@ -227,6 +227,7 @@ def celer(
                 for i in range(startptr, endptr):
                     R[X_indices[i]] -= w[j] * X_data[i]
                 if center:
+                    X_mean_j = X_mean[j]
                     for i in range(n_samples):
                         R[i] += X_mean_j * w[j]
             else:
