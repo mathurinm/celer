@@ -18,7 +18,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
                gap_freq=10, max_epochs=50000, p0=10, verbose=0,
                verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
                X_offset=None, X_scale=None,
-               return_n_iter=False, positive=False, use_accel=1):
+               return_n_iter=False, positive=False):
     """Compute Lasso path with Celer as inner solver.
 
     Parameters
@@ -187,7 +187,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
             w, R, theta, norms_X_col,
             max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
             p0=p0, verbose=verbose, verbose_inner=verbose_inner,
-            use_accel=use_accel, tol=tol, prune=prune, positive=positive)
+            use_accel=1, tol=tol, prune=prune, positive=positive)
 
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         if return_n_iter:
