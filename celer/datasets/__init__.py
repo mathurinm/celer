@@ -1,2 +1,2 @@
-from .libsvm import download_preprocess_libsvm
+from .libsvm import load_libsvm
 from .climate import download_climate

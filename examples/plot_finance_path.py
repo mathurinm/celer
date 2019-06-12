@@ -26,8 +26,8 @@ print(__doc__)
 
 print("*** Warning: this example may take more than 10 minutes to run ***")
 
-X_fname = "./data/preprocessed/finance_data.npz"
-y_fname = "./data/preprocessed/finance_target.npy"
+X_fname = "~/celer_data/preprocessed/finance_data.npz"
+y_fname = "~/celer_data/preprocessed/finance_target.npy"
 
 print("Downloading and preprocessing the Finance dataset...")
 print("*** Warning: This may take several minutes ***")

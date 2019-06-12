@@ -72,27 +72,40 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
 def download_preprocess_libsvm(dataset, replace=False, repreprocess=False):
     """Download and preprocess a given libsvm dataset."""
 
-    paths = ['./data', './data/regression/', './data/binary/',
-             './data/preprocessed']
+    paths = ['~/celer_data', '~/celer_data/regression/', '~/celer_data/binary/',
+             '~/celer_data/preprocessed']
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
 
     print("Dataset: %s" % dataset)
-    compressed_path = "./data/%s.bz2" % NAMES[dataset]
+    compressed_path = "~/celer_data/%s.bz2" % NAMES[dataset]
     download_libsvm(dataset, compressed_path, replace=replace)
 
-    decompressed_path = "./data/%s" % NAMES[dataset]
+    decompressed_path = "~/celer_data/%s" % NAMES[dataset]
     if not os.path.isfile(decompressed_path):
         decompress_data(compressed_path, decompressed_path)
 
-    y_path = "./data/preprocessed/%s_target.npy" % dataset
-    X_path = "./data/preprocessed/%s_data.npz" % dataset
+    y_path = "~/celer_data/preprocessed/%s_target.npy" % dataset
+    X_path = "~/celer_data/preprocessed/%s_data.npz" % dataset
 
     if (repreprocess or not os.path.isfile(y_path) or
             not os.path.isfile(X_path)):
         print("Preprocessing...")
         preprocess_libsvm(dataset, decompressed_path, X_path, y_path)
+
+
+def load_libsvm(dataset):
+    try:
+        X = sparse.load_npz("~/celer_data/preprocessed/%s_data.npz" % dataset)
+        y = sparse.load_npz(
+            "~/celer_data/preprocessed/%s_target.npz" % dataset)
+    except FileNotFoundError:
+        download_preprocess_libsvm(dataset, replace=False, repreprocess=False)
+        X = sparse.load_npz("~/celer_data/preprocessed/%s_data.npz" % dataset)
+        y = sparse.load_npz(
+            "~/celer_data/preprocessed/%s_target.npz" % dataset)
+    return X, y
 
 
 if __name__ == "__main__":

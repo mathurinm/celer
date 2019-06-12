@@ -11,7 +11,7 @@ from scipy.signal import detrend
 
 
 def get_data(data_file):
-    data = xray.open_dataset('./data/regression/surface/' + data_file,
+    data = xray.open_dataset('~/celer_data/regression/surface/' + data_file,
                              decode_times=False)
 
     n_times, n_lat, n_lon = data[list(data.data_vars.keys())[0]].shape
@@ -45,7 +45,7 @@ def download_climate(replace=False):
              'pres.mon.mean.nc']
 
     for fname in files:
-        target = './data/regression/surface/' + fname
+        target = '~/celer_data/regression/surface/' + fname
         if not os.path.isfile(target):
             download.download(prefix + "surface/" + fname,
                               target, replace=replace)
@@ -89,14 +89,14 @@ def target_region(lx, Lx):
 
     y = air[:, target]
 
-    paths = ['./data', './data/regression/', './data/binary/',
-             './data/preprocessed']
+    paths = ['~/celer_data', '~/celer_data/regression/', '~/celer_data/binary/',
+             '~/celer_data/preprocessed']
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
 
-    np.save("./data/preprocessed/climate_design", X)
-    np.save("./data/preprocessed/climate_target", y)
+    np.save("~/celer_data/preprocessed/climate_design", X)
+    np.save("~/celer_data/preprocessed/climate_target", y)
 
     return X, y
 
