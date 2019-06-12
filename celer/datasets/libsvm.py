@@ -9,11 +9,15 @@ from download import download
 from scipy import sparse
 import numpy as np
 
+from os.path import join as pjoin
+from pathlib import Path
+CELER_PATH = pjoin(str(Path.home()), 'celer_data')
 
-NAMES = {'rcv1_train': '/binary/rcv1_train.binary',
-         'news20': '/binary/news20.binary',
-         'finance': '/regression/log1p.E2006.train',
-         'kdda_train': '/binary/kdda'}
+
+NAMES = {'rcv1_train': 'binary/rcv1_train.binary',
+         'news20': 'binary/news20.binary',
+         'finance': 'regression/log1p.E2006.train',
+         'kdda_train': 'binary/kdda'}
 
 N_FEATURES = {'finance': 4272227,
               'news20': 1355191,
@@ -25,7 +29,7 @@ def download_libsvm(dataset, destination, replace=False):
     """Download a dataset from LIBSVM website."""
     if dataset not in NAMES:
         raise ValueError("Unsupported dataset %s" % dataset)
-    url = ("https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets" +
+    url = ("https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/" +
            NAMES[dataset])
     path = download(url + '.bz2', destination, replace=replace)
     return path
@@ -72,22 +76,23 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
 def download_preprocess_libsvm(dataset, replace=False, repreprocess=False):
     """Download and preprocess a given libsvm dataset."""
 
-    paths = ['~/celer_data', '~/celer_data/regression/', '~/celer_data/binary/',
-             '~/celer_data/preprocessed']
+    paths = [CELER_PATH, pjoin(CELER_PATH, 'regression'),
+             pjoin(CELER_PATH, 'binary'),
+             pjoin(CELER_PATH, 'preprocessed')]
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
 
     print("Dataset: %s" % dataset)
-    compressed_path = "~/celer_data/%s.bz2" % NAMES[dataset]
+    compressed_path = pjoin(CELER_PATH, "%s.bz2" % NAMES[dataset])
     download_libsvm(dataset, compressed_path, replace=replace)
 
-    decompressed_path = "~/celer_data/%s" % NAMES[dataset]
+    decompressed_path = pjoin(CELER_PATH, "%s" % NAMES[dataset])
     if not os.path.isfile(decompressed_path):
         decompress_data(compressed_path, decompressed_path)
 
-    y_path = "~/celer_data/preprocessed/%s_target.npy" % dataset
-    X_path = "~/celer_data/preprocessed/%s_data.npz" % dataset
+    y_path = pjoin(CELER_PATH, "preprocessed", "%s_target.npy" % dataset)
+    X_path = pjoin(CELER_PATH, "preprocessed", "%s_data.npz" % dataset)
 
     if (repreprocess or not os.path.isfile(y_path) or
             not os.path.isfile(X_path)):
@@ -97,14 +102,16 @@ def download_preprocess_libsvm(dataset, replace=False, repreprocess=False):
 
 def load_libsvm(dataset):
     try:
-        X = sparse.load_npz("~/celer_data/preprocessed/%s_data.npz" % dataset)
-        y = sparse.load_npz(
-            "~/celer_data/preprocessed/%s_target.npz" % dataset)
+        X = sparse.load_npz(pjoin(CELER_PATH, 'preprocessed',
+                                  '%s_data.npz' % dataset))
+        y = np.load(pjoin(CELER_PATH, 'preprocessed',
+                          '%s_target.npy' % dataset))
     except FileNotFoundError:
-        download_preprocess_libsvm(dataset, replace=False, repreprocess=False)
-        X = sparse.load_npz("~/celer_data/preprocessed/%s_data.npz" % dataset)
-        y = sparse.load_npz(
-            "~/celer_data/preprocessed/%s_target.npz" % dataset)
+        download_preprocess_libsvm(dataset, replace=False, repreprocess=True)
+        X = sparse.load_npz(pjoin(CELER_PATH, 'preprocessed',
+                                  '%s_data.npz' % dataset))
+        y = np.load(pjoin(CELER_PATH, 'preprocessed',
+                          '%s_target.npy' % dataset))
     return X, y
 
 

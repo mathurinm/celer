@@ -8,10 +8,15 @@ import xray
 import download
 
 from scipy.signal import detrend
+from os.path import join as pjoin
+
+from pathlib import Path
+CELER_PATH = str(Path.home()) + '/celer_data/'
 
 
 def get_data(data_file):
-    data = xray.open_dataset('~/celer_data/regression/surface/' + data_file,
+    data = xray.open_dataset(pjoin(CELER_PATH, 'regression/surface',
+                                   data_file),
                              decode_times=False)
 
     n_times, n_lat, n_lon = data[list(data.data_vars.keys())[0]].shape
@@ -38,20 +43,20 @@ def get_data(data_file):
 
 def download_climate(replace=False):
     prefix = "ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/"
-    print('Downloading climate data, this may take a moment')
 
     files = ["air.mon.mean.nc", "rhum.mon.mean.nc", 'pr_wtr.mon.mean.nc',
              "uwnd.mon.mean.nc", "vwnd.mon.mean.nc", 'slp.mon.mean.nc',
              'pres.mon.mean.nc']
 
     for fname in files:
-        target = '~/celer_data/regression/surface/' + fname
+        target = pjoin(CELER_PATH, 'regression/surface', fname)
         if not os.path.isfile(target):
             download.download(prefix + "surface/" + fname,
                               target, replace=replace)
 
 
-def target_region(lx, Lx):
+def target_region(lx, Lx, replace=False):
+    download_climate(replace=False)
 
     air_file = 'air.mon.mean.nc'
     pres_file = 'pres.mon.mean.nc'
@@ -78,7 +83,6 @@ def target_region(lx, Lx):
 
     begin = 0
     for j in range(p):
-
         if j == target:
             continue
         X[:, begin:begin + 7] = np.vstack((air[:, j], pres[:, j],
@@ -89,20 +93,30 @@ def target_region(lx, Lx):
 
     y = air[:, target]
 
-    paths = ['~/celer_data', '~/celer_data/regression/', '~/celer_data/binary/',
-             '~/celer_data/preprocessed']
+    paths = [CELER_PATH, pjoin(CELER_PATH, 'regression/'),
+             pjoin(CELER_PATH, 'binary'),
+             pjoin(CELER_PATH, 'preprocessed')]
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
 
-    np.save("~/celer_data/preprocessed/climate_design", X)
-    np.save("~/celer_data/preprocessed/climate_target", y)
+    np.save(pjoin(CELER_PATH, 'preprocessed/climate_data.npy'), X)
+    np.save(pjoin(CELER_PATH, 'preprocessed/climate_target.npy'), y)
 
+    return X, y
+
+
+def load_climate():
+    try:
+        X = np.load(pjoin(CELER_PATH, 'preprocessed', 'climate_data.npy'))
+        y = np.load(pjoin(CELER_PATH, 'preprocessed', 'climate_target.npy'))
+    except FileNotFoundError:
+        lx, Lx = 14, 17  # Dakar
+        X, y = target_region(lx, Lx)
     return X, y
 
 
 if __name__ == "__main__":
     lx, Lx = 14, 17  # Dakar
-    # lx = 48; Lx = 2  # Paris
     download_climate(replace=False)
     X, y = target_region(lx, Lx)
