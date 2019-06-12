@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>celer.celer &#8212; celer 0.3.1 documentation</title>
+    <title>celer.celer &#8212; celer 0.5dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3.1',
+        VERSION:     '0.5dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.5dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -188,11 +188,8 @@ subproblems solved).</p>
 <dt><strong>theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_samples,)</span></dt>
 <dd><p class="first last">Dual point (potentially accelerated) when the solver exits.</p>
 </dd>
-<dt><strong>gaps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
-<dd><p class="first last">Duality gap at each outer loop iteration.</p>
-</dd>
-<dt><strong>times</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
-<dd><p class="first last">Time elapsed since entering the solver, at each outer loop iteration.</p>
+<dt><strong>gap</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Final duality gap.</p>
 </dd>
 <dt><strong>n_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">Number of iterations (subproblems solved). Returned only if
