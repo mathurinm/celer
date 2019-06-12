@@ -11,32 +11,18 @@ implementation as it makes the example too long to run.
 """
 
 import time
-import os
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-from scipy import sparse
-
 from celer import celer_path
-from celer.examples_utils import download_preprocess_finance
+from celer.datasets import load_libsvm
 from celer.plot_utils import plot_path_hist
 
 print(__doc__)
 
-print("*** Warning: this example may take more than 10 minutes to run ***")
-
-X_fname = "./data/finance_data_preprocessed.npz"
-y_fname = "./data/finance_target_preprocessed.npy"
-
-if not os.path.exists(X_fname):
-    print("Downloading and preprocessing the Finance dataset...")
-    print("*** Warning: This may take several minutes ***")
-    download_preprocess_finance()
-
-print("Loading data...")
-X = sparse.load_npz(X_fname)
-y = np.load(y_fname)
+print("*** Warning: this example may take more than 5 minutes to run ***")
+X, y = load_libsvm('finance')
 
 print("Starting path computation...")
 n_samples = X.shape[0]

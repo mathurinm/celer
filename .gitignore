@@ -2,6 +2,8 @@
 *.cpp
 *.so
 *.o
+*.c
+*.html
 celer.egg-info/*
 
 # Python precompilation
@@ -9,6 +11,7 @@ celer.egg-info/*
 
 # Data
 examples/data/*
+data/*
 
 # cache
 .pytest_cache/*
