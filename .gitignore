@@ -9,6 +9,7 @@ celer.egg-info/*
 
 # Data
 examples/data/*
+data/*
 
 # cache
 .pytest_cache/*
