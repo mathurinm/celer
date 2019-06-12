@@ -19,20 +19,19 @@ import matplotlib.pyplot as plt
 from scipy import sparse
 
 from celer import celer_path
-from celer.examples_utils import download_preprocess_finance
+from celer.datasets import download_preprocess_libsvm
 from celer.plot_utils import plot_path_hist
 
 print(__doc__)
 
 print("*** Warning: this example may take more than 10 minutes to run ***")
 
-X_fname = "./data/finance_data_preprocessed.npz"
-y_fname = "./data/finance_target_preprocessed.npy"
+X_fname = "./data/preprocessed/finance_data.npz"
+y_fname = "./data/preprocessed/finance_target.npy"
 
-if not os.path.exists(X_fname):
-    print("Downloading and preprocessing the Finance dataset...")
-    print("*** Warning: This may take several minutes ***")
-    download_preprocess_finance()
+print("Downloading and preprocessing the Finance dataset...")
+print("*** Warning: This may take several minutes ***")
+download_preprocess_libsvm('finance')
 
 print("Loading data...")
 X = sparse.load_npz(X_fname)

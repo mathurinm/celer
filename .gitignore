@@ -2,6 +2,8 @@
 *.cpp
 *.so
 *.o
+*.c
+*.html
 celer.egg-info/*
 
 # Python precompilation
