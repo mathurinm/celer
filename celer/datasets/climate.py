@@ -2,17 +2,17 @@
 #          Mathurin Massias
 # BSD License
 
-
+import os
 import numpy as np
 import xray
-import urllib
-import os
+import download
 
 from scipy.signal import detrend
 
 
 def get_data(data_file):
-    data = xray.open_dataset(data_file, decode_times=False)
+    data = xray.open_dataset('./data/regression/surface/' + data_file,
+                             decode_times=False)
 
     n_times, n_lat, n_lon = data[list(data.data_vars.keys())[0]].shape
     p = n_lat * n_lon
@@ -36,17 +36,19 @@ def get_data(data_file):
     return X
 
 
-def download_climate():
+def download_climate(replace=False):
     prefix = "ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/"
     print('Downloading climate data, this may take a moment')
 
     files = ["air.mon.mean.nc", "rhum.mon.mean.nc", 'pr_wtr.mon.mean.nc',
              "uwnd.mon.mean.nc", "vwnd.mon.mean.nc", 'slp.mon.mean.nc',
              'pres.mon.mean.nc']
-    # urllib.request needs python 3:
+
     for fname in files:
-        if not os.path.isfile(fname):
-            urllib.request.urlretrieve(prefix + "surface/" + fname, fname)
+        target = './data/regression/surface/' + fname
+        if not os.path.isfile(target):
+            download.download(prefix + "surface/" + fname,
+                              target, replace=replace)
 
 
 def target_region(lx, Lx):
@@ -86,11 +88,15 @@ def target_region(lx, Lx):
         begin += 7
 
     y = air[:, target]
-    # y = pr_wtr[:, target]
-    # y /= linalg.norm(y)
 
-    np.save("_Xclimate_design", X)
-    np.save("_yclimate_target", y)
+    paths = ['./data', './data/regression/', './data/binary/',
+             './data/preprocessed']
+    for path in paths:
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+    np.save("./data/preprocessed/climate_design", X)
+    np.save("./data/preprocessed/climate_target", y)
 
     return X, y
 
@@ -98,5 +104,5 @@ def target_region(lx, Lx):
 if __name__ == "__main__":
     lx, Lx = 14, 17  # Dakar
     # lx = 48; Lx = 2  # Paris
-    download_climate()
+    download_climate(replace=False)
     X, y = target_region(lx, Lx)

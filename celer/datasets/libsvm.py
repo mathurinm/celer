@@ -43,8 +43,7 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
                       is_regression=False):
     """Preprocess a LIBSVM dataset."""
     # Normalization performed:
-    # - X with only columns with >= 3 non zero elements, norm-1 columns, and
-    #   a constant column to fit intercept
+    # - X with only columns with >= 3 non zero elements, norm-1 columns
     # - y centered and set to std equal to 1
     # """
     n_features_total = N_FEATURES[dataset]
@@ -58,8 +57,6 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
 
         # set all feature norms to 1
         X_new = preprocessing.normalize(X_new, axis=0)
-        # add constant feature to fit intercept
-        X_new = preprocessing.add_dummy_feature(X_new, 1000.)
         if is_regression:
             # center y
             y -= np.mean(y)
@@ -100,4 +97,4 @@ def download_preprocess_libsvm(dataset, replace=False, repreprocess=False):
 
 if __name__ == "__main__":
     for dataset in NAMES:
-        download_preprocess_libsvm(dataset, replace=False)
+        download_preprocess_libsvm(dataset, replace=False, repreprocess=False)
