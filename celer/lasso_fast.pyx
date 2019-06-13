@@ -275,10 +275,7 @@ def celer(
         gaps[t] = gap
 
         if verbose:
-            print("############ Iteration %d  #################" % t)
-            print("Primal {:.10f}".format(p_obj))
-            print("Dual {:.10f}".format(highest_d_obj))
-            print("Log gap %.2e" % gap)
+            print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap))
 
         if gap < tol:
             if verbose:
@@ -333,7 +330,7 @@ def celer(
             tol_inner = tol
 
         if verbose:
-            print("Solving subproblem with %d constraints" % len(C))
+            print("Solving subpb with %d constraints (%d left) " % (len(C), n_features - n_screened))
         # calling inner solver which will modify w and R inplace
         inner_solver(
             is_sparse,
