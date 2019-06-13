@@ -1,3 +1,4 @@
+#cython: language_level=3
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
 
@@ -8,8 +9,8 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from utils cimport primal_value, dual_value, ST
-from utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
+from .utils cimport primal_value, dual_value, ST
+from .utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 
 ctypedef np.uint8_t uint8
 
@@ -275,11 +276,11 @@ def celer(
         gaps[t] = gap
 
         if verbose:
-            print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap))
+            print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
         if gap < tol:
             if verbose:
-                print("Early exit, gap: %.2e < %.2e" % (gap, tol))
+                print("\nEarly exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
         radius = sqrt(2 * gap / n_samples) / alpha
@@ -330,7 +331,7 @@ def celer(
             tol_inner = tol
 
         if verbose:
-            print("Solving subpb with %d constraints (%d left) " % (len(C), n_features - n_screened))
+            print(", %d feats in subpb (%d left)" % (len(C), n_features - n_screened))
         # calling inner solver which will modify w and R inplace
         inner_solver(
             is_sparse,
@@ -387,7 +388,7 @@ cpdef void inner_solver(
 
     # solving linear system in cython
     # doc at https://software.intel.com/en-us/node/468894
-    cdef char char_U = 'U'
+    cdef char * char_U = 'U'
     cdef int Kminus1 = K - 1
     cdef int one = 1
     cdef floating sum_z
@@ -437,7 +438,7 @@ cpdef void inner_solver(
                     for k in range(K - 1):
                         onesK[k] = 1
 
-                    fposv(&char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
+                    fposv(char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
                            &onesK[0], &Kminus1, &info_dposv)
 
                     # onesK now holds the solution in x to UtU dot x = onesK
