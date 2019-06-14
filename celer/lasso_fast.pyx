@@ -170,13 +170,13 @@ cdef void set_feature_prios(
 @cython.wraparound(False)
 @cython.cdivision(True)
 def celer(
-    bint is_sparse, floating[::1, :] X,
-    floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, floating[:] w, floating[:] R,
-    floating[:] theta, floating[:] norms_X_col, int max_iter,
-    int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
-    float tol=1e-6, int p0=100, int screening=0, int verbose=0,
-    int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0):
+        bint is_sparse, floating[::1, :] X, floating[:] X_data,
+        int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
+        floating[:] y, floating alpha, floating[:] w, floating[:] R,
+        floating[:] theta, floating[:] norms_X_col, int max_iter,
+        int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
+        float tol=1e-6, int p0=100, int verbose=0,
+        int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0):
     """R and w are modified in place and assumed to match."""
 
     if floating is double:
