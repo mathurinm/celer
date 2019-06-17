@@ -362,23 +362,16 @@ cpdef void inner_solver(
     else:
         dtype = np.float32
 
-    cdef int i, j, k, startptr, endptr
-    cdef int epoch
-    cdef floating old_w_j
-    cdef floating X_mean_j
-    cdef floating w_Cj
+    cdef int i, j, k, startptr, endptr, epoch
+    cdef floating old_w_j, X_mean_j, w_Cj
     cdef int inc = 1
     cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
-    # gap related:
-    cdef floating[:] gaps = np.zeros(max_epochs // gap_freq, dtype=dtype)
 
-    # cdef floating[:] theta = np.empty(n_samples)
     cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
-    cdef floating gap, d_obj, d_obj_accel, dual_scale, dual_scale_accel
+    cdef floating gap, p_obj, d_obj, d_obj_accel, dual_scale, dual_scale_accel
     cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
     # at first d_obj computation. highest_d_obj corresponds to theta = 0.
-    cdef floating tmp
-    cdef floating R_sum
+    cdef floating tmp, R_sum
     # acceleration variables:
     cdef floating[:, :] last_K_res = np.empty([K, n_samples], dtype=dtype)
     cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
@@ -392,7 +385,6 @@ cpdef void inner_solver(
     cdef int one = 1
     cdef floating sum_z
     cdef int info_dposv
-
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
@@ -486,18 +478,18 @@ cpdef void inner_solver(
                 highest_d_obj = d_obj
 
             # CAUTION: I have not yet written the code to include a best_theta.
-            # This is of no consequence as long as screening is not performed. Otherwise dgap and theta might disagree.
+            # This is of no consequence as long as screening is not performed.
+            # Otherwise dgap and theta might disagree.
 
             # we pass full w and will ignore zero values
-            gap = primal_value(alpha, n_samples, &R[0], n_features,
-                               &w[0]) - highest_d_obj
+            p_obj = primal_value(alpha, n_samples, &R[0], n_features, &w[0])
+            gap = p_obj - highest_d_obj
 
             if verbose:
-                print("Inner epoch %d, gap: %.2e" % (epoch, gap))
-                print("primal %.9f" % (gap + highest_d_obj))
+                print("Inner epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj, gap))
             if gap < eps:
                 if verbose:
-                    print("Inner: early exit at epoch %d, gap: %.2e < %.2e" % \
+                    print("Inner: exit epoch %d, gap: %.2e < %.2e" % \
                         (epoch, gap, eps))
                 break
 
