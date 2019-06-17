@@ -135,7 +135,7 @@ cdef floating compute_dual_scaling(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef void set_feature_prios(
+cdef void set_prios(
     bint is_sparse, int n_samples, int n_features, floating * theta,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
@@ -284,11 +284,10 @@ def celer(
             break
 
         radius = sqrt(2 * gap / n_samples) / alpha
-        set_feature_prios(
+        set_prios(
             is_sparse, n_samples, n_features, &theta_to_use[0], X, X_data,
-            X_indices,
-            X_indptr, &norms_X_col[0], &prios[0], &screened[0], radius,
-            &n_screened, positive)
+            X_indices, X_indptr, &norms_X_col[0], &prios[0], &screened[0],
+            radius, &n_screened, positive)
 
         if prune:
             nnz = 0
