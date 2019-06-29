@@ -9,13 +9,61 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .utils cimport primal_value, dual_value, ST
 from .utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal
+from .utils cimport dual_value
 
 ctypedef np.uint8_t uint8
 
 cdef:
     int inc = 1
+
+
+cpdef floating primal_grp(
+        int n_samples, int n_groups, floating alpha, floating[:] R,
+        int[:] grp_ptr, int[:] grp_indices, floating[:] w):
+    cdef floating nrm = 0.
+    cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / n_samples
+    for g in range(n_groups):
+        nrm = 0
+        for k in range(grp_ptr[g], grp_ptr[g + 1]):
+            j = grp_indices[k]
+            nrm += w[j] ** 2
+        p_obj += alpha * sqrt(nrm)
+
+
+cpdef compute_dual_scaling(
+        bint is_sparse, int n_samples, int n_groups, floating[:] theta,
+        int[:] grp_ptr, int[:] grp_indices, floating[::1, :] X, floating[:] X_data,
+        int[:] X_indices, int[:] X_indptr, floating[:] X_mean, bint center):
+
+    cdef floating Xj_theta
+    cdef floating scal = 0.
+    cdef floating theta_sum = 0.
+    cdef int i, j, k, startptr, endptr
+
+    if is_sparse:
+        if center:
+            for i in range(n_samples):
+                theta_sum += theta[i]
+
+    for g in range(n_groups):
+        tmp = 0
+        for k in range(grp_ptr[g], grp_ptr[g + 1]):
+            j = grp_indices[k]
+            if is_sparse:
+                startptr = X_indptr[j]
+                endptr = X_indptr[j + 1]
+                Xj_theta = 0.
+                for i in range(startptr, endptr):
+                    Xj_theta += X_data[i] * theta[X_indices[i]]
+                if center:
+                    Xj_theta -= theta_sum * X_mean[j]
+            else:
+                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+            tmp += Xj_theta ** 2
+
+        scal = max(scal, sqrt(tmp))
+    return scal
 
 
 @cython.boundscheck(False)
@@ -43,7 +91,7 @@ cpdef void group_lasso(
     for g in range(n_groups):
         max_group_size = max(max_group_size, grp_ptr[g + 1] - grp_ptr[g])
 
-    cdef floating old_w_g = np.zeros(max_group_size, dtype=dtype)
+    cdef floating[:] old_w_g = np.zeros(max_group_size, dtype=dtype)
     # cdef
     # X_mean_g, w_g
     cdef int inc = 1
@@ -60,9 +108,8 @@ cpdef void group_lasso(
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = compute_dual_scaling(
-                is_sparse,
-                n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-                ws_size, &C[0], &dummy_screened[0], X_mean, center)
+                is_sparse, n_samples, n_groups, theta, grp_ptr,
+                grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
 
             if dual_scale > 1. :
                 tmp = 1. / dual_scale
@@ -72,8 +119,10 @@ cpdef void group_lasso(
 
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj
-            p_obj = primal_value(alpha, n_samples, &R[0], n_features, &w[0])
+            p_obj = primal_grp(n_samples, n_groups, alpha, R,
+                                 grp_ptr, grp_indices, w)
             gap = p_obj - highest_d_obj
+
 
             if verbose:
                 print("Epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj, gap))
@@ -108,7 +157,7 @@ cpdef void group_lasso(
             # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
             for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                 j = grp_indices[k]
-                tmp = w[j] - old_w[k]
+                tmp = w[j] - old_w_g[k]
                 if tmp != 0.:
                     if is_sparse:
                         for i in range(startptr, endptr):
