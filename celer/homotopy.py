@@ -11,10 +11,10 @@ from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
 from .lasso_fast import celer
-from .utils improt compute_norms_X_col, compute_residuals
+from .utils import compute_norms_X_col, compute_residuals
 from .logreg_fast import celer_logreg
-from .prox_newton import PN_solver
 from .multitask_fast import celer_mtl
+from .PN_logreg import newton_celer
 
 
 # TODO merge both logreg and lasso solver, eventually MTL
@@ -438,3 +438,26 @@ def mtl_path(
         return alphas, coefs, gaps, thetas
     else:
         return alphas, coefs, gaps
+
+
+# TODO put this in logreg_path with solver variable
+def PN_solver(X, y, alpha, w_init, max_iter, verbose=False, verbose_inner=False,
+              tol=1e-4, prune=True, p0=10, use_accel=True, K=6,
+              growth=2, blitz_sc=False):
+    is_sparse = sparse.issparse(X)
+    w = w_init.copy()
+    if is_sparse:
+        X_dense = np.empty([2, 2], order='F')
+        X_indices = X.indices.astype(np.int32)
+        X_indptr = X.indptr.astype(np.int32)
+        X_data = X.data
+    else:
+        X_dense = X
+        X_indices = np.empty([1], dtype=np.int32)
+        X_indptr = np.empty([1], dtype=np.int32)
+        X_data = np.empty([1])
+
+    return newton_celer(
+        is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
+        max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
+        growth=growth, blitz_sc=blitz_sc)
