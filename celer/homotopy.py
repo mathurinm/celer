@@ -9,6 +9,7 @@ import numpy as np
 from scipy import sparse
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
+from numpy.linalg import norm
 
 from .lasso_fast import celer
 from .utils import compute_norms_X_col, compute_residuals
