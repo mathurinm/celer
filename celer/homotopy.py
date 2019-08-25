@@ -10,7 +10,8 @@ from scipy import sparse
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
-from .lasso_fast import celer, compute_norms_X_col, compute_residuals
+from .lasso_fast import celer
+from .utils improt compute_norms_X_col, compute_residuals
 from .logreg_fast import celer_logreg
 from .prox_newton import PN_solver
 from .multitask_fast import celer_mtl
