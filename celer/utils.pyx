@@ -188,10 +188,19 @@ cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
     cdef int i
     cdef floating d_obj = 0.
     for i in range(n_samples):
-        d_obj -= (y[i] / alpha - theta[i]) ** 2
-    d_obj *= 0.5 * alpha ** 2
-    d_obj += norm_y2 / 2.
+        d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
+    d_obj *= 0.5 * alpha ** 2 * n_samples
+    d_obj += norm_y2 / (2. * n_samples)
     return d_obj
+
+
+#     cdef int i
+#     cdef floating d_obj = 0.
+#     for i in range(n_samples):
+#         d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
+#     d_obj *= 0.5 * alpha ** 2 * n_samples
+#     d_obj += norm_y2 / (2. * n_samples)
+#     return d_obj
 
 
 @cython.boundscheck(False)

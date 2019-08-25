@@ -350,7 +350,6 @@ def logreg_path(
             p_t = p0
 
         alpha = alphas[t]
-        t0 = time.time()
 
         if solver == "celer":
             sol = celer_logreg(
@@ -368,8 +367,7 @@ def logreg_path(
             sol = PN_solver(
                 X, y, alpha, w, max_iter,
                 verbose=verbose,  verbose_inner=verbose_inner,
-                tol=tol, prune=prune,
-                p0=p_t, use_accel=use_accel, K=K, numba=numba,
+                tol=tol, prune=prune, p0=p_t, use_accel=use_accel, K=K
             )
 
             coefs[:, t], thetas[t], gaps[t] = sol
@@ -393,7 +391,7 @@ def mtl_path(
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]
     if alphas is None:
-        alpha_max = np.max(np.abs(X.T.dot(y))) / 2.0
+        alpha_max = np.max(norm(X.T.dot(Y), ord=2, axis=1))
         alphas = alpha_max * \
             np.geomspace(0, eps, n_alphas, dtype=X.dtype)
     else:
@@ -425,7 +423,6 @@ def mtl_path(
             p_t = 10
 
         alpha = alphas[t]
-        t0 = time.time()
 
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
@@ -441,9 +438,9 @@ def mtl_path(
 
 
 # TODO put this in logreg_path with solver variable
-def PN_solver(X, y, alpha, w_init, max_iter, verbose=False, verbose_inner=False,
-              tol=1e-4, prune=True, p0=10, use_accel=True, K=6,
-              growth=2, blitz_sc=False):
+def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
+              verbose_inner=False, tol=1e-4, prune=True, p0=10,
+              use_accel=True, K=6, growth=2, blitz_sc=False):
     is_sparse = sparse.issparse(X)
     w = w_init.copy()
     if is_sparse:
