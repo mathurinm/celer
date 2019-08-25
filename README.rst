@@ -86,7 +86,7 @@ If you use this code, please cite:
     }
 
 
-ArXiv link: https://arxiv.org/abs/1802.07481
+ArXiv links: https://arxiv.org/abs/1802.07481 and https://arxiv.org/abs/1907.05830
 
 .. |image0| image:: https://travis-ci.org/mathurinm/celer.svg?branch=master
    :target: https://travis-ci.org/mathurinm/celer/

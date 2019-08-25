@@ -29,3 +29,13 @@ cdef void fposv(char *, int *, int *, floating *,
 cdef int create_accel_pt(
     int, int, int, int, int, int, floating, floating *, floating *,
     floating *, floating[:, :], floating[:, :], floating[:], floating[:])
+
+
+cpdef void compute_residuals(bint, floating[:], floating[:],
+        floating[:], bint, int, int, floating[::1, :],
+        floating[:], int[:], int[:], floating[:])
+
+
+cpdef void compute_norms_X_col(
+        bint, floating[:], int, int, floating[::1, :],
+        floating[:], int[:], int[:], floating[:])

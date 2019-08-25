@@ -8,7 +8,7 @@ cimport cython
 from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
 from scipy.linalg.cython_blas cimport sdot, sasum, saxpy, snrm2, scopy, sscal
 from scipy.linalg.cython_lapack cimport sposv, dposv
-from libc.math cimport fabs, log, exp
+from libc.math cimport fabs, log, exp, sqrt
 from numpy.math cimport INFINITY
 from cython cimport floating
 
@@ -83,33 +83,33 @@ cdef inline floating ST(floating u, floating x) nogil:
 
 
 # TODO deprecated, use dual() and primal()
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef floating primal_value(floating alpha, int n_samples, floating * R,
-                         int n_features, floating * w) nogil:
-    cdef int inc = 1
-    # regularization term: alpha ||w||_1
-    cdef floating p_obj = alpha * fasum(&n_features, w, &inc)
-    # R is passed as a pointer so no need to & it
-    p_obj += fdot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
-    return p_obj
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
+# cdef floating primal_value(floating alpha, int n_samples, floating * R,
+#                          int n_features, floating * w) nogil:
+#     cdef int inc = 1
+#     # regularization term: alpha ||w||_1
+#     cdef floating p_obj = alpha * fasum(&n_features, w, &inc)
+#     # R is passed as a pointer so no need to & it
+#     p_obj += fdot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
+#     return p_obj
 
 
-# TODO deprecated, use dual() and primal()
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef floating dual_value(int n_samples, floating alpha, floating norm_y2,
-                       floating * theta, floating * y) nogil:
-    """Theta must be feasible"""
-    cdef int i
-    cdef floating d_obj = 0.
-    for i in range(n_samples):
-        d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
-    d_obj *= 0.5 * alpha ** 2 * n_samples
-    d_obj += norm_y2 / (2. * n_samples)
-    return d_obj
+# # TODO deprecated, use dual() and primal()
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
+# cdef floating dual_value(int n_samples, floating alpha, floating norm_y2,
+#                        floating * theta, floating * y) nogil:
+#     """Theta must be feasible"""
+#     cdef int i
+#     cdef floating d_obj = 0.
+#     for i in range(n_samples):
+#         d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
+#     d_obj *= 0.5 * alpha ** 2 * n_samples
+#     d_obj += norm_y2 / (2. * n_samples)
+#     return d_obj
 
 
 cdef floating log_1pexp(floating x) nogil:
@@ -157,6 +157,7 @@ cdef floating primal_logreg(floating alpha, int n_samples, floating * Xw,
     return p_obj
 
 
+# todo check normalization by 1 / n_samples everywhere
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
@@ -164,7 +165,7 @@ cdef floating primal_lasso(floating alpha, int n_samples, floating * R,
                          int n_features, floating * w) nogil:
     cdef int inc = 1
     cdef floating p_obj = alpha * fasum(&n_features, w, &inc)
-    p_obj += fdot(&n_samples, R, &inc, R, &inc) / 2.
+    p_obj += fdot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
     return p_obj
 
 
@@ -309,3 +310,57 @@ cdef int create_accel_pt(
         # LOGREG:  y * sigmoid(-y * Xw) / alpha
 
     return info_dposv
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef void compute_norms_X_col(
+        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
+        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr, floating[:] X_mean):
+    cdef int j, startptr, endptr
+    cdef floating tmp, X_mean_j
+
+    for j in range(n_features):
+        if is_sparse:
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            X_mean_j = X_mean[j]
+            tmp = 0.
+            for i in range(startptr, endptr):
+                tmp += (X_data[i] - X_mean_j) ** 2
+            tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
+            norms_X_col[j] = sqrt(tmp)
+        else:
+            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
+        floating[:] w, bint center, int n_samples,
+        int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr, floating[:] X_mean):
+
+    cdef int j, startptr, endptr
+    cdef floating tmp, X_mean_j
+
+    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+    for j in range(n_features):
+        if w[j] == 0.:
+            continue
+        else:
+            if is_sparse:
+                startptr = X_indptr[j]
+                endptr = X_indptr[j + 1]
+                for i in range(startptr, endptr):
+                    R[X_indices[i]] -= w[j] * X_data[i]
+                if center:
+                    X_mean_j = X_mean[j]
+                    for i in range(n_samples):
+                        R[i] += X_mean_j * w[j]
+            else:
+                tmp = - w[j]
+                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)

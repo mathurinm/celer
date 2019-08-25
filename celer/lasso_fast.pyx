@@ -9,7 +9,7 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .utils cimport primal_value, dual_value, ST
+from .utils cimport LASSO, primal, dual, ST, compute_norms_X_col, compute_residuals
 from .utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 
 ctypedef np.uint8_t uint8
@@ -18,58 +18,34 @@ cdef:
     int inc = 1
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cpdef void compute_norms_X_col(
-        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
-        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-        int[:] X_indptr, floating[:] X_mean):
-    cdef int j, startptr, endptr
-    cdef floating tmp, X_mean_j
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
+# cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
+#         floating[:] w, bint center, int n_samples,
+#         int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+#         int[:] X_indptr, floating[:] X_mean):
 
-    for j in range(n_features):
-        if is_sparse:
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            X_mean_j = X_mean[j]
-            tmp = 0.
-            for i in range(startptr, endptr):
-                tmp += (X_data[i] - X_mean_j) ** 2
-            tmp += (n_samples - endptr + startptr) * X_mean_j ** 2
-            norms_X_col[j] = sqrt(tmp)
-        else:
-            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+#     cdef int j, startptr, endptr
+#     cdef floating tmp, X_mean_j
 
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
-        floating[:] w, bint center, int n_samples,
-        int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-        int[:] X_indptr, floating[:] X_mean):
-
-    cdef int j, startptr, endptr
-    cdef floating tmp, X_mean_j
-
-    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
-    for j in range(n_features):
-        if w[j] == 0.:
-            continue
-        else:
-            if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                for i in range(startptr, endptr):
-                    R[X_indices[i]] -= w[j] * X_data[i]
-                if center:
-                    X_mean_j = X_mean[j]
-                    for i in range(n_samples):
-                        R[i] += X_mean_j * w[j]
-            else:
-                tmp = - w[j]
-                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+#     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+#     for j in range(n_features):
+#         if w[j] == 0.:
+#             continue
+#         else:
+#             if is_sparse:
+#                 startptr = X_indptr[j]
+#                 endptr = X_indptr[j + 1]
+#                 for i in range(startptr, endptr):
+#                     R[X_indices[i]] -= w[j] * X_data[i]
+#                 if center:
+#                     X_mean_j = X_mean[j]
+#                     for i in range(n_samples):
+#                         R[i] += X_mean_j * w[j]
+#             else:
+#                 tmp = - w[j]
+#                 faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
 
 @cython.boundscheck(False)
@@ -179,6 +155,7 @@ def celer(
         int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0):
     """R and w are modified in place and assumed to match."""
 
+    cdef int pb = LASSO
     if floating is double:
         dtype = np.float64
     else:
@@ -242,8 +219,8 @@ def celer(
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
-                            &y[0])
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0],
+                         &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
@@ -255,11 +232,10 @@ def celer(
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
-            d_obj_from_inner = dual_value(n_samples, alpha, norm_y2,
-                                          &theta_inner[0], &y[0])
+            d_obj_from_inner = dual(
+                pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
         else:
-            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0],
-                                &y[0])
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -271,9 +247,10 @@ def celer(
             highest_d_obj = d_obj
             # TODO implement a best_theta
 
-        p_obj = primal_value(alpha, n_samples, &R[0], n_features, &w[0])
+        p_obj = primal(
+            pb, alpha, n_samples, &R[0], &y[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
-        gaps[t] = gap
+        gaps[t] = gap  # TODO useful?
 
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
@@ -357,6 +334,7 @@ cpdef void inner_solver(
     floating norm_y2, floating eps, int max_epochs, int gap_freq,
     int verbose=0, int K=6, int use_accel=1, bint positive=0):
 
+    cdef int pb = LASSO
     if floating is double:
         dtype = np.float64
     else:
@@ -402,7 +380,7 @@ cpdef void inner_solver(
                 tmp = 1. / dual_scale
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             if use_accel: # also compute accelerated dual_point
                 if epoch // gap_freq < K:
@@ -465,8 +443,8 @@ cpdef void inner_solver(
                         tmp = 1. / dual_scale_accel
                         fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
-                    d_obj_accel = dual_value(n_samples, alpha, norm_y2,
-                                             &thetaccel[0], &y[0])
+                    d_obj_accel = dual(
+                        pb, n_samples, alpha, norm_y2, &thetaccel[0], &y[0])
 
                     if d_obj_accel > d_obj:
                         d_obj = d_obj_accel
@@ -482,7 +460,8 @@ cpdef void inner_solver(
             # Otherwise dgap and theta might disagree.
 
             # we pass full w and will ignore zero values
-            p_obj = primal_value(alpha, n_samples, &R[0], n_features, &w[0])
+            p_obj = primal(
+                pb, alpha, n_samples, &R[0], &y[0], n_features, &w[0])
             gap = p_obj - highest_d_obj
 
             if verbose:
