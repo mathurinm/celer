@@ -76,6 +76,16 @@ If you use this code, please cite:
       volume = 	 {80},
     }
 
+::
+
+    @article{massias2019dual,
+    title={Dual Extrapolation for Sparse Generalized Linear Models},
+    author={Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph},
+    journal={arXiv preprint arXiv:1907.05830},
+    year={2019}
+    }
+
+
 ArXiv link: https://arxiv.org/abs/1802.07481
 
 .. |image0| image:: https://travis-ci.org/mathurinm/celer.svg?branch=master
