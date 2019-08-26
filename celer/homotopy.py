@@ -418,7 +418,7 @@ def mtl_path(
     if alphas is None:
         alpha_max = np.max(norm(X.T @ Y, ord=2, axis=1))
         alphas = alpha_max * \
-            np.geomspace(0, eps, n_alphas, dtype=X.dtype)
+            np.geomspace(1, eps, n_alphas, dtype=X.dtype)
     else:
         alphas = np.sort(alphas)[::-1]
 
@@ -441,7 +441,7 @@ def mtl_path(
             print("#" * 60)
         if t > 0:
             W = coefs[:, :, t - 1].copy()
-            p_t = max(len(np.where(W[:, 0] != 0)[0]), 1)
+            p_t = max(len(np.where(W[:, 0] != 0)[0]), p0)
         else:
             W = coefs[:, :, t].copy()
             p_t = 10
@@ -451,7 +451,7 @@ def mtl_path(
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
             prune=prune, max_iter=max_iter, max_epochs=max_epochs,
-            verbose=verbose_inner, use_accel=use_accel)
+            verbose=verbose_inner, use_accel=use_accel, gap_freq=gap_freq)
 
         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
 
