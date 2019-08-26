@@ -20,37 +20,6 @@ cdef:
     int inc = 1
 
 
-
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-# @cython.cdivision(True)
-# cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
-#         floating[:] w, bint center, int n_samples,
-#         int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-#         int[:] X_indptr, floating[:] X_mean):
-
-#     cdef int j, startptr, endptr
-#     cdef floating tmp, X_mean_j
-
-#     fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
-#     for j in range(n_features):
-#         if w[j] == 0.:
-#             continue
-#         else:
-#             if is_sparse:
-#                 startptr = X_indptr[j]
-#                 endptr = X_indptr[j + 1]
-#                 for i in range(startptr, endptr):
-#                     R[X_indices[i]] -= w[j] * X_data[i]
-#                 if center:
-#                     X_mean_j = X_mean[j]
-#                     for i in range(n_samples):
-#                         R[i] += X_mean_j * w[j]
-#             else:
-#                 tmp = - w[j]
-#                 faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
-
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
