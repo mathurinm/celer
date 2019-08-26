@@ -315,20 +315,24 @@ cpdef void compute_residuals(
         int n_features, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean):
     # R holds residuals if LASSO, Xw for LOGREG
-    cdef int j, startptr, endptr
-    cdef floating tmp
+    cdef int i, j, startptr, endptr
+    cdef floating tmp, X_mean_j
     cdef int inc = 1
-    # cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
+
     for j in range(n_features):
         if w[j] != 0:
             if is_sparse:
                 startptr, endptr = X_indptr[j], X_indptr[j + 1]
                 for i in range(startptr, endptr):
                     R[X_indices[i]] += w[j] * X_data[i]
+                if center:
+                    X_mean_j = X_mean[j]
+                    for i in range(n_samples):
+                        R[i] -= X_mean_j * w[j]
             else:
                 tmp = w[j]
                 faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
-    # currently R = Xw, update for LASSO
+    # currently R = X @ w, update for LASSO:
     if pb == LASSO:
         for i in range(n_samples):
             R[i] = y[i] - R[i]
