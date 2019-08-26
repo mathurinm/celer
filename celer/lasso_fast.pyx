@@ -9,8 +9,8 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .utils cimport LASSO, primal, dual, ST
-from .utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
+from .cython_utils cimport LASSO, primal, dual, ST
+from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 
 ctypedef np.uint8_t uint8
 

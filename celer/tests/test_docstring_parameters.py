@@ -56,7 +56,7 @@ _docstring_ignores = [
     "celer.dropin_sklearn.Lasso.path",
     "celer.dropin_sklearn.path",
     "celer.dropin_sklearn.LassoCV.path",
-    ]
+]
 _tab_ignores = []
 
 
