@@ -31,8 +31,9 @@ cdef int create_accel_pt(
     floating *, floating[:, :], floating[:, :], floating[:], floating[:])
 
 
-cpdef void compute_residuals(bint, floating[:], floating[:],
-        floating[:], bint, int, int, floating[::1, :],
+cpdef void compute_residuals(
+        bint, floating[:], floating[:],
+        floating[:], int, bint, int, int, floating[::1, :],
         floating[:], int[:], int[:], floating[:])
 
 

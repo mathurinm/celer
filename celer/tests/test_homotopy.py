@@ -16,7 +16,8 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
 
 from celer import celer_path, celer
 from celer.dropin_sklearn import Lasso, LassoCV
-from celer.homotopy import logreg_path, mtl_path
+# from celer.homotopy import mtl_path
+from celer.homotopy_bis import logreg_path
 
 
 def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
@@ -194,7 +195,8 @@ def test_warm_start():
                         #  product([False, True], [None, 1], ["celer", "PN"]))
 
 
-def test_logreg_path(sparse_X, alphas, solver):
+# def test_logreg_path(sparse_X, alphas, solver):
+if __name__ == "__main__":
     sparse_X = True
     alphas = None
     solver = "celer"

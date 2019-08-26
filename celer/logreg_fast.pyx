@@ -10,14 +10,67 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt, exp
 
-from .utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
-from .utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                     sigmoid, ST, LOGREG, compute_residuals)
+from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
+from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
+                            sigmoid, ST, LOGREG)
 
 ctypedef np.uint8_t uint8
 
 cdef:
     int inc = 1
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef void compute_norms_X_col(
+        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
+        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr):
+    cdef int j, startptr, endptr
+    cdef floating tmp
+    cdef int inc = 1
+
+    for j in range(n_features):
+        if is_sparse:
+            tmp = 0.
+            startptr, endptr = X_indptr[j], X_indptr[j + 1]
+            for i in range(startptr, endptr):
+                tmp += X_data[i] ** 2
+            norms_X_col[j] = sqrt(tmp)
+        else:
+            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
+
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
+        floating[:] w, bint center, int n_samples,
+        int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
+        int[:] X_indptr, floating[:] X_mean):
+
+    cdef int j, startptr, endptr
+    cdef floating tmp, X_mean_j
+
+    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+    for j in range(n_features):
+        if w[j] == 0.:
+            continue
+        else:
+            if is_sparse:
+                startptr = X_indptr[j]
+                endptr = X_indptr[j + 1]
+                for i in range(startptr, endptr):
+                    R[X_indices[i]] -= w[j] * X_data[i]
+                if center:
+                    X_mean_j = X_mean[j]
+                    for i in range(n_samples):
+                        R[i] += X_mean_j * w[j]
+            else:
+                tmp = - w[j]
+                faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
 
 @cython.boundscheck(False)
@@ -180,7 +233,6 @@ def celer_logreg(
             tmp = 1. / scal
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        # TODO tmp used as dummy?
         d_obj = dual(pb, n_samples, alpha, tmp, &theta[0], &y[0])
 
         # also test dual point returned by inner solver after 1st iter:

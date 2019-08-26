@@ -82,36 +82,6 @@ cdef inline floating ST(floating u, floating x) nogil:
         return 0
 
 
-# TODO deprecated, use dual() and primal()
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-# @cython.cdivision(True)
-# cdef floating primal_value(floating alpha, int n_samples, floating * R,
-#                          int n_features, floating * w) nogil:
-#     cdef int inc = 1
-#     # regularization term: alpha ||w||_1
-#     cdef floating p_obj = alpha * fasum(&n_features, w, &inc)
-#     # R is passed as a pointer so no need to & it
-#     p_obj += fdot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
-#     return p_obj
-
-
-# # TODO deprecated, use dual() and primal()
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-# @cython.cdivision(True)
-# cdef floating dual_value(int n_samples, floating alpha, floating norm_y2,
-#                        floating * theta, floating * y) nogil:
-#     """Theta must be feasible"""
-#     cdef int i
-#     cdef floating d_obj = 0.
-#     for i in range(n_samples):
-#         d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
-#     d_obj *= 0.5 * alpha ** 2 * n_samples
-#     d_obj += norm_y2 / (2. * n_samples)
-#     return d_obj
-
-
 cdef floating log_1pexp(floating x) nogil:
     """Compute log(1. + exp(x)) while avoiding over/underflow."""
     if x < - 18:
@@ -192,15 +162,6 @@ cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
     d_obj *= 0.5 * alpha ** 2 * n_samples
     d_obj += norm_y2 / (2. * n_samples)
     return d_obj
-
-
-#     cdef int i
-#     cdef floating d_obj = 0.
-#     for i in range(n_samples):
-#         d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
-#     d_obj *= 0.5 * alpha ** 2 * n_samples
-#     d_obj += norm_y2 / (2. * n_samples)
-#     return d_obj
 
 
 @cython.boundscheck(False)
@@ -348,28 +309,26 @@ cpdef void compute_norms_X_col(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef void compute_residuals(bint is_sparse, floating[:] R, floating[:] y,
-        floating[:] w, bint center, int n_samples,
-        int n_features, floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-        int[:] X_indptr, floating[:] X_mean):
-
+cpdef void compute_residuals(
+        bint is_sparse, floating[:] R, floating[:] w,
+        floating[:] y, int pb, bint center, int n_samples,
+        int n_features, floating[::1, :] X, floating[:] X_data,
+        int[:] X_indices, int[:] X_indptr, floating[:] X_mean):
+    # R holds residuals if LASSO, Xw for LOGREG
     cdef int j, startptr, endptr
-    cdef floating tmp, X_mean_j
-
-    fcopy(&n_samples, &y[0], &inc, &R[0], &inc)
+    cdef floating tmp
+    cdef int inc = 1
+    # cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     for j in range(n_features):
-        if w[j] == 0.:
-            continue
-        else:
+        if w[j] != 0:
             if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
+                startptr, endptr = X_indptr[j], X_indptr[j + 1]
                 for i in range(startptr, endptr):
-                    R[X_indices[i]] -= w[j] * X_data[i]
-                if center:
-                    X_mean_j = X_mean[j]
-                    for i in range(n_samples):
-                        R[i] += X_mean_j * w[j]
+                    R[X_indices[i]] += w[j] * X_data[i]
             else:
-                tmp = - w[j]
+                tmp = w[j]
                 faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+    # currently R = Xw, update for LASSO
+    if pb == LASSO:
+        for i in range(n_samples):
+            R[i] = y[i] - R[i]

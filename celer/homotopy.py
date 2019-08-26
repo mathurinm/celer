@@ -180,7 +180,7 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
             # initialize R and theta, afterwards celer() updates them inplace
             R = np.zeros(n_samples, dtype=X.dtype)
             compute_residuals(
-                is_sparse, R, y, w, X_sparse_scaling.any(), n_samples,
+                is_sparse, R, w, y, 0, X_sparse_scaling.any(), n_samples,
                 n_features, X_dense, X_data, X_indices, X_indptr,
                 X_sparse_scaling)
             theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
@@ -216,246 +216,246 @@ def celer_path(X, y, eps=1e-3, n_alphas=100, alphas=None,
     return results
 
 
-def logreg_path(
-        X, y, solver, eps=1e-3, n_alphas=100, alphas=None,
-        max_iter=20, gap_freq=10, max_epochs=50000,
-        p0=10, verbose=False, verbose_inner=False,
-        tol=1e-6, prune=True, use_accel=True, return_thetas=False,
-        better_lc=True, K=6):
-    """Compute Logreg path with Celer or PN as solver.
+# def logreg_path(
+#         X, y, solver, eps=1e-3, n_alphas=100, alphas=None,
+#         max_iter=20, gap_freq=10, max_epochs=50000,
+#         p0=10, verbose=False, verbose_inner=False,
+#         tol=1e-6, prune=True, use_accel=True, return_thetas=False,
+#         better_lc=True, K=6):
+#     """Compute Logreg path with Celer or PN as solver.
 
-    Parameters
-    ----------
-    X : {array-like, sparse matrix}, shape (n_samples, n_features)
-        Training data. Pass directly as Fortran-contiguous data or column
-        sparse format (CSC) to avoid unnecessary memory duplication.
+#     Parameters
+#     ----------
+#     X : {array-like, sparse matrix}, shape (n_samples, n_features)
+#         Training data. Pass directly as Fortran-contiguous data or column
+#         sparse format (CSC) to avoid unnecessary memory duplication.
 
-    y : ndarray, shape (n_samples,)
-        Target values
+#     y : ndarray, shape (n_samples,)
+#         Target values
 
-    eps : float, optional
-        Length of the path. ``eps=1e-3`` means that
-        ``alpha_min = 1e-3 * alpha_max``
+#     eps : float, optional
+#         Length of the path. ``eps=1e-3`` means that
+#         ``alpha_min = 1e-3 * alpha_max``
 
-    n_alphas : int, optional
-        Number of alphas along the regularization path
+#     n_alphas : int, optional
+#         Number of alphas along the regularization path
 
-    alphas : ndarray, optional
-        List of alphas where to compute the models.
-        If ``None`` alphas are set automatically
+#     alphas : ndarray, optional
+#         List of alphas where to compute the models.
+#         If ``None`` alphas are set automatically
 
-    max_iter : int, optional
-        The maximum number of iterations (subproblem definitions)
+#     max_iter : int, optional
+#         The maximum number of iterations (subproblem definitions)
 
-    gap_freq : int, optional
-        Number of coordinate descent epochs between each duality gap
-        computations.
+#     gap_freq : int, optional
+#         Number of coordinate descent epochs between each duality gap
+#         computations.
 
-    max_epochs : int, optional
-        Maximum number of CD epochs on each subproblem.
+#     max_epochs : int, optional
+#         Maximum number of CD epochs on each subproblem.
 
-    p0 : int, optional
-        First working set size.
+#     p0 : int, optional
+#         First working set size.
 
-    verbose : bool or integer, optional
-        Amount of verbosity.
+#     verbose : bool or integer, optional
+#         Amount of verbosity.
 
-    verbose_inner : bool or integer
-        Amount of verbosity in the inner solver.
+#     verbose_inner : bool or integer
+#         Amount of verbosity in the inner solver.
 
-    tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+#     tol : float, optional
+#         The tolerance for the optimization: the solver runs until the duality
+#         gap is smaller than ``tol`` or the maximum number of iteration is
+#         reached.
 
-    prune : 0 | 1, optional
-        Whether or not to use pruning when growing working sets.
+#     prune : 0 | 1, optional
+#         Whether or not to use pruning when growing working sets.
 
-    return_thetas : bool, optional
-        If True, dual variables along the path are returned.
+#     return_thetas : bool, optional
+#         If True, dual variables along the path are returned.
 
-    Returns
-    -------
-    alphas : array, shape (n_alphas,)
-        The alphas along the path where models are computed.
+#     Returns
+#     -------
+#     alphas : array, shape (n_alphas,)
+#         The alphas along the path where models are computed.
 
-    coefs : array, shape (n_features, n_alphas)
-        Coefficients along the path.
+#     coefs : array, shape (n_features, n_alphas)
+#         Coefficients along the path.
 
-    gaps : array, shape (n_alphas,)
-        Duality gaps returned by the solver along the path.
+#     gaps : array, shape (n_alphas,)
+#         Duality gaps returned by the solver along the path.
 
-    thetas : array, shape (n_alphas, n_samples)
-        The dual variables along the path.
-        (Is returned only when ``return_thetas`` is set to True).
-    """
-    assert solver in ("celer", "PN")
-    is_sparse = sparse.issparse(X)
-    if set(y) - set([-1.0, 1.0]):
-        raise ValueError(
-            "y must contain only -1. or 1 values. "
-            "Got %s " % (set(y) - set([-1.0, 1.0]))
-        )
+#     thetas : array, shape (n_alphas, n_samples)
+#         The dual variables along the path.
+#         (Is returned only when ``return_thetas`` is set to True).
+#     """
+#     assert solver in ("celer", "PN")
+#     is_sparse = sparse.issparse(X)
+#     if set(y) - set([-1.0, 1.0]):
+#         raise ValueError(
+#             "y must contain only -1. or 1 values. "
+#             "Got %s " % (set(y) - set([-1.0, 1.0]))
+#         )
 
-    X = check_array(X, "csc", dtype=[
-                    np.float64, np.float32], order="F", copy=False)
-    y = check_array(
-        y, "csc", dtype=X.dtype.type, order="F", copy=False, ensure_2d=False
-    )
+#     X = check_array(X, "csc", dtype=[
+#                     np.float64, np.float32], order="F", copy=False)
+#     y = check_array(
+#         y, "csc", dtype=X.dtype.type, order="F", copy=False, ensure_2d=False
+#     )
 
-    n_samples, n_features = X.shape
-    if alphas is None:
-        alpha_max = np.max(np.abs(X.T.dot(y))) / 2.0
-        alphas = alpha_max * \
-            np.logspace(0, np.log10(eps), n_alphas, dtype=X.dtype)
-    else:
-        alphas = np.sort(alphas)[::-1]
+#     n_samples, n_features = X.shape
+#     if alphas is None:
+#         alpha_max = np.max(np.abs(X.T.dot(y))) / 2.0
+#         alphas = alpha_max * \
+#             np.logspace(0, np.log10(eps), n_alphas, dtype=X.dtype)
+#     else:
+#         alphas = np.sort(alphas)[::-1]
 
-    n_alphas = len(alphas)
+#     n_alphas = len(alphas)
 
-    coefs = np.zeros((n_features, n_alphas), order="F", dtype=X.dtype)
-    thetas = np.zeros((n_alphas, n_samples), dtype=X.dtype)
-    gaps = np.zeros(n_alphas)
+#     coefs = np.zeros((n_features, n_alphas), order="F", dtype=X.dtype)
+#     thetas = np.zeros((n_alphas, n_samples), dtype=X.dtype)
+#     gaps = np.zeros(n_alphas)
 
-    X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)  # TODO
-    if is_sparse:
-        X_data = X.data
-        X_indices = X.indices
-        X_indptr = X.indptr
-        X_dense = np.empty([1, 1], order="F")
-    else:
-        X_dense = X
-        X_data = np.empty([1], dtype=X.dtype)
-        X_indices = np.empty([1], dtype=np.intc)
-        X_indptr = np.empty([1], dtype=np.intc)
+#     X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)  # TODO
+#     if is_sparse:
+#         X_data = X.data
+#         X_indices = X.indices
+#         X_indptr = X.indptr
+#         X_dense = np.empty([1, 1], order="F")
+#     else:
+#         X_dense = X
+#         X_data = np.empty([1], dtype=X.dtype)
+#         X_indices = np.empty([1], dtype=np.intc)
+#         X_indptr = np.empty([1], dtype=np.intc)
 
-    norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
-    # TODO centering not supported for now
-    compute_norms_X_col(is_sparse, norms_X_col, n_samples, n_features,
-                        X_dense, X_data, X_indices, X_indptr, X_sparse_scaling)
+#     norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
+#     # TODO centering not supported for now
+#     compute_norms_X_col(is_sparse, norms_X_col, n_samples, n_features,
+#                         X_dense, X_data, X_indices, X_indptr, X_sparse_scaling)
 
-    # do not skip alphas[0], it is not always alpha_max
-    for t in range(n_alphas):
-        if verbose:
-            print("#" * 60)
-            print("##### Computing %dth alpha" % (t + 1))
-            print("#" * 60)
-        if t > 0:
-            w = coefs[:, t - 1].copy()
-            theta = thetas[t - 1].copy()
-            p_t = max(int(1.2 * (w != 0).sum()), 1)
-        else:
-            w = np.zeros(n_features, dtype=X.dtype)
-            Xw = np.zeros(n_samples, dtype=X.dtype)
-            theta = np.zeros(n_samples, dtype=X.dtype)
-            p_t = p0
+#     # do not skip alphas[0], it is not always alpha_max
+#     for t in range(n_alphas):
+#         if verbose:
+#             print("#" * 60)
+#             print("##### Computing %dth alpha" % (t + 1))
+#             print("#" * 60)
+#         if t > 0:
+#             w = coefs[:, t - 1].copy()
+#             theta = thetas[t - 1].copy()
+#             p_t = max(int(1.2 * (w != 0).sum()), 1)
+#         else:
+#             w = np.zeros(n_features, dtype=X.dtype)
+#             Xw = np.zeros(n_samples, dtype=X.dtype)
+#             theta = np.zeros(n_samples, dtype=X.dtype)
+#             p_t = p0
 
-        alpha = alphas[t]
+#         alpha = alphas[t]
 
-        if solver == "celer":
-            sol = celer_logreg(
-                is_sparse, X_dense, X_data, X_indices, X_indptr,
-                X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
-                max_iter=max_iter, gap_freq=gap_freq,
-                max_epochs=max_epochs, p0=p_t, verbose=verbose,
-                verbose_inner=verbose_inner, use_accel=use_accel,
-                tol=tol, prune=prune, better_lc=better_lc,
-            )
+#         if solver == "celer":
+#             sol = celer_logreg(
+#                 is_sparse, X_dense, X_data, X_indices, X_indptr,
+#                 X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
+#                 max_iter=max_iter, gap_freq=gap_freq,
+#                 max_epochs=max_epochs, p0=p_t, verbose=verbose,
+#                 verbose_inner=verbose_inner, use_accel=use_accel,
+#                 tol=tol, prune=prune, better_lc=better_lc,
+#             )
 
-            coefs[:, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2][-1]
+#             coefs[:, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2][-1]
 
-        elif solver == "PN":
-            sol = PN_solver(
-                X, y, alpha, w, max_iter,
-                verbose=verbose,  verbose_inner=verbose_inner,
-                tol=tol, prune=prune, p0=p_t, use_accel=use_accel, K=K
-            )
+#         elif solver == "PN":
+#             sol = PN_solver(
+#                 X, y, alpha, w, max_iter,
+#                 verbose=verbose,  verbose_inner=verbose_inner,
+#                 tol=tol, prune=prune, p0=p_t, use_accel=use_accel, K=K
+#             )
 
-            coefs[:, t], thetas[t], gaps[t] = sol
-        else:
-            raise ValueError("Unsupported solver %s" % solver)
+#             coefs[:, t], thetas[t], gaps[t] = sol
+#         else:
+#             raise ValueError("Unsupported solver %s" % solver)
 
-    if return_thetas:
-        return alphas, coefs, gaps, thetas
-    else:
-        return alphas, coefs, gaps
-
-
-def mtl_path(
-    X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
-    max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
-    prune=True, use_accel=True, return_thetas=False, K=6,
-):
-    X = check_array(X, "csc", dtype=[
-                    np.float64, np.float32], order="F", copy=False)
-
-    n_samples, n_features = X.shape
-    n_tasks = Y.shape[1]
-    if alphas is None:
-        alpha_max = np.max(norm(X.T.dot(Y), ord=2, axis=1))
-        alphas = alpha_max * \
-            np.geomspace(0, eps, n_alphas, dtype=X.dtype)
-    else:
-        alphas = np.sort(alphas)[::-1]
-
-    n_alphas = len(alphas)
-
-    # TODO fix
-    coefs = np.zeros((n_features, n_tasks, n_alphas), order="F", dtype=X.dtype)
-    thetas = np.zeros((n_alphas, n_samples, n_tasks), dtype=X.dtype)
-    gaps = np.zeros(n_alphas)
-
-    norms_X_col = np.linalg.norm(X, axis=0)
-    Y = np.asfortranarray(Y)
-    R = Y.copy(order='F')
-    theta = np.zeros_like(R, order='F')
-
-    # do not skip alphas[0], it is not always alpha_max
-    for t in range(n_alphas):
-        if verbose:
-            print("#" * 60)
-            print("##### Computing %dth alpha" % (t + 1))
-            print("#" * 60)
-        if t > 0:
-            W = coefs[:, :, t - 1].copy()
-            p_t = max(len(np.where(W[:, 0] != 0)[0]), 1)
-        else:
-            W = coefs[:, :, t].copy()
-            p_t = 10
-
-        alpha = alphas[t]
-
-        sol = celer_mtl(
-            X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
-            prune=prune, max_iter=max_iter, max_epochs=max_epochs,
-            verbose=verbose_inner, use_accel=use_accel)
-
-        coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
-
-    if return_thetas:
-        return alphas, coefs, gaps, thetas
-    else:
-        return alphas, coefs, gaps
+#     if return_thetas:
+#         return alphas, coefs, gaps, thetas
+#     else:
+#         return alphas, coefs, gaps
 
 
-# TODO put this in logreg_path with solver variable
-def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
-              verbose_inner=False, tol=1e-4, prune=True, p0=10,
-              use_accel=True, K=6, growth=2, blitz_sc=False):
-    is_sparse = sparse.issparse(X)
-    w = w_init.copy()
-    if is_sparse:
-        X_dense = np.empty([2, 2], order='F')
-        X_indices = X.indices.astype(np.int32)
-        X_indptr = X.indptr.astype(np.int32)
-        X_data = X.data
-    else:
-        X_dense = X
-        X_indices = np.empty([1], dtype=np.int32)
-        X_indptr = np.empty([1], dtype=np.int32)
-        X_data = np.empty([1])
+# def mtl_path(
+#     X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
+#     max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
+#     prune=True, use_accel=True, return_thetas=False, K=6,
+# ):
+#     X = check_array(X, "csc", dtype=[
+#                     np.float64, np.float32], order="F", copy=False)
 
-    return newton_celer(
-        is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-        max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
-        growth=growth, blitz_sc=blitz_sc)
+#     n_samples, n_features = X.shape
+#     n_tasks = Y.shape[1]
+#     if alphas is None:
+#         alpha_max = np.max(norm(X.T.dot(Y), ord=2, axis=1))
+#         alphas = alpha_max * \
+#             np.geomspace(0, eps, n_alphas, dtype=X.dtype)
+#     else:
+#         alphas = np.sort(alphas)[::-1]
+
+#     n_alphas = len(alphas)
+
+#     # TODO fix
+#     coefs = np.zeros((n_features, n_tasks, n_alphas), order="F", dtype=X.dtype)
+#     thetas = np.zeros((n_alphas, n_samples, n_tasks), dtype=X.dtype)
+#     gaps = np.zeros(n_alphas)
+
+#     norms_X_col = np.linalg.norm(X, axis=0)
+#     Y = np.asfortranarray(Y)
+#     R = Y.copy(order='F')
+#     theta = np.zeros_like(R, order='F')
+
+#     # do not skip alphas[0], it is not always alpha_max
+#     for t in range(n_alphas):
+#         if verbose:
+#             print("#" * 60)
+#             print("##### Computing %dth alpha" % (t + 1))
+#             print("#" * 60)
+#         if t > 0:
+#             W = coefs[:, :, t - 1].copy()
+#             p_t = max(len(np.where(W[:, 0] != 0)[0]), 1)
+#         else:
+#             W = coefs[:, :, t].copy()
+#             p_t = 10
+
+#         alpha = alphas[t]
+
+#         sol = celer_mtl(
+#             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
+#             prune=prune, max_iter=max_iter, max_epochs=max_epochs,
+#             verbose=verbose_inner, use_accel=use_accel)
+
+#         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
+
+#     if return_thetas:
+#         return alphas, coefs, gaps, thetas
+#     else:
+#         return alphas, coefs, gaps
+
+
+# # TODO put this in logreg_path with solver variable
+# def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
+#               verbose_inner=False, tol=1e-4, prune=True, p0=10,
+#               use_accel=True, K=6, growth=2, blitz_sc=False):
+#     is_sparse = sparse.issparse(X)
+#     w = w_init.copy()
+#     if is_sparse:
+#         X_dense = np.empty([2, 2], order='F')
+#         X_indices = X.indices.astype(np.int32)
+#         X_indptr = X.indptr.astype(np.int32)
+#         X_data = X.data
+#     else:
+#         X_dense = X
+#         X_indices = np.empty([1], dtype=np.int32)
+#         X_indptr = np.empty([1], dtype=np.int32)
+#         X_data = np.empty([1])
+
+#     return newton_celer(
+#         is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
+#         max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
+#         growth=growth, blitz_sc=blitz_sc)
