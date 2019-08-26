@@ -192,23 +192,15 @@ def test_warm_start():
         np.testing.assert_array_less(reg1.n_iter_, 2.01)
 
 
-@pytest.mark.parametrize("sparse_X, alphas, solver",
-                         product([False, True], [None, 1], ["celer", "PN"]))
-def test_logreg_path(sparse_X, alphas, solver):
-    # if __name__ == "__main__":
-    # sparse_X = True
-    # alphas = None
-    # solver = "celer"
+@pytest.mark.parametrize("sparse_X", [False, True])
+def test_logreg_path(sparse_X):
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     y = np.sign(y)
-    if alphas is None:
-        alpha_max = np.max(np.abs(X.T.dot(y))) / 2.0
-        n_alphas = 10
-        alphas = alpha_max * np.logspace(0, -2, n_alphas)
+    solver = "celer"
 
     tol = 1e-6
     alphas, coefs, gaps, thetas = logreg_path(
-        X, y, solver, alphas=alphas, tol=tol, return_thetas=True,
+        X, y, solver, tol=tol, return_thetas=True,
         verbose=True, verbose_inner=False)
     np.testing.assert_array_less(gaps, tol)

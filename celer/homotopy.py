@@ -366,6 +366,7 @@ def logreg_path(
             coefs[:, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2][-1]
 
         elif solver == "PN":
+            raise NotImplementedError("not public yet")  # TODO publish code
             sol = PN_solver(
                 X, y, alpha, w, max_iter,
                 verbose=verbose,  verbose_inner=verbose_inner,
