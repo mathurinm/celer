@@ -332,7 +332,7 @@ def logreg_path(
     norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
     # TODO centering not supported for now
     compute_norms_X_col(is_sparse, norms_X_col, n_samples, n_features,
-                        X_dense, X_data, X_indices, X_indptr)
+                        X_dense, X_data, X_indices, X_indptr, X_sparse_scaling)
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
