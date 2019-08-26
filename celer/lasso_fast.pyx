@@ -21,28 +21,6 @@ cdef:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef void compute_norms_X_col(
-        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
-        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-        int[:] X_indptr):
-    cdef int j, startptr, endptr
-    cdef floating tmp
-    cdef int inc = 1
-
-    for j in range(n_features):
-        if is_sparse:
-            tmp = 0.
-            startptr, endptr = X_indptr[j], X_indptr[j + 1]
-            for i in range(startptr, endptr):
-                tmp += X_data[i] ** 2
-            norms_X_col[j] = sqrt(tmp)
-        else:
-            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
 cdef floating compute_dual_scaling(
         bint is_sparse, int n_features, int n_samples, floating * theta,
         floating[::1, :] X, floating[:] X_data,

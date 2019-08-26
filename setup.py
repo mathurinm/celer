@@ -57,11 +57,6 @@ setup(name='celer',
                     sources=['celer/PN_logreg.pyx'],
                     language='c++',
                     include_dirs=[np.get_include()],
-                    extra_compile_args=["-O3"]),
-          Extension('celer.multitask_fast',
-                    sources=['celer/multitask_fast.pyx'],
-                    language='c++',
-                    include_dirs=[np.get_include()],
-                    extra_compile_args=["-O3"]),
+                    extra_compile_args=["-O3"])
       ],
       )
