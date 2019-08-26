@@ -17,7 +17,8 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
 from celer import celer_path, celer
 from celer.dropin_sklearn import Lasso, LassoCV
 # from celer.homotopy import mtl_path
-from celer.homotopy_bis import logreg_path
+# from celer.homotopy_bis import logreg_path
+from celer.homotopy import logreg_path
 
 
 def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
@@ -54,9 +55,9 @@ def test_celer_path(sparse_X, alphas, positive):
         alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
     tol = 1e-6
-    alphas, coefs, gaps, thetas = celer_path(
+    alphas, coefs, gaps, thetas, n_iters = celer_path(
         X, y, alphas=alphas, tol=tol, return_thetas=True, verbose=False,
-        verbose_inner=False, positive=positive)
+        verbose_inner=False, positive=positive, return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
@@ -191,19 +192,16 @@ def test_warm_start():
         np.testing.assert_array_less(reg1.n_iter_, 2.01)
 
 
-# @pytest.mark.parametrize("sparse_X, alphas, solver",
-                        #  product([False, True], [None, 1], ["celer", "PN"]))
-
-
-# def test_logreg_path(sparse_X, alphas, solver):
-if __name__ == "__main__":
-    sparse_X = True
-    alphas = None
-    solver = "celer"
+@pytest.mark.parametrize("sparse_X, alphas, solver",
+                         product([False, True], [None, 1], ["celer", "PN"]))
+def test_logreg_path(sparse_X, alphas, solver):
+    # if __name__ == "__main__":
+    # sparse_X = True
+    # alphas = None
+    # solver = "celer"
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     y = np.sign(y)
-    n_samples = X.shape[0]
     if alphas is None:
         alpha_max = np.max(np.abs(X.T.dot(y))) / 2.0
         n_alphas = 10
