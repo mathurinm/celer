@@ -73,7 +73,7 @@ cdef void fposv(char * uplo, int * n, int * nrhs, floating * a,
         sposv(uplo, n, nrhs, a, lda, b, ldb, info)
 
 
-cdef inline floating ST(floating u, floating x) nogil:
+cdef inline floating ST(floating x, floating u) nogil:
     if x > u:
         return x - u
     elif x < - u:

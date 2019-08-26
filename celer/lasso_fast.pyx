@@ -487,7 +487,7 @@ cpdef void inner_solver(
             if positive and w[j] <= 0.:
                 w[j] = 0.
             else:
-                w[j] = ST(alpha / norms_X_col[j] ** 2 * n_samples, w[j])
+                w[j] = ST(w[j], alpha / norms_X_col[j] ** 2 * n_samples)
 
             # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
             tmp = w[j] - old_w_j
