@@ -12,9 +12,9 @@ from sklearn.exceptions import ConvergenceWarning
 from numpy.linalg import norm
 
 from .lasso_fast import celer
-from .utils import compute_norms_X_col, compute_residuals
+from .cython_utils import compute_norms_X_col, compute_residuals
 from .logreg_fast import celer_logreg
-# from .multitask_fast import celer_mtl
+from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
 
 
@@ -404,3 +404,58 @@ def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
         is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
         max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
         growth=growth, blitz_sc=blitz_sc)
+
+
+def mtl_path(
+        X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
+        max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
+        prune=True, use_accel=True, return_thetas=False, K=6):
+    X = check_array(X, "csc", dtype=[
+                    np.float64, np.float32], order="F", copy=False)
+
+    n_samples, n_features = X.shape
+    n_tasks = Y.shape[1]
+    if alphas is None:
+        alpha_max = np.max(norm(X.T @ Y, ord=2, axis=1))
+        alphas = alpha_max * \
+            np.geomspace(0, eps, n_alphas, dtype=X.dtype)
+    else:
+        alphas = np.sort(alphas)[::-1]
+
+    n_alphas = len(alphas)
+
+    coefs = np.zeros((n_features, n_tasks, n_alphas), order="F", dtype=X.dtype)
+    thetas = np.zeros((n_alphas, n_samples, n_tasks), dtype=X.dtype)
+    gaps = np.zeros(n_alphas)
+
+    norms_X_col = np.linalg.norm(X, axis=0)
+    Y = np.asfortranarray(Y)
+    R = Y.copy(order='F')
+    theta = np.zeros_like(R, order='F')
+
+    # do not skip alphas[0], it is not always alpha_max
+    for t in range(n_alphas):
+        if verbose:
+            print("#" * 60)
+            print("##### Computing %dth alpha" % (t + 1))
+            print("#" * 60)
+        if t > 0:
+            W = coefs[:, :, t - 1].copy()
+            p_t = max(len(np.where(W[:, 0] != 0)[0]), 1)
+        else:
+            W = coefs[:, :, t].copy()
+            p_t = 10
+
+        alpha = alphas[t]
+
+        sol = celer_mtl(
+            X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
+            prune=prune, max_iter=max_iter, max_epochs=max_epochs,
+            verbose=verbose_inner, use_accel=use_accel)
+
+        coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
+
+    if return_thetas:
+        return alphas, coefs, gaps, thetas
+    else:
+        return alphas, coefs, gaps

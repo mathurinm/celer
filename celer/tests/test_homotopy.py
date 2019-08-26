@@ -8,7 +8,6 @@ import pytest
 import warnings
 
 from itertools import product
-from scipy import sparse
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
@@ -16,31 +15,7 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
 
 from celer import celer_path, celer
 from celer.dropin_sklearn import Lasso, LassoCV
-# from celer.homotopy import mtl_path
-# from celer.homotopy_bis import logreg_path
-from celer.homotopy import logreg_path
-
-
-def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
-                  n_targets=1, sparse_X=False):
-    """Build samples and observation for linear regression problem."""
-    random_state = np.random.RandomState(0)
-    if n_targets > 1:
-        w = random_state.randn(n_features, n_targets)
-    else:
-        w = random_state.randn(n_features)
-    w[n_informative_features:] = 0.0
-    if sparse_X:
-        X = sparse.random(n_samples, n_features, density=0.5, format='csc',
-                          random_state=random_state)
-        X_test = sparse.random(n_samples, n_features, density=0.5,
-                               format='csc', random_state=random_state)
-    else:
-        X = random_state.randn(n_samples, n_features)
-        X_test = random_state.randn(n_samples, n_features)
-    y = X.dot(w)
-    y_test = X_test.dot(w)
-    return X, y, X_test, y_test
+from celer.utils.testing import build_dataset
 
 
 @pytest.mark.parametrize("sparse_X, alphas, positive",
@@ -190,17 +165,3 @@ def test_warm_start():
         reg1.fit(X, y)
         # hack because assert_array_less does strict comparison...
         np.testing.assert_array_less(reg1.n_iter_, 2.01)
-
-
-@pytest.mark.parametrize("sparse_X", [False, True])
-def test_logreg_path(sparse_X):
-    """Test Lasso path convergence."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
-    y = np.sign(y)
-    solver = "celer"
-
-    tol = 1e-6
-    alphas, coefs, gaps, thetas = logreg_path(
-        X, y, solver, tol=tol, return_thetas=True,
-        verbose=True, verbose_inner=False)
-    np.testing.assert_array_less(gaps, tol)

@@ -10,8 +10,8 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt, exp
 
-from .utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
-from .utils cimport (primal, dual, create_dual_pt, create_accel_pt,
+from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
+from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
                             sigmoid, ST, LOGREG)
 
 ctypedef np.uint8_t uint8
