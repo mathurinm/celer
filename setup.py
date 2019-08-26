@@ -1,8 +1,9 @@
 import os
 
+from distutils.core import setup, Extension
+
 import numpy as np
 
-from distutils.core import setup, Extension
 from Cython.Distutils import build_ext
 
 
@@ -43,8 +44,8 @@ setup(name='celer',
                     language='c++',
                     include_dirs=[np.get_include()],
                     extra_compile_args=["-O3"]),
-          Extension('celer.utils',
-                    sources=['celer/utils.pyx'],
+          Extension('celer.cython_utils',
+                    sources=['celer/cython_utils.pyx'],
                     language='c++',
                     include_dirs=[np.get_include()],
                     extra_compile_args=["-O3"]),
@@ -57,6 +58,11 @@ setup(name='celer',
                     sources=['celer/PN_logreg.pyx'],
                     language='c++',
                     include_dirs=[np.get_include()],
-                    extra_compile_args=["-O3"])
+                    extra_compile_args=["-O3"]),
+          Extension('celer.multitask_fast',
+                    sources=['celer/multitask_fast.pyx'],
+                    language='c++',
+                    include_dirs=[np.get_include()],
+                    extra_compile_args=["-O3"]),
       ],
       )
