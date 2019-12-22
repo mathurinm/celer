@@ -5,7 +5,7 @@ import numpy as np
 from scipy import sparse
 from abc import ABCMeta, abstractmethod
 from sklearn.base import RegressorMixin, MultiOutputMixin
-from sklearn.linear_model.base import LinearModel
+from sklearn.linear_model._base import LinearModel
 from sklearn.utils import check_array
 from sklearn.utils.validation import column_or_1d
 from sklearn.model_selection import check_cv
