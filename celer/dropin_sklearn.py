@@ -15,10 +15,10 @@ from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
                                   LassoCV as _LassoCV)
-from sklearn.linear_model.coordinate_descent import (LinearModelCV as
-                                                     _LinearModelCV)
-from sklearn.linear_model.coordinate_descent import (_alpha_grid,
-                                                     _path_residuals)
+from sklearn.linear_model._coordinate_descent import (LinearModelCV as
+                                                      _LinearModelCV)
+from sklearn.linear_model._coordinate_descent import (_alpha_grid,
+                                                      _path_residuals)
 
 from .homotopy import celer_path
 
