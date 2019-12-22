@@ -7,7 +7,6 @@ from abc import ABCMeta, abstractmethod
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.linear_model.base import LinearModel
 from sklearn.utils import check_array
-from sklearn.externals import six
 from sklearn.utils.validation import column_or_1d
 from sklearn.model_selection import check_cv
 from joblib import Parallel, delayed, effective_n_jobs
