@@ -2,7 +2,7 @@ import pytest
 
 import numpy as np
 
-from celer.homotopy import logreg_path
+from celer.homotopy import celer_path
 from celer.utils.testing import build_dataset
 
 
@@ -14,7 +14,7 @@ def test_logreg_path(sparse_X):
     solver = "celer"
 
     tol = 1e-6
-    alphas, coefs, gaps, thetas = logreg_path(
-        X, y, solver, tol=tol, return_thetas=True,
+    alphas, coefs, gaps, thetas = celer_path(
+        X, y, "logreg", solver, tol=tol, return_thetas=True,
         verbose=True, verbose_inner=False)
     np.testing.assert_array_less(gaps, tol)

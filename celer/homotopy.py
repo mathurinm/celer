@@ -97,7 +97,8 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
         If True, number of iterations along the path are returned.
 
     positive : bool, optional (default=False)
-        When set to True, if pb == "lasso", forces the coefficients to be positive.
+        When set to True, if pb == "lasso", forces the coefficients to be
+        positive.
 
     Returns
     -------
@@ -205,12 +206,12 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
             theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
 
         alpha = alphas[t]
-        # celer modifies w and theta in place:
+        # celer modifies w, Xw, R and theta in place:
         if pb == "lasso":
             sol = celer(
                 is_sparse,
-                X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y, alpha,
-                w, R, theta, norms_X_col,
+                X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
+                alpha, w, R, theta, norms_X_col,
                 max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
                 p0=p0, verbose=verbose, verbose_inner=verbose_inner,
                 use_accel=1, tol=tol, prune=prune, positive=positive)
@@ -226,7 +227,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
                     verbose_inner=verbose_inner, use_accel=True,
                     tol=tol, prune=prune)
 
-                coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+                dual_gaps[t] = sol[2][-1]
 
             elif solver == "PN":
                 sol = PN_solver(
@@ -234,7 +235,8 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
                     verbose=verbose, verbose_inner=verbose_inner,
                     tol=tol, prune=prune, p0=p0, use_accel=True)
 
-                coefs[:, t], thetas[t], dual_gaps[t] = sol
+                dual_gaps[t] = sol[2]
+            coefs[:, t], thetas[t], = sol[0], sol[1]
         if return_n_iter:  # TODO working for Lasso only RN
             n_iters[t] = len(sol[2])
 
