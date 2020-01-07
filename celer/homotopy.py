@@ -190,14 +190,18 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
             if coef_init is not None:
                 w = coef_init.copy()
                 p0 = max((w != 0.).sum(), p0)
+                Xw = X.dot(w)
             else:
                 w = np.zeros(n_features, dtype=X.dtype)
+                Xw = np.zeros(n_samples, dtype=X.dtype)
             # initialize R and theta, afterwards celer() updates them inplace
             R = np.zeros(n_samples, dtype=X.dtype)
             compute_residuals(
                 is_sparse, R, w, y, 0, X_sparse_scaling.any(), n_samples,
                 n_features, X_dense, X_data, X_indices, X_indptr,
                 X_sparse_scaling)
+            # TODO: R = y - Xw is simpler and the time loss should be minimal
+
             theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
 
         alpha = alphas[t]
@@ -218,21 +222,19 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
                     is_sparse, X_dense, X_data, X_indices, X_indptr,
                     X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
                     max_iter=max_iter, gap_freq=gap_freq,
-                    max_epochs=max_epochs, p0=p_t, verbose=verbose,
-                    verbose_inner=verbose_inner, use_accel=use_accel,
-                    tol=tol, prune=prune, better_lc=better_lc)
+                    max_epochs=max_epochs, p0=p0, verbose=verbose,
+                    verbose_inner=verbose_inner, use_accel=True,
+                    tol=tol, prune=prune)
 
-            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+                coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
 
-        elif solver == "PN":
-            raise NotImplementedError("not public yet")  # TODO publish code
-            sol = PN_solver(
-                X, y, alpha, w, max_iter,
-                verbose=verbose,  verbose_inner=verbose_inner,
-                tol=tol, prune=prune,
-                p0=p_t, use_accel=use_accel, K=K)
+            elif solver == "PN":
+                sol = PN_solver(
+                    X, y, alpha, w, max_iter,
+                    verbose=verbose, verbose_inner=verbose_inner,
+                    tol=tol, prune=prune, p0=p0, use_accel=True)
 
-            coefs[:, t], thetas[t], gaps[t] = sol
+                coefs[:, t], thetas[t], dual_gaps[t] = sol
         if return_n_iter:  # TODO working for Lasso only RN
             n_iters[t] = len(sol[2])
 
