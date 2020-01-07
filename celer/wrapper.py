@@ -7,8 +7,6 @@ import numpy as np
 
 from .homotopy import celer_path
 
-# TODO make it usable for both lasso and logreg?
-
 
 def celer(X, y, pb, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
