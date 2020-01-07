@@ -10,15 +10,24 @@ from .homotopy import celer_path
 # TODO make it usable for both lasso and logreg?
 
 
-def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
+def celer(X, y, pb, alpha, w_init=None, max_iter=100, gap_freq=10,
           max_epochs=50000, p0=10, verbose=1, verbose_inner=0,
           tol=1e-6, prune=0, positive=False, return_n_iter=False):
-    """
-    Compute the Lasso solution with the Celer algorithm.
+    r"""
+    Compute the Lasso or Logistic regression solution with the Celer algorithm.
 
-    The minimized objective function is::
+    The Lasso objective function is
 
-        ||y - X w||_2^2 / (2 * n_samples) + alpha * ||w||_1
+    .. math::
+
+        \frac{||y - X w||_2^2}{2 * \text{n_samples}} + \alpha ||w||_1
+
+    while for Logreg it is
+
+    .. math::
+
+        \sum_{i=1}^{\text{n_samples}} \text{log} \,(1 + e^{-y_i x_i^\top w}) +
+        \alpha  ||w||_1
 
     Parameters
     ----------
@@ -29,8 +38,10 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
     y : array-like, shape (n_samples,)
         Observation vector.
 
+    pb : "lasso" | "logreg"
+
     alpha : float
-        Value of the Lasso regularization parameter.
+        Value of the regularization parameter.
 
     w_init : array-like, shape (n_features,), optional
         Initial value for the coefficients vector.
@@ -84,12 +95,13 @@ def celer(X, y, alpha, w_init=None, max_iter=100, gap_freq=10,
         return_n_iter is True.
     """
 
+    # TODO implement PN as solver here
     results = celer_path(
-        X, y, "lasso", alphas=np.array([alpha]), coef_init=w_init,
-        max_iter=max_iter, gap_freq=gap_freq,
-        max_epochs=max_epochs, p0=p0, verbose=verbose,
-        verbose_inner=verbose_inner, tol=tol, prune=prune, return_thetas=True,
-        return_n_iter=return_n_iter, positive=positive)
+        X, y, pb, solver="celer", alphas=np.array([alpha]), coef_init=w_init,
+        max_iter=max_iter, gap_freq=gap_freq, max_epochs=max_epochs, p0=p0,
+        verbose=verbose, verbose_inner=verbose_inner, tol=tol,
+        prune=prune, return_thetas=True, return_n_iter=return_n_iter,
+        positive=positive)
 
     w = results[1].T[0]
     gap = results[2][0]

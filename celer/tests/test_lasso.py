@@ -117,13 +117,16 @@ def test_dropin_lasso(sparse_X, fit_intercept, positive):
     check_estimator(Lasso)
 
 
-@pytest.mark.parametrize("sparse_X", [True, False])
-def test_celer_single_alpha(sparse_X):
+@pytest.mark.parametrize("sparse_X, pb",
+                         product([True, False], ["lasso", "logreg"]))
+def test_celer_single_alpha(sparse_X, pb):
     X, y, _, _ = build_dataset(n_samples=20, n_features=100, sparse_X=sparse_X)
+    if pb == "logreg":
+        y = np.sign(y)
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, gap, n_iter = celer(X, y, alpha_max / 10., tol=tol,
+    w, theta, gap, n_iter = celer(X, y, pb, alpha_max / 10., tol=tol,
                                   return_n_iter=True)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
@@ -140,7 +143,7 @@ def test_zero_column(sparse_X):
         X[:, :n_zero_columns].fill(0.)
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     tol = 1e-6
-    w, theta, gap = celer(X, y, alpha_max / 10., tol=tol, p0=50,
+    w, theta, gap = celer(X, y, "lasso", alpha_max / 10., tol=tol, p0=50,
                           prune=0, verbose=1, verbose_inner=1)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
