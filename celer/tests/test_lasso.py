@@ -31,8 +31,9 @@ def test_celer_path(sparse_X, alphas, positive):
 
     tol = 1e-6
     alphas, coefs, gaps, thetas, n_iters = celer_path(
-        X, y, alphas=alphas, tol=tol, return_thetas=True, verbose=False,
-        verbose_inner=False, positive=positive, return_n_iter=True)
+        X, y, "lasso", alphas=alphas, tol=tol, return_thetas=True,
+        verbose=False, verbose_inner=False, positive=positive,
+        return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
@@ -59,7 +60,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
 
     params = dict(eps=1e-2, n_alphas=10, tol=1e-14)
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, return_thetas=False, verbose=1, prune=prune, **params)
+        X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
 
     alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params)
 
@@ -116,14 +117,16 @@ def test_dropin_lasso(sparse_X, fit_intercept, positive):
     check_estimator(Lasso)
 
 
-@pytest.mark.parametrize("sparse_X", [True, False])
-def test_celer_single_alpha(sparse_X):
+@pytest.mark.parametrize("sparse_X, pb",
+                         product([True, False], ["lasso", "logreg"]))
+def test_celer_single_alpha(sparse_X, pb):
     X, y, _, _ = build_dataset(n_samples=20, n_features=100, sparse_X=sparse_X)
+    if pb == "logreg":
+        y = np.sign(y)
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, gap, n_iter = celer(X, y, alpha_max / 10., tol=tol,
-                                  return_n_iter=True)
+    w, theta, gap = celer(X, y, pb, alpha_max / 10., tol=tol)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
@@ -139,7 +142,7 @@ def test_zero_column(sparse_X):
         X[:, :n_zero_columns].fill(0.)
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     tol = 1e-6
-    w, theta, gap = celer(X, y, alpha_max / 10., tol=tol, p0=50,
+    w, theta, gap = celer(X, y, "lasso", alpha_max / 10., tol=tol, p0=50,
                           prune=0, verbose=1, verbose_inner=1)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])

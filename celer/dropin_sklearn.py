@@ -139,7 +139,7 @@ class Lasso(Lasso_sklearn):
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
         results = celer_path(
-            X, y, alphas=alphas, coef_init=coef_init,
+            X, y, "lasso", alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune,
@@ -269,10 +269,10 @@ class LassoCV(LassoCV_sklearn):
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute Lasso path with Celer."""
         alphas, coefs, dual_gaps = celer_path(
-            X, y, alphas=alphas, coef_init=coef_init, max_iter=self.max_iter,
-            gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, tol=self.tol, prune=self.prune,
-            positive=self.positive,
+            X, y, "lasso", alphas=alphas, coef_init=coef_init,
+            max_iter=self.max_iter, gap_freq=self.gap_freq,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, prune=self.prune, positive=self.positive,
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps)
