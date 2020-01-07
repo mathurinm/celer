@@ -31,8 +31,9 @@ def test_celer_path(sparse_X, alphas, positive):
 
     tol = 1e-6
     alphas, coefs, gaps, thetas, n_iters = celer_path(
-        X, y, alphas=alphas, tol=tol, return_thetas=True, verbose=False,
-        verbose_inner=False, positive=positive, return_n_iter=True)
+        X, y, "lasso", alphas=alphas, tol=tol, return_thetas=True,
+        verbose=False, verbose_inner=False, positive=positive,
+        return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
@@ -59,7 +60,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
 
     params = dict(eps=1e-2, n_alphas=10, tol=1e-14)
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, return_thetas=False, verbose=1, prune=prune, **params)
+        X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
 
     alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params)
 
