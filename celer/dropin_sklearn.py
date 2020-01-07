@@ -5,9 +5,8 @@ import numpy as np
 from scipy import sparse
 from abc import ABCMeta, abstractmethod
 from sklearn.base import RegressorMixin, MultiOutputMixin
-from sklearn.linear_model.base import LinearModel
+from sklearn.linear_model._base import LinearModel
 from sklearn.utils import check_array
-from sklearn.externals import six
 from sklearn.utils.validation import column_or_1d
 from sklearn.model_selection import check_cv
 from joblib import Parallel, delayed, effective_n_jobs
@@ -15,10 +14,10 @@ from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
                                   LassoCV as _LassoCV)
-from sklearn.linear_model.coordinate_descent import (LinearModelCV as
-                                                     _LinearModelCV)
-from sklearn.linear_model.coordinate_descent import (_alpha_grid,
-                                                     _path_residuals)
+from sklearn.linear_model._coordinate_descent import (LinearModelCV as
+                                                      _LinearModelCV)
+from sklearn.linear_model._coordinate_descent import (_alpha_grid,
+                                                      _path_residuals)
 
 from .homotopy import celer_path
 
