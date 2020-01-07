@@ -126,8 +126,7 @@ def test_celer_single_alpha(sparse_X, pb):
     alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, gap, n_iter = celer(X, y, pb, alpha_max / 10., tol=tol,
-                                  return_n_iter=True)
+    w, theta, gap = celer(X, y, pb, alpha_max / 10., tol=tol)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
