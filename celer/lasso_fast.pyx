@@ -70,7 +70,6 @@ def celer(
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
 
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
-
     # passed to inner solver
     # and potentially used for screening if it gives a better d_obj
     cdef floating d_obj_from_inner = 0.
@@ -110,7 +109,6 @@ def celer(
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
             fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
-            theta_to_use = theta
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
@@ -181,8 +179,7 @@ def celer(
             is_sparse,
             n_samples, n_features, ws_size, X, X_data, X_indices, X_indptr, X_mean,
             y, alpha, center, w, R, C, theta_inner, norms_X_col,
-            norm_y2, tol_inner, max_epochs=max_epochs,
-            gap_freq=gap_freq, verbose=verbose_inner,
+            norm_y2, tol_inner, max_epochs, gap_freq, verbose=verbose_inner,
             use_accel=use_accel, positive=positive)
 
     return (np.asarray(w), np.asarray(theta),
@@ -196,7 +193,7 @@ cpdef void inner_solver(
     bint is_sparse,
     int n_samples, int n_features, int ws_size, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, bint center, floating[:] w, floating[:] R,
+    floating[:] y, floating alpha, bint center, floating[:] w, floating[:] Xw,
     int[:] C, floating[:] theta, floating[:] norms_X_col,
     floating norm_y2, floating eps, int max_epochs, int gap_freq,
     int verbose=0, int K=6, int use_accel=1, bint positive=0):
@@ -217,7 +214,7 @@ cpdef void inner_solver(
     cdef floating gap, p_obj, d_obj, d_obj_accel, scal
     cdef floating highest_d_obj = 0.
     # acceleration variables:
-    cdef floating[:, :] last_K_res = np.empty([K, n_samples], dtype=dtype)
+    cdef floating[:, :] last_K_Xw = np.empty([K, n_samples], dtype=dtype)
     cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
     cdef floating[:, :] UtU = np.empty([K - 1, K - 1], dtype=dtype)
     cdef floating[:] onesK = np.ones(K - 1, dtype=dtype)
@@ -226,12 +223,12 @@ cpdef void inner_solver(
 
     for epoch in range(max_epochs):
         if epoch != 0 and epoch % gap_freq == 0:
-            create_dual_pt(pb, n_samples, alpha, &theta[0], &R[0], &y[0])
+            create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
 
             scal = compute_dual_scaling(
-                is_sparse, pb,
-                n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
+                is_sparse, pb, n_features, n_samples,
+                &theta[0], X, X_data, X_indices, X_indptr,
                 ws_size, &C[0], &dummy_screened[0], X_mean, center, positive)
 
             if scal > 1. :
@@ -243,7 +240,7 @@ cpdef void inner_solver(
             if use_accel: # also compute accelerated dual_point
                 info_dposv = create_accel_pt(
                     pb, n_samples, n_features, K, epoch, gap_freq, alpha,
-                    &R[0], &thetaccel[0], &last_K_res[0, 0], U, UtU, onesK, y)
+                    &Xw[0], &thetaccel[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
                 if info_dposv != 0 and verbose:
                     print("linear system solving failed")
@@ -260,7 +257,6 @@ cpdef void inner_solver(
 
                     d_obj_accel = dual(
                         pb, n_samples, alpha, norm_y2, &thetaccel[0], &y[0])
-
                     if d_obj_accel > d_obj:
                         d_obj = d_obj_accel
                         # theta = theta_accel (theta is defined as
@@ -276,7 +272,7 @@ cpdef void inner_solver(
 
             # we pass full w and will ignore zero values
             p_obj = primal(
-                pb, alpha, n_samples, &R[0], &y[0], n_features, &w[0])
+                pb, alpha, n_samples, &Xw[0], &y[0], n_features, &w[0])
             gap = p_obj - highest_d_obj
 
             if verbose:
@@ -297,14 +293,14 @@ cpdef void inner_solver(
                 X_mean_j = X_mean[j]
                 startptr, endptr = X_indptr[j], X_indptr[j + 1]
                 for i in range(startptr, endptr):
-                    w[j] += R[X_indices[i]] * X_data[i] / norms_X_col[j] ** 2
+                    w[j] += Xw[X_indices[i]] * X_data[i] / norms_X_col[j] ** 2
                 if center:
                     R_sum = 0.
                     for i in range(n_samples):
-                        R_sum += R[i]
+                        R_sum += Xw[i]
                     w[j] -= R_sum * X_mean_j / norms_X_col[j] ** 2
             else:
-                w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / norms_X_col[j] ** 2
+                w[j] += fdot(&n_samples, &X[0, j], &inc, &Xw[0], &inc) / norms_X_col[j] ** 2
 
             # perform ST in place:
             if positive and w[j] <= 0.:
@@ -317,12 +313,12 @@ cpdef void inner_solver(
             if tmp != 0.:
                 if is_sparse:
                     for i in range(startptr, endptr):
-                        R[X_indices[i]] += tmp *  X_data[i]
+                        Xw[X_indices[i]] += tmp * X_data[i]
                     if center:
                         for i in range(n_samples):
-                            R[i] -= X_mean_j * tmp
+                            Xw[i] -= X_mean_j * tmp
                 else:
-                    faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+                    faxpy(&n_samples, &tmp, &X[0, j], &inc, &Xw[0], &inc)
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))

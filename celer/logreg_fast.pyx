@@ -3,7 +3,6 @@
 # License: BSD 3 clause
 
 import numpy as np
-
 cimport numpy as np
 cimport cython
 
@@ -36,6 +35,7 @@ def celer_logreg(
     """Xw and w are modified in place and assumed to match."""
 
     cdef int pb = LOGREG
+    cdef bint positive = 0
     if floating is double:
         dtype = np.float64
     else:
@@ -48,14 +48,12 @@ def celer_logreg(
         p0 = n_features
 
     cdef int i, j, t, startptr, endptr
-
     cdef int inc = 1
     cdef floating tmp
     cdef int ws_size = 0
     cdef int nnz = 0
     cdef floating p_obj, d_obj, highest_d_obj, gap, radius
     cdef floating scal
-
     cdef int n_screened = 0
     cdef bint center = False
     cdef floating X_mean_j
@@ -87,7 +85,7 @@ def celer_logreg(
         scal = compute_dual_scaling(
             is_sparse, pb, n_features, n_samples, &theta[0], X, X_data,
             X_indices, X_indptr, n_features, &dummy_C[0], &screened[0],
-            X_mean, center, 0)
+            X_mean, center, positive)
 
         if scal > 1. :
             tmp = 1. / scal
@@ -123,7 +121,6 @@ def celer_logreg(
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
-
         if gap < tol:
             if verbose:
                 print("\nEarly exit, gap: %.2e < %.2e" % (gap, tol))
@@ -133,7 +130,7 @@ def celer_logreg(
         set_prios(
             is_sparse, pb, n_samples, n_features, &theta[0], X, X_data,
             X_indices, X_indptr, &norms_X_col[0], &prios[0], &screened[0],
-            radius, &n_screened, 0)
+            radius, &n_screened, positive)
 
         if prune:
             nnz = 0
@@ -202,6 +199,7 @@ cpdef void inner_solver_logreg(
     int verbose=0, int K=6, int use_accel=1, int better_lc=1):
 
     cdef int pb = LOGREG
+    cdef bint positive = 0
     if floating is double:
         dtype = np.float64
     else:
@@ -236,7 +234,7 @@ cpdef void inner_solver_logreg(
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = compute_dual_scaling(
-                is_sparse, pb, n_features, n_features,
+                is_sparse, pb, n_features, n_samples,
                 &theta[0], X, X_data, X_indices, X_indptr,
                 ws_size, &C[0], &dummy_screened[0], X_mean, center, 0)
 
@@ -255,18 +253,16 @@ cpdef void inner_solver_logreg(
                     print("linear system solving failed")
 
                 scal = compute_dual_scaling(
-                    is_sparse, pb, n_features, n_samples, &thetaccel[0], X, X_data,
-                    X_indices, X_indptr, ws_size, &C[0],
-                    &dummy_screened[0], X_mean, center, 0)
+                    is_sparse, pb, n_features, n_samples, &thetaccel[0], X,
+                    X_data, X_indices, X_indptr, ws_size, &C[0],
+                    &dummy_screened[0], X_mean, center, positive)
 
                 if scal > 1. :
                     tmp = 1. / scal
                     fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
-                d_obj_accel = dual(pb, n_samples, alpha, tmp, &thetaccel[0], &y[0])
-                # CAUTION: I have not yet written the code to include a best_theta.
-                # This is of no consequence as long as screening is not performed.
-                # Otherwise dgap and theta might disagree.
+                d_obj_accel = dual(
+                    pb, n_samples, alpha, tmp, &thetaccel[0], &y[0])
                 if d_obj_accel > d_obj:
                     d_obj = d_obj_accel
                     # theta = theta_accel (theta is defined as
