@@ -213,7 +213,7 @@ cpdef void inner_solver(
     cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
 
     cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
-    cdef floating gap, p_obj, d_obj, d_obj_accel, dual_scale, dual_scale_accel
+    cdef floating gap, p_obj, d_obj, d_obj_accel, scal
     cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
     # at first d_obj computation. highest_d_obj corresponds to theta = 0.
     cdef floating tmp, R_sum
@@ -238,13 +238,13 @@ cpdef void inner_solver(
             tmp = 1. / (alpha * n_samples)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            dual_scale = compute_dual_scaling(
+            scal = compute_dual_scaling(
                 is_sparse, pb,
                 n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
                 ws_size, &C[0], &dummy_screened[0], X_mean, center, positive)
 
-            if dual_scale > 1. :
-                tmp = 1. / dual_scale
+            if scal > 1. :
+                tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
@@ -301,13 +301,13 @@ cpdef void inner_solver(
                     tmp = 1. / (alpha * n_samples)
                     fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
-                    dual_scale_accel = compute_dual_scaling(
+                    scal = compute_dual_scaling(
                         is_sparse, pb, n_features, n_samples, &thetaccel[0], X,
                         X_data, X_indices, X_indptr, ws_size, &C[0],
                         &dummy_screened[0], X_mean, center, positive)
 
-                    if dual_scale_accel > 1. :
-                        tmp = 1. / dual_scale_accel
+                    if scal > 1. :
+                        tmp = 1. / scal
                         fscal(&n_samples, &tmp, &thetaccel[0], &inc)
 
                     d_obj_accel = dual(
@@ -340,7 +340,7 @@ cpdef void inner_solver(
                 break
 
         for k in range(ws_size):
-            # update feature k in place, cyclically
+            # update feature j in place
             j = C[k]
             if norms_X_col[j] == 0.:
                 continue
@@ -365,16 +365,15 @@ cpdef void inner_solver(
                 w[j] = ST(w[j], alpha / norms_X_col[j] ** 2 * n_samples)
 
             # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
-            tmp = w[j] - old_w_j
+            tmp = old_w_j - w[j]
             if tmp != 0.:
                 if is_sparse:
                     for i in range(startptr, endptr):
-                        R[X_indices[i]] -= tmp *  X_data[i]
+                        R[X_indices[i]] += tmp *  X_data[i]
                     if center:
                         for i in range(n_samples):
-                            R[i] += X_mean_j * tmp
+                            R[i] -= X_mean_j * tmp
                 else:
-                    tmp = -tmp
                     faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
