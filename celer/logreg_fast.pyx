@@ -12,101 +12,13 @@ from libc.math cimport fabs, sqrt, exp
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                            sigmoid, ST, LOGREG)
+                            sigmoid, ST, LOGREG, compute_dual_scaling,
+                            set_prios)
 
 ctypedef np.uint8_t uint8
 
 cdef:
     int inc = 1
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef floating compute_dual_scaling(
-        bint is_sparse, int n_features, int n_samples, floating * theta,
-        floating[::1, :] X, floating[:] X_data,
-        int[:] X_indices, int[:] X_indptr, int ws_size, int * C, uint8 * screened,
-        floating[:] X_mean, bint center) nogil:
-    """compute norm(X.T.dot(theta), ord=inf),
-    with X restricted to features (columns) with indices in array C.
-    if ws_size == n_features, C=np.arange(n_features is used)"""
-    cdef floating Xj_theta
-    cdef floating scal = 0.
-    cdef floating theta_sum = 0.
-    cdef int i, j, Cj, startptr, endptr
-
-    if is_sparse:
-        if center:
-            for i in range(n_samples):
-                theta_sum += theta[i]
-
-    if ws_size == n_features: # scaling wrt all features
-        for j in range(n_features):
-            if screened[j]:
-                continue
-            if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                Xj_theta = 0.
-                for i in range(startptr, endptr):
-                    Xj_theta += X_data[i] * theta[X_indices[i]]
-                if center:
-                    Xj_theta -= theta_sum * X_mean[j]
-            else:
-                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
-
-            Xj_theta = fabs(Xj_theta)
-            scal = max(scal, Xj_theta)
-    else: # scaling wrt features in C only
-        for j in range(ws_size):
-            Cj = C[j]
-            if is_sparse:
-                startptr = X_indptr[Cj]
-                endptr = X_indptr[Cj + 1]
-                Xj_theta = 0.
-                for i in range(startptr, endptr):
-                    Xj_theta += X_data[i] * theta[X_indices[i]]
-                if center:
-                    Xj_theta -= theta_sum * X_mean[j]
-            else:
-                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc)
-
-            Xj_theta = fabs(Xj_theta)
-
-            scal = max(scal, Xj_theta)
-    return scal
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef void set_prios(
-    bint is_sparse, int n_samples, int n_features, floating * theta,
-    floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
-    int * n_screened) nogil:
-    cdef int i, j, startptr, endptr
-    cdef floating Xj_theta
-
-    for j in range(n_features):
-        if screened[j]:
-            prios[j] = 10000
-            continue
-        if is_sparse:
-            Xj_theta = 0
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            for i in range(startptr, endptr):
-                Xj_theta += theta[X_indices[i]] * X_data[i]
-        else:
-            Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
-
-        prios[j] = (1. - fabs(Xj_theta)) / norms_X_col[j]
-
-        if prios[j] > radius:
-            screened[j] = True
-            n_screened[0] += 1
 
 
 @cython.boundscheck(False)
@@ -173,8 +85,8 @@ def celer_logreg(
         create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
         scal = compute_dual_scaling(
-            is_sparse, n_features, n_samples, &theta[0], X, X_data, X_indices,
-            X_indptr, n_features, &dummy_C[0], &screened[0], X_mean, center)
+            is_sparse, pb, n_features, n_samples, &theta[0], X, X_data, X_indices,
+            X_indptr, n_features, &dummy_C[0], &screened[0], X_mean, center, 0)
 
         if scal > 1. :
             tmp = 1. / scal
@@ -185,9 +97,9 @@ def celer_logreg(
         # also test dual point returned by inner solver after 1st iter:
         if t != 0:
             scal = compute_dual_scaling(
-                is_sparse, n_features, n_samples, &theta_inner[0],
+                is_sparse, pb, n_features, n_samples, &theta_inner[0],
                 X, X_data, X_indices, X_indptr,
-                n_features, &dummy_C[0], &screened[0], X_mean, center)
+                n_features, &dummy_C[0], &screened[0], X_mean, center, 0)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
@@ -218,9 +130,9 @@ def celer_logreg(
 
         radius = sqrt(gap / 2.) / alpha
         set_prios(
-            is_sparse, n_samples, n_features, &theta[0], X, X_data,
+            is_sparse, pb, n_samples, n_features, &theta[0], X, X_data,
             X_indices, X_indptr, &norms_X_col[0], &prios[0], &screened[0],
-            radius, &n_screened)
+            radius, &n_screened, 0)
 
         if prune:
             nnz = 0
@@ -324,9 +236,9 @@ cpdef int inner_solver_logreg(
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = compute_dual_scaling(
-                is_sparse, n_features, n_features,
+                is_sparse, pb, n_features, n_features,
                 &theta[0], X, X_data, X_indices, X_indptr,
-                ws_size, &C[0], &dummy_screened[0], X_mean, center)
+                ws_size, &C[0], &dummy_screened[0], X_mean, center, 0)
 
             if scal > 1. :
                 tmp = 1. / scal
@@ -343,9 +255,9 @@ cpdef int inner_solver_logreg(
                     print("linear system solving failed")
 
                 scal = compute_dual_scaling(
-                    is_sparse, n_features, n_samples, &thetaccel[0], X, X_data,
+                    is_sparse, pb, n_features, n_samples, &thetaccel[0], X, X_data,
                     X_indices, X_indptr, ws_size, &C[0],
-                    &dummy_screened[0], X_mean, center)
+                    &dummy_screened[0], X_mean, center, 0)
 
                 if scal > 1. :
                     tmp = 1. / scal
