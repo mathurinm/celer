@@ -118,7 +118,7 @@ def celer_logreg(
 
         p_obj = primal(pb, alpha, n_samples, &Xw[0], &y[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
-        gaps[t] = gap
+        gaps[t] = gap  # TODO useful?
 
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
@@ -217,8 +217,8 @@ cpdef void inner_solver_logreg(
 
     cdef int idx  # used as shortcut for X_indices[i]
 
-    cdef floating tmp
     cdef double tmp_exp
+    cdef floating tmp
     cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
     cdef floating gap, p_obj, d_obj, d_obj_accel, scal
     cdef floating highest_d_obj = 0.
@@ -268,8 +268,6 @@ cpdef void inner_solver_logreg(
                 # This is of no consequence as long as screening is not performed.
                 # Otherwise dgap and theta might disagree.
                 if d_obj_accel > d_obj:
-                    if verbose:
-                        print("Win: %.2e vs %.2e" % (p_obj - d_obj_accel, p_obj - d_obj))
                     d_obj = d_obj_accel
                     # theta = theta_accel (theta is defined as
                     # theta_inner in outer loop)

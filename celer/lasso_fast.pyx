@@ -212,11 +212,10 @@ cpdef void inner_solver(
     cdef int inc = 1
     cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
 
+    cdef floating tmp, R_sum
     cdef floating[:] thetaccel = np.empty(n_samples, dtype=dtype)
     cdef floating gap, p_obj, d_obj, d_obj_accel, scal
-    cdef floating highest_d_obj = 0. # d_obj is always >=0 so this gets replaced
-    # at first d_obj computation. highest_d_obj corresponds to theta = 0.
-    cdef floating tmp, R_sum
+    cdef floating highest_d_obj = 0.
     # acceleration variables:
     cdef floating[:, :] last_K_res = np.empty([K, n_samples], dtype=dtype)
     cdef floating[:, :] U = np.empty([K - 1, n_samples], dtype=dtype)
@@ -233,10 +232,8 @@ cpdef void inner_solver(
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
-            # theta = R / (alpha * n_samples)
-            fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-            tmp = 1. / (alpha * n_samples)
-            fscal(&n_samples, &tmp, &theta[0], &inc)
+            create_dual_pt(pb, n_samples, alpha, &theta[0], &R[0], &y[0])
+
 
             scal = compute_dual_scaling(
                 is_sparse, pb,
@@ -335,7 +332,7 @@ cpdef void inner_solver(
                 print("Inner epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj, gap))
             if gap < eps:
                 if verbose:
-                    print("Inner: exit epoch %d, gap: %.2e < %.2e" % \
+                    print("Inner: early exit at epoch %d, gap: %.2e < %.2e" % \
                         (epoch, gap, eps))
                 break
 
