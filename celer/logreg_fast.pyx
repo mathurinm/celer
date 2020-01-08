@@ -85,8 +85,9 @@ def celer_logreg(
         create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
         scal = compute_dual_scaling(
-            is_sparse, pb, n_features, n_samples, &theta[0], X, X_data, X_indices,
-            X_indptr, n_features, &dummy_C[0], &screened[0], X_mean, center, 0)
+            is_sparse, pb, n_features, n_samples, &theta[0], X, X_data,
+            X_indices, X_indptr, n_features, &dummy_C[0], &screened[0],
+            X_mean, center, 0)
 
         if scal > 1. :
             tmp = 1. / scal
@@ -104,8 +105,8 @@ def celer_logreg(
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
-            d_obj_from_inner = dual(pb, n_samples, alpha, tmp, &theta_inner[0],
-                                    &y[0])
+            d_obj_from_inner = dual(
+                pb, n_samples, alpha, tmp, &theta_inner[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -180,8 +181,7 @@ def celer_logreg(
             is_sparse,
             n_samples, n_features, ws_size, X, X_data, X_indices, X_indptr,
             X_mean, y, alpha, center, w, Xw, C, theta_inner, norms_X_col,
-            tol_inner, max_epochs, gap_freq,
-            verbose=verbose_inner,
+            tol_inner, max_epochs, gap_freq, verbose=verbose_inner,
             K=K, use_accel=use_accel, better_lc=better_lc)
 
     return (np.asarray(w), np.asarray(theta),
@@ -191,7 +191,7 @@ def celer_logreg(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef int inner_solver_logreg(
+cpdef void inner_solver_logreg(
     bint is_sparse,
     int n_samples, int n_features, int ws_size, floating[::1, :] X,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr,
@@ -333,8 +333,5 @@ cpdef int inner_solver_logreg(
     else:
         print("!!! Inner solver did not converge at epoch %d, gap: %.2e > %.2e" % \
             (epoch, gap, eps))
-
-    return epoch
-
 
 

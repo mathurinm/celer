@@ -9,9 +9,10 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .cython_utils cimport LASSO, primal, dual, ST, compute_dual_scaling, set_prios
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
-
+from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
+                            sigmoid, ST, LASSO, LOGREG, compute_dual_scaling,
+                            set_prios)
 ctypedef np.uint8_t uint8
 
 cdef:
@@ -22,6 +23,7 @@ cdef:
 @cython.wraparound(False)
 @cython.cdivision(True)
 def celer(
+        # bint is_sparse, int pb, floating[::1, :] X, floating[:] X_data,
         bint is_sparse, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
         floating[:] y, floating alpha, floating[:] w, floating[:] R,
@@ -29,7 +31,7 @@ def celer(
         int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
         float tol=1e-6, int p0=100, int verbose=0,
         int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0):
-    """R and w are modified in place and assumed to match."""
+    """R/Xw and w are modified in place and assumed to match."""
 
     cdef int pb = LASSO
     if floating is double:
@@ -44,7 +46,6 @@ def celer(
         p0 = n_features
 
     cdef int i, j, t, startptr, endptr
-
     cdef int inc = 1
     cdef floating tmp
     cdef int ws_size = 0
@@ -55,7 +56,6 @@ def celer(
     cdef bint center = False
     cdef floating X_mean_j
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    # cdef floating[:] R = np.zeros(n_samples, dtype=dtype)
     cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
 
     if is_sparse:
@@ -70,7 +70,6 @@ def celer(
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
 
     cdef floating[:] theta_inner = np.zeros(n_samples, dtype=dtype)
-    cdef floating[:] theta_to_use  # the one giving highest d_obj
 
     # passed to inner solver
     # and potentially used for screening if it gives a better d_obj
@@ -81,29 +80,24 @@ def celer(
 
     for t in range(max_iter):
         if t != 0:
-            # theta = R / (alpha * n_samples)
-            fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-            tmp = 1. / (alpha * n_samples)
-            fscal(&n_samples, &tmp, &theta[0], &inc)
+            create_dual_pt(pb, n_samples, alpha, &theta[0], &R[0], &y[0])
 
             scal = compute_dual_scaling(
-                is_sparse, pb,
-                n_features, n_samples, &theta[0], X, X_data, X_indices, X_indptr,
-                n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
+                is_sparse, pb, n_features, n_samples, &theta[0], X, X_data,
+                X_indices, X_indptr, n_features, &dummy_C[0], &screened[0],
+                X_mean, center, positive)
 
             if scal > 1. :
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0],
-                         &y[0])
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
-                is_sparse, pb,
-                n_features, n_samples, &theta_inner[0], X, X_data, X_indices,
-                X_indptr, n_features, &dummy_C[0], &screened[0], X_mean,
-                center, positive)
+                is_sparse, pb, n_features, n_samples, &theta_inner[0],
+                X, X_data, X_indices, X_indptr,
+                n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
@@ -115,16 +109,14 @@ def celer(
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
-            theta_to_use = theta_inner
-        else:
+            fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
             theta_to_use = theta
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj
             # TODO implement a best_theta
 
-        p_obj = primal(
-            pb, alpha, n_samples, &R[0], &y[0], n_features, &w[0])
+        p_obj = primal(pb, alpha, n_samples, &R[0], &y[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
         gaps[t] = gap  # TODO useful?
 
@@ -138,7 +130,7 @@ def celer(
 
         radius = sqrt(2 * gap / n_samples) / alpha
         set_prios(
-            is_sparse, pb, n_samples, n_features, &theta_to_use[0], X, X_data,
+            is_sparse, pb, n_samples, n_features, &theta[0], X, X_data,
             X_indices, X_indptr, &norms_X_col[0], &prios[0], &screened[0],
             radius, &n_screened, positive)
 
@@ -193,8 +185,7 @@ def celer(
             gap_freq=gap_freq, verbose=verbose_inner,
             use_accel=use_accel, positive=positive)
 
-
-    return (np.asarray(w), np.asarray(theta_to_use),
+    return (np.asarray(w), np.asarray(theta),
             np.asarray(gaps[:t + 1]))
 
 
