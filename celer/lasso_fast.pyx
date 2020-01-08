@@ -222,16 +222,10 @@ cpdef void inner_solver(
     cdef floating[:, :] UtU = np.empty([K - 1, K - 1], dtype=dtype)
     cdef floating[:] onesK = np.ones(K - 1, dtype=dtype)
 
-    # solving linear system in cython
-    # doc at https://software.intel.com/en-us/node/468894
-    cdef char * char_U = 'U'
-    cdef int Kminus1 = K - 1
-    cdef int one = 1
-    cdef floating sum_z
     cdef int info_dposv
 
     for epoch in range(max_epochs):
-        if epoch % gap_freq == 1:
+        if epoch != 0 and epoch % gap_freq == 0:
             create_dual_pt(pb, n_samples, alpha, &theta[0], &R[0], &y[0])
 
 
@@ -247,57 +241,14 @@ cpdef void inner_solver(
             d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             if use_accel: # also compute accelerated dual_point
-                if epoch // gap_freq < K:
-                    # last_K_res[it // f_gap] = R:
-                    fcopy(&n_samples, &R[0], &inc,
-                          &last_K_res[epoch // gap_freq, 0], &inc)
-                else:
-                    for k in range(K - 1):
-                        fcopy(&n_samples, &last_K_res[k + 1, 0], &inc,
-                              &last_K_res[k, 0], &inc)
-                    fcopy(&n_samples, &R[0], &inc, &last_K_res[K - 1, 0], &inc)
-                    for k in range(K - 1):
-                        for i in range(n_samples):
-                            U[k, i] = last_K_res[k + 1, i] - last_K_res[k, i]
+                info_dposv = create_accel_pt(
+                    pb, n_samples, n_features, K, epoch, gap_freq, alpha,
+                    &R[0], &thetaccel[0], &last_K_res[0, 0], U, UtU, onesK, y)
 
-                    for k in range(K - 1):
-                        for j in range(k, K - 1):
-                            UtU[k, j] = fdot(&n_samples, &U[k, 0], &inc,
-                                              &U[j, 0], &inc)
-                            UtU[j, k] = UtU[k, j]
+                if info_dposv != 0 and verbose:
+                    print("linear system solving failed")
 
-                    # refill onesK with ones because it has been overwritten
-                    # by dposv
-                    for k in range(K - 1):
-                        onesK[k] = 1
-
-                    fposv(char_U, &Kminus1, &one, &UtU[0, 0], &Kminus1,
-                           &onesK[0], &Kminus1, &info_dposv)
-
-                    # onesK now holds the solution in x to UtU dot x = onesK
-                    if info_dposv != 0:
-                        if verbose:
-                            print("linear system solving failed")
-                        # don't use accel for this iteration
-                        for k in range(K - 2):
-                            onesK[k] = 0
-                        onesK[K - 2] = 1
-
-                    sum_z = 0
-                    for k in range(K - 1):
-                        sum_z += onesK[k]
-                    for k in range(K - 1):
-                        onesK[k] /= sum_z
-
-                    for i in range(n_samples):
-                        thetaccel[i] = 0.
-                    for k in range(K - 1):
-                        for i in range(n_samples):
-                            thetaccel[i] += onesK[k] * last_K_res[k, i]
-
-                    tmp = 1. / (alpha * n_samples)
-                    fscal(&n_samples, &tmp, &thetaccel[0], &inc)
-
+                if epoch // gap_freq >= K:
                     scal = compute_dual_scaling(
                         is_sparse, pb, n_features, n_samples, &thetaccel[0], X,
                         X_data, X_indices, X_indptr, ws_size, &C[0],

@@ -223,7 +223,7 @@ cdef int create_accel_pt(
     cdef int info_dposv
 
     cdef int i, j, k
-    cdef floating tmp = 1. / alpha
+    cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
 
     if epoch // gap_freq < K:
         # last_K_R[it // f_gap] = R:
@@ -277,7 +277,7 @@ cdef int create_accel_pt(
 
         fscal(&n_samples, &tmp, &out[0], &inc)
         # out now holds the extrapolated dual point:
-        # LASSO: (y - Xw) / alpha
+        # LASSO: (y - Xw) / (alpha * n_samples)
         # LOGREG:  y * sigmoid(-y * Xw) / alpha
 
     return info_dposv
