@@ -215,6 +215,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
         alpha = alphas[t]
         # celer modifies w, Xw, R and theta in place:
         if solver == "celer":
+            # TODO makes no sense to pass this R for logreg?
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
