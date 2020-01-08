@@ -181,8 +181,7 @@ def celer_logreg(
             tol_inner, max_epochs, gap_freq, verbose=verbose_inner,
             K=K, use_accel=use_accel, better_lc=better_lc)
 
-    return (np.asarray(w), np.asarray(theta),
-            np.asarray(gaps[:t + 1]))
+    return (np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1]))
 
 
 @cython.boundscheck(False)
@@ -236,7 +235,7 @@ cpdef void inner_solver_logreg(
             scal = compute_dual_scaling(
                 is_sparse, pb, n_features, n_samples,
                 &theta[0], X, X_data, X_indices, X_indptr,
-                ws_size, &C[0], &dummy_screened[0], X_mean, center, 0)
+                ws_size, &C[0], &dummy_screened[0], X_mean, center, positive)
 
             if scal > 1. :
                 tmp = 1. / scal
@@ -285,7 +284,6 @@ cpdef void inner_solver_logreg(
                 break
 
         for k in range(ws_size):
-            # update feature j cyclically
             j = C[k]
             old_w_j = w[j]
             if is_sparse:
