@@ -9,8 +9,8 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal
-from .utils cimport dual_value
+from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal
+# from .utils cimport dual_value
 
 ctypedef np.uint8_t uint8
 
@@ -22,20 +22,19 @@ cpdef floating primal_grp(
         int n_samples, int n_groups, floating alpha, floating[:] R,
         int[:] grp_ptr, int[:] grp_indices, floating[:] w):
     cdef floating nrm = 0.
-    cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / n_samples
+    cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / (2 * n_samples)
     for g in range(n_groups):
-        nrm = 0
+        nrm = 0.
         for k in range(grp_ptr[g], grp_ptr[g + 1]):
             j = grp_indices[k]
             nrm += w[j] ** 2
         p_obj += alpha * sqrt(nrm)
 
 
-cpdef compute_dual_scaling(
+cpdef floating compute_dual_scaling(
         bint is_sparse, int n_samples, int n_groups, floating[:] theta,
         int[:] grp_ptr, int[:] grp_indices, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean, bint center):
-
     cdef floating Xj_theta
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
@@ -98,7 +97,7 @@ cpdef void group_lasso(
 
     cdef floating gap, p_obj, d_obj, dual_scale
     cdef floating highest_d_obj = 0.
-    cdef floating tmp, R_sum
+    cdef floating tmp, R_sum, norm_wg, bst_scal
 
     for epoch in range(max_epochs):
         if epoch % gap_freq == 1:
@@ -115,7 +114,9 @@ cpdef void group_lasso(
                 tmp = 1. / dual_scale
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = 0.
+            # TODO implement dobj_sgl
+            # d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj
@@ -135,6 +136,7 @@ cpdef void group_lasso(
         for g in range(n_groups):
             if lc_groups[g] == 0.:
                     continue
+            norm_wg = 0.
             for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                 j = grp_indices[k]
                 old_w_g[k] = w[j]
@@ -143,20 +145,23 @@ cpdef void group_lasso(
                     X_mean_j = X_mean[j]
                     startptr, endptr = X_indptr[j], X_indptr[j + 1]
                     for i in range(startptr, endptr):
-                        w[j] += R[X_indices[i]] * X_data[i] / lc_groups[g] ** 2
+                        w[j] += R[X_indices[i]] * X_data[i] / lc_groups[g]
                     if center:
                         R_sum = 0.
                         for i in range(n_samples):
                             R_sum += R[i]
-                        w[j] -= R_sum * X_mean_j / norms_X_col[j] ** 2
+                        w[j] -= R_sum * X_mean_j / lc_groups[g]
                 else:
-                    w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / norms_X_col[j] ** 2
+                    w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / lc_groups[g]
+                norm_wg += w[j] ** 2
+            norm_wg = sqrt(norm_wg)
+            bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg )
 
-            BST(w, alpha / lc_groups[g] ** 2 * n_samples)
-
-            # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
             for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                 j = grp_indices[k]
+                # perform BST:
+                w[j] *= bst_scal
+                # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
                 tmp = w[j] - old_w_g[k]
                 if tmp != 0.:
                     if is_sparse:
