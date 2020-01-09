@@ -310,9 +310,9 @@ cpdef void compute_norms_X_col(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef void compute_residuals(
-        bint is_sparse, floating[:] R, floating[:] w,
-        floating[:] y, int pb, bint center, int n_samples,
+cpdef void compute_Xw(
+        bint is_sparse, int pb, floating[:] R, floating[:] w,
+        floating[:] y, bint center, int n_samples,
         int n_features, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean):
     # R holds residuals if LASSO, Xw for LOGREG
