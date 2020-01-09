@@ -13,8 +13,7 @@ from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
-                                  Lasso as sklearn_Lasso, lasso_path,
-                                  LogisticRegression)
+                                  Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path, celer
 from celer.dropin_sklearn import Lasso, LassoCV
