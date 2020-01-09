@@ -27,12 +27,14 @@ def test_logreg():
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     alphas = alpha_max * np.geomspace(1, 1e-2, 10)
 
+    tol = 1e-8
     coefs, Cs, n_iters = _logistic_regression_path(
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
-        solver='liblinear', tol=1e-8)
+        solver='liblinear', tol=tol)
 
-    _, coefs_c, gaps = celer_path(X, y, "logreg", alphas=alphas, tol=1e-8)
+    _, coefs_c, gaps = celer_path(X, y, "logreg", alphas=alphas, tol=tol)
 
+    np.testing.assert_array_less(gaps, tol)
     np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
     np.testing.assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
 
