@@ -12,10 +12,12 @@ from sklearn.exceptions import ConvergenceWarning
 from numpy.linalg import norm
 
 from .lasso_fast import celer
-from .cython_utils import compute_norms_X_col, compute_residuals
-from .logreg_fast import celer_logreg
+from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
+
+LASSO = 0
+LOGREG = 1
 
 
 def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
@@ -115,7 +117,12 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
         The dual variables along the path.
         (Is returned only when ``return_thetas`` is set to True).
     """
-    if pb == "logreg":
+    assert pb in ("lasso", "logreg")
+    if pb == "lasso":
+        solver = "celer"
+        pb = LASSO
+    else:
+        pb = LOGREG
         assert solver in ("celer", "PN")
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
@@ -179,6 +186,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
+        alpha = alphas[t]
         if verbose:
             print("#" * 60)
             print(" ##### Computing %dth alpha" % (t + 1))
@@ -191,52 +199,39 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
             if coef_init is not None:
                 w = coef_init.copy()
                 p0 = max((w != 0.).sum(), p0)
-                Xw = X.dot(w)
+                # y - Xw for Lasso, Xw for Logreg:
+                Xw = np.zeros(n_samples, dtype=X.dtype)
+                compute_Xw(
+                    is_sparse, pb, Xw, w, y, X_sparse_scaling.any(),
+                    n_samples, n_features, X_dense, X_data, X_indices,
+                    X_indptr, X_sparse_scaling)
             else:
                 w = np.zeros(n_features, dtype=X.dtype)
-                Xw = np.zeros(n_samples, dtype=X.dtype)
-            # initialize R and theta, afterwards celer() updates them inplace
-            R = np.zeros(n_samples, dtype=X.dtype)
-            compute_residuals(
-                is_sparse, R, w, y, 0, X_sparse_scaling.any(), n_samples,
-                n_features, X_dense, X_data, X_indices, X_indptr,
-                X_sparse_scaling)
-            # TODO: R = y - Xw is simpler and the time loss should be minimal
-
-            theta = R / np.linalg.norm(X.T.dot(R), ord=np.inf)
-
-        alpha = alphas[t]
-        # celer modifies w, Xw, R and theta in place:
-        if pb == "lasso":
+                Xw = y.copy() if pb == LASSO else np.zeros(n_samples, X.dtype)
+            if pb == LASSO:
+                theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
+            else:
+                theta = y / (1 + np .exp(y * Xw)) / alpha
+                theta /= np.linalg.norm(X.T.dot(theta), ord=np.inf)
+        # celer modifies w, Xw, and theta in place:
+        if solver == "celer":
             sol = celer(
-                is_sparse,
+                is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
-                alpha, w, R, theta, norms_X_col,
-                max_iter=max_iter, gap_freq=gap_freq,  max_epochs=max_epochs,
+                alpha, w, Xw, theta, norms_X_col,
+                max_iter=max_iter, gap_freq=gap_freq, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, verbose_inner=verbose_inner,
                 use_accel=1, tol=tol, prune=prune, positive=positive)
 
             coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
-        else:
-            if solver == "celer":
-                sol = celer_logreg(
-                    is_sparse, X_dense, X_data, X_indices, X_indptr,
-                    X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
-                    max_iter=max_iter, gap_freq=gap_freq,
-                    max_epochs=max_epochs, p0=p0, verbose=verbose,
-                    verbose_inner=verbose_inner, use_accel=True,
-                    tol=tol, prune=prune)
 
-                dual_gaps[t] = sol[2][-1]
+        elif solver == "PN":
+            sol = PN_solver(
+                X, y, alpha, w, max_iter,
+                verbose=verbose, verbose_inner=verbose_inner,
+                tol=tol, prune=prune, p0=p0, use_accel=True)
 
-            elif solver == "PN":
-                sol = PN_solver(
-                    X, y, alpha, w, max_iter,
-                    verbose=verbose, verbose_inner=verbose_inner,
-                    tol=tol, prune=prune, p0=p0, use_accel=True)
-
-                dual_gaps[t] = sol[2]
-            coefs[:, t], thetas[t], = sol[0], sol[1]
+            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2]
         if return_n_iter:  # TODO working for Lasso only RN
             n_iters[t] = len(sol[2])
 
@@ -285,7 +280,7 @@ def mtl_path(
         max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
         prune=True, use_accel=True, return_thetas=False, K=6):
     X = check_array(X, "csc", dtype=[
-                    np.float64, np.float32], order="F", copy=False)
+        np.float64, np.float32], order="F", copy=False)
 
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]

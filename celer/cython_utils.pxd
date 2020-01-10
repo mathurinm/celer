@@ -1,6 +1,9 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
 from cython cimport floating
+cimport numpy as np
+
+ctypedef np.uint8_t uint8
 
 cdef int LASSO
 cdef int LOGREG
@@ -31,12 +34,22 @@ cdef int create_accel_pt(
     floating *, floating[:, :], floating[:, :], floating[:], floating[:])
 
 
-cpdef void compute_residuals(
-        bint, floating[:], floating[:],
-        floating[:], int, bint, int, int, floating[::1, :],
-        floating[:], int[:], int[:], floating[:])
+cpdef void compute_Xw(
+    bint, int, floating[:], floating[:],
+    floating[:], bint, int, int, floating[::1, :],
+    floating[:], int[:], int[:], floating[:])
 
 
 cpdef void compute_norms_X_col(
-        bint, floating[:], int, int, floating[::1, :],
-        floating[:], int[:], int[:], floating[:])
+    bint, floating[:], int, int, floating[::1, :],
+    floating[:], int[:], int[:], floating[:])
+
+
+cdef floating compute_dual_scaling(
+        bint, int, int, int, floating *, floating[::1, :], floating[:],
+        int[:], int[:], int, int *, uint8 *, floating[:], bint, bint) nogil
+
+
+cdef void set_prios(
+    bint, int, int, int, floating *, floating[::1, :], floating[:], int[:],
+    int[:], floating *, floating *, uint8 *, floating, int *, bint) nogil

@@ -4,6 +4,7 @@
 # License: BSD 3 clause
 
 cimport cython
+cimport numpy as np
 
 from scipy.linalg.cython_blas cimport ddot, dasum, daxpy, dnrm2, dcopy, dscal
 from scipy.linalg.cython_blas cimport sdot, sasum, saxpy, snrm2, scopy, sscal
@@ -222,7 +223,7 @@ cdef int create_accel_pt(
     cdef int info_dposv
 
     cdef int i, j, k
-    cdef floating tmp = 1. / alpha
+    cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
 
     if epoch // gap_freq < K:
         # last_K_R[it // f_gap] = R:
@@ -276,7 +277,7 @@ cdef int create_accel_pt(
 
         fscal(&n_samples, &tmp, &out[0], &inc)
         # out now holds the extrapolated dual point:
-        # LASSO: (y - Xw) / alpha
+        # LASSO: (y - Xw) / (alpha * n_samples)
         # LOGREG:  y * sigmoid(-y * Xw) / alpha
 
     return info_dposv
@@ -309,9 +310,9 @@ cpdef void compute_norms_X_col(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef void compute_residuals(
-        bint is_sparse, floating[:] R, floating[:] w,
-        floating[:] y, int pb, bint center, int n_samples,
+cpdef void compute_Xw(
+        bint is_sparse, int pb, floating[:] R, floating[:] w,
+        floating[:] y, bint center, int n_samples,
         int n_features, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean):
     # R holds residuals if LASSO, Xw for LOGREG
@@ -336,3 +337,97 @@ cpdef void compute_residuals(
     if pb == LASSO:
         for i in range(n_samples):
             R[i] = y[i] - R[i]
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cdef floating compute_dual_scaling(
+        bint is_sparse, int pb, int n_features, int n_samples,
+        floating * theta, floating[::1, :] X, floating[:] X_data,
+        int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
+        uint8 * screened, floating[:] X_mean, bint center, bint positive) nogil:
+    """compute norm(X.T.dot(theta), ord=inf),
+    with X restricted to features (columns) with indices in array C.
+    if ws_size == n_features, C=np.arange(n_features is used)"""
+    cdef floating Xj_theta
+    cdef floating scal = 0.
+    cdef floating theta_sum = 0.
+    cdef int i, j, Cj, startptr, endptr
+
+    if is_sparse:
+        if center:
+            for i in range(n_samples):
+                theta_sum += theta[i]
+
+    if ws_size == n_features: # scaling wrt all features
+        for j in range(n_features):
+            if screened[j]:
+                continue
+            if is_sparse:
+                startptr = X_indptr[j]
+                endptr = X_indptr[j + 1]
+                Xj_theta = 0.
+                for i in range(startptr, endptr):
+                    Xj_theta += X_data[i] * theta[X_indices[i]]
+                if center:
+                    Xj_theta -= theta_sum * X_mean[j]
+            else:
+                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+
+            if not positive:
+                Xj_theta = fabs(Xj_theta)
+            scal = max(scal, Xj_theta)
+    else: # scaling wrt features in C only
+        for j in range(ws_size):
+            Cj = C[j]
+            if is_sparse:
+                startptr = X_indptr[Cj]
+                endptr = X_indptr[Cj + 1]
+                Xj_theta = 0.
+                for i in range(startptr, endptr):
+                    Xj_theta += X_data[i] * theta[X_indices[i]]
+                if center:
+                    Xj_theta -= theta_sum * X_mean[j]
+            else:
+                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc)
+
+            if not positive:
+                Xj_theta = fabs(Xj_theta)
+
+            scal = max(scal, Xj_theta)
+    return scal
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cdef void set_prios(
+    bint is_sparse, int pb, int n_samples, int n_features, floating * theta,
+    floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
+    floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
+    int * n_screened, bint positive) nogil:
+    cdef int i, j, startptr, endptr
+    cdef floating Xj_theta
+
+    for j in range(n_features):
+        if screened[j]:
+            prios[j] = 10000
+            continue
+        if is_sparse:
+            Xj_theta = 0
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            for i in range(startptr, endptr):
+                Xj_theta += theta[X_indices[i]] * X_data[i]
+        else:
+            Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+
+        if positive:
+            prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]
+        else:
+            prios[j] = (1. - fabs(Xj_theta)) / norms_X_col[j]
+
+        if prios[j] > radius:
+            screened[j] = True
+            n_screened[0] += 1

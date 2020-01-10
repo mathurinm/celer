@@ -8,6 +8,8 @@ import pytest
 import warnings
 
 from itertools import product
+from numpy.linalg import norm
+from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
@@ -18,11 +20,33 @@ from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
-@pytest.mark.parametrize("sparse_X, alphas, positive",
-                         product([False, True], [None, 1], [False, True]))
-def test_celer_path(sparse_X, alphas, positive):
+def test_logreg():
+    X, y, _, _ = build_dataset(
+        n_samples=100, n_features=100, sparse_X=True)
+    y = np.sign(y)
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
+    alphas = alpha_max * np.geomspace(1, 1e-2, 10)
+
+    tol = 1e-8
+    coefs, Cs, n_iters = _logistic_regression_path(
+        X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
+        solver='liblinear', tol=tol)
+
+    _, coefs_c, gaps = celer_path(X, y, "logreg", alphas=alphas, tol=tol)
+
+    np.testing.assert_array_less(gaps, tol)
+    np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
+    np.testing.assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
+
+
+@pytest.mark.parametrize("sparse_X, alphas, pb",
+                         product([False, True], [None, 1],
+                                 ["lasso", "logreg"]))
+def test_celer_path(sparse_X, alphas, pb):
     """Test Lasso path convergence."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    if pb == "logreg":
+        y = np.sign(y)
     n_samples = X.shape[0]
     if alphas is not None:
         alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
@@ -31,9 +55,8 @@ def test_celer_path(sparse_X, alphas, positive):
 
     tol = 1e-6
     alphas, coefs, gaps, thetas, n_iters = celer_path(
-        X, y, "lasso", alphas=alphas, tol=tol, return_thetas=True,
-        verbose=False, verbose_inner=False, positive=positive,
-        return_n_iter=True)
+        X, y, pb, alphas=alphas, tol=tol, return_thetas=True,
+        verbose=False, verbose_inner=False, return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
@@ -98,7 +121,7 @@ def test_dropin_lasso(sparse_X, fit_intercept, positive):
     """Test that our Lasso class behaves as sklearn's Lasso."""
     X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
     if not positive:
-        alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+        alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     else:
         alpha_max = X.T.dot(y).max() / X.shape[0]
 
@@ -123,7 +146,7 @@ def test_celer_single_alpha(sparse_X, pb):
     X, y, _, _ = build_dataset(n_samples=20, n_features=100, sparse_X=sparse_X)
     if pb == "logreg":
         y = np.sign(y)
-    alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
     w, theta, gap = celer(X, y, pb, alpha_max / 10., tol=tol)
@@ -140,7 +163,7 @@ def test_zero_column(sparse_X):
         X.data[:X.indptr[n_zero_columns]].fill(0.)
     else:
         X[:, :n_zero_columns].fill(0.)
-    alpha_max = np.linalg.norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     tol = 1e-6
     w, theta, gap = celer(X, y, "lasso", alpha_max / 10., tol=tol, p0=50,
                           prune=0, verbose=1, verbose_inner=1)
