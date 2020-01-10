@@ -3,14 +3,15 @@
 # BSD License
 
 import os
+from pathlib import Path
+from os.path import join as pjoin
+
 import numpy as np
 import xray
 import download
 
 from scipy.signal import detrend
-from os.path import join as pjoin
 
-from pathlib import Path
 CELER_PATH = str(Path.home()) + '/celer_data/'
 
 
@@ -56,7 +57,7 @@ def download_climate(replace=False):
 
 
 def target_region(lx, Lx, replace=False):
-    download_climate(replace=False)
+    download_climate(replace=replace)
 
     air_file = 'air.mon.mean.nc'
     pres_file = 'pres.mon.mean.nc'
