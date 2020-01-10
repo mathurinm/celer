@@ -7,9 +7,9 @@ import warnings
 import numpy as np
 
 from scipy import sparse
+from numpy.linalg import norm
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
-from numpy.linalg import norm
 
 from .lasso_fast import celer
 from .cython_utils import compute_norms_X_col, compute_Xw
@@ -21,10 +21,9 @@ LOGREG = 1
 
 
 def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
-               coef_init=None, max_iter=20,
-               gap_freq=10, max_epochs=50000, p0=10, verbose=0,
-               verbose_inner=0, tol=1e-6, prune=0, return_thetas=False,
-               X_offset=None, X_scale=None,
+               coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
+               p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
+               return_thetas=False, X_offset=None, X_scale=None,
                return_n_iter=False, positive=False):
     """Compute Lasso path with Celer as inner solver.
 
@@ -320,11 +319,12 @@ def mtl_path(
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
             prune=prune, max_iter=max_iter, max_epochs=max_epochs,
-            verbose=verbose_inner, use_accel=use_accel, gap_freq=gap_freq)
+            verbose=verbose_inner, use_accel=use_accel, gap_freq=gap_freq,
+            K=K)
 
         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
 
     if return_thetas:
         return alphas, coefs, gaps, thetas
-    else:
-        return alphas, coefs, gaps
+
+    return alphas, coefs, gaps

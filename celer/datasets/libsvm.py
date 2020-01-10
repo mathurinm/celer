@@ -2,15 +2,16 @@
 # License: BSD 3 clause
 
 import os
-from bz2 import BZ2Decompressor
-from sklearn import preprocessing
-from sklearn.datasets import load_svmlight_file
-from download import download
-from scipy import sparse
-import numpy as np
-
 from os.path import join as pjoin
 from pathlib import Path
+from bz2 import BZ2Decompressor
+
+import numpy as np
+from scipy import sparse
+from download import download
+from sklearn import preprocessing
+from sklearn.datasets import load_svmlight_file
+
 CELER_PATH = pjoin(str(Path.home()), 'celer_data')
 
 
