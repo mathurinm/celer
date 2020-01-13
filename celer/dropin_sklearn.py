@@ -13,7 +13,8 @@ from joblib import Parallel, delayed, effective_n_jobs
 from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
-                                  LassoCV as _LassoCV)
+                                  LassoCV as _LassoCV,
+                                  LogisticRegression as LogReg_sklearn)
 from sklearn.linear_model._coordinate_descent import (LinearModelCV as
                                                       _LinearModelCV)
 from sklearn.linear_model._coordinate_descent import (_alpha_grid,
@@ -276,3 +277,50 @@ class LassoCV(LassoCV_sklearn):
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps)
+
+
+class LogisticRegression(LogReg_sklearn):
+    """TODO
+    """
+
+    def __init__(self, C=1., max_iter=50, verbose=False, gap_freq=10,
+                 max_epochs=50000, warm_sart=False):
+        super(LogisticRegression, self).__init__(
+            tol=tol, C=C)
+        if self.__penalty__ != 'l1':
+            raise NotImplementedError(
+                'Only L1 penalty is supported, got %s' % self.penalty)
+
+        self.verbose = verbose
+        self.gap_freq = gap_freq
+        self.max_epochs = max_epochs
+        self.p0 = p0
+
+    def fit(self, X, y):
+        """TODO"""
+        # TODO handle normalization, centering
+        # TODO intercept
+        # TODO support warm start
+        if not isinstance(self.C, numbers.Number) or self.C <= 0:
+            raise ValueError("Penalty term must be positive; got (C=%r)"
+                             % self.C)
+        alpha = 1. / C
+        # below are copy pasted excerpts from sklearn.linear_model._logistic
+        X, y = check_X_y(X, y, accept_sparse='csr', dtype=_dtype, order="C")
+        check_classification_targets(y)
+
+        Cs, coefs, dual_gaps = self.path(X, y, np.array([self.C]))
+        self.coef_ = coefs[0]
+
+        return self
+
+    def path(self, X, y, Cs, coef_init=None, **kwargs):
+        """Compute sparse Logistic Regression path with Celer(-PN).
+        """
+        alphas, coefs, dual_gaps = celer_path(
+            X, y, "logreg", alphas=1/C, coef_init=coef_init,
+            max_iter=self.max_iter, gap_freq=self.gap_freq,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+        return 1. / alphas, coefs, dual_gaps
