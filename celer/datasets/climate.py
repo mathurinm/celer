@@ -7,7 +7,7 @@ from pathlib import Path
 from os.path import join as pjoin
 
 import numpy as np
-import xray
+import xarray
 import download
 
 from scipy.signal import detrend
@@ -16,9 +16,9 @@ CELER_PATH = str(Path.home()) + '/celer_data/'
 
 
 def get_data(data_file):
-    data = xray.open_dataset(pjoin(CELER_PATH, 'regression/surface',
-                                   data_file),
-                             decode_times=False)
+    data = xarray.open_dataset(pjoin(CELER_PATH, 'regression/surface',
+                                     data_file),
+                               decode_times=False)
 
     n_times, n_lat, n_lon = data[list(data.data_vars.keys())[0]].shape
     p = n_lat * n_lon
