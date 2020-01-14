@@ -13,10 +13,11 @@ from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
-                                  Lasso as sklearn_Lasso, lasso_path)
+                                  Lasso as sklearn_Lasso, lasso_path,
+                                  LogisticRegression as sklearn_Logreg)
 
 from celer import celer_path, celer
-from celer.dropin_sklearn import Lasso, LassoCV
+from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
 
 
@@ -38,6 +39,20 @@ def test_logreg():
     np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
     np.testing.assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
 
+
+def test_dropin_logreg():
+    check_estimator(LogisticRegression)
+    X, y, _, _ = build_dataset(
+        n_samples=100, n_features=100, sparse_X=True)
+    y = np.sign(y)
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
+    C = 30. / alpha_max
+
+    clf1 = LogisticRegression(C=C)
+    clf1.fit(X, y)
+
+    clf2 = sklearn_Logreg(C=C, penalty='l1')
+    clf2.fit(X, y)
 
 @pytest.mark.parametrize("sparse_X, alphas, pb",
                          product([False, True], [None, 1],

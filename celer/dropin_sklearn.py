@@ -1,5 +1,7 @@
 # flake8: noqa F401
 import inspect
+import numbers
+import warnings
 import numpy as np
 
 from scipy import sparse
@@ -7,7 +9,8 @@ from abc import ABCMeta, abstractmethod
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.linear_model._base import LinearModel
 from sklearn.utils import check_array
-from sklearn.utils.validation import column_or_1d
+from sklearn.utils.validation import column_or_1d, check_X_y
+from sklearn.utils.multiclass import check_classification_targets
 from sklearn.model_selection import check_cv
 from joblib import Parallel, delayed, effective_n_jobs
 from sklearn.utils.fixes import _joblib_parallel_args
@@ -284,17 +287,20 @@ class LogisticRegression(LogReg_sklearn):
     """
 
     def __init__(self, C=1., max_iter=50, verbose=False, gap_freq=10,
-                 max_epochs=50000, warm_sart=False):
+                 max_epochs=50000, tol=1e-4, p0=10, penalty='l1',
+                 warm_start=False):
         super(LogisticRegression, self).__init__(
             tol=tol, C=C)
-        if self.__penalty__ != 'l1':
-            raise NotImplementedError(
-                'Only L1 penalty is supported, got %s' % self.penalty)
+        if penalty == 'l1':
+            warnings.warn(
+                'Only L1 penalty is supported, got %s' % penalty)
+            self.__penalty__ = 'l1'
 
         self.verbose = verbose
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
+        self.max_iter = max_iter
 
     def fit(self, X, y):
         """TODO"""
@@ -304,9 +310,9 @@ class LogisticRegression(LogReg_sklearn):
         if not isinstance(self.C, numbers.Number) or self.C <= 0:
             raise ValueError("Penalty term must be positive; got (C=%r)"
                              % self.C)
-        alpha = 1. / C
+        alpha = 1. / self.C
         # below are copy pasted excerpts from sklearn.linear_model._logistic
-        X, y = check_X_y(X, y, accept_sparse='csr', dtype=_dtype, order="C")
+        X, y = check_X_y(X, y, accept_sparse='csr', order="C")
         check_classification_targets(y)
 
         Cs, coefs, dual_gaps = self.path(X, y, np.array([self.C]))
@@ -318,7 +324,7 @@ class LogisticRegression(LogReg_sklearn):
         """Compute sparse Logistic Regression path with Celer(-PN).
         """
         alphas, coefs, dual_gaps = celer_path(
-            X, y, "logreg", alphas=1/C, coef_init=coef_init,
+            X, y, "logreg", alphas=1 / Cs, coef_init=coef_init,
             max_iter=self.max_iter, gap_freq=self.gap_freq,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
             tol=self.tol, X_scale=kwargs.get('X_scale', None),
