@@ -125,8 +125,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
         assert solver in ("celer", "PN")
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
-                "y must contain only -1. or 1 values. "
-                "Got %s " % (set(y) - set([-1.0, 1.0])))
+                "y must contain only -1. or 1 values. Got %s " % (set(y)))
 
     is_sparse = sparse.issparse(X)
 
