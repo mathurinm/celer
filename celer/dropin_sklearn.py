@@ -1,7 +1,6 @@
 # flake8: noqa F401
 import inspect
 import numbers
-import warnings
 
 import numpy as np
 
@@ -323,18 +322,13 @@ class LogisticRegression(LogReg_sklearn):
         self.classes_ = enc.classes_
         n_classes = len(enc.classes_)
 
-        if n_classes < 3:
+        if n_classes <= 2:
             Cs, coefs, dual_gaps = self.path(
                 X, 2 * y_ind - 1, np.array([self.C]))  # TODO check proper encoding
             self.coef_ = coefs.T  # must be [1, n_features]
             self.intercept_ = 0
         else:
-            warnings.warn("Multiclass support is experimental.")
             self.coef_ = np.empty([n_classes, X.shape[1]])
-            # for label in range(len(enc.classes_)):
-            #     y_rest = 2 * (y_ind == label) - 1
-            #     self.coef_[label, :] = self.path(
-            #         X, y_rest, np.array([self.C]))[1][0]
             self.intercept_ = 0.
             multiclass = OneVsRestClassifier(self).fit(X, y)
             self.coef_ = multiclass.coef_

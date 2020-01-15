@@ -41,6 +41,7 @@ def test_logreg():
 
 
 def test_dropin_logreg():
+    np.random.seed(1409)
     check_estimator(LogisticRegression)
     X, y, _, _ = build_dataset(
         n_samples=100, n_features=100, sparse_X=True)
@@ -48,11 +49,24 @@ def test_dropin_logreg():
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     C = 30. / alpha_max
 
-    clf1 = LogisticRegression(C=C)
+    tol = 1e-8
+    clf1 = LogisticRegression(C=C, tol=tol)
     clf1.fit(X, y)
 
-    clf2 = sklearn_Logreg(C=C, penalty='l1', solver='liblinear')
+    clf2 = sklearn_Logreg(
+        C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
     clf2.fit(X, y)
+    np.testing.assert_allclose(clf1.coef_, clf2.coef_, rtol=1e-3, atol=1e-5)
+
+    # multinomial test:
+    y = np.random.choice(4, len(y))
+    clf3 = LogisticRegression(C=C, tol=tol)
+    clf3.fit(X, y)
+
+    clf4 = sklearn_Logreg(
+        C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
+    clf4.fit(X, y)
+    np.testing.assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-4)
 
 
 @pytest.mark.parametrize("sparse_X, alphas, pb",
