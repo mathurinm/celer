@@ -24,6 +24,7 @@ from sklearn.linear_model._coordinate_descent import (LinearModelCV as
 from sklearn.linear_model._coordinate_descent import (_alpha_grid,
                                                       _path_residuals)
 from sklearn.preprocessing import LabelEncoder
+from sklearn.multiclass import OneVsRestClassifier
 
 from .homotopy import celer_path
 
@@ -330,11 +331,13 @@ class LogisticRegression(LogReg_sklearn):
         else:
             warnings.warn("Multiclass support is experimental.")
             self.coef_ = np.empty([n_classes, X.shape[1]])
-            for label in range(len(enc.classes_)):
-                y_rest = 2 * (y_ind == label) - 1
-                self.coef_[label, :] = self.path(
-                    X, y_rest, np.array([self.C]))[1][0]
+            # for label in range(len(enc.classes_)):
+            #     y_rest = 2 * (y_ind == label) - 1
+            #     self.coef_[label, :] = self.path(
+            #         X, y_rest, np.array([self.C]))[1][0]
             self.intercept_ = 0.
+            multiclass = OneVsRestClassifier(self).fit(X, y)
+            self.coef_ = multiclass.coef_
 
         return self
 
