@@ -2,6 +2,7 @@
 import inspect
 import numbers
 import warnings
+
 import numpy as np
 
 from scipy import sparse
@@ -291,22 +292,23 @@ class LogisticRegression(LogReg_sklearn):
                  warm_start=False):
         super(LogisticRegression, self).__init__(
             tol=tol, C=C)
-        if penalty == 'l1':
-            warnings.warn(
-                'Only L1 penalty is supported, got %s' % penalty)
-            self.__penalty__ = 'l1'
 
         self.verbose = verbose
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.max_iter = max_iter
+        self.penalty = penalty
 
     def fit(self, X, y):
         """TODO"""
         # TODO handle normalization, centering
         # TODO intercept
         # TODO support warm start
+        if self.penalty != 'l1':
+            raise NotImplementedError(
+                'Only L1 penalty is supported, got %s' % self.penalty)
+
         if not isinstance(self.C, numbers.Number) or self.C <= 0:
             raise ValueError("Penalty term must be positive; got (C=%r)"
                              % self.C)

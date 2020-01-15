@@ -54,6 +54,7 @@ def test_dropin_logreg():
     clf2 = sklearn_Logreg(C=C, penalty='l1')
     clf2.fit(X, y)
 
+
 @pytest.mark.parametrize("sparse_X, alphas, pb",
                          product([False, True], [None, 1],
                                  ["lasso", "logreg"]))
@@ -206,3 +207,7 @@ def test_warm_start():
         reg1.fit(X, y)
         # hack because assert_array_less does strict comparison...
         np.testing.assert_array_less(reg1.n_iter_, 2.01)
+
+
+if __name__ == "__main__":
+    test_dropin_logreg()
