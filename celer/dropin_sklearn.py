@@ -319,10 +319,18 @@ class LogisticRegression(LogReg_sklearn):
         check_classification_targets(y)
         enc = LabelEncoder()
         y_ind = enc.fit_transform(y)
-        print(y_ind)
+        n_classes = len(enc.classes_)
 
-        Cs, coefs, dual_gaps = self.path(X, y_ind, np.array([self.C]))
-        self.coef_ = coefs[0]
+        if n_classes < 3:
+            Cs, coefs, dual_gaps = self.path(X, y_ind, np.array([self.C]))
+            self.coef_ = coefs[0]
+        else:
+            warnings.warn("Multiclass support is experimental.")
+            self.coef_ = np.empty([n_classes, X.shape[1]])
+            for label in range(len(enc.classes_)):
+                y_rest = 2 * (y_ind == label) - 1
+                self.coef_[label, :] = self.path(
+                    X, y_rest, np.array([self.C]))[1][0]
 
         return self
 
