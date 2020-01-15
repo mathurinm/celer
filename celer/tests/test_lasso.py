@@ -51,7 +51,7 @@ def test_dropin_logreg():
     clf1 = LogisticRegression(C=C)
     clf1.fit(X, y)
 
-    clf2 = sklearn_Logreg(C=C, penalty='l1')
+    clf2 = sklearn_Logreg(C=C, penalty='l1', solver='liblinear')
     clf2.fit(X, y)
 
 
