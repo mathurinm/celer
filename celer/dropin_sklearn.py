@@ -23,6 +23,7 @@ from sklearn.linear_model._coordinate_descent import (LinearModelCV as
                                                       _LinearModelCV)
 from sklearn.linear_model._coordinate_descent import (_alpha_grid,
                                                       _path_residuals)
+from sklearn.preprocessing import LabelEncoder
 
 from .homotopy import celer_path
 
@@ -316,8 +317,11 @@ class LogisticRegression(LogReg_sklearn):
         # below are copy pasted excerpts from sklearn.linear_model._logistic
         X, y = check_X_y(X, y, accept_sparse='csr', order="C")
         check_classification_targets(y)
+        enc = LabelEncoder()
+        y_ind = enc.fit_transform(y)
+        print(y_ind)
 
-        Cs, coefs, dual_gaps = self.path(X, y, np.array([self.C]))
+        Cs, coefs, dual_gaps = self.path(X, y_ind, np.array([self.C]))
         self.coef_ = coefs[0]
 
         return self
