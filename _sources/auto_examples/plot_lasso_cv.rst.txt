@@ -15,6 +15,32 @@ The example runs the LassoCV scikit-learn like estimator
 using the Celer algorithm.
 
 
+
+.. image:: /auto_examples/images/sphx_glr_plot_lasso_cv_001.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    Loading data...
+    /home/mathurin/workspace/celer/celer/homotopy.py:242: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Fitting data with very small alpha may cause precision problems.
+      ConvergenceWarning)
+    Estimated regularization parameter alpha: 81.38126193253959
+    /home/mathurin/workspace/celer/examples/plot_lasso_cv.py:45: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+      plt.show()
+
+
+
+
+
+|
+
+
 .. code-block:: default
 
 
@@ -58,7 +84,7 @@ using the Celer algorithm.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
+   **Total running time of the script:** ( 0 minutes  0.854 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:

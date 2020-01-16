@@ -116,6 +116,19 @@
 which is a large sparse dataset.</p>
 <p>Running time is here not compared with the scikit-learn
 implementation as it makes the example too long to run.</p>
+<img alt="../_images/sphx_glr_plot_finance_path_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_finance_path_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>*** Warning: this example may take more than 5 minutes to run ***
+Starting path computation...
+/home/mathurin/workspace/celer/celer/plot_utils.py:48: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+  plt.show(block=False)
+/home/mathurin/workspace/celer/examples/plot_finance_path.py:48: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+  plt.show()
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -139,18 +152,12 @@ implementation as it makes the example too long to run.</p>
 <span class="n">n_alphas</span> <span class="o">=</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">fine</span> <span class="k">else</span> <span class="mi">10</span>
 <span class="n">alphas</span> <span class="o">=</span> <span class="n">alpha_max</span> <span class="o">*</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.logspace.html#numpy.logspace" title="View documentation for numpy.logspace"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_alphas</span><span class="p">)</span>
 
-<span class="n">gap_freq</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">prune</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">verbose_inner</span> <span class="o">=</span> <span class="mi">0</span>
-
 <span class="n">tols</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">]</span>
 <span class="n">results</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tols</span><span class="p">)])</span>
 <span class="k">for</span> <span class="n">tol_ix</span><span class="p">,</span> <span class="n">tol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tols</span><span class="p">):</span>
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">res</span> <span class="o">=</span> <a href="../generated/celer.celer_path.html#celer.celer_path" title="View documentation for celer.celer_path"><span class="n">celer_path</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">gap_freq</span><span class="o">=</span><span class="n">gap_freq</span><span class="p">,</span>
-                     <span class="n">p0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">verbose_inner</span><span class="o">=</span><span class="n">verbose_inner</span><span class="p">,</span>
-                     <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">prune</span><span class="o">=</span><span class="n">prune</span><span class="p">,</span> <span class="n">return_thetas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <a href="../generated/celer.celer_path.html#celer.celer_path" title="View documentation for celer.celer_path"><span class="n">celer_path</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pb</span><span class="o">=</span><span class="s2">&quot;lasso&quot;</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+                     <span class="n">return_thetas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">gaps</span><span class="p">,</span> <span class="n">thetas</span> <span class="o">=</span> <span class="n">res</span>
 
@@ -160,7 +167,7 @@ implementation as it makes the example too long to run.</p>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  38.075 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-finance-path-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1e2b507d59f5c81fd7116ff6c187df47/plot_finance_path.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_finance_path.py</span></code></a></p>

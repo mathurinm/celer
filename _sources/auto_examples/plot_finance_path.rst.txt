@@ -18,6 +18,32 @@ Running time is here not compared with the scikit-learn
 implementation as it makes the example too long to run.
 
 
+
+.. image:: /auto_examples/images/sphx_glr_plot_finance_path_001.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    *** Warning: this example may take more than 5 minutes to run ***
+    Starting path computation...
+    /home/mathurin/workspace/celer/celer/plot_utils.py:48: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+      plt.show(block=False)
+    /home/mathurin/workspace/celer/examples/plot_finance_path.py:48: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+      plt.show()
+
+
+
+
+
+|
+
+
 .. code-block:: default
 
 
@@ -44,18 +70,12 @@ implementation as it makes the example too long to run.
     n_alphas = 100 if fine else 10
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
-    gap_freq = 10
-    prune = 0
-    verbose = 0
-    verbose_inner = 0
-
     tols = [1e-2, 1e-4, 1e-6]
     results = np.zeros([1, len(tols)])
     for tol_ix, tol in enumerate(tols):
         t0 = time.time()
-        res = celer_path(X, y, alphas=alphas, max_iter=100, gap_freq=gap_freq,
-                         p0=100, verbose=verbose, verbose_inner=verbose_inner,
-                         tol=tol, prune=prune, return_thetas=True)
+        res = celer_path(X, y, pb="lasso", alphas=alphas, tol=tol,
+                         return_thetas=True)
         results[0, tol_ix] = time.time() - t0
         _, coefs, gaps, thetas = res
 
@@ -67,7 +87,7 @@ implementation as it makes the example too long to run.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
+   **Total running time of the script:** ( 0 minutes  38.075 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_finance_path.py:
