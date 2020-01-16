@@ -1,5 +1,7 @@
 # flake8: noqa F401
 import inspect
+import numbers
+
 import numpy as np
 
 from scipy import sparse
@@ -7,17 +9,21 @@ from abc import ABCMeta, abstractmethod
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.linear_model._base import LinearModel
 from sklearn.utils import check_array
-from sklearn.utils.validation import column_or_1d
+from sklearn.utils.validation import column_or_1d, check_X_y
+from sklearn.utils.multiclass import check_classification_targets
 from sklearn.model_selection import check_cv
 from joblib import Parallel, delayed, effective_n_jobs
 from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
-                                  LassoCV as _LassoCV)
+                                  LassoCV as _LassoCV,
+                                  LogisticRegression as LogReg_sklearn)
 from sklearn.linear_model._coordinate_descent import (LinearModelCV as
                                                       _LinearModelCV)
 from sklearn.linear_model._coordinate_descent import (_alpha_grid,
                                                       _path_residuals)
+from sklearn.preprocessing import LabelEncoder
+from sklearn.multiclass import OneVsRestClassifier
 
 from .homotopy import celer_path
 
@@ -30,7 +36,8 @@ exec(lines)
 
 
 class Lasso(Lasso_sklearn):
-    """Lasso scikit-learn estimator based on Celer solver
+    """
+    Lasso scikit-learn estimator based on Celer solver
 
     The optimization objective for Lasso is::
 
@@ -151,7 +158,8 @@ class Lasso(Lasso_sklearn):
 
 
 class LassoCV(LassoCV_sklearn):
-    """LassoCV scikit-learn estimator based on Celer solver
+    """
+    LassoCV scikit-learn estimator based on Celer solver
 
     The best model is selected by cross-validation.
 
@@ -276,3 +284,190 @@ class LassoCV(LassoCV_sklearn):
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return (alphas, coefs, dual_gaps)
+
+
+class LogisticRegression(LogReg_sklearn):
+    """
+    Sparse Logisitc regression scikit-learn estimator based on Celer solver.
+
+    The optimization objective for sparse Logistic regression is::
+
+    \sum_1^n_samples log(1 + e^{-y_i x_i^T w}) + 1. / C * ||w||_1
+
+    The solvers use a working set strategy. To solve problems restricted to a
+    subset of features, Celer uses coordinate descent while PN-Celer uses
+    a Prox-Newton strategy (detailed in [1], Sec 5.2).
+
+    Parameters
+    ----------
+    C : float, default=1.0
+        Inverse of regularization strength; must be a positive float.
+
+    penalty : 'l1'.
+        Other penalties are not supported.
+
+    tol : float, optional
+        The tolerance for the optimization: the solver runs until the duality
+        gap is smaller than ``tol`` or the maximum number of iteration is
+        reached.
+
+    fit_intercept : bool, optional (default=False)
+        Whether or not to fit an intercept. Currently True is not supported.
+
+    max_iter : int, optional
+        The maximum number of iterations (subproblem definitions)
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    max_epochs : int
+        Maximum number of CD epochs on each subproblem.
+
+    p0 : int
+        First working set size.
+
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+        Only False is supported so far.
+
+
+    Attributes
+    ----------
+
+    classes_ : ndarray of shape (n_classes, )
+        A list of class labels known to the classifier.
+
+    coef_ : ndarray of shape (1, n_features) or (n_classes, n_features)
+        Coefficient of the features in the decision function.
+
+        `coef_` is of shape (1, n_features) when the given problem is binary.
+
+    intercept_ :  ndarray of shape (1,) or (n_classes,)
+        constant term in decision function. Not handled yet.
+
+    n_iter_ : int
+        Number of subproblems solved by Celer to reach the specified tolerance.
+
+    Examples
+    --------
+    >>> from celer import LogisticRegression
+    >>> clf = LogisticRegression(C=1.)
+    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 1])
+    LogisticRegression(C=1.0, penalty='l1', tol=0.0001, fit_intercept=False,
+    max_iter=50, verbose=False, max_epochs=50000, p0=10, warm_start=False)
+
+    >>> print(clf.coef_)
+    [[0.4001237  0.01949392]]
+
+    See also
+    --------
+    celer_path
+
+    References
+    ----------
+    .. [1] M. Massias, S. Vaiter, A. Gramfort, J. Salmon
+       "Dual Extrapolation for Sparse Generalized Linear Models",
+       preprint, https://arxiv.org/abs/1907.05830
+    """
+
+    def __init__(self, C=1., penalty='l1', tol=1e-4, fit_intercept=False,
+                 max_iter=50, verbose=False, max_epochs=50000,
+                 p0=10, warm_start=False):
+        super(LogisticRegression, self).__init__(
+            tol=tol, C=C)
+
+        self.verbose = verbose
+        self.max_epochs = max_epochs
+        self.p0 = p0
+        self.max_iter = max_iter
+        self.penalty = penalty
+        self.fit_intercept = fit_intercept
+
+    def fit(self, X, y):
+        """
+        Fit the model according to the given training data.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            Training vector, where n_samples is the number of samples and
+            n_features is the number of features.
+
+        y : array-like of shape (n_samples,)
+            Target vector relative to X.
+
+        Returns
+        -------
+        self
+            Fitted estimator.
+        """
+        # TODO handle normalization, centering
+        # TODO intercept
+        if self.fit_intercept:
+            raise NotImplementedError(
+                "Fitting an intercept is not implement yet")
+        # TODO support warm start
+        if self.penalty != 'l1':
+            raise NotImplementedError(
+                'Only L1 penalty is supported, got %s' % self.penalty)
+
+        if not isinstance(self.C, numbers.Number) or self.C <= 0:
+            raise ValueError("Penalty term must be positive; got (C=%r)"
+                             % self.C)
+        # below are copy pasted excerpts from sklearn.linear_model._logistic
+        X, y = check_X_y(X, y, accept_sparse='csr', order="C")
+        check_classification_targets(y)
+        enc = LabelEncoder()
+        y_ind = enc.fit_transform(y)
+        self.classes_ = enc.classes_
+        n_classes = len(enc.classes_)
+
+        if n_classes <= 2:
+            coefs = self.path(
+                X, 2 * y_ind - 1, np.array([self.C]))[0]
+            self.coef_ = coefs.T  # must be [1, n_features]
+            self.intercept_ = 0
+        else:
+            self.coef_ = np.empty([n_classes, X.shape[1]])
+            self.intercept_ = 0.
+            multiclass = OneVsRestClassifier(self).fit(X, y)
+            self.coef_ = multiclass.coef_
+
+        return self
+
+    def path(self, X, y, Cs, coef_init=None, **kwargs):
+        """
+        Compute sparse Logistic Regression path with Celer-PN.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            Training vector, where n_samples is the number of samples and
+            n_features is the number of features.
+
+        y : array-like of shape (n_samples,)
+            Target vector relative to X.
+
+        Cs : ndarray
+            Values of regularization strenghts for which solutions are
+            computed
+
+        coef_init : array, shape (n_features,), optional
+            Initial value of the coefficients.
+
+        Returns
+        -------
+        coefs_ : array, shape (len(Cs), n_features)
+            Computed coefficients for each value in Cs.
+
+        dual_gaps : array, shape (len(Cs),)
+            Corresponding duality gaps at the end of optimization.
+        """
+        _, coefs, dual_gaps = celer_path(
+            X, y, "logreg", alphas=1. / Cs, coef_init=coef_init,
+            max_iter=self.max_iter, max_epochs=self.max_epochs,
+            p0=self.p0, verbose=self.verbose, tol=self.tol,
+            X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+        return coefs, dual_gaps

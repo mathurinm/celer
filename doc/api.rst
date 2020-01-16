@@ -24,3 +24,4 @@ Estimators
 
    Lasso
    LassoCV
+   LogisticRegression
