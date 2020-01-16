@@ -36,7 +36,8 @@ exec(lines)
 
 
 class Lasso(Lasso_sklearn):
-    """Lasso scikit-learn estimator based on Celer solver
+    """
+    Lasso scikit-learn estimator based on Celer solver
 
     The optimization objective for Lasso is::
 
@@ -157,7 +158,8 @@ class Lasso(Lasso_sklearn):
 
 
 class LassoCV(LassoCV_sklearn):
-    """LassoCV scikit-learn estimator based on Celer solver
+    """
+    LassoCV scikit-learn estimator based on Celer solver
 
     The best model is selected by cross-validation.
 
@@ -285,9 +287,10 @@ class LassoCV(LassoCV_sklearn):
 
 
 class LogisticRegression(LogReg_sklearn):
-    """Lasso scikit-learn estimator based on Celer solver
+    """
+    Sparse Logisitc regression scikit-learn estimator based on Celer solver.
 
-    The optimization objective for Lasso is::
+    The optimization objective for sparse Logistic regression is::
 
     \sum_1^n_samples log(1 + e^{-y_i x_i^T w}) + 1. / C * ||w||_1
 
@@ -434,7 +437,8 @@ class LogisticRegression(LogReg_sklearn):
         return self
 
     def path(self, X, y, Cs, coef_init=None, **kwargs):
-        """Compute sparse Logistic Regression path with Celer-PN.
+        """
+        Compute sparse Logistic Regression path with Celer-PN.
 
         Parameters
         ----------
