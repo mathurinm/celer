@@ -3,25 +3,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>celer.Lasso &#8212; celer 0.5dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5dev',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -35,8 +27,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body>
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -121,86 +112,72 @@
 <h1>celer.Lasso<a class="headerlink" href="#celer-lasso" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.Lasso">
-<em class="property">class </em><code class="descclassname">celer.</code><code class="descname">Lasso</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>warm_start=False</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">celer.</code><code class="sig-name descname">Lasso</code><span class="sig-paren">(</span><em class="sig-param">alpha=1.0</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">warm_start=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lasso scikit-learn estimator based on Celer solver</p>
 <p>The optimization objective for Lasso is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2</span><span class="n">_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Constant that multiplies the L1 term. Defaults to 1.0.
-<code class="docutils literal"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> is equivalent to an ordinary least square.
-For numerical reasons, using <code class="docutils literal"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> with the
-<code class="docutils literal"><span class="pre">Lasso</span></code> object is not advised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>Constant that multiplies the L1 term. Defaults to 1.0.
+<code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> is equivalent to an ordinary least square.
+For numerical reasons, using <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> with the
+<code class="docutils literal notranslate"><span class="pre">Lasso</span></code> object is not advised.</p>
 </dd>
-<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">The maximum number of iterations (subproblem definitions)</p>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (subproblem definitions)</p>
 </dd>
-<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Number of coordinate descent epochs between each duality gap
+<dt><strong>gap_freq</strong><span class="classifier">int</span></dt><dd><p>Number of coordinate descent epochs between each duality gap
 computations.</p>
 </dd>
-<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Maximum number of CD epochs on each subproblem.</p>
+<dt><strong>max_epochs</strong><span class="classifier">int</span></dt><dd><p>Maximum number of CD epochs on each subproblem.</p>
 </dd>
-<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">First working set size.</p>
+<dt><strong>p0</strong><span class="classifier">int</span></dt><dd><p>First working set size.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer</span></dt>
-<dd><p class="first last">Amount of verbosity.</p>
+<dt><strong>verbose</strong><span class="classifier">bool or integer</span></dt><dd><p>Amount of verbosity.</p>
 </dd>
-<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">The tolerance for the optimization: the solver runs until the duality
-gap is smaller than <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
+gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
 reached.</p>
 </dd>
-<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0 | 1, optional</span></dt>
-<dd><p class="first last">Whether or not to use pruning when growing working sets.</p>
+<dt><strong>prune</strong><span class="classifier">0 | 1, optional</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
 </dd>
-<dt><strong>fit_intercept</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=True)</span></dt>
-<dd><p class="first last">Whether or not to fit an intercept.</p>
+<dt><strong>fit_intercept</strong><span class="classifier">bool, optional (default=True)</span></dt><dd><p>Whether or not to fit an intercept.</p>
 </dd>
-<dt><strong>normalize</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
-<dd><p class="first last">This parameter is ignored when <code class="docutils literal"><span class="pre">fit_intercept</span></code> is set to False.
+<dt><strong>normalize</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>This parameter is ignored when <code class="docutils literal notranslate"><span class="pre">fit_intercept</span></code> is set to False.
 If True,  the regressors X will be normalized before regression by
 subtracting the mean and dividing by the l2-norm.</p>
 </dd>
-<dt><strong>warm_start</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
-<dd><p class="first last">When set to True, reuse the solution of the previous call to fit as
+<dt><strong>warm_start</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, reuse the solution of the previous call to fit as
 initialization, otherwise, just erase the previous solution.</p>
 </dd>
-<dt><strong>positive</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
-<dd><p class="first last">When set to True, forces the coefficients to be positive.</p>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, forces the coefficients to be positive.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal"><span class="pre">celer_path</span></code></a>, <a class="reference internal" href="celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV"><code class="xref py py-obj docutils literal"><span class="pre">LassoCV</span></code></a></p>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LassoCV</span></code></a></dt><dd></dd>
+</dl>
 </div>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r9848a8cfb00c-1" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><ol class="first upperalpha simple" start="13">
-<li>Massias, A. Gramfort, J. Salmon</li>
+<dl class="citation">
+<dt class="label" id="r9848a8cfb00c-1"><span class="brackets">R9848a8cfb00c-1</span></dt>
+<dd><ol class="upperalpha simple" start="13">
+<li><p>Massias, A. Gramfort, J. Salmon</p></li>
 </ol>
 <blockquote>
-<div>“Celer: a Fast Solver for the Lasso wit Dual Extrapolation”, ICML 2018,</div></blockquote>
-<p class="last"><a class="reference external" href="http://proceedings.mlr.press/v80/massias18a.html">http://proceedings.mlr.press/v80/massias18a.html</a></p>
-</td></tr>
-</tbody>
-</table>
+<div><p>“Celer: a Fast Solver for the Lasso wit Dual Extrapolation”, ICML 2018,</p>
+</div></blockquote>
+<p><a class="reference external" href="http://proceedings.mlr.press/v80/massias18a.html">http://proceedings.mlr.press/v80/massias18a.html</a></p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">celer</span> <span class="k">import</span> <span class="n">Lasso</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">celer</span> <span class="k">import</span> <span class="n">Lasso</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span> <span class="o">=</span> <span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="go">Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,</span>
@@ -211,60 +188,65 @@ initialization, otherwise, just erase the previous solution.</p>
 <span class="go">0.15</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>coef_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features,)</span></dt>
-<dd><p class="first last">parameter vector (w in the cost function formula)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coef_</strong><span class="classifier">array, shape (n_features,)</span></dt><dd><p>parameter vector (w in the cost function formula)</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">sparse_coef_</span></code> <span class="classifier-delimiter">:</span> <span class="classifier">scipy.sparse matrix, shape (n_features, 1)</span></dt>
-<dd><p class="first last">sparse representation of the fitted <code class="docutils literal"><span class="pre">coef_</span></code></p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code><span class="classifier">scipy.sparse matrix, shape (n_features, 1)</span></dt><dd><p>sparse representation of the fitted <code class="docutils literal notranslate"><span class="pre">coef_</span></code></p>
 </dd>
-<dt><strong>intercept_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">constant term in decision function.</p>
+<dt><strong>intercept_</strong><span class="classifier">float</span></dt><dd><p>constant term in decision function.</p>
 </dd>
-<dt><strong>n_iter_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Number of subproblems solved by Celer to reach the specified tolerance.</p>
+<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>Number of subproblems solved by Celer to reach the specified tolerance.</p>
 </dd>
 </dl>
-</td>
+</dd>
+</dl>
+<dl class="method">
+<dt id="celer.Lasso.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">warm_start=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#celer.Lasso.__init__" title="celer.Lasso.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self[, alpha, max_iter, gap_freq, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(self, X, y[, check_input])</p></td>
+<td><p>Fit model with coordinate descent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(self, X, y, alphas[, coef_init, …])</p></td>
+<td><p>Compute Lasso path with Celer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(self, X)</p></td>
+<td><p>Predict using the linear model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(self, X, y[, sample_weight])</p></td>
+<td><p>Return the coefficient of determination R^2 of the prediction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(self, \*\*params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="celer.Lasso.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>alpha=1.0</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>tol=0.0001</em>, <em>prune=0</em>, <em>fit_intercept=True</em>, <em>normalize=False</em>, <em>warm_start=False</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.Lasso.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#celer.Lasso.__init__" title="celer.Lasso.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([alpha,&nbsp;max_iter,&nbsp;gap_freq,&nbsp;…])</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code>(X,&nbsp;y[,&nbsp;check_input])</td>
-<td>Fit model with coordinate descent.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code>([deep])</td>
-<td>Get parameters for this estimator.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path</span></code>(X,&nbsp;y,&nbsp;alphas[,&nbsp;coef_init,&nbsp;return_n_iter])</td>
-<td>Compute Lasso path with Celer.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">predict</span></code>(X)</td>
-<td>Predict using the linear model</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">score</span></code>(X,&nbsp;y[,&nbsp;sample_weight])</td>
-<td>Returns the coefficient of determination R^2 of the prediction.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code>(**params)</td>
-<td>Set the parameters of this estimator.</td>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code></p></td>
+<td><p>sparse representation of the fitted <code class="docutils literal notranslate"><span class="pre">coef_</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -288,7 +270,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
     </p>
   </div>
 </footer>

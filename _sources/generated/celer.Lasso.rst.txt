@@ -1,5 +1,5 @@
-celer\.Lasso
-============
+celer.Lasso
+===========
 
 .. currentmodule:: celer
 
@@ -24,5 +24,11 @@ celer\.Lasso
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Lasso.sparse_coef_
    
    

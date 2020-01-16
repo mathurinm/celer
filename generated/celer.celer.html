@@ -3,25 +3,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>celer.celer &#8212; celer 0.5dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5dev',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -35,8 +27,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body>
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -121,85 +112,67 @@
 <h1>celer.celer<a class="headerlink" href="#celer-celer" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer">
-<code class="descclassname">celer.</code><code class="descname">celer</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>alpha</em>, <em>w_init=None</em>, <em>max_iter=100</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=1</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>positive=False</em>, <em>return_n_iter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the Lasso solution with the Celer algorithm.</p>
-<p>The minimized objective function is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||</span><span class="n">_2</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">w</span><span class="o">||</span><span class="n">_1</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt>
-<dd><p class="first last">Training data. Pass directly as Fortran-contiguous data or column
+<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">pb</em>, <em class="sig-param">alpha</em>, <em class="sig-param">w_init=None</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=1</em>, <em class="sig-param">verbose_inner=0</em>, <em class="sig-param">tol=1e-06</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">positive=False</em>, <em class="sig-param">return_n_iter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Lasso or Logistic regression solution with the Celer algorithm.</p>
+<p>The Lasso objective function is</p>
+<div class="math notranslate nohighlight">
+\[\frac{||y - X w||_2^2}{2 * \text{n_samples}} + \alpha ||w||_1\]</div>
+<p>while for Logreg it is</p>
+<div class="math notranslate nohighlight">
+\[\sum_{i=1}^{\text{n_samples}} \text{log} \,(1 + e^{-y_i x_i^\top w}) +
+\alpha  ||w||_1\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt><dd><p>Training data. Pass directly as Fortran-contiguous data or column
 sparse format (CSC) to avoid unnecessary memory duplication.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (n_samples,)</span></dt>
-<dd><p class="first last">Observation vector.</p>
+<dt><strong>y</strong><span class="classifier">array-like, shape (n_samples,)</span></dt><dd><p>Observation vector.</p>
 </dd>
-<dt><strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Value of the Lasso regularization parameter.</p>
+<dt><strong>pb</strong><span class="classifier">“lasso” | “logreg”</span></dt><dd></dd>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Value of the regularization parameter.</p>
 </dd>
-<dt><strong>w_init</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (n_features,), optional</span></dt>
-<dd><p class="first last">Initial value for the coefficients vector.</p>
+<dt><strong>w_init</strong><span class="classifier">array-like, shape (n_features,), optional</span></dt><dd><p>Initial value for the coefficients vector.</p>
 </dd>
-<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Maximum number of outer loop (working set definition) iterations.</p>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of outer loop (working set definition) iterations.</p>
 </dd>
-<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of epochs between every gap computation in the inner solver.</p>
+<dt><strong>gap_freq</strong><span class="classifier">int, optional</span></dt><dd><p>Number of epochs between every gap computation in the inner solver.</p>
 </dd>
-<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Maximum number of epochs for the coordinate descent solver called on
+<dt><strong>max_epochs</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of epochs for the coordinate descent solver called on
 the subproblems.</p>
 </dd>
-<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Size of the first working set.</p>
+<dt><strong>p0</strong><span class="classifier">int, optional</span></dt><dd><p>Size of the first working set.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
-<dd><p class="first last">Verbosity level of the outer loop.</p>
+<dt><strong>verbose</strong><span class="classifier">(0, 1), optional</span></dt><dd><p>Verbosity level of the outer loop.</p>
 </dd>
-<dt><strong>verbose_inner</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
-<dd><p class="first last">Verbosity level of the inner solver.</p>
+<dt><strong>verbose_inner</strong><span class="classifier">(0, 1), optional</span></dt><dd><p>Verbosity level of the inner solver.</p>
 </dd>
-<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Optimization tolerance: the solver stops when the duality gap goes
-below <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is reached.</p>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Optimization tolerance: the solver stops when the duality gap goes
+below <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is reached.</p>
 </dd>
-<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">(0, 1), optional</span></dt>
-<dd><p class="first last">Whether or not to use pruning when growing the working sets.</p>
+<dt><strong>prune</strong><span class="classifier">(0, 1), optional</span></dt><dd><p>Whether or not to use pruning when growing the working sets.</p>
 </dd>
-<dt><strong>positive</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
-<dd><p class="first last">When set to True, forces the coefficients to be positive.</p>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, forces the coefficients to be positive.</p>
 </dd>
-<dt><strong>return_n_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
-<dd><p class="first last">Whether or not to return the number of iterations (ie the number of
+<dt><strong>return_n_iter</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>Whether or not to return the number of iterations (ie the number of
 subproblems solved).</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>w</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features,)</span></dt>
-<dd><p class="first last">Estimated coefficient vector.</p>
 </dd>
-<dt><strong>theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_samples,)</span></dt>
-<dd><p class="first last">Dual point (potentially accelerated) when the solver exits.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>w</strong><span class="classifier">array, shape (n_features,)</span></dt><dd><p>Estimated coefficient vector.</p>
 </dd>
-<dt><strong>gap</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Final duality gap.</p>
+<dt><strong>theta</strong><span class="classifier">array, shape (n_samples,)</span></dt><dd><p>Dual point (potentially accelerated) when the solver exits.</p>
 </dd>
-<dt><strong>n_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Number of iterations (subproblems solved). Returned only if
+<dt><strong>gap</strong><span class="classifier">float</span></dt><dd><p>Final duality gap.</p>
+</dd>
+<dt><strong>n_iter</strong><span class="classifier">int</span></dt><dd><p>Number of iterations (subproblems solved). Returned only if
 return_n_iter is True.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -220,7 +193,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
     </p>
   </div>
 </footer>

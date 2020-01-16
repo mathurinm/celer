@@ -3,25 +3,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>celer.celer_path &#8212; celer 0.5dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5dev',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -35,8 +27,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body>
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -121,100 +112,78 @@
 <h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer_path">
-<code class="descclassname">celer.</code><code class="descname">celer_path</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>eps=0.001</em>, <em>n_alphas=100</em>, <em>alphas=None</em>, <em>coef_init=None</em>, <em>max_iter=20</em>, <em>gap_freq=10</em>, <em>max_epochs=50000</em>, <em>p0=10</em>, <em>verbose=0</em>, <em>verbose_inner=0</em>, <em>tol=1e-06</em>, <em>prune=0</em>, <em>return_thetas=False</em>, <em>X_offset=None</em>, <em>X_scale=None</em>, <em>return_n_iter=False</em>, <em>positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer_path</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">pb</em>, <em class="sig-param">solver='celer'</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">coef_init=None</em>, <em class="sig-param">max_iter=20</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">verbose_inner=0</em>, <em class="sig-param">tol=1e-06</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">return_thetas=False</em>, <em class="sig-param">X_offset=None</em>, <em class="sig-param">X_scale=None</em>, <em class="sig-param">return_n_iter=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute Lasso path with Celer as inner solver.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt>
-<dd><p class="first last">Training data. Pass directly as Fortran-contiguous data or column
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt><dd><p>Training data. Pass directly as Fortran-contiguous data or column
 sparse format (CSC) to avoid unnecessary memory duplication.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, shape (n_samples,)</span></dt>
-<dd><p class="first last">Target values</p>
+<dt><strong>y</strong><span class="classifier">ndarray, shape (n_samples,)</span></dt><dd><p>Target values</p>
 </dd>
-<dt><strong>eps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Length of the path. <code class="docutils literal"><span class="pre">eps=1e-3</span></code> means that
-<code class="docutils literal"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
+<dt><strong>pb</strong><span class="classifier">“lasso” | “logreg”</span></dt><dd><p>Optimization problem to solve.</p>
 </dd>
-<dt><strong>n_alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of alphas along the regularization path</p>
+<dt><strong>solver</strong><span class="classifier">“celer” | “PN”</span></dt><dd><p>Algorithm to use if pb == “logreg”.</p>
 </dd>
-<dt><strong>alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, optional</span></dt>
-<dd><p class="first last">List of alphas where to compute the models.
-If <code class="docutils literal"><span class="pre">None</span></code> alphas are set automatically</p>
+<dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Length of the path. <code class="docutils literal notranslate"><span class="pre">eps=1e-3</span></code> means that
+<code class="docutils literal notranslate"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
 </dd>
-<dt><strong>coef_init</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, shape (n_features,) | None, optional, (defualt=None)</span></dt>
-<dd><p class="first last">Initial value of coefficients. If None, np.zeros(n_features) is used.</p>
+<dt><strong>n_alphas</strong><span class="classifier">int, optional</span></dt><dd><p>Number of alphas along the regularization path</p>
 </dd>
-<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">The maximum number of iterations (subproblem definitions)</p>
+<dt><strong>alphas</strong><span class="classifier">ndarray, optional</span></dt><dd><p>List of alphas where to compute the models.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> alphas are set automatically</p>
 </dd>
-<dt><strong>gap_freq</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of coordinate descent epochs between each duality gap
+<dt><strong>coef_init</strong><span class="classifier">ndarray, shape (n_features,) | None, optional, (defualt=None)</span></dt><dd><p>Initial value of coefficients. If None, np.zeros(n_features) is used.</p>
+</dd>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (subproblem definitions)</p>
+</dd>
+<dt><strong>gap_freq</strong><span class="classifier">int, optional</span></dt><dd><p>Number of coordinate descent epochs between each duality gap
 computations.</p>
 </dd>
-<dt><strong>max_epochs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Maximum number of CD epochs on each subproblem.</p>
+<dt><strong>max_epochs</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of CD epochs on each subproblem.</p>
 </dd>
-<dt><strong>p0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">First working set size.</p>
+<dt><strong>p0</strong><span class="classifier">int, optional</span></dt><dd><p>First working set size.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer, optional</span></dt>
-<dd><p class="first last">Amount of verbosity.</p>
+<dt><strong>verbose</strong><span class="classifier">bool or integer, optional</span></dt><dd><p>Amount of verbosity.</p>
 </dd>
-<dt><strong>verbose_inner</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or integer</span></dt>
-<dd><p class="first last">Amount of verbosity in the inner solver.</p>
+<dt><strong>verbose_inner</strong><span class="classifier">bool or integer</span></dt><dd><p>Amount of verbosity in the inner solver.</p>
 </dd>
-<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">The tolerance for the optimization: the solver runs until the duality
-gap is smaller than <code class="docutils literal"><span class="pre">tol</span></code> or the maximum number of iteration is
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
+gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
 reached.</p>
 </dd>
-<dt><strong>prune</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0 | 1, optional</span></dt>
-<dd><p class="first last">Whether or not to use pruning when growing working sets.</p>
+<dt><strong>prune</strong><span class="classifier">0 | 1, optional</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
 </dd>
-<dt><strong>return_thetas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">If True, dual variables along the path are returned.</p>
+<dt><strong>return_thetas</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, dual variables along the path are returned.</p>
 </dd>
-<dt><strong>X_offset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">np.array, shape (n_features,), optional</span></dt>
-<dd><p class="first last">Used to center sparse X without breaking sparsity. Mean of each column.
+<dt><strong>X_offset</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to center sparse X without breaking sparsity. Mean of each column.
 See sklearn.linear_model.base._preprocess_data().</p>
 </dd>
-<dt><strong>X_scale: np.array, shape (n_features,), optional</strong></dt>
-<dd><p class="first last">Used to scale centered sparse X without breaking sparsity. Norm of each
+<dt><strong>X_scale</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to scale centered sparse X without breaking sparsity. Norm of each
 centered column. See sklearn.linear_model.base._preprocess_data().</p>
 </dd>
-<dt><strong>return_n_iter: bool, optional</strong></dt>
-<dd><p class="first last">If True, number of iterations along the path are returned.</p>
+<dt><strong>return_n_iter</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, number of iterations along the path are returned.</p>
 </dd>
-<dt><strong>positive</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional (default=False)</span></dt>
-<dd><p class="first last">When set to True, forces the coefficients to be positive.</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>alphas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_alphas,)</span></dt>
-<dd><p class="first last">The alphas along the path where models are computed.</p>
-</dd>
-<dt><strong>coefs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_features, n_alphas)</span></dt>
-<dd><p class="first last">Coefficients along the path.</p>
-</dd>
-<dt><strong>dual_gaps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_alphas,)</span></dt>
-<dd><p class="first last">Duality gaps returned by the solver along the path.</p>
-</dd>
-<dt><strong>thetas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape (n_alphas, n_samples)</span></dt>
-<dd><p class="first last">The dual variables along the path.
-(Is returned only when <code class="docutils literal"><span class="pre">return_thetas</span></code> is set to True).</p>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, if pb == “lasso”, forces the coefficients to be
+positive.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>alphas</strong><span class="classifier">array, shape (n_alphas,)</span></dt><dd><p>The alphas along the path where models are computed.</p>
+</dd>
+<dt><strong>coefs</strong><span class="classifier">array, shape (n_features, n_alphas)</span></dt><dd><p>Coefficients along the path.</p>
+</dd>
+<dt><strong>dual_gaps</strong><span class="classifier">array, shape (n_alphas,)</span></dt><dd><p>Duality gaps returned by the solver along the path.</p>
+</dd>
+<dt><strong>thetas</strong><span class="classifier">array, shape (n_alphas, n_samples)</span></dt><dd><p>The dual variables along the path.
+(Is returned only when <code class="docutils literal notranslate"><span class="pre">return_thetas</span></code> is set to True).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -235,7 +204,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
     </p>
   </div>
 </footer>

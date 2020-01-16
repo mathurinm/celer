@@ -1,5 +1,5 @@
-celer\.celer\_path
-==================
+celer.celer\_path
+=================
 
 .. currentmodule:: celer
 

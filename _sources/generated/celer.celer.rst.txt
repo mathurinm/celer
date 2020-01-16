@@ -1,5 +1,5 @@
-celer\.celer
-============
+celer.celer
+===========
 
 .. currentmodule:: celer
 
