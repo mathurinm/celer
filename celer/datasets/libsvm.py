@@ -19,13 +19,17 @@ NAMES = {'rcv1_train': 'binary/rcv1_train.binary',
          'news20': 'binary/news20.binary',
          'finance': 'regression/log1p.E2006.train',
          'kdda_train': 'binary/kdda',
-         'rcv1_topics_test': 'multilabel/rcv1_topics_test_2.svm'}
+         'rcv1_topics_test': 'multilabel/rcv1_topics_test_2.svm',
+         'url': 'binary/url_combined',
+         'webspam': 'binary/webspam_wc_normalized_trigram.svm'}
 
 N_FEATURES = {'finance': 4272227,
               'news20': 1355191,
               'rcv1_train': 47236,
               'kdda_train': 20216830,
-              'rcv1_topics_test': 47236}
+              'rcv1_topics_test': 47236,
+              'url': 3231961,
+              'webspam': 16609143}
 
 
 def download_libsvm(dataset, destination, replace=False):
