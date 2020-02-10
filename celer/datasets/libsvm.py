@@ -44,7 +44,7 @@ def decompress_data(compressed_path, decompressed_path):
             f.write(decompressor.decompress(data))
 
 
-def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
+def preprocess_libsvm(dataset, decompressed_path, X_path, y_path, multilabel,
                       is_regression=False):
     """Preprocess a LIBSVM dataset.
     Normalization performed:
@@ -53,7 +53,6 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
     """
     n_features_total = N_FEATURES[dataset]
     with open(decompressed_path, 'rb') as f:
-        multilabel = NAMES[dataset].split('/')[0] == 'multilabel'
         X, y = load_svmlight_file(f, n_features_total, multilabel=multilabel)
         X = sparse.csc_matrix(X)
 
@@ -69,54 +68,25 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
         sparse.save_npz(X_path, X_new)
 
         if multilabel:
-            # Y is a row sparse matrix
             indices = np.array([lab for labels in y for lab in labels])
             indptr = np.cumsum([0] + [len(labels) for labels in y])
             data = np.ones_like(indices)
-            # n_labels = np.max([np.max(labels) for labels in y])
             Y = sparse.csr_matrix((data, indices, indptr))
             sparse.save_npz(y_path, Y)
+            return X, Y
 
         else:
             if is_regression:
+                # TODO this parameter is not used
                 # center y
                 y -= np.mean(y)
                 # normalize y to get a first duality gap of 0.5
                 y /= np.std(y)
             np.save(y_path, y)
+            return X, y
 
 
-def download_preprocess_libsvm(dataset, replace=False, repreprocess=False):
-    """Download and preprocess a given LIBSVM dataset."""
-
-    paths = [CELER_PATH, pjoin(CELER_PATH, 'regression'),
-             pjoin(CELER_PATH, 'binary'),
-             pjoin(CELER_PATH, 'preprocessed')]
-    for path in paths:
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-    if dataset not in NAMES:
-        raise ValueError("Unsupported dataset %s" % dataset)
-
-    print("Dataset: %s" % dataset)
-    compressed_path = pjoin(CELER_PATH, "%s.bz2" % NAMES[dataset])
-    download_libsvm(dataset, compressed_path, replace=replace)
-
-    decompressed_path = pjoin(CELER_PATH, "%s" % NAMES[dataset])
-    if not os.path.isfile(decompressed_path):
-        decompress_data(compressed_path, decompressed_path)
-
-    y_path = pjoin(CELER_PATH, "preprocessed", "%s_target.npy" % dataset)
-    X_path = pjoin(CELER_PATH, "preprocessed", "%s_data.npz" % dataset)
-
-    if (repreprocess or not os.path.isfile(y_path) or
-            not os.path.isfile(X_path)):
-        print("Preprocessing...")
-        preprocess_libsvm(dataset, decompressed_path, X_path, y_path)
-
-
-def load_libsvm(dataset):
+def load_libsvm(dataset, replace=False, repreprocess=False):
     """
     Download a dataset from LIBSVM website.
 
@@ -139,22 +109,41 @@ def load_libsvm(dataset):
     https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/
 
     """
-    try:
-        X = sparse.load_npz(pjoin(CELER_PATH, 'preprocessed',
-                                  '%s_data.npz' % dataset))
-        y = np.load(pjoin(CELER_PATH, 'preprocessed',
-                          '%s_target.npy' % dataset))
-    except FileNotFoundError:
-        download_preprocess_libsvm(
-            dataset, replace=False, repreprocess=True)
-        X = sparse.load_npz(pjoin(CELER_PATH, 'preprocessed',
-                                  '%s_data.npz' % dataset))
-        y = np.load(pjoin(CELER_PATH, 'preprocessed',
-                          '%s_target.npy' % dataset))
+    paths = [CELER_PATH, pjoin(CELER_PATH, 'regression'),
+             pjoin(CELER_PATH, 'binary'),
+             pjoin(CELER_PATH, 'preprocessed')]
+    for path in paths:
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+    if dataset not in NAMES:
+        raise ValueError("Unsupported dataset %s" % dataset)
+    multilabel = NAMES[dataset].split('/')[0] == 'multilabel'
+
+    print("Dataset: %s" % dataset)
+    compressed_path = pjoin(CELER_PATH, "%s.bz2" % NAMES[dataset])
+    download_libsvm(dataset, compressed_path, replace=replace)
+
+    decompressed_path = pjoin(CELER_PATH, "%s" % NAMES[dataset])
+    if replace or not os.path.isfile(decompressed_path):
+        decompress_data(compressed_path, decompressed_path)
+
+    ext = '.npz' if multilabel else '.npy'
+    y_path = pjoin(CELER_PATH, "preprocessed", "%s_target%s" % (dataset, ext))
+    X_path = pjoin(CELER_PATH, "preprocessed", "%s_data.npz" % dataset)
+
+    if (repreprocess or not os.path.isfile(y_path) or
+            not os.path.isfile(X_path)):
+        print("Preprocessing...")
+        X, y = preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
+                                 multilabel)
+    else:
+        X = sparse.load_npz(X_path)
+        y = np.load(y_path)
     return X, y
 
 
 if __name__ == "__main__":
     for dataset in NAMES:
-        download_preprocess_libsvm(
+        load_libsvm(
             dataset, replace=False, repreprocess=False)
