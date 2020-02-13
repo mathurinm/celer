@@ -17,6 +17,7 @@ dependencies:
     - pip
     - pytest
     - pytest-cov
+    - xarray
 
     - pip:
         - "https://api.github.com/repos/choldgraf/download/zipball/master"
