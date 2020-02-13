@@ -1,12 +1,14 @@
 import numpy as np
 
 from celer.datasets import load_libsvm, load_climate
-from celer.datasets.libsvm import NAMES
+# from celer.datasets.libsvm import NAMES
 
 
-def test_random_download():
-    dataset = np.random.choice(list(NAMES.keys()))
-    print(dataset)
+def test_news20():
+    # other datasets are super big
+    # dataset = np.random.choice(list(NAMES.keys()))
+    # print(dataset)
+    dataset = 'news20'
     X, y = load_libsvm(dataset)
     np.testing.assert_equal(X.shape[0], y.shape[0])
 
