@@ -46,7 +46,7 @@ tols = [1e-2, 1e-4, 1e-6, 1e-8]
 results = np.zeros([2, len(tols)])
 for tol_ix, tol in enumerate(tols):
     t0 = time.time()
-    res = celer_path(X, y, alphas=alphas, max_iter=100, gap_freq=gap_freq,
+    res = celer_path(X, y, pb='lasso', alphas=alphas, max_iter=100, gap_freq=gap_freq,
                      p0=100, verbose=verbose, verbose_inner=verbose_inner,
                      tol=tol, prune=prune, return_thetas=True)
     results[0, tol_ix] = time.time() - t0
