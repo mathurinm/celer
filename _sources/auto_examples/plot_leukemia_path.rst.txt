@@ -31,8 +31,8 @@ Running time is compared with the scikit-learn implementation.
 
     Loading data...
     Starting path computation...
-    Celer time: 0.06 s
-    Celer time: 0.24 s
+    Celer time: 0.09 s
+    Celer time: 0.20 s
     /home/mathurin/workspace/scikit-learn/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008798288118680109, tolerance: 0.007200000000000005
       positive)
     /home/mathurin/workspace/scikit-learn/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.01049346133488438, tolerance: 0.007200000000000005
@@ -49,7 +49,7 @@ Running time is compared with the scikit-learn implementation.
       positive)
     /home/mathurin/workspace/scikit-learn/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011755693816106194, tolerance: 0.007200000000000005
       positive)
-    Celer time: 0.43 s
+    Celer time: 0.45 s
     /home/mathurin/workspace/scikit-learn/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 7.642283540221229e-05, tolerance: 7.200000000000004e-05
       positive)
     /home/mathurin/workspace/scikit-learn/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.0002809060302619848, tolerance: 7.200000000000004e-05
@@ -165,7 +165,7 @@ Running time is compared with the scikit-learn implementation.
       positive)
     /home/mathurin/workspace/celer/celer/plot_utils.py:48: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show(block=False)
-    /home/mathurin/workspace/celer/examples/plot_leukemia_path.py:59: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+    /home/mathurin/workspace/celer/examples/plot_leukemia_path.py:64: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
 
@@ -207,12 +207,17 @@ Running time is compared with the scikit-learn implementation.
     n_alphas = 100 if fine else 10
     alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
+    gap_freq = 10
+    prune = 1
+    verbose = 0
+    verbose_inner = 0
     tols = [1e-2, 1e-4, 1e-6, 1e-8]
     results = np.zeros([2, len(tols)])
     for tol_ix, tol in enumerate(tols):
         t0 = time.time()
-        res = celer_path(X, y, pb="lasso", alphas=alphas, tol=tol,
-                         return_thetas=True)
+        res = celer_path(X, y, pb='lasso', alphas=alphas, max_iter=100, gap_freq=gap_freq,
+                         p0=100, verbose=verbose, verbose_inner=verbose_inner,
+                         tol=tol, prune=prune, return_thetas=True)
         results[0, tol_ix] = time.time() - t0
         print('Celer time: %.2f s' % results[0, tol_ix])
         _, coefs, gaps, thetas = res
@@ -230,7 +235,7 @@ Running time is compared with the scikit-learn implementation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  31.307 seconds)
+   **Total running time of the script:** ( 0 minutes  39.919 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:

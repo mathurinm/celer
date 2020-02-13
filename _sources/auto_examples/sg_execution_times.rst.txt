@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**01:09.382** total execution time for **auto_examples** files:
+**00:37.071** total execution time for **auto_examples** files:
 
-- **00:38.075**: :ref:`sphx_glr_auto_examples_plot_finance_path.py` (``plot_finance_path.py``)
-- **00:31.307**: :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``plot_leukemia_path.py``)
+- **00:37.071**: :ref:`sphx_glr_auto_examples_plot_finance_path.py` (``plot_finance_path.py``)
 - **00:00.000**: :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``plot_lasso_cv.py``)
+- **00:00.000**: :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``plot_leukemia_path.py``)

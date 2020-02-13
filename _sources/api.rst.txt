@@ -6,7 +6,7 @@ API Documentation
 
 .. currentmodule:: celer
 
-Celer
+CELER
 =====
 
 Functions
@@ -15,7 +15,6 @@ Functions
    :toctree: generated/
 
    celer
-
    celer_path
 
 Estimators
@@ -24,7 +23,5 @@ Estimators
    :toctree: generated/
 
    Lasso
-
    LassoCV
-
    LogisticRegression
