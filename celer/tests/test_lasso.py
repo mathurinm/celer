@@ -21,7 +21,8 @@ from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
 
 
-def test_logreg():
+@pytest.mark.parametrize("solver", ["celer", "PN"])
+def test_logreg(solver):
     X, y, _, _ = build_dataset(
         n_samples=100, n_features=100, sparse_X=True)
     y = np.sign(y)
@@ -33,7 +34,8 @@ def test_logreg():
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
         solver='liblinear', tol=tol)
 
-    _, coefs_c, gaps = celer_path(X, y, "logreg", alphas=alphas, tol=tol)
+    _, coefs_c, gaps = celer_path(X, y, solver=solver, pb="logreg",
+                                  alphas=alphas, tol=tol, p0=1)
 
     np.testing.assert_array_less(gaps, tol)
     np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
@@ -224,4 +226,14 @@ def test_warm_start():
 
 
 if __name__ == "__main__":
-    test_dropin_logreg()
+    solver = "PN"
+    X, y, _, _ = build_dataset(
+        n_samples=100, n_features=100, sparse_X=True)
+    y = np.sign(y)
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
+    alphas = alpha_max * np.geomspace(1, 1e-2, 10)
+
+    tol = 1e-8
+    _, coefs_c, gaps = celer_path(X, y, solver=solver, pb="logreg",
+                                  alphas=alphas, tol=tol, verbose=True,
+                                  verbose_inner=True, p0=20)

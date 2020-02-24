@@ -192,7 +192,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
         if t > 0:
             w = coefs[:, t - 1].copy()
             theta = thetas[t - 1].copy()
-            p0 = max(len(np.where(w != 0)[0]), 1)
+            p0 = max(len(np.where(w != 0)[0]), p0)
         else:
             if coef_init is not None:
                 w = coef_init.copy()
