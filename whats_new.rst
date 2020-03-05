@@ -3,6 +3,7 @@ Version 0.5
 
 Changelog
 ~~~~~~~~~
+- Structure of `~/celer_data/` folder changed, consider deleting it and redownloading the datasets.
 - Added module `datasets`, supporting more datasets (climate for Sparse Group Lasso)
 - Removed `celer_logreg` function, use `celer` instead with `pb="logreg"`
 - Added sklearn-like `LogisticRegression` class.
