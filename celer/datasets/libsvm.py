@@ -40,36 +40,33 @@ def download_libsvm(dataset, destination, replace=False):
     return path
 
 
-def decompress_data(compressed_path, decompressed_path):
-    """Decompress a LIBSVM dataset."""
-    decompressor = BZ2Decompressor()
-    with open(decompressed_path, "wb") as f, open(compressed_path, "rb") as g:
-        for data in iter(lambda: g.read(100 * 1024), b''):
-            f.write(decompressor.decompress(data))
+def get_X_y(dataset, compressed_path, multilabel, replace=False):
+    """Load a LIBSVM dataset as sparse X and observation y/Y.
+    If X and y already exists as npz and npy, they are not redownloaded unless
+    replace=True."""
 
+    ext = '.npz' if multilabel else '.npy'
+    y_path = pjoin(CELER_PATH, "%s_target%s" % (NAMES[dataset], ext))
+    X_path = pjoin(CELER_PATH, "%s_data.npz" % NAMES[dataset])
+    if replace or not os.path.isfile(y_path) or not os.path.isfile(X_path):
+        tmp_path = pjoin(CELER_PATH, "%s" % NAMES[dataset])
 
-def preprocess_libsvm(dataset, decompressed_path, X_path, y_path, multilabel,
-                      is_regression=False):
-    """Preprocess a LIBSVM dataset.
-    Normalization performed:
-    - X with only columns with >= 3 non zero elements, norm-1 columns
-    - y centered and set to std equal to 1
-    """
-    n_features_total = N_FEATURES[dataset]
-    with open(decompressed_path, 'rb') as f:
-        X, y = load_svmlight_file(f, n_features_total, multilabel=multilabel)
+        decompressor = BZ2Decompressor()
+        print("Decompressing...")
+        with open(tmp_path, "wb") as f, open(compressed_path, "rb") as g:
+            for data in iter(lambda: g.read(100 * 1024), b''):
+                f.write(decompressor.decompress(data))
+
+        n_features_total = N_FEATURES[dataset]
+        print("Loading svmlight file...")
+        with open(tmp_path, 'rb') as f:
+            X, y = load_svmlight_file(
+                f, n_features_total, multilabel=multilabel)
+
+        os.remove(tmp_path)
         X = sparse.csc_matrix(X)
-
-        NNZ = np.diff(X.indptr)  # number of non zero elements per feature
-        # keep only features with >=3 non zero values
-        X_new = X[:, NNZ >= 3]
-
-        # set all feature norms to 1
-        # TODO this really makes no sense on a sparse matrix...
-        X_new = preprocessing.normalize(X_new, axis=0)
-        # very important for sparse/sparse dot products: have sorted X.indices
-        X_new.sort_indices()
-        sparse.save_npz(X_path, X_new)
+        X.sort_indices()
+        sparse.save_npz(X_path, X)
 
         if multilabel:
             indices = np.array([lab for labels in y for lab in labels])
@@ -80,17 +77,16 @@ def preprocess_libsvm(dataset, decompressed_path, X_path, y_path, multilabel,
             return X, Y
 
         else:
-            if is_regression:
-                # TODO this parameter is not used
-                # center y
-                y -= np.mean(y)
-                # normalize y to get a first duality gap of 0.5
-                y /= np.std(y)
             np.save(y_path, y)
-            return X, y
+
+    else:
+        X = sparse.load_npz(X_path)
+        y = np.load(y_path)
+
+    return X, y
 
 
-def load_libsvm(dataset, replace=False, repreprocess=False):
+def load_libsvm(dataset, replace=False, normalize=True, min_nnz=3):
     """
     Download a dataset from LIBSVM website.
 
@@ -98,6 +94,18 @@ def load_libsvm(dataset, replace=False, repreprocess=False):
     ----------
     dataset : string
         Dataset name. Must be in celer.datasets.libsvm.NAMES.keys()
+
+    replace : bool, default=False
+        Whether to force download of dataset if already downloaded.
+
+    normalize : bool
+        If True, columns of X are set to unit norm. This may make little sense
+        for a sparse matrix since centering is not performed.
+        y is centered and set to unit norm if the dataset is a regression one.
+
+    min_nnz: int, default=3
+        Columns of X with strictly less than min_nnz non-zero entries are
+        discarded.
 
     Returns
     -------
@@ -115,7 +123,7 @@ def load_libsvm(dataset, replace=False, repreprocess=False):
     """
     paths = [CELER_PATH, pjoin(CELER_PATH, 'regression'),
              pjoin(CELER_PATH, 'binary'),
-             pjoin(CELER_PATH, 'preprocessed')]
+             pjoin(CELER_PATH, 'multilabel')]
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
@@ -123,31 +131,27 @@ def load_libsvm(dataset, replace=False, repreprocess=False):
     if dataset not in NAMES:
         raise ValueError("Unsupported dataset %s" % dataset)
     multilabel = NAMES[dataset].split('/')[0] == 'multilabel'
+    is_regression = NAMES[dataset].split('/')[0] == 'regression'
 
     print("Dataset: %s" % dataset)
     compressed_path = pjoin(CELER_PATH, "%s.bz2" % NAMES[dataset])
     download_libsvm(dataset, compressed_path, replace=replace)
 
-    decompressed_path = pjoin(CELER_PATH, "%s" % NAMES[dataset])
-    if replace or not os.path.isfile(decompressed_path):
-        decompress_data(compressed_path, decompressed_path)
+    X, y = get_X_y(dataset, compressed_path, multilabel, replace=replace)
 
-    ext = '.npz' if multilabel else '.npy'
-    y_path = pjoin(CELER_PATH, "preprocessed", "%s_target%s" % (dataset, ext))
-    X_path = pjoin(CELER_PATH, "preprocessed", "%s_data.npz" % dataset)
+    # preprocessing
+    if min_nnz != 0:
+        X = X[:, np.diff(X.indptr) >= min_nnz]
 
-    if (repreprocess or not os.path.isfile(y_path) or
-            not os.path.isfile(X_path)):
-        print("Preprocessing...")
-        X, y = preprocess_libsvm(dataset, decompressed_path, X_path, y_path,
-                                 multilabel)
-    else:
-        X = sparse.load_npz(X_path)
-        y = np.load(y_path)
+    if normalize:
+        X = preprocessing.normalize(X, axis=0)
+        if is_regression:
+            y -= np.mean(y)
+            y /= np.std(y)
+
     return X, y
 
 
 if __name__ == "__main__":
     for dataset in NAMES:
-        load_libsvm(
-            dataset, replace=False, repreprocess=False)
+        load_libsvm(dataset, replace=False)
