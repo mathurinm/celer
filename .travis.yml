@@ -13,8 +13,6 @@ before_install:
   - conda update --yes --quiet conda
 install:
   - conda create -n celer-env python=${PYTHON_VERSION} -y
-  - conda env update --file environment.yml
-  - source activate celer-env
   - conda install --yes --quiet pytest pytest-cov coverage
   - pip install flake8 check-manifest
   - pip install codecov
