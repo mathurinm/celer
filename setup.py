@@ -1,9 +1,9 @@
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
 import os
-import numpy as np
 from setuptools import dist
 dist.Distribution().fetch_build_eggs(['numpy>=1.12'])
+import numpy as np
 
 
 descr = 'Fast algorithm with dual extrapolation for the Lasso'
