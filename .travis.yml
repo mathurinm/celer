@@ -13,7 +13,7 @@ before_install:
   - conda update --yes --quiet conda
 install:
   - conda create -n celer-env python=${PYTHON_VERSION} -y
-  - conda install --yes --quiet pytest pytest-cov coverage
+  - pip install pytest pytest-cov coverage numpydoc  # for testing
   - pip install flake8 check-manifest codecov
   - pip install -e .
 script:
