@@ -23,17 +23,8 @@ From a console or terminal install celer with pip:
 
     pip install -U celer
 
-To setup a fully functional environment we recommend you download this
-`conda
-environment <https://raw.githubusercontent.com/mathurinm/celer/master/environment.yml>`__
-and install it with:
-
-::
-
-    conda env create --file environment.yml
-
-Install the development version
-===============================
+Install and work with the development version
+=============================================
 
 From a console or terminal clone the repository and install CELER:
 
@@ -41,9 +32,7 @@ From a console or terminal clone the repository and install CELER:
 
     git clone https://github.com/mathurinm/celer.git
     cd celer/
-    conda env create --file environment.yml
-    source activate celer-env
-    pip install --no-deps -e .
+    pip install -e .
 
 Demos & Examples
 ================
@@ -58,7 +47,7 @@ it, and compute the path).
 Dependencies
 ============
 
-All dependencies are in ``./environment.yml``
+All dependencies are in ``./setup.py`` file.
 
 Cite
 ====
