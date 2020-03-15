@@ -14,9 +14,7 @@ before_install:
 install:
   - conda create -n celer-env python=${PYTHON_VERSION} -y
   - conda install --yes --quiet pytest pytest-cov coverage
-  - pip install flake8 check-manifest
-  - pip install codecov
-  - python setup.py build_ext --inplace
+  - pip install flake8 check-manifest codecov
   - pip install -e .
 script:
   - pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
