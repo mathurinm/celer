@@ -1,10 +1,9 @@
+from setuptools.command.build_ext import build_ext
+from setuptools import setup, Extension
 import os
-
-from distutils.core import setup, Extension
-
 import numpy as np
-
-from Cython.Distutils import build_ext
+from setuptools import dist
+dist.Distribution().fetch_build_eggs(['numpy>=1.12'])
 
 
 descr = 'Fast algorithm with dual extrapolation for the Lasso'
