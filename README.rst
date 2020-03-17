@@ -26,7 +26,7 @@ From a console or terminal install celer with pip:
 Install and work with the development version
 =============================================
 
-From a console or terminal clone the repository and install CELER:
+From a console or terminal clone the repository and install Celer:
 
 ::
 
@@ -40,7 +40,7 @@ To build the documentation you will need to run:
 ::
 
     pip install -U sphinx_gallery sphinx_bootstrap_theme
-    cd doc
+    cd doc/
     make html
 
 
@@ -75,8 +75,6 @@ If you use this code, please cite:
       volume = 	 {80},
     }
 
-::
-
     @article{massias2019dual,
     title={Dual Extrapolation for Sparse Generalized Linear Models},
     author={Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph},
@@ -85,7 +83,10 @@ If you use this code, please cite:
     }
 
 
-ArXiv links: https://arxiv.org/abs/1802.07481 and https://arxiv.org/abs/1907.05830
+ArXiv links:
+
+- https://arxiv.org/abs/1802.07481
+- https://arxiv.org/abs/1907.05830
 
 .. |image0| image:: https://travis-ci.org/mathurinm/celer.svg?branch=master
    :target: https://travis-ci.org/mathurinm/celer/
