@@ -65,6 +65,19 @@ ICML link: http://proceedings.mlr.press/v80/massias18a.html
     year={2019}
     }
 
+Build the documentation
+-----------------------
+
+To build the documentation you will need to run:
+
+
+::
+
+    pip install -U sphinx_gallery sphinx_bootstrap_theme
+    cd doc
+    make html
+
+
 API
 ---
 

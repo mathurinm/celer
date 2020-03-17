@@ -34,6 +34,16 @@ From a console or terminal clone the repository and install CELER:
     cd celer/
     pip install -e .
 
+To build the documentation you will need to run:
+
+
+::
+
+    pip install -U sphinx_gallery sphinx_bootstrap_theme
+    cd doc
+    make html
+
+
 Demos & Examples
 ================
 
