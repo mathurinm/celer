@@ -17,19 +17,14 @@ First clone the repository available at https://github.com/mathurinm/celer::
     $ cd celer/
 
 
-We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_,
-and create a conda environment with::
+We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_.
 
-    $ conda env create --file environment.yml
+From a working environment, you can compile the Cython code and install the package with::
 
-Then, you can compile the Cython code and install the package with::
-
-    $ source activate celer-env
-    $ pip install --no-deps -e .
+    $ pip install -e .
 
 To check if everything worked fine, you can do::
 
-    $ source activate celer-env
     $ python -c 'import celer'
 
 and it should not give any error message.
@@ -38,7 +33,7 @@ From a Python shell you can just do::
 
     >>> import celer
 
-If you don't want to use Anaconda, the list of packages you need to install is in the `environment.yml` file.
+If you don't want to use Anaconda, you should still be able to install using `pip`.
 
 Cite
 ----
@@ -60,6 +55,27 @@ If you use this code, please cite:
 ArXiv link: https://arxiv.org/abs/1802.07481
 
 ICML link: http://proceedings.mlr.press/v80/massias18a.html
+
+::
+
+    @article{massias2019dual,
+    title={Dual Extrapolation for Sparse Generalized Linear Models},
+    author={Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph},
+    journal={arXiv preprint arXiv:1907.05830},
+    year={2019}
+    }
+
+Build the documentation
+-----------------------
+
+To build the documentation you will need to run:
+
+
+::
+
+    pip install -U sphinx_gallery sphinx_bootstrap_theme
+    cd doc
+    make html
 
 
 API

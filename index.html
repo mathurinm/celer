@@ -8,16 +8,16 @@
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/js/jquery-fix.js"></script>
+    <script src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Documentation" href="api.html" />
@@ -76,6 +76,7 @@
 <li><a class="reference internal" href="#">Celer</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#cite">Cite</a></li>
+<li><a class="reference internal" href="#build-the-documentation">Build the documentation</a></li>
 <li><a class="reference internal" href="#api">API</a></li>
 </ul>
 </li>
@@ -123,19 +124,13 @@ This algorithm uses an extrapolated dual point which enables a tight control of 
 $ cd celer/
 </pre></div>
 </div>
-<p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>,
-and create a conda environment with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda env create --file environment.yml
-</pre></div>
-</div>
-<p>Then, you can compile the Cython code and install the package with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source activate celer-env
-$ pip install --no-deps -e .
+<p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.</p>
+<p>From a working environment, you can compile the Cython code and install the package with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
 </pre></div>
 </div>
 <p>To check if everything worked fine, you can do:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source activate celer-env
-$ python -c &#39;import celer&#39;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import celer&#39;
 </pre></div>
 </div>
 <p>and it should not give any error message.</p>
@@ -143,7 +138,7 @@ $ python -c &#39;import celer&#39;
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">celer</span>
 </pre></div>
 </div>
-<p>If you don’t want to use Anaconda, the list of packages you need to install is in the <cite>environment.yml</cite> file.</p>
+<p>If you don’t want to use Anaconda, you should still be able to install using <cite>pip</cite>.</p>
 </div>
 <div class="section" id="cite">
 <h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
@@ -160,6 +155,23 @@ $ python -c &#39;import celer&#39;
 </div>
 <p>ArXiv link: <a class="reference external" href="https://arxiv.org/abs/1802.07481">https://arxiv.org/abs/1802.07481</a></p>
 <p>ICML link: <a class="reference external" href="http://proceedings.mlr.press/v80/massias18a.html">http://proceedings.mlr.press/v80/massias18a.html</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">massias2019dual</span><span class="p">,</span>
+<span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">Dual</span> <span class="n">Extrapolation</span> <span class="k">for</span> <span class="n">Sparse</span> <span class="n">Generalized</span> <span class="n">Linear</span> <span class="n">Models</span><span class="p">},</span>
+<span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Massias</span><span class="p">,</span> <span class="n">Mathurin</span> <span class="ow">and</span> <span class="n">Vaiter</span><span class="p">,</span> <span class="n">Samuel</span> <span class="ow">and</span> <span class="n">Gramfort</span><span class="p">,</span> <span class="n">Alexandre</span> <span class="ow">and</span> <span class="n">Salmon</span><span class="p">,</span> <span class="n">Joseph</span><span class="p">},</span>
+<span class="n">journal</span><span class="o">=</span><span class="p">{</span><span class="n">arXiv</span> <span class="n">preprint</span> <span class="n">arXiv</span><span class="p">:</span><span class="mf">1907.05830</span><span class="p">},</span>
+<span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2019</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="build-the-documentation">
+<h2>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permalink to this headline">¶</a></h2>
+<p>To build the documentation you will need to run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx_gallery</span> <span class="n">sphinx_bootstrap_theme</span>
+<span class="n">cd</span> <span class="n">doc</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="api">
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
@@ -187,7 +199,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

@@ -21,9 +21,9 @@ Examples Gallery
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_lasso_cv_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_lasso_cv_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_lasso_cv.py`
+     :ref:`sphx_glr_auto_examples_plot_lasso_cv.py`
 
 .. raw:: html
 
@@ -41,9 +41,9 @@ Examples Gallery
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_finance_path_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_finance_path_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_finance_path.py`
+     :ref:`sphx_glr_auto_examples_plot_finance_path.py`
 
 .. raw:: html
 
@@ -61,9 +61,9 @@ Examples Gallery
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_leukemia_path_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_leukemia_path_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_leukemia_path.py`
+     :ref:`sphx_glr_auto_examples_plot_leukemia_path.py`
 
 .. raw:: html
 
@@ -76,7 +76,7 @@ Examples Gallery
    /auto_examples/plot_leukemia_path
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
