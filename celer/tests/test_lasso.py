@@ -3,12 +3,14 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-import numpy as np
-import pytest
 import warnings
-
 from itertools import product
+
+import numpy as np
 from numpy.linalg import norm
+
+import pytest
+
 from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator

@@ -276,7 +276,8 @@ def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
 def mtl_path(
         X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
         max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
-        prune=True, use_accel=True, return_thetas=False, K=6):
+        prune=True, use_accel=True, return_thetas=False, K=6,
+        coef_init=None):
     X = check_array(X, "csc", dtype=[
         np.float64, np.float32], order="F", copy=False)
 
@@ -291,7 +292,10 @@ def mtl_path(
 
     n_alphas = len(alphas)
 
-    coefs = np.zeros((n_features, n_tasks, n_alphas), order="F", dtype=X.dtype)
+    if coef_init is None:
+        coefs = np.zeros((n_features, n_tasks, n_alphas), order="F", dtype=X.dtype)
+    else:
+        coefs = np.swapaxes(coef_init, 0, 1).copy('F')
     thetas = np.zeros((n_alphas, n_samples, n_tasks), dtype=X.dtype)
     gaps = np.zeros(n_alphas)
 
@@ -322,6 +326,8 @@ def mtl_path(
             K=K)
 
         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
+
+    coefs = np.swapaxes(coefs, 0, 1).copy('F')
 
     if return_thetas:
         return alphas, coefs, gaps, thetas
