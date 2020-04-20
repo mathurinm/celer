@@ -51,22 +51,24 @@ def test_dropin_MultiTaskLassoCV(fit_intercept):
 @pytest.mark.parametrize("fit_intercept", [False, True])
 def test_dropin_MultiTaskLasso(fit_intercept):
     """Test that our Lasso class behaves as sklearn's Lasso."""
-    X, y, _, _ = build_dataset(n_samples=20, n_features=30, n_targets=10)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+    X, Y, _, _ = build_dataset(n_samples=20, n_features=30, n_targets=10)
+    alpha_max = np.max(norm(X.T.dot(Y), axis=1)) / X.shape[0]
 
     alpha = alpha_max / 2.
     params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
                   normalize=True)
     clf = MultiTaskLasso(**params)
-    clf.fit(X, y)
+    clf.fit(X, Y)
 
     clf2 = sklearn_MultiTaskLasso(**params)
-    clf2.fit(X, y)
+    clf2.fit(X, Y)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
     if fit_intercept:
         np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
     check_estimator(MultiTaskLasso)
 
+
 if __name__ == "__main__":
-    test_dropin_MultiTaskLassoCV(fit_intercept=False)
+    pass
+    # test_dropin_MultiTaskLassoCV(fit_intercept=False)
