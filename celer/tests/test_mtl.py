@@ -1,8 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
 
-import pytest
-
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
 from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
