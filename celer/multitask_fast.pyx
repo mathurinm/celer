@@ -98,9 +98,9 @@ cdef floating dual_mtl(
 
     for k in range(n_tasks):
         for i in range(n_samples):
-            d_obj -= (Y[i, k] / alpha - theta[i, k]) ** 2
-    d_obj *= 0.5 * alpha ** 2
-    d_obj += norm_Y2 / 2.
+            d_obj -= (Y[i, k] / (alpha * n_samples) - theta[i, k]) ** 2
+    d_obj *= 0.5 * alpha ** 2 * n_samples
+    d_obj += norm_Y2 / (2. * n_samples)
     return d_obj
 
 
@@ -113,7 +113,7 @@ cdef floating primal_mtl(
     cdef int inc = 1
     cdef int j, k
     cdef int n_obs = n_samples * n_tasks
-    cdef floating p_obj = fnrm2(&n_obs, &R[0, 0], &inc) ** 2 / 2.
+    cdef floating p_obj = fnrm2(&n_obs, &R[0, 0], &inc) ** 2 / (2. * n_samples)
 
     for j in range(n_features):
         for k in range(n_tasks):
@@ -210,7 +210,7 @@ def celer_mtl(
                 print("\nEarly exit, gap %.2e < %.2e" % (gap, tol))
             break
 
-        radius = sqrt(2 * gap) / alpha
+        radius = sqrt(2 * gap / n_samples) / alpha
         # TODO prios could be computed along with scaling
         set_prios_mtl(
             n_samples, n_features, n_tasks, &screened[0], X, theta,
@@ -353,7 +353,7 @@ cpdef void inner_solver(
             for k in range(n_tasks):
                 tmp = fdot(&n_samples, &X[0, j], &inc, &R[0, k], &inc)
                 W[j, k] += tmp / norms_X_col[j] ** 2
-            BST(n_tasks, &W[j, 0], alpha / norms_X_col[j] ** 2)
+            BST(n_tasks, &W[j, 0], alpha / norms_X_col[j] ** 2 * n_samples)
 
             for k in range(n_tasks):
                 tmp = old_Wj[k] - W[j, k]

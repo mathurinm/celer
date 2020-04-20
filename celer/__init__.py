@@ -3,5 +3,6 @@
 from .homotopy import celer_path
 from .wrapper import celer
 from .dropin_sklearn import Lasso, LassoCV, LogisticRegression
+from .dropin_sklearn import MultiTaskLassoCV, MultiTaskLasso
 
 __version__ = '0.5dev'
