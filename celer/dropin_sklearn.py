@@ -474,6 +474,9 @@ class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
 
     precompute : ignored parameter, kept for sklearn compatibility.
 
+    n_jobs : int
+        to run CV in parallel.
+
     Attributes
     ----------
     alpha_ : float
@@ -508,11 +511,12 @@ class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, gap_freq=10,
-                 max_epochs=50000, p0=10, prune=0, precompute='auto'):
+                 max_epochs=50000, p0=10, prune=0, precompute='auto',
+                 n_jobs=1):
         super().__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
-            verbose=verbose)
+            verbose=verbose, n_jobs=n_jobs)
         self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
