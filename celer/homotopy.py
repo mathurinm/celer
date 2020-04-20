@@ -284,7 +284,7 @@ def mtl_path(
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]
     if alphas is None:
-        alpha_max = np.max(norm(X.T @ Y, ord=2, axis=1))
+        alpha_max = np.max(norm(X.T @ Y, ord=2, axis=1)) / n_samples
         alphas = alpha_max * \
             np.geomspace(1, eps, n_alphas, dtype=X.dtype)
     else:
@@ -293,7 +293,8 @@ def mtl_path(
     n_alphas = len(alphas)
 
     if coef_init is None:
-        coefs = np.zeros((n_features, n_tasks, n_alphas), order="F", dtype=X.dtype)
+        coefs = np.zeros((n_features, n_tasks, n_alphas), order="F",
+                         dtype=X.dtype)
     else:
         coefs = np.swapaxes(coef_init, 0, 1).copy('F')
     thetas = np.zeros((n_alphas, n_samples, n_tasks), dtype=X.dtype)

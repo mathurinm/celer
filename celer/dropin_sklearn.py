@@ -41,7 +41,6 @@ lines = lines.replace('MultiTaskLassoCV', 'MultiTaskLassoCV_sklearn')
 exec(lines)
 
 
-
 class Lasso(Lasso_sklearn):
     """
     Lasso scikit-learn estimator based on Celer solver
@@ -290,14 +289,14 @@ class LassoCV(LassoCV_sklearn):
             tol=self.tol, prune=self.prune, positive=self.positive,
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
-        return (alphas, coefs, dual_gaps)
+        return alphas, coefs, dual_gaps
 
 
 class MultiTaskLasso(MultiTaskLasso_sklearn):
     """
     MultiTaskLasso scikit-learn estimator based on Celer solver
 
-    The optimization objective for Lasso is::
+    The optimization objective for MultiTaskLasso is::
 
     (1 / (2 * n_samples)) * ||y - X W||^2_2 + alpha * ||W||_{21}
 
@@ -405,6 +404,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
             verbose=self.verbose, tol=self.tol, prune=self.prune)
 
         return results
+
 
 class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
     """
@@ -526,22 +526,18 @@ class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
         #     X, y, alphas=alphas, coef_init=coef_init,
         #     max_iter=self.max_iter, tol=self.tol)
 
-        if alphas is not None:
-            alphas = alphas * len(X)
-
         alphas, coefs, dual_gaps = mtl_path(
             X, y, alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, gap_freq=self.gap_freq,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
             tol=self.tol, prune=self.prune)
 
-        alphas = alphas / len(X)
-        return (alphas, coefs, dual_gaps)
+        return alphas, coefs, dual_gaps
 
 
 class LogisticRegression(LogReg_sklearn):
     """
-    Sparse Logisitc regression scikit-learn estimator based on Celer solver.
+    Sparse Logistic regression scikit-learn estimator based on Celer solver.
 
     The optimization objective for sparse Logistic regression is::
 
