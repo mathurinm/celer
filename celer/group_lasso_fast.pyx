@@ -42,7 +42,7 @@ cpdef floating dscal_grplasso(
         bint is_sparse, int n_samples, int n_groups, floating[:] theta,
         int[:] grp_ptr, int[:] grp_indices, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean, bint center):
-    cdef floating Xj_theta
+    cdef floating Xj_theta, tmp
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, g, k, startptr, endptr
@@ -138,11 +138,9 @@ cpdef void group_lasso(
         max_group_size = max(max_group_size, grp_ptr[g + 1] - grp_ptr[g])
 
     cdef floating[:] old_w_g = np.zeros(max_group_size, dtype=dtype)
-    # cdef
-    # X_mean_g, w_g
     cdef int inc = 1
 
-    cdef floating gap, p_obj, d_obj, dual_scale
+    cdef floating gap, p_obj, d_obj, dual_scale, X_mean_j
     cdef floating highest_d_obj = 0.
     cdef floating tmp, R_sum, norm_wg, bst_scal
 

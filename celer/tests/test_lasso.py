@@ -29,6 +29,7 @@ def test_group_lasso():
     X, y = build_dataset(
         n_samples=100, n_features=n_features, sparse_X=False)[:2]
     # 1 feature per group:
+    X = np.asfortranarray(X)
     grp_indices = np.arange(n_features)
     grp_ptr = np.arange(n_features)
     n_samples = len(y)
@@ -41,9 +42,10 @@ def test_group_lasso():
     alpha = alpha_max / 10
     tol = 1e-4
     res = group_lasso(
-        False, len(
-            y), n_features, X, grp_indices, grp_ptr, X_data, X_indices, X_indptr, X_data, y, alpha, False,
-        np.zeros(n_features), y.copy(), np.zeros(n_samples), norm(X, axis=0) ** 2, (y ** 2).sum(), tol, 10000, 10, verbose=True)
+        False, len(y), n_features, X, grp_indices, grp_ptr, X_data, X_indices,
+        X_indptr, X_data, y, alpha, False,
+        np.zeros(n_features), y.copy(), np.zeros(n_samples),
+        norm(X, axis=0) ** 2, (y ** 2).sum(), tol, 10000, 10, verbose=True)
 
 
 def test_logreg():
