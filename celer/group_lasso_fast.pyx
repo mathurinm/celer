@@ -182,7 +182,7 @@ cpdef void group_lasso(
                     continue
             norm_wg = 0.
             for k in range(grp_ptr[g + 1] - grp_ptr[g]):
-                j = grp_indices[k]
+                j = grp_indices[k + grp_ptr[g]]
                 old_w_g[k] = w[j]
 
                 if is_sparse:
@@ -202,7 +202,7 @@ cpdef void group_lasso(
             bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg )
 
             for k in range(grp_ptr[g + 1] - grp_ptr[g]):
-                j = grp_indices[k]
+                j = grp_indices[grp_ptr[g] + k]
                 # perform BST:
                 w[j] *= bst_scal
                 # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
@@ -217,4 +217,5 @@ cpdef void group_lasso(
                     else:
                         tmp = -tmp
                         faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+
 
