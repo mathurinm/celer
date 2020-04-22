@@ -234,6 +234,11 @@ class LassoCV(LassoCV_sklearn):
     positive : bool, optional (default=False)
         When set to True, forces the coefficients to be positive.
 
+    n_jobs : int or None, optional (default=None)
+        Number of CPUs to use during the cross validation.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors.
+
     Attributes
     ----------
     alpha_ : float
@@ -269,7 +274,7 @@ class LassoCV(LassoCV_sklearn):
                  fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, gap_freq=10,
                  max_epochs=50000, p0=10, prune=0, precompute='auto',
-                 positive=False, n_jobs=1):
+                 positive=False, n_jobs=None):
         super(LassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
