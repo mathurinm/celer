@@ -9,8 +9,7 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal
-# from .utils cimport dual_value
+from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, dual, LASSO
 
 ctypedef np.uint8_t uint8
 
@@ -18,10 +17,14 @@ cdef:
     int inc = 1
 
 
-cpdef floating primal_grp(
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef floating primal_grplasso(
         int n_samples, int n_groups, floating alpha, floating[:] R,
         int[:] grp_ptr, int[:] grp_indices, floating[:] w):
     cdef floating nrm = 0.
+    cdef int j, k, g
     cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / (2 * n_samples)
     for g in range(n_groups):
         nrm = 0.
@@ -29,16 +32,20 @@ cpdef floating primal_grp(
             j = grp_indices[k]
             nrm += w[j] ** 2
         p_obj += alpha * sqrt(nrm)
+    return p_obj
 
 
-cpdef floating compute_dual_scaling(
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef floating dscal_grplasso(
         bint is_sparse, int n_samples, int n_groups, floating[:] theta,
         int[:] grp_ptr, int[:] grp_indices, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean, bint center):
     cdef floating Xj_theta
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
-    cdef int i, j, k, startptr, endptr
+    cdef int i, j, g, k, startptr, endptr
 
     if is_sparse:
         if center:
@@ -63,6 +70,46 @@ cpdef floating compute_dual_scaling(
 
         scal = max(scal, sqrt(tmp))
     return scal
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cdef void set_prios_grplasso(
+    bint is_sparse, int pb, int n_samples, int n_groups, floating * theta,
+    floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
+    floating * norms_X_grp, int * grp_ptr, int * grp_indices,
+    floating * prios, uint8 * screened, floating radius,
+    int * n_screened) nogil:
+    cdef int i, j, k, g, startptr, endptr
+    cdef floating nrm_Xgtheta, Xj_theta
+
+    for g in range(n_groups):
+        if screened[g] or norms_X_grp[g] == 0.:
+            prios[g] = 10000
+            continue
+        nrm_Xgtheta = 0
+        for k in range(grp_ptr[g], grp_ptr[g + 1]):
+            j = grp_indices[k]
+            if is_sparse:
+                startptr = X_indptr[j]
+                endptr = X_indptr[j + 1]
+                Xj_theta = 0.
+                for i in range(startptr, endptr):
+                    Xj_theta += X_data[i] * theta[X_indices[i]]
+            else:
+                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+            nrm_Xgtheta += Xj_theta ** 2
+        nrm_Xgtheta = sqrt(nrm_Xgtheta)
+
+
+        prios[g] = (1. - nrm_Xgtheta) / norms_X_grp[g]
+
+        if prios[g] > radius:
+            screened[g] = True
+            n_screened[0] += 1
+
+# cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
 
 @cython.boundscheck(False)
@@ -106,7 +153,7 @@ cpdef void group_lasso(
             tmp = 1. / (alpha * n_samples)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            dual_scale = compute_dual_scaling(
+            dual_scale = dscal_grplasso(
                 is_sparse, n_samples, n_groups, theta, grp_ptr,
                 grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
 
@@ -114,13 +161,12 @@ cpdef void group_lasso(
                 tmp = 1. / dual_scale
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = 0.
-            # TODO implement dobj_sgl
-            # d_obj = dual_value(n_samples, alpha, norm_y2, &theta[0], &y[0])
+            # dual value is the same as for the Lasso
+            d_obj = dual(LASSO, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj
-            p_obj = primal_grp(n_samples, n_groups, alpha, R,
+            p_obj = primal_grplasso(n_samples, n_groups, alpha, R,
                                  grp_ptr, grp_indices, w)
             gap = p_obj - highest_d_obj
 

@@ -132,11 +132,13 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     assert pb in ("lasso", "logreg")
     if pb == "lasso":
         pb = LASSO
-    else:
+    elif pb.lower() == "logreg":
         pb = LOGREG
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
+    else:
+        raise ValueError("Unsupported problem: %s" % pb)
 
     is_sparse = sparse.issparse(X)
 

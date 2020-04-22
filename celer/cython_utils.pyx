@@ -414,8 +414,9 @@ cdef void set_prios(
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
 
+    #TODO we do not substract theta_sum, which seems to indicate that theta is always centered...
     for j in range(n_features):
-        if screened[j]:
+        if screened[j] or norms_X_col[j] == 0.:
             prios[j] = 10000
             continue
         if is_sparse:
