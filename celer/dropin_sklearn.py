@@ -730,3 +730,130 @@ class LogisticRegression(LogReg_sklearn):
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return coefs, dual_gaps
+
+
+class GroupLasso(Lasso_sklearn):
+    r"""
+    Group Lasso scikit-learn estimator based on Celer solver
+
+    The optimization objective for the Group Lasso is::
+
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g ||w_g||_2
+
+    where `w_g` is the weight vector of group number `g`.
+
+    Parameters
+    ----------
+    alpha : float, optional
+        Constant that multiplies the penalty term. Defaults to 1.0.
+
+    groups : int or list of ints or list of lists of ints.
+        Partition of features used in the penalty on `w`.
+        If an int is passed, groups are contiguous blocks of features, of size
+        `groups`.
+        If a list of ints is passed, groups are assumed to be contiguous,
+        group `g` being of size `groups[g]`.
+        If a list of lists of ints is passed, each sublist contains the
+        feature indices of the associated group.
+
+    max_iter : int, optional
+        The maximum number of iterations (subproblem definitions)
+
+    gap_freq : int
+        Number of block coordinate descent (BCD) epochs between each duality
+        gap computations.
+
+    max_epochs : int
+        Maximum number of BCD epochs on each subproblem.
+
+    p0 : int
+        First working set size.
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    tol : float, optional
+        The tolerance for the optimization: the solver runs until the duality
+        gap is smaller than ``tol`` or the maximum number of iteration is
+        reached.
+
+    prune : 0 | 1, optional
+        Whether or not to use pruning when growing working sets.
+
+    fit_intercept : bool, optional (default=True)
+        Whether or not to fit an intercept.
+
+    normalize : bool, optional (default=False)
+        This parameter is ignored when ``fit_intercept`` is set to False.
+        If True,  the regressors X will be normalized before regression by
+        subtracting the mean and dividing by the l2-norm.
+
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+
+    Attributes
+    ----------
+    coef_ : array, shape (n_features,)
+        parameter vector (w in the cost function formula)
+
+    sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
+        ``sparse_coef_`` is a readonly property derived from ``coef_``
+
+    intercept_ : float
+        constant term in decision function.
+
+    n_iter_ : int
+        Number of subproblems solved by Celer to reach the specified tolerance.
+
+    Examples
+    --------
+    >>> from celer import Lasso
+    >>> clf = Lasso(alpha=0.1)
+    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
+    Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,
+    p0=10, prune=0, tol=1e-06, verbose=0)
+    >>> print(clf.coef_)
+    [0.85 0.  ]
+    >>> print(clf.intercept_)
+    0.15
+
+    See also
+    --------
+    celer_path
+    LassoCV
+
+    References
+    ----------
+    .. [1] M. Massias, A. Gramfort, J. Salmon
+       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      http://proceedings.mlr.press/v80/massias18a.html
+    """
+
+    def __init__(self, alpha=1., groups=1, max_iter=100, gap_freq=10,
+                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
+                 fit_intercept=True, normalize=False, warm_start=False):
+        super(GroupLasso, self).__init__(
+            alpha=alpha, tol=tol, max_iter=max_iter,
+            fit_intercept=fit_intercept, normalize=normalize,
+            warm_start=warm_start)
+        self.verbose = verbose
+        self.gap_freq = gap_freq
+        self.max_epochs = max_epochs
+        self.p0 = p0
+        self.prune = prune
+        self.groups = groups
+
+    def path(self, X, y, alphas, groups, coef_init=None, return_n_iter=True,
+             **kwargs):
+        """Compute Group Lasso path with Celer."""
+        results = celer_path(
+            X, y, "grouplasso", alphas=alphas, groups=groups,
+            coef_init=coef_init, max_iter=self.max_iter,
+            return_n_iter=return_n_iter, gap_freq=self.gap_freq,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, prune=self.prune,
+            X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+
+        return results

@@ -48,7 +48,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     y : ndarray, shape (n_samples,)
         Target values
 
-    pb : "lasso" | "logreg"
+    pb : "lasso" | "logreg" | "grouplasso"
         Optimization problem to solve.
 
     eps : float, optional
@@ -69,11 +69,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         The maximum number of iterations (subproblem definitions)
 
     gap_freq : int, optional
-        Number of coordinate descent epochs between each duality gap
+        Number of (block) coordinate descent epochs between each duality gap
         computations.
 
     max_epochs : int, optional
-        Maximum number of CD epochs on each subproblem.
+        Maximum number of (block) CD epochs on each subproblem.
 
     p0 : int, optional
         First working set size.
@@ -111,8 +111,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         If True, number of iterations along the path are returned.
 
     positive : bool, optional (default=False)
-        When set to True, if pb == "lasso", forces the coefficients to be
-        positive.
+        If True and pb == "lasso", forces the coefficients to be positive.
 
     Returns
     -------
@@ -137,6 +136,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
+    elif pb.lower() == "grouplasso":
+        pass
     else:
         raise ValueError("Unsupported problem: %s" % pb)
 
@@ -244,12 +245,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             n_iters[t] = len(sol[2])
 
         if dual_gaps[t] > tol:
-            warnings.warn('Objective did not converge.' +
-                          ' You might want' +
-                          ' to increase the number of iterations.' +
-                          ' Fitting data with very small alpha' +
-                          ' may cause precision problems.',
-                          ConvergenceWarning)
+            warnings.warn(
+                'Objective did not converge. Increasing `tol` may make the' +
+                ' solver faster without affecting the results much.' +
+                ' Fitting with very small alpha may cause precision problems.',
+                ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps
     if return_thetas:
