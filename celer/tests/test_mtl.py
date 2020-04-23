@@ -7,7 +7,7 @@ from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
 from sklearn.linear_model import lasso_path
 
 from celer import Lasso, MultiTaskLasso, MultiTaskLassoCV
-from celer.homotopy import mtl_path
+from celer.homotopy import mtl_path, _grp_converter
 from celer.group_lasso_fast import group_lasso, dscal_grplasso
 from celer.utils.testing import build_dataset
 
@@ -87,6 +87,22 @@ def test_group_lasso_multitask():
     W_grp = w.reshape(n_features, 3, order='F')
 
     np.testing.assert_allclose(W_grp, W_mtl, atol=1e-6)
+
+
+def test_convert_groups():
+    n_features = 6
+    grp_ptr, grp_indices = _grp_converter(3, n_features)
+    np.testing.assert_equal(grp_ptr, [0, 3, 6])
+    np.testing.assert_equal(grp_indices, [0, 1, 2, 3, 4, 5])
+
+    grp_ptr, grp_indices = _grp_converter([1, 3, 2], 6)
+    np.testing.assert_equal(grp_ptr, [0, 1, 4, 6])
+    np.testing.assert_equal(grp_indices, [0, 1, 2, 3, 4, 5])
+
+    groups = [[0, 2, 5], [1, 3], [4]]
+    grp_ptr, grp_indices = _grp_converter(groups, 6)
+    np.testing.assert_equal(grp_ptr, [0, 3, 5, 6])
+    np.testing.assert_equal(grp_indices, [0, 2, 5, 1, 3, 4])
 
 
 def test_mtl():

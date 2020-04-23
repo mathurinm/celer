@@ -284,14 +284,14 @@ def _grp_converter(groups, n_features):
         grp_indices = np.arange(n_features)
     elif isinstance(groups, list) and isinstance(groups[0], int):
         grp_indices = np.arange(n_features).astype(np.int32)
-        grp_ptr = np.cumsum(np.vstack([groups, [0]]))
+        grp_ptr = np.cumsum(np.hstack([[0], groups]))
     elif isinstance(groups, list) and isinstance(groups[0], list):
         grp_sizes = np.array([len(l) for l in groups])
-        grp_ptr = np.cumsum(np.vstack([grp_sizes, [0]]))
+        grp_ptr = np.cumsum(np.hstack([[0], grp_sizes]))
         grp_indices = np.array([idx for grp in groups for idx in grp])
     else:
         raise ValueError("Unsupported group format.")
-    return grp_indices.astype(np.int32), grp_ptr.astype(np.int32)
+    return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
 
 
 # TODO put this in logreg_path with solver variable
