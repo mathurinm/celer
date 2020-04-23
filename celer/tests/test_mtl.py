@@ -6,9 +6,87 @@ from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
 from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
 from sklearn.linear_model import lasso_path
 
-from celer.utils.testing import build_dataset
+from celer import Lasso, MultiTaskLasso, MultiTaskLassoCV
 from celer.homotopy import mtl_path
-from celer import MultiTaskLasso, MultiTaskLassoCV
+from celer.group_lasso_fast import group_lasso, dscal_grplasso
+from celer.utils.testing import build_dataset
+
+
+def test_group_lasso_lasso():
+    # check that group Lasso with groups of size 1 gives Lasso
+    n_features = 200
+    X, y = build_dataset(
+        n_samples=100, n_features=n_features, sparse_X=False)[:2]
+    # 1 feature per group:
+    X = np.asfortranarray(X)
+    grp_indices = np.arange(n_features).astype(np.int32)
+    grp_ptr = np.arange(n_features + 1).astype(np.int32)
+    n_samples = len(y)
+
+    X_data = np.empty([1], dtype=X.dtype)
+    X_indices = np.empty([1], dtype=np.int32)
+    X_indptr = np.empty([1], dtype=np.int32)
+
+    alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
+    alpha = alpha_max / 10
+    tol = 1e-4
+    theta = np.zeros(n_samples)
+    w = np.zeros(n_features)
+    group_lasso(
+        False, n_samples, n_features, X, grp_indices, grp_ptr, X_data,
+        X_indices, X_indptr, X_data, y, alpha, False,
+        w, y.copy(), theta,
+        norm(X, axis=0) ** 2, (y ** 2).sum(), tol, 1000, 10, verbose=True)
+
+    clf = Lasso(alpha, fit_intercept=False)
+    clf.fit(X, y)
+
+    np.testing.assert_allclose(w, clf.coef_)
+
+
+def test_group_lasso_multitask():
+    "Group Lasso and Multitask Lasso equivalence."""
+    n_samples, n_features = 30, 50
+    X_, Y_ = build_dataset(n_samples, n_features,
+                           n_informative_features=n_features, n_targets=3)[:2]
+    y = Y_.reshape(-1, order='F')
+    X = np.zeros([3 * n_samples, 3 * n_features], order='F')
+
+    # block filling new design
+    for i in range(3):
+        X[i * n_samples:(i + 1) * n_samples, i *
+          n_features:(i + 1) * n_features] = X_
+
+    grp_indices = np.arange(
+        3 * n_features).reshape(3, -1).reshape(-1, order='F').astype(np.int32)
+    grp_ptr = 3 * np.arange(n_features + 1).astype(np.int32)
+
+    alpha_max = np.max(norm(X_.T @ Y_, axis=1)) / len(Y_)
+
+    X_data = np.empty([1], dtype=X.dtype)
+    X_indices = np.empty([1], dtype=np.int32)
+    X_indptr = np.empty([1], dtype=np.int32)
+    other = dscal_grplasso(
+        False, len(y), n_features, y, grp_ptr, grp_indices, X, X_data,
+        X_indices, X_indptr, X_data, False)
+    np.testing.assert_allclose(alpha_max, other / len(Y_))
+
+    alpha = alpha_max / 10
+    clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8)
+    clf.fit(X_, Y_)
+
+    W_mtl = clf.coef_.T
+    tol = 1e-8
+    theta = np.zeros_like(y)
+    w = np.zeros_like(X[0])
+    group_lasso(
+        False, len(y), X.shape[1], X, grp_indices, grp_ptr, X_data, X_indices,
+        X_indptr, X_data, y, alpha / 3, False,
+        w, y.copy(), theta,
+        norm(X_, axis=0) ** 2, (y ** 2).sum(), tol, 100, 10, verbose=True)
+    W_grp = w.reshape(n_features, 3, order='F')
+
+    np.testing.assert_allclose(W_grp, W_mtl, atol=1e-6)
 
 
 def test_mtl():

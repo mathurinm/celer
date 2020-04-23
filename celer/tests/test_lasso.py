@@ -21,39 +21,6 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
 from celer import celer_path
 from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
-from celer.group_lasso_fast import group_lasso
-
-
-def test_group_lasso():
-    # check that group Lasso with groups of size 1 gives Lasso
-    n_features = 200
-    X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=False)[:2]
-    # 1 feature per group:
-    X = np.asfortranarray(X)
-    grp_indices = np.arange(n_features).astype(np.int32)
-    grp_ptr = np.arange(n_features + 1).astype(np.int32)
-    n_samples = len(y)
-
-    X_data = np.empty([1], dtype=X.dtype)
-    X_indices = np.empty([1], dtype=np.int32)
-    X_indptr = np.empty([1], dtype=np.int32)
-
-    alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
-    alpha = alpha_max / 10
-    tol = 1e-4
-    theta = np.zeros(n_samples)
-    w = np.zeros(n_features)
-    group_lasso(
-        False, n_samples, n_features, X, grp_indices, grp_ptr, X_data, X_indices,
-        X_indptr, X_data, y, alpha, False,
-        w, y.copy(), theta,
-        norm(X, axis=0) ** 2, (y ** 2).sum(), tol, 1000, 10, verbose=True)
-
-    clf = Lasso(alpha, fit_intercept=False)
-    clf.fit(X, y)
-
-    np.testing.assert_allclose(w, clf.coef_)
 
 
 def test_logreg():
