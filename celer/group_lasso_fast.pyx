@@ -109,27 +109,28 @@ cdef void set_prios_grplasso(
             screened[g] = True
             n_screened[0] += 1
 
-# cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef void group_lasso(
-    bint is_sparse,
-    int n_samples, int n_features, floating[::1, :] X, int[:] grp_indices,
-    int[:] grp_ptr,
+    bint is_sparse, floating[::1, :] X, int[:] grp_indices, int[:] grp_ptr,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
     floating[:] y, floating alpha, bint center, floating[:] w, floating[:] R,
     floating[:] theta, floating[:] lc_groups,
-    floating norm_y2, floating eps, int max_epochs, int gap_freq,
+    floating eps, int max_epochs, int gap_freq,
     int verbose=0):
+
+    cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
     if floating is double:
         dtype = np.float64
     else:
         dtype = np.float32
 
+    cdef int n_samples = y.shape[0]
+    cdef int n_features = w.shape[0]
     cdef int n_groups = lc_groups.shape[0]
 
     cdef int i, j, g, k, startptr, endptr, epoch

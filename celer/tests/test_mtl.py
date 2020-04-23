@@ -33,10 +33,10 @@ def test_group_lasso_lasso():
     theta = np.zeros(n_samples)
     w = np.zeros(n_features)
     group_lasso(
-        False, n_samples, n_features, X, grp_indices, grp_ptr, X_data,
+        False, X, grp_indices, grp_ptr, X_data,
         X_indices, X_indptr, X_data, y, alpha, False,
         w, y.copy(), theta,
-        norm(X, axis=0) ** 2, (y ** 2).sum(), tol, 1000, 10, verbose=True)
+        norm(X, axis=0) ** 2, tol, 1000, 10, verbose=True)
 
     clf = Lasso(alpha, fit_intercept=False)
     clf.fit(X, y)
@@ -80,10 +80,10 @@ def test_group_lasso_multitask():
     theta = np.zeros_like(y)
     w = np.zeros_like(X[0])
     group_lasso(
-        False, len(y), X.shape[1], X, grp_indices, grp_ptr, X_data, X_indices,
+        False, X, grp_indices, grp_ptr, X_data, X_indices,
         X_indptr, X_data, y, alpha / 3, False,
         w, y.copy(), theta,
-        norm(X_, axis=0) ** 2, (y ** 2).sum(), tol, 100, 10, verbose=True)
+        norm(X_, axis=0) ** 2, tol, 100, 10, verbose=True)
     W_grp = w.reshape(n_features, 3, order='F')
 
     np.testing.assert_allclose(W_grp, W_mtl, atol=1e-6)

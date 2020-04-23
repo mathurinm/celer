@@ -12,18 +12,20 @@ from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
 from .lasso_fast import celer
+from .group_lasso_fast import group_lasso
 from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
 
 LASSO = 0
 LOGREG = 1
+GRPLASSO = 2
 
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
                p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
-               return_thetas=False, use_PN=False, X_offset=None, X_scale=None,
+               groups=None, return_thetas=False, X_offset=None, X_scale=None,
                return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
@@ -92,6 +94,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
 
+    groups : int or list of ints or list of list of ints, optional
+        Used for the group Lasso only. See the documentation of the
+        GroupLasso class.
+
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
@@ -137,7 +143,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             raise ValueError(
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
     elif pb.lower() == "grouplasso":
-        pass
+        solver = "celer"
+        grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
     else:
         raise ValueError("Unsupported problem: %s" % pb)
 
@@ -225,8 +232,14 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             else:
                 theta = y / (1 + np .exp(y * Xw)) / alpha
                 theta /= np.linalg.norm(X.T.dot(theta), ord=np.inf)
+
         # celer modifies w, Xw, and theta in place:
-        if pb == LASSO or (pb == LOGREG and not use_PN):
+        if pb == GRPLASSO:  # this if else scheme is complicated
+            group_lasso(
+                is_sparse, )
+            coefs[:, t], thetas[t] = w, theta
+            dual_gaps[t] = 1  # TOD
+        elif solver == "celer":
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
@@ -258,6 +271,50 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         results += (n_iters,)
 
     return results
+
+
+def _grp_converter(groups, n_features):
+    if isinstance(groups, int):
+        grp_size = groups
+        if n_features % grp_size != 0:
+            raise ValueError("n_features %d is not a multitple of the desired"
+                             "group size %d" % (n_features, grp_size))
+        n_groups = n_features // grp_size
+        grp_ptr = grp_size * np.arange(n_groups + 1)
+        grp_indices = np.arange(n_features)
+    elif isinstance(groups, list) and isinstance(groups[0], int):
+        grp_indices = np.arange(n_features).astype(np.int32)
+        grp_ptr = np.cumsum(np.vstack([groups, [0]]))
+    elif isinstance(groups, list) and isinstance(groups[0], list):
+        grp_sizes = np.array([len(l) for l in groups])
+        grp_ptr = np.cumsum(np.vstack([grp_sizes, [0]]))
+        grp_indices = np.array([idx for grp in groups for idx in grp])
+    else:
+        raise ValueError("Unsupported group format.")
+    return grp_indices.astype(np.int32), grp_ptr.astype(np.int32)
+
+
+# TODO put this in logreg_path with solver variable
+def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
+              verbose_inner=False, tol=1e-4, prune=True, p0=10,
+              use_accel=True, K=6, growth=2, blitz_sc=False):
+    is_sparse = sparse.issparse(X)
+    w = w_init.copy()
+    if is_sparse:
+        X_dense = np.empty([2, 2], order='F')
+        X_indices = X.indices.astype(np.int32)
+        X_indptr = X.indptr.astype(np.int32)
+        X_data = X.data
+    else:
+        X_dense = X
+        X_indices = np.empty([1], dtype=np.int32)
+        X_indptr = np.empty([1], dtype=np.int32)
+        X_data = np.empty([1])
+
+    return newton_celer(
+        is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
+        max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
+        growth=growth, blitz_sc=blitz_sc)
 
 
 def mtl_path(
