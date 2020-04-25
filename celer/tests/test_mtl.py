@@ -7,7 +7,7 @@ from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
 from sklearn.linear_model import lasso_path
 
 from celer import Lasso, MultiTaskLasso, MultiTaskLassoCV
-from celer.homotopy import mtl_path, _grp_converter
+from celer.homotopy import celer_path, mtl_path, _grp_converter
 from celer.group_lasso_fast import group_lasso, dscal_grplasso
 from celer.utils.testing import build_dataset
 
@@ -17,7 +17,7 @@ def test_group_lasso_lasso():
     n_features = 200
     X, y = build_dataset(
         n_samples=100, n_features=n_features, sparse_X=False)[:2]
-    # 1 feature per group:
+    # take groups of size 1:
     X = np.asfortranarray(X)
     grp_indices = np.arange(n_features).astype(np.int32)
     grp_ptr = np.arange(n_features + 1).astype(np.int32)
@@ -140,7 +140,7 @@ def test_dropin_MultiTaskLassoCV():
 
 
 def test_dropin_MultiTaskLasso():
-    """Test that our Lasso class behaves as sklearn's Lasso."""
+    """Test that our MultiTaskLasso class behaves as sklearn's."""
     X, Y, _, _ = build_dataset(n_samples=20, n_features=30, n_targets=10)
     alpha_max = np.max(norm(X.T.dot(Y), axis=1)) / X.shape[0]
 
@@ -160,4 +160,10 @@ def test_dropin_MultiTaskLasso():
 
 
 if __name__ == "__main__":
-    pass
+    n_features = 200
+    X, y = build_dataset(
+        n_samples=100, n_features=n_features, sparse_X=False, n_informative_features=200)[:2]
+    # 1 feature per group:
+    X = np.asfortranarray(X)
+    alphas, coefs, gap = celer_path(
+        X, y, "grouplasso", groups=1, eps=1e-2, n_alphas=10)

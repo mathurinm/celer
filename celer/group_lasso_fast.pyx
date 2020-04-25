@@ -114,14 +114,15 @@ cdef void set_prios_grplasso(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef void group_lasso(
+cpdef group_lasso(
     bint is_sparse, floating[::1, :] X, int[:] grp_indices, int[:] grp_ptr,
     floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, bint center, floating[:] w, floating[:] R,
+    floating[:] y, floating alpha, floating[:] w, floating[:] R,
     floating[:] theta, floating[:] lc_groups,
     floating eps, int max_epochs, int gap_freq,
     int verbose=0):
 
+    cdef bint center = False
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
     if floating is double:
@@ -218,5 +219,7 @@ cpdef void group_lasso(
                     else:
                         tmp = -tmp
                         faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+
+    return gap
 
 
