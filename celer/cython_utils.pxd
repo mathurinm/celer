@@ -36,7 +36,7 @@ cdef int create_accel_pt(
 
 cpdef void compute_Xw(
     bint, int, floating[:], floating[:],
-    floating[:], bint, int, int, floating[::1, :],
+    floating[:], bint, floating[::1, :],
     floating[:], int[:], int[:], floating[:])
 
 

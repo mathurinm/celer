@@ -312,13 +312,14 @@ cpdef void compute_norms_X_col(
 @cython.cdivision(True)
 cpdef void compute_Xw(
         bint is_sparse, int pb, floating[:] R, floating[:] w,
-        floating[:] y, bint center, int n_samples,
-        int n_features, floating[::1, :] X, floating[:] X_data,
+        floating[:] y, bint center, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean):
     # R holds residuals if LASSO, Xw for LOGREG
     cdef int i, j, startptr, endptr
     cdef floating tmp, X_mean_j
     cdef int inc = 1
+    cdef int n_samples = y.shape[0]
+    cdef int n_features = w.shape[0]
 
     for j in range(n_features):
         if w[j] != 0:

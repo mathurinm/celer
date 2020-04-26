@@ -200,9 +200,8 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
                 # y - Xw for Lasso, Xw for Logreg:
                 Xw = np.zeros(n_samples, dtype=X.dtype)
                 compute_Xw(
-                    is_sparse, pb, Xw, w, y, X_sparse_scaling.any(),
-                    n_samples, n_features, X_dense, X_data, X_indices,
-                    X_indptr, X_sparse_scaling)
+                    is_sparse, pb, Xw, w, y, X_sparse_scaling.any(), X_dense,
+                    X_data, X_indices, X_indptr, X_sparse_scaling)
             else:
                 w = np.zeros(n_features, dtype=X.dtype)
                 Xw = y.copy() if pb == LASSO else np.zeros(n_samples, X.dtype)

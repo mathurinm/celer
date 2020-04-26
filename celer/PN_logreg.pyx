@@ -119,12 +119,14 @@ cdef void set_feature_prios(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void compute_Xw(
-        floating[:] Xw, floating[:] w, bint is_sparse, int n_features,
-        int n_samples, floating[::1, :] X, floating[:] X_data,
-        int[:] X_indices, int[:] X_indptr) nogil:
+        floating[:] Xw, floating[:] w, bint is_sparse, floating[::1, :] X,
+        floating[:] X_data, int[:] X_indices, int[:] X_indptr) nogil:
     """Compute X @ w in place."""
+    # TODO this function is available in cython_utils with sparse scaling
     cdef int j
     cdef int startptr, endptr
+    cdef int n_features = w.shape[0]
+    cdef int n_samples = Xw.shape[0]
 
     for j in range(n_features):
         if w[j] != 0:
@@ -177,8 +179,7 @@ def newton_celer(
     compute_norms(norms_X_col, is_sparse, n_features, n_samples, X,
                   X_data, X_indices, X_indptr)
     cdef floating[:] Xw = np.zeros(n_samples, dtype=dtype)
-    compute_Xw(Xw, w, is_sparse, n_features, n_samples,
-               X, X_data, X_indices, X_indptr)
+    compute_Xw(Xw, w, is_sparse, X, X_data, X_indices, X_indptr)
 
     cdef floating[:] theta = np.empty(n_samples, dtype=dtype)
     cdef floating[:] theta_acc = np.empty(n_samples, dtype=dtype)
