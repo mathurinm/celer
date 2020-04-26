@@ -319,7 +319,7 @@ cpdef void inner_solver(
 
             if use_accel:
                 create_accel_pt(
-                    LASSO, n_obs, n_features, K, epoch, gap_freq, alpha,
+                    LASSO, K, epoch, gap_freq, alpha,
                     &R[0, 0], &theta_acc[0, 0], &last_K_R[0, 0], U, UtU,
                     onesK, onesK)  # passing onesK as y which is ignored
                 if epoch // gap_freq >= K:

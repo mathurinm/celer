@@ -179,7 +179,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
 
     norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
     compute_norms_X_col(
-        is_sparse, norms_X_col, n_samples, n_features, X_dense, X_data,
+        is_sparse, norms_X_col, n_samples, X_dense, X_data,
         X_indices, X_indptr, X_sparse_scaling)
 
     # do not skip alphas[0], it is not always alpha_max
