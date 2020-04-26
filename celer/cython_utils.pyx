@@ -207,7 +207,7 @@ cdef void create_dual_pt(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef int create_accel_pt(
-    int pb, int n_samples, int n_features, int K, int epoch, int gap_freq,
+    int pb, int n_samples, int epoch, int gap_freq,
     floating alpha,
     floating * R, floating * out, floating * last_K_R, floating[:, :] U,
     floating[:, :] UtU, floating[:] onesK, floating[:] y):
@@ -215,6 +215,8 @@ cdef int create_accel_pt(
     # solving linear system in cython
     # doc at https://software.intel.com/en-us/node/468894
 
+    # cdef int n_samples = y.shape[0] cannot use this for MTL
+    cdef int K = U.shape[0] + 1
     cdef char * char_U = 'U'
     cdef int one = 1
     cdef int Kminus1 = K - 1
@@ -287,11 +289,12 @@ cdef int create_accel_pt(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef void compute_norms_X_col(
-        bint is_sparse, floating[:] norms_X_col, int n_samples, int n_features,
+        bint is_sparse, floating[:] norms_X_col, int n_samples,
         floating[::1, :] X, floating[:] X_data, int[:] X_indices,
         int[:] X_indptr, floating[:] X_mean):
     cdef int j, startptr, endptr
     cdef floating tmp, X_mean_j
+    cdef int n_features = norms_X_col.shape[0]
 
     for j in range(n_features):
         if is_sparse:
@@ -312,13 +315,14 @@ cpdef void compute_norms_X_col(
 @cython.cdivision(True)
 cpdef void compute_Xw(
         bint is_sparse, int pb, floating[:] R, floating[:] w,
-        floating[:] y, bint center, int n_samples,
-        int n_features, floating[::1, :] X, floating[:] X_data,
+        floating[:] y, bint center, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean):
     # R holds residuals if LASSO, Xw for LOGREG
     cdef int i, j, startptr, endptr
     cdef floating tmp, X_mean_j
     cdef int inc = 1
+    cdef int n_samples = y.shape[0]
+    cdef int n_features = w.shape[0]
 
     for j in range(n_features):
         if w[j] != 0:

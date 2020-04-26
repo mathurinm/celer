@@ -26,7 +26,7 @@ def test_mtl():
 def test_dropin_MultiTaskLassoCV():
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=3)
-    params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
+    params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2, n_jobs=2,
                   fit_intercept=False, verbose=True)
 
     clf = MultiTaskLassoCV(**params)
