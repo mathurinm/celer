@@ -12,7 +12,8 @@ from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
 from .lasso_fast import celer
-from .group_lasso_fast import group_lasso
+from .group_lasso_fast import group_lasso, dscal_grplasso
+# TODO dnorm better name?
 from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
@@ -171,6 +172,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
 
     if alphas is None:
+        # TODO this is wrong is X_sparse_scaling is used
         if pb == LASSO:
             if positive:
                 alpha_max = np.max(X.T.dot(y)) / n_samples
@@ -211,11 +213,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         X_indptr = np.empty([1], dtype=np.int32)
 
     if pb == GRPLASSO:
+        # TODO this must be included in compute_norm_Xcols when centering
         lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
         for g in range(n_groups):
             X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
             lc_grp[g] = norm(X_g, ord=2) ** 2
-
     else:
         # TODO harmonize names
         norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
@@ -248,10 +250,15 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 w = np.zeros(n_features, dtype=X.dtype)
                 Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
 
-            if pb in (LASSO, GRPLASSO):
-                # TODO this is not correct for GRPLASSO
+            if pb == LASSO:
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
-            else:
+            elif pb == GRPLASSO:
+                theta = Xw.copy()
+                scal = dscal_grplasso(
+                    is_sparse, theta, grp_ptr, grp_indices, X, X_data,
+                    X_indices, X_indptr, X_sparse_scaling, False)
+                theta /= scal
+            elif pb == LOGREG:
                 theta = y / (1 + np .exp(y * Xw)) / alpha
                 theta /= np.linalg.norm(X.T.dot(theta), ord=np.inf)
 
@@ -259,7 +266,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         if pb == GRPLASSO:  # TODO this if else scheme is complicated
             dual_gaps[t] = group_lasso(
                 is_sparse, X, grp_indices, grp_ptr, X_data, X_indices,
-                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta, lc_grp, tol, max_epochs, gap_freq)  # TODO max_iter
+                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta, lc_grp,
+                tol, max_epochs, gap_freq)  # TODO max_iter
             coefs[:, t], thetas[t] = w, theta
         elif solver == "celer":
             sol = celer(
@@ -299,7 +307,7 @@ def _grp_converter(groups, n_features):
     if isinstance(groups, int):
         grp_size = groups
         if n_features % grp_size != 0:
-            raise ValueError("n_features %d is not a multitple of the desired"
+            raise ValueError("n_features %d is not a multiple of the desired"
                              "group size %d" % (n_features, grp_size))
         n_groups = n_features // grp_size
         grp_ptr = grp_size * np.arange(n_groups + 1)

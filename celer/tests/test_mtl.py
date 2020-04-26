@@ -67,8 +67,8 @@ def test_group_lasso_multitask():
     X_indices = np.empty([1], dtype=np.int32)
     X_indptr = np.empty([1], dtype=np.int32)
     other = dscal_grplasso(
-        False, len(y), n_features, y, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data)
+        False, y, grp_ptr, grp_indices, X, X_data,
+        X_indices, X_indptr, X_data, False)
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
     alpha = alpha_max / 10
@@ -160,13 +160,14 @@ def test_dropin_MultiTaskLasso():
 
 
 if __name__ == "__main__":
-    n_features = 100
+    n_features = 6
     X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=False, n_informative_features=100)[:2]
-    # 1 feature per group:
+        n_samples=50, n_features=n_features, sparse_X=False, n_informative_features=n_features)[:2]
     X = np.asfortranarray(X)
+
+    groups = [[0, 2, 5], [1, 3], [4]]
     alphas, coefs, gaps = celer_path(
-        X, y, "grouplasso", groups=1, eps=1e-2, n_alphas=10, tol=1e-8)
+        X, y, "grouplasso", groups=groups, eps=1e-1, n_alphas=10, tol=1e-8)
 
     # X_dense = X
     # X_data = np.empty([1], dtype=X.dtype)

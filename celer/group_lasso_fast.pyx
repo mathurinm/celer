@@ -41,8 +41,10 @@ cpdef floating primal_grplasso(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef floating dscal_grplasso(
-        bint is_sparse, floating[::1] theta, int[::1] grp_ptr, int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data, int[::1] X_indices,
-        int[::1] X_indptr, floating[::1] X_mean, bint center):
+        bint is_sparse, floating[::1] theta, int[::1] grp_ptr,
+        int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data,
+        int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
+        bint center):
     cdef floating Xj_theta, tmp
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
