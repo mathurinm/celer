@@ -214,7 +214,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
         for g in range(n_groups):
             X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
-            lc_grp[g] = norm(X_g, ord=2)
+            lc_grp[g] = norm(X_g, ord=2) ** 2
 
     else:
         # TODO harmonize names
@@ -248,7 +248,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 w = np.zeros(n_features, dtype=X.dtype)
                 Xw = y.copy() if pb == LASSO else np.zeros(n_samples, X.dtype)
 
-            if pb == LASSO:
+            if pb in (LASSO, GRPLASSO):
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
             else:
                 theta = y / (1 + np .exp(y * Xw)) / alpha

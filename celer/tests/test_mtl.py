@@ -34,7 +34,7 @@ def test_group_lasso_lasso():
     w = np.zeros(n_features)
     group_lasso(
         False, X, grp_indices, grp_ptr, X_data,
-        X_indices, X_indptr, X_data, y, alpha, False,
+        X_indices, X_indptr, X_data, y, alpha,
         w, y.copy(), theta,
         norm(X, axis=0) ** 2, tol, 1000, 10, verbose=True)
 
@@ -68,7 +68,7 @@ def test_group_lasso_multitask():
     X_indptr = np.empty([1], dtype=np.int32)
     other = dscal_grplasso(
         False, len(y), n_features, y, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data, False)
+        X_indices, X_indptr, X_data)
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
     alpha = alpha_max / 10
@@ -81,7 +81,7 @@ def test_group_lasso_multitask():
     w = np.zeros_like(X[0])
     group_lasso(
         False, X, grp_indices, grp_ptr, X_data, X_indices,
-        X_indptr, X_data, y, alpha / 3, False,
+        X_indptr, X_data, y, alpha / 3,
         w, y.copy(), theta,
         norm(X_, axis=0) ** 2, tol, 100, 10, verbose=True)
     W_grp = w.reshape(n_features, 3, order='F')
@@ -162,8 +162,35 @@ def test_dropin_MultiTaskLasso():
 if __name__ == "__main__":
     n_features = 200
     X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=False, n_informative_features=200)[:2]
+        n_samples=200, n_features=n_features, sparse_X=False, n_informative_features=200)[:2]
     # 1 feature per group:
     X = np.asfortranarray(X)
-    alphas, coefs, gap = celer_path(
+    alphas, coefs, gaps = celer_path(
         X, y, "grouplasso", groups=1, eps=1e-2, n_alphas=10)
+
+    X_dense = X
+    X_data = np.empty([1], dtype=X.dtype)
+    X_indices = np.empty([1], dtype=np.int32)
+    X_indptr = np.empty([1], dtype=np.int32)
+
+    X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
+    groups = 1
+    grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
+    n_groups = len(grp_ptr) - 1
+    lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
+    for g in range(n_groups):
+        X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
+        lc_grp[g] = norm(X_g, ord=2)
+
+    alpha = alphas[8]
+    is_sparse = False
+    w = np.zeros(n_features)
+    Xw = y.copy()
+    theta = np.zeros(len(y))
+    tol = 0.01
+    max_epochs = 100
+    gap_freq = 2
+
+    group_lasso(
+        is_sparse, X, grp_indices, grp_ptr, X_data, X_indices,
+        X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta, lc_grp ** 2, tol, max_epochs, gap_freq, verbose=True)
