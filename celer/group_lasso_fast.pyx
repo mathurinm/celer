@@ -126,7 +126,6 @@ cpdef group_lasso(
         int gap_freq, int verbose=0):
 
     cdef bint center = False
-    cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
     if floating is double:
         dtype = np.float64
@@ -136,6 +135,8 @@ cpdef group_lasso(
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
     cdef int n_groups = lc_groups.shape[0]
+    cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
+    # print("nrmyy", norm_y2)
 
     cdef int i, j, g, k, startptr, endptr, epoch
     cdef int max_group_size = 0
@@ -143,16 +144,15 @@ cpdef group_lasso(
         max_group_size = max(max_group_size, grp_ptr[g + 1] - grp_ptr[g])
 
     cdef floating[:] old_w_g = np.zeros(max_group_size, dtype=dtype)
-    cdef int inc = 1
 
     cdef floating gap, p_obj, d_obj, dual_scale, X_mean_j
     cdef floating highest_d_obj = 0.
     cdef floating tmp, R_sum, norm_wg, bst_scal
 
     for epoch in range(max_epochs):
-        print("epoch", epoch)
+        # print("epoch", epoch)
         if epoch % gap_freq == 1:
-            print("gap")
+            # print("gap")
             # theta = R / (alpha * n_samples)
             fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
             tmp = 1. / (alpha * n_samples)
@@ -161,14 +161,16 @@ cpdef group_lasso(
             dual_scale = dscal_grplasso(
                 is_sparse, theta, grp_ptr,
                 grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
+            # print("dscal", dual_scale)
 
             if dual_scale > 1. :
                 tmp = 1. / dual_scale
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             # dual value is the same as for the Lasso
+            # print(np.array(theta))
             d_obj = dual(LASSO, n_samples, alpha, norm_y2, &theta[0], &y[0])
-            print(p_obj)
+            # print(d_obj)
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj
             p_obj = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)

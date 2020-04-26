@@ -160,37 +160,38 @@ def test_dropin_MultiTaskLasso():
 
 
 if __name__ == "__main__":
-    n_features = 200
+    n_features = 100
     X, y = build_dataset(
-        n_samples=200, n_features=n_features, sparse_X=False, n_informative_features=200)[:2]
+        n_samples=100, n_features=n_features, sparse_X=False, n_informative_features=100)[:2]
     # 1 feature per group:
     X = np.asfortranarray(X)
     alphas, coefs, gaps = celer_path(
-        X, y, "grouplasso", groups=1, eps=1e-2, n_alphas=10)
+        X, y, "grouplasso", groups=1, eps=1e-2, n_alphas=10, tol=1e-8)
 
-    X_dense = X
-    X_data = np.empty([1], dtype=X.dtype)
-    X_indices = np.empty([1], dtype=np.int32)
-    X_indptr = np.empty([1], dtype=np.int32)
+    # X_dense = X
+    # X_data = np.empty([1], dtype=X.dtype)
+    # X_indices = np.empty([1], dtype=np.int32)
+    # X_indptr = np.empty([1], dtype=np.int32)
 
-    X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
-    groups = 1
-    grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
-    n_groups = len(grp_ptr) - 1
-    lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
-    for g in range(n_groups):
-        X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
-        lc_grp[g] = norm(X_g, ord=2)
+    # X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
+    # groups = 1
+    # grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
+    # n_groups = len(grp_ptr) - 1
+    # lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
+    # for g in range(n_groups):
+    #     X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
+    #     lc_grp[g] = norm(X_g, ord=2)
 
-    alpha = alphas[8]
-    is_sparse = False
-    w = np.zeros(n_features)
-    Xw = y.copy()
-    theta = y.copy / norm(X.T @ y, ord=np.inf)
-    tol = 0.01
-    max_epochs = 100
-    gap_freq = 2
+    # # alpha = alphas[8]
+    # alpha = 0.01
+    # is_sparse = False
+    # w = np.zeros(n_features)
+    # R = y.copy()
+    # theta = y.copy() / norm(X.T @ y, ord=np.inf)
+    # tol = 0.01
+    # max_epochs = 5000
+    # gap_freq = 2
 
-    group_lasso(
-        is_sparse, X, grp_indices, grp_ptr, X_data, X_indices,
-        X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta, lc_grp ** 2, tol, max_epochs, gap_freq, verbose=True)
+    # group_lasso(
+    #     is_sparse, X, grp_indices, grp_ptr, X_data, X_indices,
+    #     X_indptr, X_sparse_scaling, y, alpha, w, R, theta, lc_grp ** 2, tol, max_epochs, gap_freq, verbose=True)

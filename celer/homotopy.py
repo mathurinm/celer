@@ -246,7 +246,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     X_data, X_indices, X_indptr, X_sparse_scaling)
             else:
                 w = np.zeros(n_features, dtype=X.dtype)
-                Xw = y.copy() if pb == LASSO else np.zeros(n_samples, X.dtype)
+                Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
 
             if pb in (LASSO, GRPLASSO):
                 # TODO this is not correct for GRPLASSO
