@@ -216,16 +216,16 @@ cpdef group_lasso(
                 # perform BST:
                 w[j] *= bst_scal
                 # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
-                tmp = w[j] - old_w_g[k]
+                tmp = old_w_g[k] - w[j]
                 if tmp != 0.:
                     if is_sparse:
+                        startptr, endptr = X_indptr[j], X_indptr[j + 1]
                         for i in range(startptr, endptr):
-                            R[X_indices[i]] -= tmp *  X_data[i]
+                            R[X_indices[i]] += tmp *  X_data[i]
                         if center:
                             for i in range(n_samples):
                                 R[i] += X_mean_j * tmp
                     else:
-                        tmp = -tmp
                         faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
     return gap
