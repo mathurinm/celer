@@ -173,6 +173,8 @@ def test_group_lasso_path(sparse_X):
     tol = 1e-8
     np.testing.assert_array_less(gaps, tol)
 
+    check_estimator(GroupLasso)
+
 
 @pytest.mark.parametrize("sparse_X", [True, False])
 def test_GroupLasso(sparse_X):
@@ -181,8 +183,10 @@ def test_GroupLasso(sparse_X):
         n_samples=11, n_features=n_features, sparse_X=sparse_X,
         n_informative_features=n_features)[:2]
 
-    clf = GroupLasso(alpha=0.01, groups=10)
+    tol = 1e-4
+    clf = GroupLasso(alpha=0.01, groups=10, tol=tol)
     clf.fit(X, y)
+    np.testing.assert_array_less(clf.dual_gap_, tol)
 
 
 if __name__ == "__main__":
@@ -191,8 +195,10 @@ if __name__ == "__main__":
         n_samples=11, n_features=n_features, sparse_X=False,
         n_informative_features=n_features)[:2]
 
-    clf = GroupLasso(alpha=0.01, groups=10)
+    tol = 1e-4
+    clf = GroupLasso(alpha=0.01, groups=10, tol=tol)
     clf.fit(X, y)
+    np.testin.assert_array_less(clf.dual_gap_, tol)
 
     # n_features = 6
     # X, y = build_dataset(
