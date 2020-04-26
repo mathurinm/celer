@@ -17,6 +17,7 @@ from cython cimport floating
 cdef:
     int LASSO = 0
     int LOGREG = 1
+    int GRPLASSO = 2
     int inc = 1
 
 
@@ -337,8 +338,8 @@ cpdef void compute_Xw(
             else:
                 tmp = w[j]
                 faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
-    # currently R = X @ w, update for LASSO:
-    if pb == LASSO:
+    # currently R = X @ w, update for LASSO/GRPLASSO:
+    if pb in (LASSO, GRPLASSO):
         for i in range(n_samples):
             R[i] = y[i] - R[i]
 

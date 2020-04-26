@@ -7,7 +7,8 @@ from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
 from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
 from sklearn.linear_model import lasso_path
 
-from celer import Lasso, MultiTaskLasso, MultiTaskLassoCV
+from celer import (Lasso, GroupLasso, MultiTaskLasso,
+                   MultiTaskLassoCV)
 from celer.homotopy import celer_path, mtl_path, _grp_converter
 from celer.group_lasso_fast import group_lasso, dscal_grplasso
 from celer.utils.testing import build_dataset
@@ -173,16 +174,42 @@ def test_group_lasso_path(sparse_X):
     np.testing.assert_array_less(gaps, tol)
 
 
-if __name__ == "__main__":
-    n_features = 6
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_GroupLasso(sparse_X):
+    n_features = 50
     X, y = build_dataset(
-        n_samples=50, n_features=n_features, sparse_X=True,
+        n_samples=11, n_features=n_features, sparse_X=sparse_X,
         n_informative_features=n_features)[:2]
 
-    groups = [[0, 2, 5], [1, 3], [4]]
-    alphas, coefs, gaps = celer_path(
-        X, y, "grouplasso", groups=groups, eps=1e-1, n_alphas=10, tol=1e-8)
+    clf = GroupLasso(alpha=0.01, groups=10)
+    clf.fit(X, y)
 
+
+if __name__ == "__main__":
+    n_features = 50
+    X, y = build_dataset(
+        n_samples=11, n_features=n_features, sparse_X=False,
+        n_informative_features=n_features)[:2]
+
+    clf = GroupLasso(alpha=0.01, groups=10)
+    clf.fit(X, y)
+
+    # n_features = 6
+    # X, y = build_dataset(
+    #     n_samples=50, n_features=n_features, sparse_X=True,
+    #     n_informative_features=n_features)[:2]
+    # n_groups = 11
+    # # idx =
+    # # split = np.sort(np.random.choice(n_features, n_groups, replace=False))
+    # # groups = [[0, 2, 5], [1, 3], [4]]
+    # groups = 2
+
+    # X = np.asfortranarray(X.toarray())
+
+    # alphas, coefs, gaps = celer_path(
+    #     X, y, "grouplasso", groups=groups, eps=1e-1, n_alphas=2, tol=1e-8)
+
+    # print(coefs)
     # X_dense = X
     # X_data = np.empty([1], dtype=X.dtype)
     # X_indices = np.empty([1], dtype=np.int32)

@@ -1,4 +1,4 @@
-"""Celer algorithm to solve the Lasso"""
+"""Celer algorithm to solve L1-type regularized problems."""
 
 from .homotopy import celer_path
 from .dropin_sklearn import Lasso, LassoCV, LogisticRegression

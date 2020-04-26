@@ -808,9 +808,9 @@ class GroupLasso(Lasso_sklearn):
 
     Examples
     --------
-    >>> from celer import Lasso
-    >>> clf = Lasso(alpha=0.1)
-    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
+    >>> from celer import GroupLasso
+    >>> clf = GroupLasso(alpha=0.1, groups=[[0, 1], [2]])
+    >>> clf.fit([[0, 0, 1], [1, -1, 2], [2, 0, -1]], [1, 1, -1])
     Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,
     p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
@@ -844,11 +844,11 @@ class GroupLasso(Lasso_sklearn):
         self.prune = prune
         self.groups = groups
 
-    def path(self, X, y, alphas, groups, coef_init=None, return_n_iter=True,
+    def path(self, X, y, alphas, coef_init=None, return_n_iter=True,
              **kwargs):
         """Compute Group Lasso path with Celer."""
         results = celer_path(
-            X, y, "grouplasso", alphas=alphas, groups=groups,
+            X, y, "grouplasso", alphas=alphas, groups=self.groups,
             coef_init=coef_init, max_iter=self.max_iter,
             return_n_iter=return_n_iter, gap_freq=self.gap_freq,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
