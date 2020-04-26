@@ -217,7 +217,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
         for g in range(n_groups):
             X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
-            lc_grp[g] = norm(X_g, ord=2) ** 2
+            if is_sparse:
+                lc_grp[g] = norm((X_g.T @ X_g).todense(), ord=2)
+            else:
+                lc_grp[g] = norm(X_g, ord=2) ** 2
     else:
         # TODO harmonize names
         norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
@@ -255,17 +258,16 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             elif pb == GRPLASSO:
                 theta = Xw.copy()
                 scal = dscal_grplasso(
-                    is_sparse, theta, grp_ptr, grp_indices, X, X_data,
-                    X_indices, X_indptr, X_sparse_scaling, False)
+                    is_sparse, theta, grp_ptr, grp_indices, X_dense,
+                    X_data, X_indices, X_indptr, X_sparse_scaling, False)
                 theta /= scal
             elif pb == LOGREG:
                 theta = y / (1 + np .exp(y * Xw)) / alpha
-                theta /= np.linalg.norm(X.T.dot(theta), ord=np.inf)
-
+                theta /= np.linalg.norm(X.T @ theta, ord=np.inf)
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:  # TODO this if else scheme is complicated
             dual_gaps[t] = group_lasso(
-                is_sparse, X, grp_indices, grp_ptr, X_data, X_indices,
+                is_sparse, X_dense, grp_indices, grp_ptr, X_data, X_indices,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta, lc_grp,
                 tol, max_epochs, gap_freq)  # TODO max_iter
             coefs[:, t], thetas[t] = w, theta

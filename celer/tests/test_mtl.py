@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 from numpy.linalg import norm
 
@@ -159,11 +160,24 @@ def test_dropin_MultiTaskLasso():
     check_estimator(MultiTaskLasso)
 
 
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_group_lasso_path(sparse_X):
+    n_features = 50
+    X, y = build_dataset(
+        n_samples=11, n_features=n_features, sparse_X=sparse_X,
+        n_informative_features=n_features)[:2]
+
+    alphas, coefs, gaps = celer_path(
+        X, y, "grouplasso", groups=5, eps=1e-2, n_alphas=10, tol=1e-8)
+    tol = 1e-8
+    np.testing.assert_array_less(gaps, tol)
+
+
 if __name__ == "__main__":
     n_features = 6
     X, y = build_dataset(
-        n_samples=50, n_features=n_features, sparse_X=False, n_informative_features=n_features)[:2]
-    X = np.asfortranarray(X)
+        n_samples=50, n_features=n_features, sparse_X=True,
+        n_informative_features=n_features)[:2]
 
     groups = [[0, 2, 5], [1, 3], [4]]
     alphas, coefs, gaps = celer_path(
@@ -195,4 +209,5 @@ if __name__ == "__main__":
 
     # group_lasso(
     #     is_sparse, X, grp_indices, grp_ptr, X_data, X_indices,
-    #     X_indptr, X_sparse_scaling, y, alpha, w, R, theta, lc_grp ** 2, tol, max_epochs, gap_freq, verbose=True)
+    #     X_indptr, X_sparse_scaling, y, alpha, w, R, theta, lc_grp ** 2, tol,
+    #     max_epochs, gap_freq, verbose=True)
