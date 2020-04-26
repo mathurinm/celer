@@ -248,7 +248,7 @@ cpdef void inner_solver(
 
             if use_accel: # also compute accelerated dual_point
                 info_dposv = create_accel_pt(
-                    pb, K, epoch, gap_freq, alpha,
+                    pb, n_samples, epoch, gap_freq, alpha,
                     &Xw[0], &thetaccel[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
                 if info_dposv != 0 and verbose:

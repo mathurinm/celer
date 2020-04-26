@@ -207,7 +207,7 @@ cdef void create_dual_pt(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef int create_accel_pt(
-    int pb, int K, int epoch, int gap_freq,
+    int pb, int n_samples, int epoch, int gap_freq,
     floating alpha,
     floating * R, floating * out, floating * last_K_R, floating[:, :] U,
     floating[:, :] UtU, floating[:] onesK, floating[:] y):
@@ -215,7 +215,8 @@ cdef int create_accel_pt(
     # solving linear system in cython
     # doc at https://software.intel.com/en-us/node/468894
 
-    cdef int n_samples = y.shape[0]
+    # cdef int n_samples = y.shape[0] cannot use this for MTL
+    cdef int K = U.shape[0] + 1
     cdef char * char_U = 'U'
     cdef int one = 1
     cdef int Kminus1 = K - 1
