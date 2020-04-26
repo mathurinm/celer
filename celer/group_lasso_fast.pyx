@@ -21,10 +21,12 @@ cdef:
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef floating primal_grplasso(
-        int n_samples, int n_groups, floating alpha, floating[:] R,
-        int[:] grp_ptr, int[:] grp_indices, floating[:] w):
+        floating alpha, floating[:] R, int[::1] grp_ptr,
+        int[::1] grp_indices, floating[:] w):
     cdef floating nrm = 0.
     cdef int j, k, g
+    cdef int n_samples = R.shape[0]
+    cdef int n_groups = grp_ptr.shape[0] - 1
     cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / (2 * n_samples)
     for g in range(n_groups):
         nrm = 0.
@@ -39,13 +41,14 @@ cpdef floating primal_grplasso(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef floating dscal_grplasso(
-        bint is_sparse, int n_samples, int n_groups, floating[:] theta,
-        int[:] grp_ptr, int[:] grp_indices, floating[::1, :] X, floating[:] X_data,
-        int[:] X_indices, int[:] X_indptr, floating[:] X_mean, bint center):
+        bint is_sparse, floating[::1] theta, int[::1] grp_ptr, int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data, int[::1] X_indices,
+        int[::1] X_indptr, floating[::1] X_mean, bint center):
     cdef floating Xj_theta, tmp
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, g, k, startptr, endptr
+    cdef int n_groups = grp_ptr.shape[0] - 1
+    cdef int n_samples = theta.shape[0]
 
     if is_sparse:
         if center:
@@ -76,13 +79,15 @@ cpdef floating dscal_grplasso(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_grplasso(
-    bint is_sparse, int pb, int n_samples, int n_groups, floating * theta,
-    floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating * norms_X_grp, int * grp_ptr, int * grp_indices,
-    floating * prios, uint8 * screened, floating radius,
-    int * n_screened) nogil:
+        bint is_sparse, int pb,floating[::1] theta, floating[::1, :] X,
+        floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
+        floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
+        floating[::1] prios, uint8[::1] screened, floating radius,
+        int * n_screened) nogil:
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
+    cdef int n_groups = grp_ptr.shape[0] - 1
+    cdef int n_samples = theta.shape[0]
 
     for g in range(n_groups):
         if screened[g] or norms_X_grp[g] == 0.:
@@ -110,17 +115,15 @@ cdef void set_prios_grplasso(
             n_screened[0] += 1
 
 
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef group_lasso(
-    bint is_sparse, floating[::1, :] X, int[:] grp_indices, int[:] grp_ptr,
-    floating[:] X_data, int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-    floating[:] y, floating alpha, floating[:] w, floating[:] R,
-    floating[:] theta, floating[:] lc_groups,
-    floating eps, int max_epochs, int gap_freq,
-    int verbose=0):
+        bint is_sparse, floating[::1, :] X, int[::1] grp_indices, int[::1] grp_ptr,
+        floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
+        floating[:] y, floating alpha, floating[:] w, floating[:] R,
+        floating[::1] theta, floating[:] lc_groups, floating eps, int max_epochs,
+        int gap_freq, int verbose=0):
 
     cdef bint center = False
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
@@ -147,14 +150,16 @@ cpdef group_lasso(
     cdef floating tmp, R_sum, norm_wg, bst_scal
 
     for epoch in range(max_epochs):
+        print("epoch", epoch)
         if epoch % gap_freq == 1:
+            print("gap")
             # theta = R / (alpha * n_samples)
             fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
             tmp = 1. / (alpha * n_samples)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
             dual_scale = dscal_grplasso(
-                is_sparse, n_samples, n_groups, theta, grp_ptr,
+                is_sparse, theta, grp_ptr,
                 grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
 
             if dual_scale > 1. :
@@ -163,13 +168,11 @@ cpdef group_lasso(
 
             # dual value is the same as for the Lasso
             d_obj = dual(LASSO, n_samples, alpha, norm_y2, &theta[0], &y[0])
-
+            print(p_obj)
             if d_obj > highest_d_obj:
                 highest_d_obj = d_obj
-            p_obj = primal_grplasso(n_samples, n_groups, alpha, R,
-                                 grp_ptr, grp_indices, w)
+            p_obj = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
             gap = p_obj - highest_d_obj
-
 
             if verbose:
                 print("Epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj, gap))
@@ -198,10 +201,11 @@ cpdef group_lasso(
                             R_sum += R[i]
                         w[j] -= R_sum * X_mean_j / lc_groups[g]
                 else:
-                    w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0], &inc) / lc_groups[g]
+                    w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0],
+                                 &inc) / lc_groups[g]
                 norm_wg += w[j] ** 2
             norm_wg = sqrt(norm_wg)
-            bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg )
+            bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg)
 
             for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                 j = grp_indices[grp_ptr[g] + k]

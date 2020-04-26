@@ -154,7 +154,7 @@ cdef floating primal(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
-                       floating * theta, floating * y) nogil:
+                         floating * theta, floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.

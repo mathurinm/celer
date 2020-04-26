@@ -186,7 +186,7 @@ if __name__ == "__main__":
     is_sparse = False
     w = np.zeros(n_features)
     Xw = y.copy()
-    theta = np.zeros(len(y))
+    theta = y.copy / norm(X.T @ y, ord=np.inf)
     tol = 0.01
     max_epochs = 100
     gap_freq = 2

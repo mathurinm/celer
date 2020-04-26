@@ -249,6 +249,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 Xw = y.copy() if pb == LASSO else np.zeros(n_samples, X.dtype)
 
             if pb in (LASSO, GRPLASSO):
+                # TODO this is not correct for GRPLASSO
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
             else:
                 theta = y / (1 + np .exp(y * Xw)) / alpha
