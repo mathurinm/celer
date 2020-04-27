@@ -293,8 +293,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         if dual_gaps[t] > tol:
             warnings.warn(
                 'Objective did not converge. Increasing `tol` may make the' +
-                ' solver faster without affecting the results much.' +
-                ' Fitting with very small alpha may cause precision problems.',
+                ' solver faster without affecting the results much.',
                 ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps

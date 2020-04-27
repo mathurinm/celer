@@ -6,7 +6,7 @@ API Documentation
 
 .. currentmodule:: celer
 
-CELER
+Celer
 =====
 
 Functions
@@ -21,6 +21,7 @@ Estimators
 .. autosummary::
    :toctree: generated/
 
+   GroupLasso
    Lasso
    LassoCV
    LogisticRegression
