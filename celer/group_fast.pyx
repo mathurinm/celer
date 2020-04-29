@@ -279,7 +279,6 @@ cpdef celer_grp(
                     prios[g] = - 1  # include active features
             if t == 0:
                 ws_size = p0
-                print("WS size", ws_size, p0, n_screened)
             else:
                 for g in range(ws_size):
                     if not screened[C[g]]:
@@ -303,8 +302,8 @@ cpdef celer_grp(
 
         if verbose:
             print(", %d feats in subpb (%d left)" % (len(C), n_features - n_screened))
-            print("WS", ws_size)
 
+        highest_d_obj_in = 0.
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 fcopy(&n_samples, &R[0], &inc, &theta_inner[0], &inc)
@@ -322,8 +321,6 @@ cpdef celer_grp(
                 # dual value is the same as for the Lasso
                 d_obj_in = dual(pb, n_samples, alpha, norm_y2, &theta_inner[0],
                                 &y[0])
-                # print(np.asarray(theta_inner))
-                # print(d_obj)
                 if d_obj_in > highest_d_obj_in:
                     highest_d_obj_in = d_obj_in
                 p_obj_in = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
