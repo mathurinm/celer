@@ -359,6 +359,7 @@ cdef floating compute_dual_scaling(
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
+    # TODO variable pb is not used
 
     if is_sparse:
         if center:

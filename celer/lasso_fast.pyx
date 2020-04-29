@@ -170,7 +170,7 @@ def celer(
             C = all_features
         else:
             C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
-            C.sort()
+            # np.asarray(C).sort()  # TODO do we care that C is sorted ?
         if prune:
             tol_inner = tol_ratio_inner * gap
         else:

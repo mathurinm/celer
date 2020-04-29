@@ -10,7 +10,7 @@ from sklearn.linear_model import lasso_path
 from celer import (Lasso, GroupLasso, MultiTaskLasso,
                    MultiTaskLassoCV)
 from celer.homotopy import celer_path, mtl_path, _grp_converter
-from celer.group_fast import celer_grp, dscal_grp
+from celer.group_fast import dscal_grp
 from celer.utils.testing import build_dataset
 
 
@@ -18,18 +18,20 @@ def test_group_lasso_lasso():
     # check that group Lasso with groups of size 1 gives Lasso
     n_features = 200
     X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=False)[:2]
+        n_samples=100, n_features=n_features, sparse_X=False,
+        n_informative_features=n_features)[:2]
     alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
     alpha = alpha_max / 10
     # take groups of size 1:
 
-    clf1 = GroupLasso(alpha=alpha, groups=1)
+    clf1 = GroupLasso(alpha=alpha, groups=1, fit_intercept=False, tol=1e-8)
     clf1.fit(X, y)
 
-    clf = Lasso(alpha, fit_intercept=False)
+    clf = Lasso(alpha, fit_intercept=False, tol=1e-8)
     clf.fit(X, y)
 
-    np.testing.assert_allclose(clf1.coef_, clf.coef_)
+    np.testing.assert_allclose(clf1.coef_, clf.coef_, atol=1e-4)
+    # TODO check intercept is fitted too
 
 
 def test_group_lasso_multitask():
@@ -56,19 +58,20 @@ def test_group_lasso_multitask():
     X_indptr = np.empty([1], dtype=np.int32)
     other = dscal_grp(
         False, y, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data, False)
+        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
+        np.zeros(1, dtype=np.int32), False)
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
     alpha = alpha_max / 10
     clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8)
     clf.fit(X_, Y_)
-    W_mtl = clf.coef_.T
 
-    clf1 = GroupLasso(alpha=alpha / 3)
+    groups = [grp.tolist() for grp in grp_indices.reshape(50, 3)]
+    clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
+                      fit_intercept=False, tol=1e-8)
     clf1.fit(X, y)
-    W_grp = clf1.coef_.T
 
-    np.testing.assert_allclose(W_grp, W_mtl, atol=1e-6)
+    np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=1e-4)
 
 
 def test_convert_groups():
@@ -175,10 +178,49 @@ if __name__ == "__main__":
         n_samples=11, n_features=n_features, sparse_X=False,
         n_informative_features=n_features)[:2]
 
-    tol = 1e-4
-    clf = GroupLasso(alpha=0.01, groups=1, tol=tol,
-                     p0=n_features, max_epochs=500, verbose=2, prune=False, max_iter=10)
-    clf.fit(X, y)
+    # clf = GroupLasso(
+    #     alpha=0.01, groups=1, tol=tol, p0=n_features, max_epochs=1000,
+    #     verbose=2, prune=False, max_iter=10)
+    # clf.fit(X, y)
+    n_samples, n_features = 30, 50
+    X_, Y_ = build_dataset(n_samples, n_features,
+                           n_informative_features=n_features, n_targets=3)[:2]
+    y = Y_.reshape(-1, order='F')
+    X = np.zeros([3 * n_samples, 3 * n_features], order='F')
+
+    # block filling new design
+    for i in range(3):
+        X[i * n_samples:(i + 1) * n_samples, i *
+          n_features:(i + 1) * n_features] = X_
+
+    grp_indices = np.arange(
+        3 * n_features).reshape(3, -1).reshape(-1, order='F').astype(np.int32)
+    grp_ptr = 3 * np.arange(n_features + 1).astype(np.int32)
+
+    alpha_max = np.max(norm(X_.T @ Y_, axis=1)) / len(Y_)
+
+    X_data = np.empty([1], dtype=X.dtype)
+    X_indices = np.empty([1], dtype=np.int32)
+    X_indptr = np.empty([1], dtype=np.int32)
+    other = dscal_grp(
+        False, y, grp_ptr, grp_indices, X, X_data,
+        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
+        np.zeros(1, dtype=np.int32), False)
+    np.testing.assert_allclose(alpha_max, other / len(Y_))
+
+    alpha = alpha_max / 10
+    clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8)
+    clf.fit(X_, Y_)
+    W_mtl = clf.coef_
+
+    groups = [grp.tolist() for grp in grp_indices.reshape(50, 3)]
+    clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
+                      fit_intercept=False, tol=1e-8)
+    clf1.fit(X, y)
+    W_grp = clf1.coef_.T
+
+    np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=1e-4)
+
     # np.testing.assert_array_less(clf.dual_gap_, tol)
 
     # n_features = 6

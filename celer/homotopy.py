@@ -260,7 +260,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 theta = Xw.copy()
                 scal = dscal_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
-                    X_data, X_indices, X_indptr, X_sparse_scaling, False)
+                    X_data, X_indices, X_indptr, X_sparse_scaling,
+                    len(grp_ptr) - 1, np.zeros(1, dtype=np.int32), False)
                 theta /= scal
             elif pb == LOGREG:
                 theta = y / (1 + np .exp(y * Xw)) / alpha
@@ -270,8 +271,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             sol = celer_grp(
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data, X_indices,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
-                norms_X_grp, tol, max_iter, max_epochs, gap_freq)
-            coefs[:, t], thetas[t] = w, theta
+                norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
+                prune=prune, verbose=verbose)
+            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
