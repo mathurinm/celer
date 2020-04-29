@@ -12,7 +12,7 @@ from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
 from .lasso_fast import celer
-from .group_lasso_fast import group_lasso, dscal_grplasso
+from .group_fast import celer_grp, dscal_grp
 # TODO dnorm better name?
 from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
@@ -258,7 +258,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
             elif pb == GRPLASSO:
                 theta = Xw.copy()
-                scal = dscal_grplasso(
+                scal = dscal_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling, False)
                 theta /= scal
@@ -267,8 +267,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 theta /= np.linalg.norm(X.T @ theta, ord=np.inf)
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:  # TODO this if else scheme is complicated
-            dual_gaps[t] = group_lasso(
-                is_sparse, X_dense, grp_indices, grp_ptr, X_data, X_indices,
+            sol = celer_grp(
+                is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data, X_indices,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, max_iter, max_epochs, gap_freq)
             coefs[:, t], thetas[t] = w, theta
