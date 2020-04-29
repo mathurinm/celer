@@ -9,7 +9,8 @@ cimport cython
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
-from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, dual, LASSO
+from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, dual, LASSO, LOGREG
+from .cython_utils import create_dual_pt
 
 ctypedef np.uint8_t uint8
 
@@ -40,7 +41,7 @@ cpdef floating primal_grplasso(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef floating dscal_grplasso(
+cpdef floating dscal_grp(
         bint is_sparse, floating[::1] theta, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data,
         int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
@@ -80,8 +81,8 @@ cpdef floating dscal_grplasso(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef void set_prios_grplasso(
-        bint is_sparse, int pb,floating[::1] theta, floating[::1, :] X,
+cdef void set_prios_grp(
+        bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
         floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
         floating[::1] prios, uint8[::1] screened, floating radius,
@@ -109,24 +110,26 @@ cdef void set_prios_grplasso(
             nrm_Xgtheta += Xj_theta ** 2
         nrm_Xgtheta = sqrt(nrm_Xgtheta)
 
-
         prios[g] = (1. - nrm_Xgtheta) / norms_X_grp[g]
 
         if prios[g] > radius:
             screened[g] = True
             n_screened[0] += 1
 
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef group_lasso(
-        bint is_sparse, floating[::1, :] X, int[::1] grp_indices, int[::1] grp_ptr,
+cpdef celer_grp(
+        bint is_sparse, int pb, floating[::1, :] X, int[::1] grp_indices, int[::1] grp_ptr,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
         floating[:] y, floating alpha, floating[:] w, floating[:] R,
-        floating[::1] theta, floating[:] lc_groups, floating eps, int max_epochs,
+        floating[::1] theta, floating[::1] lc_groups, floating eps, int max_iter, int max_epochs,
         int gap_freq, int verbose=0):
 
+    pb = LASSO
+    cdef int prune = 0
+    cdef int p0 = 10
+    cdef int verbose_in = verbose - 1
     cdef bint center = False
 
     if floating is double:
@@ -138,96 +141,217 @@ cpdef group_lasso(
     cdef int n_features = w.shape[0]
     cdef int n_groups = lc_groups.shape[0]
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    # print("nrmyy", norm_y2)
 
-    cdef int i, j, g, k, startptr, endptr, epoch
+    cdef int[:] all_groups = np.arange(n_groups, dtype=np.int32)
+    cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
+
+
+    cdef int n_screened = 0
+    cdef int i, j, g, g_idx, k, startptr, endptr, epoch, t
+    cdef int nnz, ws_size
+    cdef floating[::1] prios = np.empty(n_groups, dtype=dtype)
+    cdef uint8[::1] screened = np.zeros(n_groups, dtype=np.uint8)
     cdef int max_group_size = 0
     for g in range(n_groups):
         max_group_size = max(max_group_size, grp_ptr[g + 1] - grp_ptr[g])
 
     cdef floating[:] old_w_g = np.zeros(max_group_size, dtype=dtype)
 
-    cdef floating gap, p_obj, d_obj, dual_scale, X_mean_j
-    cdef floating highest_d_obj = 0.
-    cdef floating tmp, R_sum, norm_wg, bst_scal
+    cdef floating[::1] gaps = np.zeros(max_iter, dtype=dtype)
+    cdef floating[::1] theta_inner = np.zeros(n_samples, dtype=dtype)
 
-    for epoch in range(max_epochs):
-        # print("epoch", epoch)
-        if epoch % gap_freq == 1:
-            # print("gap")
-            # theta = R / (alpha * n_samples)
+    cdef floating gap, p_obj, d_obj, scal, X_mean_j
+    cdef floating gap_in, p_obj_in, d_obj_in, tol_in
+    cdef floating d_obj_from_inner
+    cdef floating highest_d_obj = 0.
+    cdef floating highest_d_obj_in = 0.
+    cdef floating tmp, R_sum, norm_wg, bst_scal
+    cdef floating radius = 10000 # TODO
+
+    for t in range(max_iter):
+        if t != 0:
             fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
             tmp = 1. / (alpha * n_samples)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            dual_scale = dscal_grplasso(
+            scal = dscal_grp(
                 is_sparse, theta, grp_ptr,
                 grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
-            # print("dscal", dual_scale)
 
-            if dual_scale > 1. :
-                tmp = 1. / dual_scale
+            if scal > 1. :
+                tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            # dual value is the same as for the Lasso
-            # print(np.array(theta))
-            d_obj = dual(LASSO, n_samples, alpha, norm_y2, &theta[0], &y[0])
-            # print(d_obj)
-            if d_obj > highest_d_obj:
-                highest_d_obj = d_obj
-            p_obj = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
-            gap = p_obj - highest_d_obj
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
+            # also test dual point returned by inner solver after 1st iter:
+            # TODO
+            scal = dscal_grp(
+                    is_sparse, theta_inner, grp_ptr,
+                    grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
+                # is_sparse, pb, n_features, n_samples, &theta_inner[0],
+                # X, X_data, X_indices, X_indptr,
+                # n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
+            if scal > 1.:
+                tmp = 1. / scal
+                fscal(&n_samples, &tmp, &theta_inner[0], &inc)
+
+            d_obj_from_inner = dual(
+                pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
+        else:
+        # TODO unclear if this is safe at the moment (ok since we scale wrt all groups but potential issue if not)
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+
+        if d_obj_from_inner > d_obj:
+            d_obj = d_obj_from_inner
+            fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
+
+        if t == 0 or d_obj > highest_d_obj:
+            highest_d_obj = d_obj
+            # TODO implement a best_theta
+
+        p_obj = primal_grplasso(alpha, R
+        , grp_ptr, grp_indices, w)
+        gap = p_obj - highest_d_obj
+        gaps[t] = gap
+
+        if verbose:
+            print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
+
+        if gap < eps:
             if verbose:
-                print("Epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj, gap))
-            if gap < eps:
-                if verbose:
-                    print("Exit epoch %d, gap: %.2e < %.2e" % \
-                        (epoch, gap, eps))
-                break
+                print("\nEarly exit, gap: %.2e < %.2e" % (gap, eps))
+            break
 
-        for g in range(n_groups):
-            if lc_groups[g] == 0.:
-                    continue
-            norm_wg = 0.
-            for k in range(grp_ptr[g + 1] - grp_ptr[g]):
-                j = grp_indices[k + grp_ptr[g]]
-                old_w_g[k] = w[j]
+        if pb == LASSO:
+            radius = sqrt(2 * gap / n_samples) / alpha
+        elif pb == LOGREG:
+            radius = sqrt(gap / 2.) / alpha
 
-                if is_sparse:
-                    X_mean_j = X_mean[j]
-                    startptr, endptr = X_indptr[j], X_indptr[j + 1]
-                    for i in range(startptr, endptr):
-                        w[j] += R[X_indices[i]] * X_data[i] / lc_groups[g]
-                    if center:
-                        R_sum = 0.
-                        for i in range(n_samples):
-                            R_sum += R[i]
-                        w[j] -= R_sum * X_mean_j / lc_groups[g]
-                else:
-                    w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0],
-                                 &inc) / lc_groups[g]
-                norm_wg += w[j] ** 2
-            norm_wg = sqrt(norm_wg)
-            bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg)
+        # set_prios_grp(
+        #     is_sparse, pb, theta, X, X_data,
+        #     X_indices, X_indptr, lc_groups, grp_ptr, grp_indices, prios, &screened[0],
+        #     radius, &n_screened)
 
-            for k in range(grp_ptr[g + 1] - grp_ptr[g]):
-                j = grp_indices[grp_ptr[g] + k]
-                # perform BST:
-                w[j] *= bst_scal
-                # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
-                tmp = old_w_g[k] - w[j]
-                if tmp != 0.:
+        if prune:
+            nnz = 0
+            for g in range(n_groups):
+                # TODO this is a hack
+                if w[grp_ptr[g]] != 0:
+                    prios[g] = -1.
+                    nnz += 1
+
+            if t == 0:
+                ws_size = p0 if nnz == 0 else nnz
+            else:
+                ws_size = 2 * nnz
+
+        else:
+            for g in range(n_groups):
+                if w[g] != 0:
+                    prios[g] = - 1  # include active features
+            if t == 0:
+                ws_size = p0
+            else:
+                for g in range(ws_size):
+                    if not screened[C[g]]:
+                        prios[C[g]] = -1
+                ws_size = 2 * ws_size
+
+        if ws_size > n_groups - n_screened:
+            ws_size = n_groups - n_screened
+
+
+        # if ws_size == n_groups then argpartition will break:
+        if ws_size == n_groups:
+            C = all_groups
+        else:
+            C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
+            C.sort()
+        if prune:
+            tol_in = 0.3 * gap
+        else:
+            tol_in = eps
+
+        if verbose:
+            print(", %d feats in subpb (%d left)" % (len(C), n_features - n_screened))
+
+
+
+
+        for epoch in range(max_epochs):
+            if epoch != 0 and epoch % gap_freq == 0:
+                fcopy(&n_samples, &R[0], &inc, &theta_inner[0], &inc)
+                tmp = 1. / (alpha * n_samples)
+                fscal(&n_samples, &tmp, &theta_inner[0], &inc)
+
+                scal = dscal_grp(
+                    is_sparse, theta_inner, grp_ptr,
+                    grp_indices, X, X_data, X_indices, X_indptr, X_mean, center)
+
+                if scal > 1. :
+                    tmp = 1. / scal
+                    fscal(&n_samples, &tmp, &theta_inner[0], &inc)
+
+                # dual value is the same as for the Lasso
+                d_obj_in = dual(pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
+                # print(d_obj)
+                if d_obj_in > highest_d_obj_in:
+                    highest_d_obj = d_obj
+                p_obj_in = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
+                gap_in = p_obj_in - highest_d_obj_in
+
+                if verbose_in:
+                    print("Epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj_in, gap_in))
+                if gap_in < tol_in:
+                    if verbose_in:
+                        print("Exit epoch %d, gap: %.2e < %.2e" % \
+                            (epoch, gap_in, tol_in))
+                    break
+
+            for g_idx in range(ws_size):
+                g = C[g_idx]
+                if lc_groups[g] == 0.:
+                        continue
+                norm_wg = 0.
+                for k in range(grp_ptr[g + 1] - grp_ptr[g]):
+                    j = grp_indices[k + grp_ptr[g]]
+                    old_w_g[k] = w[j]
+
                     if is_sparse:
+                        X_mean_j = X_mean[j]
                         startptr, endptr = X_indptr[j], X_indptr[j + 1]
                         for i in range(startptr, endptr):
-                            R[X_indices[i]] += tmp *  X_data[i]
+                            w[j] += R[X_indices[i]] * X_data[i] / lc_groups[g]
                         if center:
+                            R_sum = 0.
                             for i in range(n_samples):
-                                R[i] += X_mean_j * tmp
+                                R_sum += R[i]
+                            w[j] -= R_sum * X_mean_j / lc_groups[g]
                     else:
-                        faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+                        w[j] += fdot(&n_samples, &X[0, j], &inc, &R[0],
+                                    &inc) / lc_groups[g]
+                    norm_wg += w[j] ** 2
+                norm_wg = sqrt(norm_wg)
+                bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg)
 
-    return gap
+                for k in range(grp_ptr[g + 1] - grp_ptr[g]):
+                    j = grp_indices[grp_ptr[g] + k]
+                    # perform BST:
+                    w[j] *= bst_scal
+                    # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
+                    tmp = old_w_g[k] - w[j]
+                    if tmp != 0.:
+                        if is_sparse:
+                            startptr, endptr = X_indptr[j], X_indptr[j + 1]
+                            for i in range(startptr, endptr):
+                                R[X_indices[i]] += tmp *  X_data[i]
+                            if center:
+                                for i in range(n_samples):
+                                    R[i] += X_mean_j * tmp
+                        else:
+                            faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
+
+    return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
 
