@@ -133,12 +133,12 @@ cpdef celer_grp(
         bint is_sparse, int pb, floating[::1, :] X, int[::1] grp_indices, int[::1] grp_ptr,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
         floating[:] y, floating alpha, floating[:] w, floating[:] R,
-        floating[::1] theta, floating[::1] lc_groups, floating eps, int max_iter, int max_epochs,
-        int gap_freq, int verbose=0):
+        floating[::1] theta, floating[::1] norms_X_grp, floating eps, int max_iter, int max_epochs,
+        int gap_freq, floating tol_ratio_inner=0.3, int p0=100, int prune=0, int verbose=0):
 
     pb = LASSO
-    cdef int prune = 0
-    cdef int p0 = 10
+    # cdef int prune = 0
+    # cdef int p0 = 10
     cdef int verbose_in = verbose - 1
     cdef bint center = False
 
@@ -149,8 +149,10 @@ cpdef celer_grp(
 
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
-    cdef int n_groups = lc_groups.shape[0]
+    cdef int n_groups = norms_X_grp.shape[0]
+
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
+    cdef floating[::1] lc_groups = np.square(norms_X_grp)
 
     cdef int[:] all_groups = np.arange(n_groups, dtype=np.int32)
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32) # initialize with dummy value
@@ -238,18 +240,13 @@ cpdef celer_grp(
             radius = sqrt(gap / 2.) / alpha
 
         set_prios_grp(
-            is_sparse,
-            pb, theta, X, X_data,
-            X_indices, X_indptr, lc_groups,
-            grp_ptr, grp_indices,
-            prios, screened,
-            radius, &n_screened
-            )
+            is_sparse, pb, theta, X, X_data, X_indices, X_indptr, lc_groups,
+            grp_ptr, grp_indices, prios, screened, radius, &n_screened)
 
         if prune:
             nnz = 0
             for g in range(n_groups):
-                # TODO this is a hack
+                # TODO this is a hack, fill fail for sparse group lasso
                 if w[grp_ptr[g]] != 0:
                     prios[g] = -1.
                     nnz += 1
@@ -288,8 +285,6 @@ cpdef celer_grp(
 
         if verbose:
             print(", %d feats in subpb (%d left)" % (len(C), n_features - n_screened))
-
-
 
 
         for epoch in range(max_epochs):

@@ -181,6 +181,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         elif pb == LOGREG:
             alpha_max = norm(X.T @ y, ord=np.inf) / 2.
         elif pb == GRPLASSO:
+            # TODO compute it with dscal to handle centering sparse
             alpha_max = 0
             for g in range(n_groups):
                 X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
@@ -214,13 +215,13 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     if pb == GRPLASSO:
         # TODO this must be included in compute_norm_Xcols when centering
-        lc_grp = np.zeros(n_groups, dtype=X_dense.dtype)
+        norms_X_grp = np.zeros(n_groups, dtype=X_dense.dtype)
         for g in range(n_groups):
             X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
             if is_sparse:
-                lc_grp[g] = norm((X_g.T @ X_g).todense(), ord=2)
+                norms_X_grp[g] = np.sqrt(norm((X_g.T @ X_g).todense(), ord=2))
             else:
-                lc_grp[g] = norm(X_g, ord=2) ** 2
+                norms_X_grp[g] = norm(X_g, ord=2)
     else:
         # TODO harmonize names
         norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
@@ -257,7 +258,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
             elif pb == GRPLASSO:
                 theta = Xw.copy()
-                print(theta)
                 scal = dscal_grplasso(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling, False)
@@ -269,8 +269,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         if pb == GRPLASSO:  # TODO this if else scheme is complicated
             dual_gaps[t] = group_lasso(
                 is_sparse, X_dense, grp_indices, grp_ptr, X_data, X_indices,
-                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta, lc_grp,
-                tol, max_epochs, gap_freq)  # TODO max_iter
+                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
+                norms_X_grp, tol, max_iter, max_epochs, gap_freq)
             coefs[:, t], thetas[t] = w, theta
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
