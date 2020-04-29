@@ -18,8 +18,8 @@ def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
         X_test = sparse.random(n_samples, n_features, density=0.5,
                                format='csc', random_state=random_state)
     else:
-        X = random_state.randn(n_samples, n_features)
-        X_test = random_state.randn(n_samples, n_features)
+        X = np.asfortranarray(random_state.randn(n_samples, n_features))
+        X_test = np.asfortranarray(random_state.randn(n_samples, n_features))
     y = X.dot(w)
     y_test = X_test.dot(w)
     return X, y, X_test, y_test

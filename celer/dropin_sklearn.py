@@ -747,14 +747,14 @@ class GroupLasso(Lasso_sklearn):
     alpha : float, optional
         Constant that multiplies the penalty term. Defaults to 1.0.
 
-    groups : int or list of ints or list of lists of ints.
+    groups : int | list of ints | list of lists of ints.
         Partition of features used in the penalty on `w`.
         If an int is passed, groups are contiguous blocks of features, of size
         `groups`.
         If a list of ints is passed, groups are assumed to be contiguous,
-        group `g` being of size `groups[g]`.
-        If a list of lists of ints is passed, each sublist contains the
-        feature indices of the associated group.
+        group number `g` being of size `groups[g]`.
+        If a list of lists of ints is passed, `groups[g]` contains the
+        feature indices of the group number `g`.
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
