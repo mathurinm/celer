@@ -311,8 +311,8 @@ def _grp_converter(groups, n_features):
     if isinstance(groups, int):
         grp_size = groups
         if n_features % grp_size != 0:
-            raise ValueError("n_features %d is not a multiple of the desired"
-                             "group size %d" % (n_features, grp_size))
+            raise ValueError("n_features (%d) is not a multiple of the desired"
+                             " group size (%d)" % (n_features, grp_size))
         n_groups = n_features // grp_size
         grp_ptr = grp_size * np.arange(n_groups + 1)
         grp_indices = np.arange(n_features)

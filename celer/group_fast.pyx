@@ -101,21 +101,11 @@ cpdef floating dscal_grp(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_grp(
-        bint is_sparse,
-        int pb, floating[::1] theta,
-        floating[::1, :] X,
-        floating[::1] X_data,
-        int[::1] X_indices,
-        int[::1] X_indptr,
-        floating[::1] norms_X_grp,
-        int[::1] grp_ptr,
-        int[::1] grp_indices,
-        floating[::1] prios,
-        uint8[::1] screened,
-        floating radius,
-        int * n_screened
-        ) nogil:
-    pass
+        bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
+        floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
+        floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
+        floating[::1] prios, uint8[::1] screened, floating radius,
+        int * n_screened) nogil:
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -301,7 +291,7 @@ cpdef celer_grp(
             tol_in = eps
 
         if verbose:
-            print(", %d feats in subpb (%d left)" % (len(C), n_features - n_screened))
+            print(", %d groups in subpb (%d left)" % (len(C), n_groups - n_screened))
 
         highest_d_obj_in = 0.
         for epoch in range(max_epochs):

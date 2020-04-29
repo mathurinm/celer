@@ -179,10 +179,10 @@ if __name__ == "__main__":
         n_samples=n_samples, n_features=n_features, sparse_X=False,
         n_informative_features=n_features)[:2]
 
-    tol = 1e-6
+    tol = 1e-8
     clf = GroupLasso(
-        alpha=0.01, groups=1, tol=tol, p0=10,
-        verbose=1, prune=False, max_iter=8)
+        alpha=0.01, groups=4, tol=tol, p0=10,
+        verbose=1, prune=True, max_iter=9)
     clf.fit(X, y)
 
     # np.testing.assert_array_less(clf.dual_gap_, tol)
