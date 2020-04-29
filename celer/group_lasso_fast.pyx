@@ -82,11 +82,21 @@ cpdef floating dscal_grp(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_grp(
-        bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
-        floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
-        floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
-        floating[::1] prios, uint8[::1] screened, floating radius,
-        int * n_screened) nogil:
+        bint is_sparse,
+        int pb, floating[::1] theta,
+        floating[::1, :] X,
+        floating[::1] X_data,
+        int[::1] X_indices,
+        int[::1] X_indptr,
+        floating[::1] norms_X_grp,
+        int[::1] grp_ptr,
+        int[::1] grp_indices,
+        floating[::1] prios,
+        uint8[::1] screened,
+        floating radius,
+        int * n_screened
+        ) nogil:
+    pass
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -210,8 +220,7 @@ cpdef celer_grp(
             highest_d_obj = d_obj
             # TODO implement a best_theta
 
-        p_obj = primal_grplasso(alpha, R
-        , grp_ptr, grp_indices, w)
+        p_obj = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
 
@@ -228,10 +237,14 @@ cpdef celer_grp(
         elif pb == LOGREG:
             radius = sqrt(gap / 2.) / alpha
 
-        # set_prios_grp(
-        #     is_sparse, pb, theta, X, X_data,
-        #     X_indices, X_indptr, lc_groups, grp_ptr, grp_indices, prios, &screened[0],
-        #     radius, &n_screened)
+        set_prios_grp(
+            is_sparse,
+            pb, theta, X, X_data,
+            X_indices, X_indptr, lc_groups,
+            grp_ptr, grp_indices,
+            prios, screened,
+            radius, &n_screened
+            )
 
         if prune:
             nnz = 0
