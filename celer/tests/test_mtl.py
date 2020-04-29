@@ -177,29 +177,31 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
-    for (sparse_X, fit_intercept, normalize) in \
-            itertools.product([0, 1], [0, 1], [0, 1]):
+    # for (sparse_X, fit_intercept, normalize) in \
+            # itertools.product([0, 1], [0, 1], [0, 1]):
 
-        # check that group Lasso with groups of size 1 gives Lasso
-        n_features = 200
-        X, y = build_dataset(
-            n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
-        alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
-        alpha = alpha_max / 10
-        # take groups of size 1:
+    sparse_X, fit_intercept, normalize = 1, 1, 0
+    # check that group Lasso with groups of size 1 gives Lasso
+    n_features = 200
+    X, y = build_dataset(
+        n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
+    alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
+    alpha = alpha_max / 10
+    # take groups of size 1:
 
-        clf1 = GroupLasso(alpha=alpha, groups=1, tol=1e-8,
-                          fit_intercept=fit_intercept, normalize=normalize)
-        clf1.fit(X, y)
+    print(sparse_X, fit_intercept, normalize)
 
-        clf = Lasso(alpha, tol=1e-8, fit_intercept=fit_intercept,
-                    normalize=normalize)
-        clf.fit(X, y)
-        print(sparse_X, fit_intercept, normalize)
+    clf = Lasso(alpha, tol=1e-8, fit_intercept=fit_intercept,
+                normalize=normalize, verbose=1)
+    clf.fit(X, y)
 
-        print(clf1.intercept_)
-        print(clf.intercept_)
-        # np.testing.assert_allclose(clf1.coef_, clf.coef_, atol=1e-3)
+    clf1 = GroupLasso(alpha=alpha, groups=1, tol=1e-8,
+                      fit_intercept=fit_intercept, normalize=normalize, verbose=1)
+    clf1.fit(X, y)
+
+    print(clf1.intercept_)
+    print(clf.intercept_)
+    # np.testing.assert_allclose(clf1.coef_, clf.coef_, atol=1e-3)
     # TODO check intercept is fitted too
 
     # n_features = 1000

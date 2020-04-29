@@ -171,6 +171,14 @@ cpdef celer_grp(
     cdef floating[::1] prios = np.empty(n_groups, dtype=dtype)
     cdef uint8[::1] screened = np.zeros(n_groups, dtype=np.uint8)
     cdef int max_group_size = 0
+
+    if is_sparse:
+        # center = X_mean.any():
+        for j in range(n_features):
+            if X_mean[j]:
+                center = True
+                break
+
     for g in range(n_groups):
         max_group_size = max(max_group_size, grp_ptr[g + 1] - grp_ptr[g])
 
@@ -204,13 +212,9 @@ cpdef celer_grp(
             d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
-            # TODO
             scal = dscal_grp(
                     is_sparse, theta_inner, grp_ptr,
                     grp_indices, X, X_data, X_indices, X_indptr, X_mean, n_groups, dummy_C, center)
-                # is_sparse, pb, n_features, n_samples, &theta_inner[0],
-                # X, X_data, X_indices, X_indptr,
-                # n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
@@ -277,7 +281,6 @@ cpdef celer_grp(
 
         if ws_size > n_groups - n_screened:
             ws_size = n_groups - n_screened
-
 
         # if ws_size == n_groups then argpartition will break:
         if ws_size == n_groups:

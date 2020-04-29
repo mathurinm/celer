@@ -219,9 +219,21 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         for g in range(n_groups):
             X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
             if is_sparse:
-                norms_X_grp[g] = np.sqrt(norm((X_g.T @ X_g).todense(), ord=2))
+                gram = (X_g.T @ X_g).todense()
+                # handle centering:
+                for j1 in range(grp_ptr[g], grp_ptr[g + 1]):
+                    for j2 in range(grp_ptr[g], grp_ptr[g + 1]):
+                        gram[j1 - grp_ptr[g], j2 - grp_ptr[g]] += X_sparse_scaling[j1] * \
+                            X_sparse_scaling[j2] * n_samples - \
+                            X_sparse_scaling[j1] * \
+                            X_data[X_indptr[j2]:X_indptr[j2+1]].sum() - \
+                            X_sparse_scaling[j2] * \
+                            X_data[X_indptr[j1]:X_indptr[j1+1]].sum()
+
+                norms_X_grp[g] = np.sqrt(norm(gram, ord=2))
             else:
                 norms_X_grp[g] = norm(X_g, ord=2)
+        print(norms_X_grp)
     else:
         # TODO harmonize names
         norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
@@ -229,6 +241,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             is_sparse, norms_X_col, n_samples, X_dense, X_data,
             X_indices, X_indptr, X_sparse_scaling)
 
+        print(norms_X_col)
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
         alpha = alphas[t]
