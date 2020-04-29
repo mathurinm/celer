@@ -1,4 +1,5 @@
 import pytest
+import itertools
 import numpy as np
 from numpy.linalg import norm
 
@@ -14,24 +15,27 @@ from celer.group_fast import dscal_grp
 from celer.utils.testing import build_dataset
 
 
-def test_group_lasso_lasso():
+@pytest.mark.parametrize("sparse_X, fit_intercept, normalize",
+                         itertools.product([0, 1], [0, 1], [0, 1]))
+def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
     # check that group Lasso with groups of size 1 gives Lasso
     n_features = 200
     X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=False,
-        n_informative_features=n_features)[:2]
+        n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
     alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
     alpha = alpha_max / 10
     # take groups of size 1:
 
-    clf1 = GroupLasso(alpha=alpha, groups=1, fit_intercept=False, tol=1e-8)
+    clf1 = GroupLasso(alpha=alpha, groups=1, tol=1e-8,
+                      fit_intercept=fit_intercept, normalize=normalize)
     clf1.fit(X, y)
 
-    clf = Lasso(alpha, fit_intercept=False, tol=1e-8)
+    clf = Lasso(alpha, tol=1e-8, fit_intercept=fit_intercept,
+                normalize=normalize)
     clf.fit(X, y)
 
     np.testing.assert_allclose(clf1.coef_, clf.coef_, atol=1e-4)
-    # TODO check intercept is fitted too
+    np.testing.assert_allclose(clf1.intercept_, clf.intercept_)
 
 
 def test_group_lasso_multitask():
@@ -173,17 +177,42 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
-    n_features = 1000
-    n_samples = 200
-    X, y = build_dataset(
-        n_samples=n_samples, n_features=n_features, sparse_X=False,
-        n_informative_features=n_features)[:2]
+    for (sparse_X, fit_intercept, normalize) in \
+            itertools.product([0, 1], [0, 1], [0, 1]):
 
-    tol = 1e-8
-    clf = GroupLasso(
-        alpha=0.01, groups=4, tol=tol, p0=10,
-        verbose=1, prune=True, max_iter=9)
-    clf.fit(X, y)
+        # check that group Lasso with groups of size 1 gives Lasso
+        n_features = 200
+        X, y = build_dataset(
+            n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
+        alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
+        alpha = alpha_max / 10
+        # take groups of size 1:
+
+        clf1 = GroupLasso(alpha=alpha, groups=1, tol=1e-8,
+                          fit_intercept=fit_intercept, normalize=normalize)
+        clf1.fit(X, y)
+
+        clf = Lasso(alpha, tol=1e-8, fit_intercept=fit_intercept,
+                    normalize=normalize)
+        clf.fit(X, y)
+        print(sparse_X, fit_intercept, normalize)
+
+        print(clf1.intercept_)
+        print(clf.intercept_)
+        # np.testing.assert_allclose(clf1.coef_, clf.coef_, atol=1e-3)
+    # TODO check intercept is fitted too
+
+    # n_features = 1000
+    # n_samples = 200
+    # X, y = build_dataset(
+    #     n_samples=n_samples, n_features=n_features, sparse_X=False,
+    #     n_informative_features=n_features)[:2]
+
+    # tol = 1e-8
+    # clf = GroupLasso(
+    #     alpha=0.01, groups=4, tol=tol, p0=10,
+    #     verbose=1, prune=True, max_iter=9)
+    # clf.fit(X, y)
 
     # np.testing.assert_array_less(clf.dual_gap_, tol)
 
