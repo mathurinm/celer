@@ -35,7 +35,7 @@ def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
     clf1.fit(X, y)
 
     np.testing.assert_allclose(clf1.coef_, clf.coef_, atol=1e-6)
-    np.testing.assert_allclose(clf1.intercept_, clf.intercept_)
+    np.testing.assert_allclose(clf1.intercept_, clf.intercept_, rtol=1e-4)
 
 
 def test_group_lasso_multitask():
