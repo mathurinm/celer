@@ -223,7 +223,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 # handle centering:
                 for j1 in range(grp_ptr[g], grp_ptr[g + 1]):
                     for j2 in range(grp_ptr[g], grp_ptr[g + 1]):
-                        gram[j1 - grp_ptr[g], j2 - grp_ptr[g]] += X_sparse_scaling[j1] * \
+                        gram[j1 - grp_ptr[g], j2 - grp_ptr[g]] += \
+                            X_sparse_scaling[j1] * \
                             X_sparse_scaling[j2] * n_samples - \
                             X_sparse_scaling[j1] * \
                             X_data[X_indptr[j2]:X_indptr[j2+1]].sum() - \
@@ -233,7 +234,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 norms_X_grp[g] = np.sqrt(norm(gram, ord=2))
             else:
                 norms_X_grp[g] = norm(X_g, ord=2)
-        print(norms_X_grp)
     else:
         # TODO harmonize names
         norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
@@ -241,7 +241,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             is_sparse, norms_X_col, n_samples, X_dense, X_data,
             X_indices, X_indptr, X_sparse_scaling)
 
-        print(norms_X_col)
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
         alpha = alphas[t]
@@ -274,7 +273,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 scal = dscal_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
-                    len(grp_ptr) - 1, np.zeros(1, dtype=np.int32), False)
+                    len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
+                    X_sparse_scaling.any())
                 theta /= scal
             elif pb == LOGREG:
                 theta = y / (1 + np .exp(y * Xw)) / alpha

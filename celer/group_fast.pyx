@@ -147,7 +147,6 @@ cpdef celer_grp(
 
     pb = LASSO
     cdef int verbose_in = max(0, verbose - 1)
-    cdef bint center = False
 
     if floating is double:
         dtype = np.float64
@@ -172,6 +171,7 @@ cpdef celer_grp(
     cdef uint8[::1] screened = np.zeros(n_groups, dtype=np.uint8)
     cdef int max_group_size = 0
 
+    cdef bint center = False
     if is_sparse:
         # center = X_mean.any():
         for j in range(n_features):
@@ -365,8 +365,9 @@ cpdef celer_grp(
                             for i in range(startptr, endptr):
                                 R[X_indices[i]] += tmp *  X_data[i]
                             if center:
+                                X_mean_j = X_mean[j]
                                 for i in range(n_samples):
-                                    R[i] += X_mean_j * tmp
+                                    R[i] -= X_mean_j * tmp
                         else:
                             faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
 
