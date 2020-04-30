@@ -95,14 +95,16 @@ def test_convert_groups():
 
 
 def test_mtl():
+    # n_samples, n_features = 30, 70
+    # X, Y, _, _ = build_dataset(n_samples, n_features, n_targets=10)
     X, Y, _, _ = build_dataset(n_targets=10)
-    tol = 1e-8
+    tol = 1e-9
     alphas, coefs, gaps = mtl_path(X, Y, eps=1e-2, tol=tol)
     np.testing.assert_array_less(gaps, tol)
 
     sk_alphas, sk_coefs, sk_gaps = lasso_path(X, Y, eps=1e-2, tol=tol)
     np.testing.assert_array_less(sk_gaps, tol * np.linalg.norm(Y, 'fro')**2)
-    np.testing.assert_array_almost_equal(coefs, sk_coefs, decimal=6)
+    np.testing.assert_array_almost_equal(coefs, sk_coefs, decimal=5)
     np.testing.assert_allclose(alphas, sk_alphas)
 
 
@@ -177,6 +179,7 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
+    1 / 0
     for (sparse_X, fit_intercept, normalize) in \
             itertools.product([0, 1], [0, 1], [0, 1]):
         # sparse_X, fit_intercept, normalize = 1, 1, 0
