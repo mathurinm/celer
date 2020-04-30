@@ -196,21 +196,21 @@ cpdef celer_grp(
     cdef floating radius = 10000 # TODO
 
     for t in range(max_iter):
-        if t != 0:
-            fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-            tmp = 1. / (alpha * n_samples)
+        # if t != 0: TODO potential speedup at iteration 0
+        fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
+        tmp = 1. / (alpha * n_samples)
+        fscal(&n_samples, &tmp, &theta[0], &inc)
+
+        scal = dscal_grp(
+            is_sparse, theta, grp_ptr,
+            grp_indices, X, X_data, X_indices, X_indptr, X_mean, n_groups, dummy_C, center)
+        if scal > 1. :
+            tmp = 1. / scal
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            scal = dscal_grp(
-                is_sparse, theta, grp_ptr,
-                grp_indices, X, X_data, X_indices, X_indptr, X_mean, n_groups, dummy_C, center)
+        d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
-            if scal > 1. :
-                tmp = 1. / scal
-                fscal(&n_samples, &tmp, &theta[0], &inc)
-
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
-
+        if t > 0:
             # also test dual point returned by inner solver after 1st iter:
             scal = dscal_grp(
                     is_sparse, theta_inner, grp_ptr,
@@ -221,13 +221,13 @@ cpdef celer_grp(
 
             d_obj_from_inner = dual(
                 pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
-        else:
-        # TODO unclear if this is safe at the moment (ok since we scale wrt all groups but potential issue if not)
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+        # else:
+        # # TODO unclear if this is safe at the moment (ok since we scale wrt all groups but potential issue if not)
+        #     d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
-        if d_obj_from_inner > d_obj:
-            d_obj = d_obj_from_inner
-            fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
+            if d_obj_from_inner > d_obj:
+                d_obj = d_obj_from_inner
+                fcopy(&n_samples, &theta_inner[0], &inc, &theta[0], &inc)
 
         if t == 0 or d_obj > highest_d_obj:
             highest_d_obj = d_obj

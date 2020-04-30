@@ -3,7 +3,7 @@ import numpy as np
 from scipy import sparse
 
 
-def build_dataset(n_samples=50, n_features=200, n_informative_features=None,
+def build_dataset(n_samples=50, n_features=200, n_informative_features=10,
                   n_targets=1, sparse_X=False):
     """Build samples and observation for linear regression problem."""
     random_state = np.random.RandomState(0)

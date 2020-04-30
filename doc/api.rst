@@ -22,6 +22,7 @@ Estimators
    :toctree: generated/
 
    GroupLasso
+   GroupLassoCV
    Lasso
    LassoCV
    LogisticRegression
