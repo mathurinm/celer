@@ -1,7 +1,7 @@
 """
-=============================================
-Run GroupLasso for structured sparse recovery
-=============================================
+===============================================================
+Run GroupLasso and GroupLasso CV for structured sparse recovery
+===============================================================
 
 The example runs the GroupLasso scikit-learn like estimators.
 """
@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from sklearn.utils import check_random_state
 
-from celer import GroupLasso
+from celer import GroupLasso, GroupLassoCV
 from celer.plot_utils import configure_plt
 
 print(__doc__)
@@ -36,7 +36,7 @@ y = X @ w_true + rng.randn(n_samples)
 # Fit an adapted GroupLasso model
 
 groups = 5  # groups are contiguous and of size 5
-clf = GroupLasso(groups=groups, alpha=1)
+clf = GroupLasso(groups=groups, alpha=1.1)
 clf.fit(X, y)
 
 # Display results
@@ -49,3 +49,25 @@ plt.setp([m, s], color='#ff7f0e')
 plt.xlabel("feature index")
 plt.legend()
 plt.show(block=False)
+
+
+# Get optimal alpha by cross validation
+model = GroupLassoCV(groups=groups)
+model.fit(X, y)
+
+print("Estimated regularization parameter alpha: %s" % model.alpha_)
+
+fig = plt.figure(figsize=(11, 4.5))
+plt.semilogx(model.alphas_, model.mse_path_, ':')
+plt.semilogx(model.alphas_, model.mse_path_.mean(axis=-1), 'k',
+             label='Average across the folds', linewidth=2)
+plt.axvline(model.alpha_, linestyle='--', color='k',
+            label='alpha: CV estimate')
+
+plt.legend()
+
+plt.xlabel(r'$\alpha$')
+plt.ylabel('Mean square error')
+plt.show(block=False)
+
+print(model.coef_)  # not the correct sparsity pattern
