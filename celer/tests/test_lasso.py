@@ -181,10 +181,9 @@ def test_celer_single_alpha(sparse_X, pb):
     alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, gap = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
-    np.testing.assert_array_less(gap, tol)
-    np.testing.assert_equal(w.shape[0], X.shape[1])
-    np.testing.assert_equal(theta.shape[0], X.shape[0])
+    _, coefs, gaps = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
+    w = coefs.T[0]
+    np.testing.assert_array_less(gaps, tol)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
@@ -197,11 +196,11 @@ def test_zero_column(sparse_X):
         X[:, :n_zero_columns].fill(0.)
     alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     tol = 1e-6
-    w, theta, gap = celer_path(
+    _, coefs, gaps = celer_path(
         X, y, "lasso", alphas=[alpha_max / 10.], tol=tol, p0=50, prune=0)
-    np.testing.assert_array_less(gap, tol)
+    w = coefs.T[0]
+    np.testing.assert_array_less(gaps, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
-    np.testing.assert_equal(theta.shape[0], X.shape[0])
 
 
 def test_warm_start():
