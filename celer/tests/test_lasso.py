@@ -21,8 +21,8 @@ from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
 
 
-@pytest.mark.parametrize("solver", ["celer", "PN"])
-def test_logreg(solver):
+@pytest.mark.parametrize("use_PN", [False, True])
+def test_logreg(use_PN):
     X, y, _, _ = build_dataset(
         n_samples=100, n_features=100, sparse_X=True)
     y = np.sign(y)
@@ -34,7 +34,7 @@ def test_logreg(solver):
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
         solver='liblinear', tol=tol)
 
-    _, coefs_c, gaps = celer_path(X, y, solver=solver, pb="logreg",
+    _, coefs_c, gaps = celer_path(X, y, use_PN=use_PN, pb="logreg",
                                   alphas=alphas, tol=tol, p0=1)
 
     np.testing.assert_array_less(gaps, tol)
