@@ -112,7 +112,7 @@
 <h1>celer.LassoCV<a class="headerlink" href="#celer-lassocv" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="celer.LassoCV">
-<em class="property">class </em><code class="sig-prename descclassname">celer.</code><code class="sig-name descname">LassoCV</code><span class="sig-paren">(</span><em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">cv=None</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">precompute='auto'</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">celer.</code><code class="sig-name descname">LassoCV</code><span class="sig-paren">(</span><em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">cv=None</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">precompute='auto'</em>, <em class="sig-param">positive=False</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV" title="Permalink to this definition">¶</a></dt>
 <dd><p>LassoCV scikit-learn estimator based on Celer solver</p>
 <p>The best model is selected by cross-validation.</p>
 <p>The optimization objective for Lasso is:</p>
@@ -166,6 +166,10 @@ coordinate descent epochs.</p>
 <dt><strong>precompute</strong><span class="classifier">ignored parameter, kept for sklearn compatibility.</span></dt><dd></dd>
 <dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, forces the coefficients to be positive.</p>
 </dd>
+<dt><strong>n_jobs</strong><span class="classifier">int or None, optional (default=None)</span></dt><dd><p>Number of CPUs to use during the cross validation.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> means 1 unless in a <code class="xref py py-obj docutils literal notranslate"><span class="pre">joblib.parallel_backend</span></code> context.
+<code class="docutils literal notranslate"><span class="pre">-1</span></code> means using all processors.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -200,7 +204,7 @@ the specified tolerance for the optimal alpha.</p>
 </dl>
 <dl class="method">
 <dt id="celer.LassoCV.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">cv=None</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">precompute='auto'</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">cv=None</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">precompute='auto'</em>, <em class="sig-param">positive=False</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LassoCV.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 

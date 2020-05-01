@@ -15,9 +15,32 @@ The example runs the LassoCV scikit-learn like estimator
 using the Celer algorithm.
 
 
+.. code-block:: default
 
-.. image:: /auto_examples/images/sphx_glr_plot_lasso_cv_001.png
-    :class: sphx-glr-single-img
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    from sklearn.datasets import fetch_openml
+
+    from celer import LassoCV
+    from celer.plot_utils import configure_plt
+
+    print(__doc__)
+    configure_plt()
+
+    print("Loading data...")
+    dataset = fetch_openml("leukemia")
+    X = np.asfortranarray(dataset.data.astype(float))
+    y = 2 * ((dataset.target == "AML") - 0.5)
+
+    model = LassoCV(cv=3, n_jobs=3)
+    model.fit(X, y)
+
+    print("Estimated regularization parameter alpha: %s" % model.alpha_)
+
+
+
 
 
 .. rst-class:: sphx-glr-script-out
@@ -28,43 +51,18 @@ using the Celer algorithm.
 
 
     Loading data...
-    /home/mathurin/workspace/celer/celer/homotopy.py:242: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Fitting data with very small alpha may cause precision problems.
+    /home/mathurin/workspace/celer/celer/homotopy.py:241: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Fitting data with very small alpha may cause precision problems.
       ConvergenceWarning)
     Estimated regularization parameter alpha: 81.38126193253959
-    /home/mathurin/workspace/celer/examples/plot_lasso_cv.py:43: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show()
 
 
 
 
-
-
-|
+Display results
 
 
 .. code-block:: default
 
-
-    import numpy as np
-    import matplotlib.pyplot as plt
-
-    from sklearn.datasets import fetch_openml
-
-    from celer import LassoCV
-
-    print(__doc__)
-
-    print("Loading data...")
-    dataset = fetch_openml("leukemia")
-    X = np.asfortranarray(dataset.data.astype(float))
-    y = 2 * ((dataset.target == "AML") - 0.5)
-
-    model = LassoCV(cv=3)
-    model.fit(X, y)
-
-    print("Estimated regularization parameter alpha: %s" % model.alpha_)
-
-    # Display results
 
     plt.figure()
     plt.semilogx(model.alphas_, model.mse_path_, ':')
@@ -81,9 +79,18 @@ using the Celer algorithm.
     plt.show()
 
 
+
+.. image:: /auto_examples/images/sphx_glr_plot_lasso_cv_001.png
+    :class: sphx-glr-single-img
+
+
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.084 seconds)
+   **Total running time of the script:** ( 0 minutes  2.936 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:

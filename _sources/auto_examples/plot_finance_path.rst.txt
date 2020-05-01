@@ -14,8 +14,76 @@ Lasso path computation on Finance/log1p dataset
 The example runs the Celer algorithm on the Finance dataset
 which is a large sparse dataset.
 
-Running time is here not compared with the scikit-learn
+Running time is not compared with the scikit-learn
 implementation as it makes the example too long to run.
+
+
+.. code-block:: default
+
+
+    import time
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    from celer import celer_path
+    from celer.datasets import load_libsvm
+    from celer.plot_utils import plot_path_hist
+
+    print(__doc__)
+
+    print("*** Warning: this example may take more than 5 minutes to run ***")
+    X, y = load_libsvm('finance')
+    n_samples, n_features = X.shape
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+    print("Dataset size: %d samples, %d features" % X.shape)
+
+    # construct grid of regularization parameters alpha
+    n_alphas = 11
+    alphas = alpha_max * np.geomspace(1, 0.05, n_alphas)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    *** Warning: this example may take more than 5 minutes to run ***
+    Dataset: finance
+    Replace is False and data exists, so doing nothing. Use replace==True to re-download the data.
+    Dataset size: 16087 samples, 1668737 features
+
+
+
+
+Run Celer on a grid of regularization parameters, for various tolerances:
+
+
+.. code-block:: default
+
+    tols = [1e-2, 1e-4, 1e-6]
+    results = np.zeros([1, len(tols)])
+    gaps = np.zeros((len(tols), len(alphas)))
+
+    print("Starting path computation...")
+    for tol_ix, tol in enumerate(tols):
+        t0 = time.time()
+        res = celer_path(X, y, 'lasso', alphas=alphas, tol=tol, prune=True)
+        results[0, tol_ix] = time.time() - t0
+        _, coefs, gaps[tol_ix] = res
+
+
+    labels = [r"\sc{Celer}"]
+    figsize = (7, 4)
+    fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
+    plt.show(block=False)
+
 
 
 
@@ -29,73 +97,67 @@ implementation as it makes the example too long to run.
 
  .. code-block:: none
 
-
-    *** Warning: this example may take more than 5 minutes to run ***
-    Dataset: finance
-    Replace is False and data exists, so doing nothing. Use replace==True to re-download the data.
     Starting path computation...
-    /home/mathurin/workspace/celer/celer/plot_utils.py:48: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show(block=False)
-    /home/mathurin/workspace/celer/examples/plot_finance_path.py:54: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show()
 
 
 
 
-
-|
+Measure the influence of regularization on the sparsity of the solutions:
 
 
 .. code-block:: default
 
 
-    import time
+    fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True)
+    plt.bar(np.arange(n_alphas), (coefs != 0).sum(axis=0))
+    plt.title("Sparsity of solution along regularization path")
+    ax.set_ylabel(r"$||\hat w||_0$")
+    ax.set_xlabel(r"$\lambda / \lambda_{\mathrm{max}}$")
+    ax.set_yscale('log')
+    ax.set_xticks(np.arange(n_alphas)[::2])
+    ax.set_xticklabels(map(lambda x: "%.2f" % x, alphas[::2] / alphas[0]))
+    plt.show(block=False)
 
-    import numpy as np
-    import matplotlib.pyplot as plt
 
-    from celer import celer_path
-    from celer.datasets import load_libsvm
-    from celer.plot_utils import plot_path_hist
 
-    print(__doc__)
 
-    print("*** Warning: this example may take more than 5 minutes to run ***")
-    X, y = load_libsvm('finance')
 
-    print("Starting path computation...")
-    n_samples = X.shape[0]
-    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+.. image:: /auto_examples/images/sphx_glr_plot_finance_path_002.png
+    :class: sphx-glr-single-img
 
-    # construct fine or coarse grid of regularization parameters
-    fine = False
-    n_alphas = 100 if fine else 10
-    alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
-    gap_freq = 10
-    prune = 0
-    verbose = 0
-    verbose_inner = 0
 
-    tols = [1e-2, 1e-4, 1e-6]
-    results = np.zeros([1, len(tols)])
-    for tol_ix, tol in enumerate(tols):
-        t0 = time.time()
-        res = celer_path(X, y, 'lasso', alphas=alphas, max_iter=100, gap_freq=gap_freq,
-                         p0=100, verbose=verbose, verbose_inner=verbose_inner,
-                         tol=tol, prune=prune, return_thetas=True)
-        results[0, tol_ix] = time.time() - t0
-        _, coefs, gaps, thetas = res
 
-    labels = [r"\sc{Celer}"]
-    figsize = (7, 4)
-    fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
-    plt.show()
+
+Check convergence guarantees: gap is inferior to tolerance
+
+
+.. code-block:: default
+
+
+    df = pd.DataFrame(gaps.T, columns=map(lambda x: r"tol=%.0e" % x, tols))
+    df.index = map(lambda x: "%.2f" % x, alphas / alphas[0])
+    ax = df.plot.bar(figsize=(12, 5))
+    ax.set_ylabel("duality gap reached")
+    ax.set_xlabel(r"$\lambda / \lambda_{\mathrm{max}}$")
+    ax.set_yscale('log')
+    ax.set_yticks(tols)
+    plt.tight_layout()
+    plt.show(block=False)
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_finance_path_003.png
+    :class: sphx-glr-single-img
+
+
+
+
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.071 seconds)
+   **Total running time of the script:** ( 2 minutes  54.115 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_finance_path.py:
