@@ -166,6 +166,7 @@ def newton_celer(
     cdef long[:] all_features = np.arange(n_features)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef long[:] WS  # hacky for now TODO fix, int causing runtime error
+    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
 
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
@@ -217,6 +218,7 @@ def newton_celer(
 
         d_obj = dual(LOGREG, n_samples, alpha, 0., &theta[0], &y[0])
         gap = p_obj - d_obj
+        gaps[t] = gap
 
         if t != 0 and use_accel:
             # do some epochs of CD to create an extrapolated dual point
@@ -332,7 +334,7 @@ def newton_celer(
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
                   aux, is_positive_label, blitz_sc)
 
-    return np.asarray(w), np.asarray(theta), gap
+    return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
 
 @cython.boundscheck(False)
@@ -345,7 +347,6 @@ cpdef int PN_logreg(
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
         int[:] is_positive_label, bint blitz_sc):
-
 
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]

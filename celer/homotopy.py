@@ -20,10 +20,10 @@ LASSO = 0
 LOGREG = 1
 
 
-def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
+def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
                p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
-               return_thetas=False, X_offset=None, X_scale=None,
+               return_thetas=False, use_PN=False, X_offset=None, X_scale=None,
                return_n_iter=False, positive=False):
     """Compute Lasso path with Celer as inner solver.
 
@@ -38,9 +38,6 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
 
     pb : "lasso" | "logreg"
         Optimization problem to solve.
-
-    solver : "celer" | "PN"
-        Algorithm to use if pb == "logreg".
 
     eps : float, optional
         Length of the path. ``eps=1e-3`` means that
@@ -86,6 +83,10 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
 
+    use_PN : bool, optional
+        If pb == "logreg", use ProxNewton solver instead of coordinate
+        descent.
+
     X_offset : np.array, shape (n_features,), optional
         Used to center sparse X without breaking sparsity. Mean of each column.
         See sklearn.linear_model.base._preprocess_data().
@@ -118,11 +119,9 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
     """
     assert pb in ("lasso", "logreg")
     if pb == "lasso":
-        solver = "celer"
         pb = LASSO
     else:
         pb = LOGREG
-        assert solver in ("celer", "PN")
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
@@ -186,9 +185,10 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
     for t in range(n_alphas):
         alpha = alphas[t]
         if verbose:
-            print("#" * 60)
-            print(" ##### Computing %dth alpha" % (t + 1))
-            print("#" * 60)
+            to_print = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
+            print("#" * len(to_print))
+            print(to_print)
+            print("#" * len(to_print))
         if t > 0:
             w = coefs[:, t - 1].copy()
             theta = thetas[t - 1].copy()
@@ -211,7 +211,7 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
                 theta = y / (1 + np .exp(y * Xw)) / alpha
                 theta /= np.linalg.norm(X.T.dot(theta), ord=np.inf)
         # celer modifies w, Xw, and theta in place:
-        if solver == "celer":
+        if pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
@@ -219,17 +219,14 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
                 max_iter=max_iter, gap_freq=gap_freq, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, verbose_inner=verbose_inner,
                 use_accel=1, tol=tol, prune=prune, positive=positive)
+        else:  # pb == LOGREG and use_PN
+            sol = newton_celer(
+                is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
+                max_iter, verbose, verbose_inner, tol, prune, p0, True, K=6,
+                growth=2, blitz_sc=False)
 
-            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
-
-        elif solver == "PN":
-            sol = PN_solver(
-                X, y, alpha, w, max_iter,
-                verbose=verbose, verbose_inner=verbose_inner,
-                tol=tol, prune=prune, p0=p0, use_accel=True)
-
-            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2]
-        if return_n_iter:  # TODO working for Lasso only RN
+        coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+        if return_n_iter:
             n_iters[t] = len(sol[2])
 
         if dual_gaps[t] > tol:
@@ -247,29 +244,6 @@ def celer_path(X, y, pb, solver="celer", eps=1e-3, n_alphas=100, alphas=None,
         results += (n_iters,)
 
     return results
-
-
-# TODO put this in logreg_path with solver variable
-def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
-              verbose_inner=False, tol=1e-4, prune=True, p0=10,
-              use_accel=True, K=6, growth=2, blitz_sc=False):
-    is_sparse = sparse.issparse(X)
-    w = w_init.copy()
-    if is_sparse:
-        X_dense = np.empty([2, 2], order='F')
-        X_indices = X.indices.astype(np.int32)
-        X_indptr = X.indptr.astype(np.int32)
-        X_data = X.data
-    else:
-        X_dense = X
-        X_indices = np.empty([1], dtype=np.int32)
-        X_indptr = np.empty([1], dtype=np.int32)
-        X_data = np.empty([1])
-
-    return newton_celer(
-        is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-        max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
-        growth=growth, blitz_sc=blitz_sc)
 
 
 def mtl_path(
