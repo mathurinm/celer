@@ -25,7 +25,19 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
                return_thetas=False, use_PN=False, X_offset=None, X_scale=None,
                return_n_iter=False, positive=False):
-    """Compute Lasso path with Celer as inner solver.
+    r"""Compute optimization path with Celer as inner solver.
+
+    With `n = len(y)` the number of samples, the losses are:
+
+    Lasso:
+
+    .. math::
+        \frac{||y - X w||_2^2}{2 n} + \alpha ||w||_1
+    Logreg:
+
+    .. math::
+        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) +
+        \alpha  ||w||_1
 
     Parameters
     ----------
