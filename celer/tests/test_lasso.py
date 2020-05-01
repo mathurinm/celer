@@ -182,7 +182,6 @@ def test_celer_single_alpha(sparse_X, pb):
 
     tol = 1e-6
     _, coefs, gaps = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
-    w = coefs.T[0]
     np.testing.assert_array_less(gaps, tol)
 
 
