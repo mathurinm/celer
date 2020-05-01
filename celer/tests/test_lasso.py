@@ -18,7 +18,7 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path,
                                   LogisticRegression as sklearn_Logreg)
 
-from celer import celer_path, celer
+from celer import celer_path
 from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
 
@@ -181,7 +181,7 @@ def test_celer_single_alpha(sparse_X, pb):
     alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
 
     tol = 1e-6
-    w, theta, gap = celer(X, y, pb, alpha_max / 10., tol=tol)
+    w, theta, gap = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
@@ -197,8 +197,8 @@ def test_zero_column(sparse_X):
         X[:, :n_zero_columns].fill(0.)
     alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     tol = 1e-6
-    w, theta, gap = celer(X, y, "lasso", alpha_max / 10., tol=tol, p0=50,
-                          prune=0, verbose=1, verbose_inner=1)
+    w, theta, gap = celer_path(
+        X, y, "lasso", alphas=[alpha_max / 10.], tol=tol, p0=50, prune=0)
     np.testing.assert_array_less(gap, tol)
     np.testing.assert_equal(w.shape[0], X.shape[1])
     np.testing.assert_equal(theta.shape[0], X.shape[0])
