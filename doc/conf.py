@@ -13,10 +13,17 @@
 # serve to show the default.
 
 import sys
+import warnings
 # import os
 import sphinx_gallery  # noqa
 import sphinx_bootstrap_theme
 from numpydoc import numpydoc, docscrape  # noqa
+
+
+# Mathurin: disable agg warnings in doc
+warnings.filterwarnings("ignore", category=UserWarning,
+                        message='Matplotlib is currently using agg, which is a'
+                                ' non-GUI backend, so cannot show the figure.')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

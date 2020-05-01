@@ -34,29 +34,21 @@ y /= np.std(y)
 print("Starting path computation...")
 alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 
-fine = True  # fine or coarse grid
-n_alphas = 100 if fine else 10
-alphas = alpha_max * np.logspace(0, -2, n_alphas)
+n_alphas = 100
+alphas = alpha_max * np.geomspace(1, 0.01, n_alphas)
 
-gap_freq = 10
-prune = 1
-verbose = 0
-verbose_inner = 0
 tols = [1e-2, 1e-4, 1e-6, 1e-8]
 results = np.zeros([2, len(tols)])
 for tol_ix, tol in enumerate(tols):
     t0 = time.time()
-    res = celer_path(X, y, pb='lasso', alphas=alphas, max_iter=100, gap_freq=gap_freq,
-                     p0=100, verbose=verbose, verbose_inner=verbose_inner,
-                     tol=tol, prune=prune, return_thetas=True)
+    _, coefs, gaps = celer_path(
+        X, y, pb='lasso', alphas=alphas, tol=tol, prune=True)
     results[0, tol_ix] = time.time() - t0
     print('Celer time: %.2f s' % results[0, tol_ix])
-    _, coefs, gaps, thetas = res
 
     t0 = time.time()
     _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
     results[1, tol_ix] = time.time() - t0
-    coefs = coefs.T
 
 labels = [r"\sc{Celer}", "scikit-learn"]
 figsize = (7.1, 4.3)
