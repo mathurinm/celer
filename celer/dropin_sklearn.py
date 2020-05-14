@@ -9,6 +9,7 @@ from abc import ABCMeta, abstractmethod
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.linear_model._base import LinearModel
 from sklearn.utils import check_array
+from sklearn.utils.validation import _deprecate_positional_args
 from sklearn.utils.validation import column_or_1d, check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.model_selection import check_cv
