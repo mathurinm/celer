@@ -26,8 +26,8 @@ GRPLASSO = 2
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
                p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
-               groups=None, return_thetas=False, X_offset=None, X_scale=None,
-               return_n_iter=False, positive=False):
+               groups=None, return_thetas=False, use_PN=False, X_offset=None,
+               X_scale=None, return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
     With `n = len(y)` the number of samples, the losses are:
@@ -145,7 +145,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
     elif pb.lower() == "grouplasso":
         pb = GRPLASSO
-        solver = "celer"
         if groups is None:
             raise ValueError(
                 "Groups must be specified for the group lasso problem.")
@@ -282,7 +281,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:  # TODO this if else scheme is complicated
             sol = celer_grp(
-                is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data, X_indices,
+                is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
+                X_indices,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
                 prune=prune, verbose=verbose)
@@ -308,7 +308,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         if dual_gaps[t] > tol:
             warnings.warn(
                 'Objective did not converge. Increasing `tol` may make the' +
-                ' solver faster without affecting the results much.',
+                ' solver faster without affecting the results much. \n' +
+                'Fitting data with very small alpha causes precision issues.',
                 ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps
