@@ -135,8 +135,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         The dual variables along the path.
         (Is returned only when ``return_thetas`` is set to True).
     """
-    assert pb in ("lasso", "logreg")
-    if pb == "lasso":
+    if pb.lower() not in ("lasso", "logreg", "grouplasso"):
+        raise ValueError("Unsupported problem %s" % pb)
+    if pb.lower() == "lasso":
         pb = LASSO
     elif pb.lower() == "logreg":
         pb = LOGREG
