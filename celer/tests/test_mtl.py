@@ -179,38 +179,16 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
-    n_features = 200
+    n_features = 1000
     sparse_X = False
     X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
+        n_samples=100, n_features=n_features, sparse_X=sparse_X,
+        n_informative_features=None)[:2]
     # alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
-
-    clf = GroupLassoCV(groups=1, fit_intercept=False,
-                       n_alphas=10, eps=1e-2, verbose=1)
+    import time
+    t0 = time.time()
+    clf = GroupLassoCV(groups=5, fit_intercept=False,
+                       n_alphas=10, eps=1e-3, verbose=1)
     clf.fit(X, y)
-    # for (sparse_X, fit_intercept, normalize) in \
-    #         itertools.product([0, 1], [0, 1], [0, 1]):
-    #     # sparse_X, fit_intercept, normalize = 1, 1, 0
-    #     # check that group Lasso with groups of size 1 gives Lasso
-    #     n_features = 1000
-    #     X, y = build_dataset(
-    #         n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
-    #     alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
-    #     alpha = alpha_max / 10
-    #     # take groups of size 1:
-
-    #     print(sparse_X, fit_intercept, normalize)
-
-    #     clf = Lasso(alpha, tol=1e-12, fit_intercept=fit_intercept,
-    #                 normalize=normalize, verbose=0, )
-    #     clf.fit(X, y)
-
-    #     clf1 = GroupLasso(alpha=alpha, groups=1, tol=1e-12,
-    #                       fit_intercept=fit_intercept, normalize=normalize,
-    #                       verbose=0)
-    #     clf1.fit(X, y)
-
-    #     print(clf1.intercept_)
-    #     print(clf.intercept_)
-
-    #     print(np.max(np.abs(clf1.coef_ - clf.coef_)))
+    t1 = time.time() - t0
+    print(t1)

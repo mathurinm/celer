@@ -335,7 +335,7 @@ def _grp_converter(groups, n_features):
         grp_indices = np.arange(n_features).astype(np.int32)
         grp_ptr = np.cumsum(np.hstack([[0], groups]))
     elif isinstance(groups, list) and isinstance(groups[0], list):
-        grp_sizes = np.array([len(l) for l in groups])
+        grp_sizes = np.array([len(ls) for ls in groups])
         grp_ptr = np.cumsum(np.hstack([[0], grp_sizes]))
         grp_indices = np.array([idx for grp in groups for idx in grp])
     else:
