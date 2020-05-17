@@ -777,7 +777,7 @@ class GroupLasso(Lasso_sklearn):
         gap is smaller than ``tol`` or the maximum number of iteration is
         reached.
 
-    prune : 0 | 1, optional
+    prune : bool, default=True
         Whether or not to use pruning when growing working sets.
 
     fit_intercept : bool, optional (default=True)
@@ -813,7 +813,7 @@ class GroupLasso(Lasso_sklearn):
     >>> clf.fit([[0, 0, 1], [1, -1, 2], [2, 0, -1]], [1, 1, -1])
     GroupLasso(alpha=0.5, fit_intercept=True, gap_freq=10,
     groups=[[0, 1], [2]], max_epochs=50000, max_iter=100, normalize=False,
-    p0=10, prune=0, tol=0.0001, verbose=0, warm_start=False)
+    p0=10, prune=True, tol=0.0001, verbose=0, warm_start=False)
     >>> print(clf.coef_)
     [-0.         -0.          0.39285714]
     >>> print(clf.intercept_)
@@ -836,7 +836,7 @@ class GroupLasso(Lasso_sklearn):
     """
 
     def __init__(self, groups=1, alpha=1., max_iter=100, gap_freq=10,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
+                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
                  fit_intercept=True, normalize=False, warm_start=False):
         super(GroupLasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
