@@ -116,7 +116,7 @@ def celer(
 
         p_obj = primal(pb, alpha, n_samples, &Xw[0], &y[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
-        gaps[t] = gap  # TODO useful?
+        gaps[t] = gap
 
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
@@ -170,7 +170,7 @@ def celer(
             C = all_features
         else:
             C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
-            C.sort()
+            # np.asarray(C).sort()  # TODO do we care that C is sorted ?
         if prune:
             tol_inner = tol_ratio_inner * gap
         else:
@@ -189,6 +189,7 @@ def celer(
     return (np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1]))
 
 
+# TODO there is no need to have a function for this
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)

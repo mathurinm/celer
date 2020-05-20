@@ -17,6 +17,7 @@ from cython cimport floating
 cdef:
     int LASSO = 0
     int LOGREG = 1
+    int GRPLASSO = 2
     int inc = 1
 
 
@@ -154,7 +155,7 @@ cdef floating primal(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
-                       floating * theta, floating * y) nogil:
+                         floating * theta, floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
@@ -337,8 +338,8 @@ cpdef void compute_Xw(
             else:
                 tmp = w[j]
                 faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0], &inc)
-    # currently R = X @ w, update for LASSO:
-    if pb == LASSO:
+    # currently R = X @ w, update for LASSO/GRPLASSO:
+    if pb in (LASSO, GRPLASSO):
         for i in range(n_samples):
             R[i] = y[i] - R[i]
 
@@ -358,6 +359,7 @@ cdef floating compute_dual_scaling(
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
+    # TODO variable pb is not used
 
     if is_sparse:
         if center:
@@ -414,8 +416,9 @@ cdef void set_prios(
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
 
+    #TODO we do not substract theta_sum, which seems to indicate that theta is always centered...
     for j in range(n_features):
-        if screened[j]:
+        if screened[j] or norms_X_col[j] == 0.:
             prios[j] = 10000
             continue
         if is_sparse:

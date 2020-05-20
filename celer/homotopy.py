@@ -12,19 +12,22 @@ from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
 
 from .lasso_fast import celer
+from .group_fast import celer_grp, dscal_grp
+# TODO dnorm better name?
 from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
 
 LASSO = 0
 LOGREG = 1
+GRPLASSO = 2
 
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
                p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
-               return_thetas=False, use_PN=False, X_offset=None, X_scale=None,
-               return_n_iter=False, positive=False):
+               groups=None, return_thetas=False, use_PN=False, X_offset=None,
+               X_scale=None, return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
     With `n = len(y)` the number of samples, the losses are:
@@ -48,7 +51,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     y : ndarray, shape (n_samples,)
         Target values
 
-    pb : "lasso" | "logreg"
+    pb : "lasso" | "logreg" | "grouplasso"
         Optimization problem to solve.
 
     eps : float, optional
@@ -69,11 +72,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         The maximum number of iterations (subproblem definitions)
 
     gap_freq : int, optional
-        Number of coordinate descent epochs between each duality gap
+        Number of (block) coordinate descent epochs between each duality gap
         computations.
 
     max_epochs : int, optional
-        Maximum number of CD epochs on each subproblem.
+        Maximum number of (block) CD epochs on each subproblem.
 
     p0 : int, optional
         First working set size.
@@ -91,6 +94,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
+
+    groups : int or list of ints or list of list of ints, optional
+        Used for the group Lasso only. See the documentation of the
+        GroupLasso class.
 
     return_thetas : bool, optional
         If True, dual variables along the path are returned.
@@ -111,8 +118,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         If True, number of iterations along the path are returned.
 
     positive : bool, optional (default=False)
-        When set to True, if pb == "lasso", forces the coefficients to be
-        positive.
+        If True and pb == "lasso", forces the coefficients to be positive.
 
     Returns
     -------
@@ -129,14 +135,24 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         The dual variables along the path.
         (Is returned only when ``return_thetas`` is set to True).
     """
-    assert pb in ("lasso", "logreg")
-    if pb == "lasso":
+    if pb.lower() not in ("lasso", "logreg", "grouplasso"):
+        raise ValueError("Unsupported problem %s" % pb)
+    if pb.lower() == "lasso":
         pb = LASSO
-    else:
+    elif pb.lower() == "logreg":
         pb = LOGREG
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
+    elif pb.lower() == "grouplasso":
+        pb = GRPLASSO
+        if groups is None:
+            raise ValueError(
+                "Groups must be specified for the group lasso problem.")
+        grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
+        n_groups = len(grp_ptr) - 1
+    else:
+        raise ValueError("Unsupported problem: %s" % pb)
 
     is_sparse = sparse.issparse(X)
 
@@ -156,12 +172,21 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
 
     if alphas is None:
-        if positive:
-            alpha_max = np.max(X.T.dot(y)) / n_samples
-        elif pb == "logreg":
+        # TODO this is wrong is X_sparse_scaling is used
+        if pb == LASSO:
+            if positive:
+                alpha_max = np.max(X.T.dot(y)) / n_samples
+            else:
+                alpha_max = norm(X.T @ y, ord=np.inf) / n_samples
+        elif pb == LOGREG:
             alpha_max = norm(X.T @ y, ord=np.inf) / 2.
-        else:
-            alpha_max = norm(X.T @ y, ord=np.inf) / n_samples
+        elif pb == GRPLASSO:
+            # TODO compute it with dscal to handle centering sparse
+            alpha_max = 0
+            for g in range(n_groups):
+                X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
+                alpha_max = max(alpha_max, norm(X_g.T @ y, ord=2))
+            alpha_max /= n_samples
 
         alphas = alpha_max * np.geomspace(1, eps, n_alphas,
                                           dtype=X.dtype)
@@ -188,10 +213,33 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         X_indices = np.empty([1], dtype=np.int32)
         X_indptr = np.empty([1], dtype=np.int32)
 
-    norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
-    compute_norms_X_col(
-        is_sparse, norms_X_col, n_samples, X_dense, X_data,
-        X_indices, X_indptr, X_sparse_scaling)
+    if pb == GRPLASSO:
+        # TODO this must be included in compute_norm_Xcols when centering
+        norms_X_grp = np.zeros(n_groups, dtype=X_dense.dtype)
+        for g in range(n_groups):
+            X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
+            if is_sparse:
+                gram = (X_g.T @ X_g).todense()
+                # handle centering:
+                for j1 in range(grp_ptr[g], grp_ptr[g + 1]):
+                    for j2 in range(grp_ptr[g], grp_ptr[g + 1]):
+                        gram[j1 - grp_ptr[g], j2 - grp_ptr[g]] += \
+                            X_sparse_scaling[j1] * \
+                            X_sparse_scaling[j2] * n_samples - \
+                            X_sparse_scaling[j1] * \
+                            X_data[X_indptr[j2]:X_indptr[j2+1]].sum() - \
+                            X_sparse_scaling[j2] * \
+                            X_data[X_indptr[j1]:X_indptr[j1+1]].sum()
+
+                norms_X_grp[g] = np.sqrt(norm(gram, ord=2))
+            else:
+                norms_X_grp[g] = norm(X_g, ord=2)
+    else:
+        # TODO harmonize names
+        norms_X_col = np.zeros(n_features, dtype=X_dense.dtype)
+        compute_norms_X_col(
+            is_sparse, norms_X_col, n_samples, X_dense, X_data,
+            X_indices, X_indptr, X_sparse_scaling)
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
@@ -216,14 +264,31 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     X_data, X_indices, X_indptr, X_sparse_scaling)
             else:
                 w = np.zeros(n_features, dtype=X.dtype)
-                Xw = y.copy() if pb == LASSO else np.zeros(n_samples, X.dtype)
+                Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
+
             if pb == LASSO:
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
-            else:
+            elif pb == GRPLASSO:
+                theta = Xw.copy()
+                scal = dscal_grp(
+                    is_sparse, theta, grp_ptr, grp_indices, X_dense,
+                    X_data, X_indices, X_indptr, X_sparse_scaling,
+                    len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
+                    X_sparse_scaling.any())
+                theta /= scal
+            elif pb == LOGREG:
                 theta = y / (1 + np .exp(y * Xw)) / alpha
-                theta /= np.linalg.norm(X.T.dot(theta), ord=np.inf)
+                theta /= np.linalg.norm(X.T @ theta, ord=np.inf)
         # celer modifies w, Xw, and theta in place:
-        if pb == LASSO or (pb == LOGREG and not use_PN):
+        if pb == GRPLASSO:  # TODO this if else scheme is complicated
+            sol = celer_grp(
+                is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
+                X_indices,
+                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
+                norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
+                prune=prune, verbose=verbose)
+            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+        elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
@@ -242,12 +307,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             n_iters[t] = len(sol[2])
 
         if dual_gaps[t] > tol:
-            warnings.warn('Objective did not converge.' +
-                          ' You might want' +
-                          ' to increase the number of iterations.' +
-                          ' Fitting data with very small alpha' +
-                          ' may cause precision problems.',
-                          ConvergenceWarning)
+            warnings.warn(
+                'Objective did not converge. Increasing `tol` may make the' +
+                ' solver faster without affecting the results much. \n' +
+                'Fitting data with very small alpha causes precision issues.',
+                ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps
     if return_thetas:
@@ -258,6 +322,50 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     return results
 
 
+def _grp_converter(groups, n_features):
+    if isinstance(groups, int):
+        grp_size = groups
+        if n_features % grp_size != 0:
+            raise ValueError("n_features (%d) is not a multiple of the desired"
+                             " group size (%d)" % (n_features, grp_size))
+        n_groups = n_features // grp_size
+        grp_ptr = grp_size * np.arange(n_groups + 1)
+        grp_indices = np.arange(n_features)
+    elif isinstance(groups, list) and isinstance(groups[0], int):
+        grp_indices = np.arange(n_features).astype(np.int32)
+        grp_ptr = np.cumsum(np.hstack([[0], groups]))
+    elif isinstance(groups, list) and isinstance(groups[0], list):
+        grp_sizes = np.array([len(ls) for ls in groups])
+        grp_ptr = np.cumsum(np.hstack([[0], grp_sizes]))
+        grp_indices = np.array([idx for grp in groups for idx in grp])
+    else:
+        raise ValueError("Unsupported group format.")
+    return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
+
+
+# TODO put this in logreg_path with solver variable
+def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
+              verbose_inner=False, tol=1e-4, prune=True, p0=10,
+              use_accel=True, K=6, growth=2, blitz_sc=False):
+    is_sparse = sparse.issparse(X)
+    w = w_init.copy()
+    if is_sparse:
+        X_dense = np.empty([2, 2], order='F')
+        X_indices = X.indices.astype(np.int32)
+        X_indptr = X.indptr.astype(np.int32)
+        X_data = X.data
+    else:
+        X_dense = X
+        X_indices = np.empty([1], dtype=np.int32)
+        X_indptr = np.empty([1], dtype=np.int32)
+        X_data = np.empty([1])
+
+    return newton_celer(
+        is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
+        max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
+        growth=growth, blitz_sc=blitz_sc)
+
+
 def mtl_path(
         X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
         max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
@@ -265,7 +373,7 @@ def mtl_path(
         coef_init=None):
     X = check_array(X, "csc", dtype=[
         np.float64, np.float32], order="F", copy=False)
-
+    # TODO check Y is fortran too
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]
     if alphas is None:
