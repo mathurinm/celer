@@ -36,22 +36,26 @@ y = X @ w_true + rng.randn(n_samples)
 # Fit an adapted GroupLasso model
 
 groups = 5  # groups are contiguous and of size 5
+# irregular groups are also supported,
 clf = GroupLasso(groups=groups, alpha=1.1)
 clf.fit(X, y)
 
+###############################################################################
 # Display results
 
-fig = plt.figure(figsize=(13, 4))
-m, s, _ = plt.stem(w_true, label=r"true regression coefficients")
+fig = plt.figure(figsize=(10, 4))
+m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
+                   use_line_collection=True)
 m, s, _ = plt.stem(clf.coef_, label=r"estimated regression coefficients",
-                   markerfmt='x')
+                   markerfmt='x', use_line_collection=True)
 plt.setp([m, s], color='#ff7f0e')
 plt.xlabel("feature index")
 plt.legend()
 plt.show(block=False)
 
 
-# Get optimal alpha by cross validation
+###############################################################################
+# Get optimal alpha for prediction by cross validation
 model = GroupLassoCV(groups=groups)
 model.fit(X, y)
 
@@ -70,4 +74,16 @@ plt.xlabel(r'$\alpha$')
 plt.ylabel('Mean square error')
 plt.show(block=False)
 
-print(model.coef_)  # not the correct sparsity pattern
+
+###############################################################################
+# Show optimal regression vector for prediction, obtained by cross validation
+
+fig = plt.figure(figsize=(10, 4))
+m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
+                   use_line_collection=True)
+m, s, _ = plt.stem(model.coef_, label=r"CV-estimated regression coefficients",
+                   markerfmt='x', use_line_collection=True)
+plt.setp([m, s], color='#ff7f0e')
+plt.xlabel("feature index")
+plt.legend()
+plt.show(block=False)

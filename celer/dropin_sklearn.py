@@ -4,42 +4,18 @@ import numbers
 
 import numpy as np
 
-from scipy import sparse
-from abc import ABCMeta, abstractmethod
+from celer.tmp_hack_sklearn import sklearn_LinearModelCV
 from sklearn.base import RegressorMixin, MultiOutputMixin
-from sklearn.linear_model._base import LinearModel
-from sklearn.utils import check_array
-from sklearn.utils.validation import _deprecate_positional_args
-from sklearn.utils.validation import column_or_1d, check_X_y
+from sklearn.base import RegressorMixin, MultiOutputMixin
+from sklearn.utils.validation import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.model_selection import check_cv
-from joblib import Parallel, delayed, effective_n_jobs
-from sklearn.utils.fixes import _joblib_parallel_args
-from sklearn.linear_model import ElasticNetCV, lasso_path
 from sklearn.linear_model import MultiTaskLasso as MultiTaskLasso_sklearn
-from sklearn.linear_model import MultiTaskLassoCV as _MultiTaskLassoCV
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
-                                  LassoCV as _LassoCV,
                                   LogisticRegression as LogReg_sklearn)
-from sklearn.linear_model._coordinate_descent import (LinearModelCV as
-                                                      _LinearModelCV)
-from sklearn.linear_model._coordinate_descent import (_alpha_grid,
-                                                      _path_residuals)
 from sklearn.preprocessing import LabelEncoder
 from sklearn.multiclass import OneVsRestClassifier
 
 from .homotopy import celer_path, mtl_path
-
-# Hack because `model = Lasso()` is hardcoded in _LinearModelCV definition
-lines = inspect.getsource(_LinearModelCV)
-exec(lines)  # when this is executed Lasso is our class, not sklearn's
-lines = inspect.getsource(_LassoCV)
-lines = lines.replace('LassoCV', 'LassoCV_sklearn')
-exec(lines)
-
-lines = inspect.getsource(_MultiTaskLassoCV)
-lines = lines.replace('MultiTaskLassoCV', 'MultiTaskLassoCV_sklearn')
-exec(lines)
 
 
 class Lasso(Lasso_sklearn):
@@ -164,7 +140,7 @@ class Lasso(Lasso_sklearn):
         return results
 
 
-class LassoCV(LassoCV_sklearn):
+class LassoCV(RegressorMixin, sklearn_LinearModelCV):
     """
     LassoCV scikit-learn estimator based on Celer solver
 
@@ -297,6 +273,15 @@ class LassoCV(LassoCV_sklearn):
             X_offset=kwargs.get('X_offset', None))
         return alphas, coefs, dual_gaps
 
+    def _get_estimator(self):
+        return Lasso()
+
+    def _is_multitask(self):
+        return False
+
+    def _more_tags(self):
+        return {'multioutput': False}
+
 
 class MultiTaskLasso(MultiTaskLasso_sklearn):
     """
@@ -412,7 +397,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         return results
 
 
-class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
+class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     """
     MultiTaskLassoCV scikit-learn estimator based on Celer solver
 
@@ -531,11 +516,6 @@ class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute Lasso path with Celer."""
 
-        # Works !
-        # alphas, coefs, dual_gaps = lasso_path(
-        #     X, y, alphas=alphas, coef_init=coef_init,
-        #     max_iter=self.max_iter, tol=self.tol)
-
         alphas, coefs, dual_gaps = mtl_path(
             X, y, alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, gap_freq=self.gap_freq,
@@ -543,6 +523,15 @@ class MultiTaskLassoCV(MultiTaskLassoCV_sklearn):
             tol=self.tol, prune=self.prune)
 
         return alphas, coefs, dual_gaps
+
+    def _get_estimator(self):
+        return MultiTaskLasso()
+
+    def _is_multitask(self):
+        return True
+
+    def _more_tags(self):
+        return {'multioutput_only': True}
 
 
 class LogisticRegression(LogReg_sklearn):
@@ -864,7 +853,7 @@ class GroupLasso(Lasso_sklearn):
         return results
 
 
-class GroupLassoCV(LassoCV, LassoCV_sklearn):
+class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
     """
     GroupLassoCV scikit-learn estimator based on Celer solver
 
@@ -1006,3 +995,9 @@ class GroupLassoCV(LassoCV, LassoCV_sklearn):
             positive=self.positive, X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return alphas, coefs, dual_gaps
+
+    def _get_estimator(self):
+        return GroupLasso()
+
+    def _is_multitask(self):
+        return False
