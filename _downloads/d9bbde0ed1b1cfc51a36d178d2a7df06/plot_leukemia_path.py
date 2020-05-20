@@ -49,7 +49,6 @@ for tol_ix, tol in enumerate(tols):
     t0 = time.time()
     _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
     results[1, tol_ix] = time.time() - t0
-    coefs = coefs.T
 
 labels = [r"\sc{Celer}", "scikit-learn"]
 figsize = (7.1, 4.3)

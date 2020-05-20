@@ -31,8 +31,8 @@ Running time is compared with the scikit-learn implementation.
 
     Loading data...
     Starting path computation...
-    Celer time: 0.08 s
-    Celer time: 0.31 s
+    Celer time: 0.06 s
+    Celer time: 0.20 s
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008778628904757557, tolerance: 0.007200000000000005
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010492050372519213, tolerance: 0.007200000000000005
@@ -49,7 +49,7 @@ Running time is compared with the scikit-learn implementation.
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011756282285240616, tolerance: 0.007200000000000005
       positive)
-    Celer time: 0.57 s
+    Celer time: 0.45 s
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 7.642283545150619e-05, tolerance: 7.200000000000004e-05
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00028090672920200177, tolerance: 7.200000000000004e-05
@@ -94,7 +94,7 @@ Running time is compared with the scikit-learn implementation.
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011950366675567592, tolerance: 7.200000000000004e-05
       positive)
-    Celer time: 0.80 s
+    Celer time: 0.68 s
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 3.6916061612046747e-06, tolerance: 7.200000000000004e-07
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:476: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 5.5790209056993945e-06, tolerance: 7.200000000000004e-07
@@ -215,7 +215,6 @@ Running time is compared with the scikit-learn implementation.
         t0 = time.time()
         _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
         results[1, tol_ix] = time.time() - t0
-        coefs = coefs.T
 
     labels = [r"\sc{Celer}", "scikit-learn"]
     figsize = (7.1, 4.3)
@@ -225,7 +224,7 @@ Running time is compared with the scikit-learn implementation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  47.634 seconds)
+   **Total running time of the script:** ( 1 minutes  20.670 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:

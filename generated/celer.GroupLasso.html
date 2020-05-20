@@ -20,6 +20,8 @@
     <script src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="celer.GroupLassoCV" href="celer.GroupLassoCV.html" />
+    <link rel="prev" title="celer.celer_path" href="celer.celer_path.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -57,8 +59,8 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a></li>
 </ul>
 </ul>
 </li>
@@ -108,6 +110,162 @@
   
   <div class="section" id="celer-grouplasso">
 <h1>celer.GroupLasso<a class="headerlink" href="#celer-grouplasso" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="celer.GroupLasso">
+<em class="property">class </em><code class="sig-prename descclassname">celer.</code><code class="sig-name descname">GroupLasso</code><span class="sig-paren">(</span><em class="sig-param">groups=1</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">prune=True</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.GroupLasso" title="Permalink to this definition">¶</a></dt>
+<dd><p>Group Lasso scikit-learn estimator based on Celer solver</p>
+<p>The optimization objective for the Group Lasso is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> \<span class="n">sum_g</span> <span class="o">||</span><span class="n">w_g</span><span class="o">||</span><span class="n">_2</span>
+</pre></div>
+</div>
+<p>where <cite>w_g</cite> is the weight vector of group number <cite>g</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>groups</strong><span class="classifier">int | list of ints | list of lists of ints.</span></dt><dd><p>Partition of features used in the penalty on <cite>w</cite>.
+If an int is passed, groups are contiguous blocks of features, of size
+<cite>groups</cite>.
+If a list of ints is passed, groups are assumed to be contiguous,
+group number <cite>g</cite> being of size <cite>groups[g]</cite>.
+If a list of lists of ints is passed, <cite>groups[g]</cite> contains the
+feature indices of the group number <cite>g</cite>.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>Constant that multiplies the penalty term. Defaults to 1.0.</p>
+</dd>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (subproblem definitions)</p>
+</dd>
+<dt><strong>gap_freq</strong><span class="classifier">int</span></dt><dd><p>Number of block coordinate descent (BCD) epochs between each duality
+gap computations.</p>
+</dd>
+<dt><strong>max_epochs</strong><span class="classifier">int</span></dt><dd><p>Maximum number of BCD epochs on each subproblem.</p>
+</dd>
+<dt><strong>p0</strong><span class="classifier">int</span></dt><dd><p>First working set size.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool or integer</span></dt><dd><p>Amount of verbosity.</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
+gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
+reached.</p>
+</dd>
+<dt><strong>prune</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
+</dd>
+<dt><strong>fit_intercept</strong><span class="classifier">bool, optional (default=True)</span></dt><dd><p>Whether or not to fit an intercept.</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>This parameter is ignored when <code class="docutils literal notranslate"><span class="pre">fit_intercept</span></code> is set to False.
+If True,  the regressors X will be normalized before regression by
+subtracting the mean and dividing by the l2-norm.</p>
+</dd>
+<dt><strong>warm_start</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, reuse the solution of the previous call to fit as
+initialization, otherwise, just erase the previous solution.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="celer.GroupLassoCV.html#celer.GroupLassoCV" title="celer.GroupLassoCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupLassoCV</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rd30dbc656712-1"><span class="brackets">Rd30dbc656712-1</span></dt>
+<dd><ol class="upperalpha simple" start="13">
+<li><p>Massias, A. Gramfort, J. Salmon</p></li>
+</ol>
+<blockquote>
+<div><p>“Celer: a Fast Solver for the Lasso wit Dual Extrapolation”, ICML 2018,</p>
+</div></blockquote>
+<p><a class="reference external" href="http://proceedings.mlr.press/v80/massias18a.html">http://proceedings.mlr.press/v80/massias18a.html</a></p>
+</dd>
+<dt class="label" id="rd30dbc656712-2"><span class="brackets">Rd30dbc656712-2</span></dt>
+<dd><ol class="upperalpha simple" start="13">
+<li><p>Massias, A. Gramfort, J. Salmon</p></li>
+</ol>
+<blockquote>
+<div><p>“Dual extrapolation for sparse Generalized Linear Models”, submitted,</p>
+</div></blockquote>
+<p><a class="reference external" href="https://arxiv.org/abs/1907.05830">https://arxiv.org/abs/1907.05830</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">celer</span> <span class="kn">import</span> <span class="n">GroupLasso</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span> <span class="o">=</span> <span class="n">GroupLasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">GroupLasso(alpha=0.5, fit_intercept=True, gap_freq=10,</span>
+<span class="go">groups=[[0, 1], [2]], max_epochs=50000, max_iter=100, normalize=False,</span>
+<span class="go">p0=10, prune=True, tol=0.0001, verbose=0, warm_start=False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+<span class="go">[-0.         -0.          0.39285714]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">intercept_</span><span class="p">)</span>
+<span class="go">0.07142857142857145</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coef_</strong><span class="classifier">array, shape (n_features,)</span></dt><dd><p>parameter vector (w in the cost function formula)</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code><span class="classifier">scipy.sparse matrix, shape (n_features, 1)</span></dt><dd><p>sparse representation of the fitted <code class="docutils literal notranslate"><span class="pre">coef_</span></code></p>
+</dd>
+<dt><strong>intercept_</strong><span class="classifier">float</span></dt><dd><p>constant term in decision function.</p>
+</dd>
+<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>Number of subproblems solved by Celer to reach the specified tolerance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="celer.GroupLasso.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">groups=1</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">prune=True</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.GroupLasso.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#celer.GroupLasso.__init__" title="celer.GroupLasso.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self[, groups, alpha, max_iter, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(self, X, y[, sample_weight, check_input])</p></td>
+<td><p>Fit model with coordinate descent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(self, X, y, alphas[, coef_init, …])</p></td>
+<td><p>Compute Group Lasso path with Celer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(self, X)</p></td>
+<td><p>Predict using the linear model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(self, X, y[, sample_weight])</p></td>
+<td><p>Return the coefficient of determination R^2 of the prediction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(self, \*\*params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code></p></td>
+<td><p>sparse representation of the fitted <code class="docutils literal notranslate"><span class="pre">coef_</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 

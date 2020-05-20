@@ -20,6 +20,8 @@
     <script src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="celer.Lasso" href="celer.Lasso.html" />
+    <link rel="prev" title="celer.GroupLasso" href="celer.GroupLasso.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -57,8 +59,8 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a></li>
 </ul>
 </ul>
 </li>
@@ -108,6 +110,145 @@
   
   <div class="section" id="celer-grouplassocv">
 <h1>celer.GroupLassoCV<a class="headerlink" href="#celer-grouplassocv" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="celer.GroupLassoCV">
+<em class="property">class </em><code class="sig-prename descclassname">celer.</code><code class="sig-name descname">GroupLassoCV</code><span class="sig-paren">(</span><em class="sig-param">groups=None</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">cv=None</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">precompute='auto'</em>, <em class="sig-param">positive=False</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.GroupLassoCV" title="Permalink to this definition">¶</a></dt>
+<dd><p>GroupLassoCV scikit-learn estimator based on Celer solver</p>
+<p>The best model is selected by cross-validation.</p>
+<p>The optimization objective for the Group Lasso is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2_2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> \<span class="n">sum_g</span> <span class="o">||</span><span class="n">w_g</span><span class="o">||</span><span class="n">_2</span>
+</pre></div>
+</div>
+<p>where <cite>w_g</cite> is the weight vector of group number <cite>g</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>groups</strong><span class="classifier">int | list of ints | list of lists of ints.</span></dt><dd><p>Partition of features used in the penalty on <cite>w</cite>.
+If an int is passed, groups are contiguous blocks of features, of size
+<cite>groups</cite>.
+If a list of ints is passed, groups are assumed to be contiguous,
+group number <cite>g</cite> being of size <cite>groups[g]</cite>.
+If a list of lists of ints is passed, <cite>groups[g]</cite> contains the
+feature indices of the group number <cite>g</cite>.</p>
+</dd>
+<dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Length of the path. <code class="docutils literal notranslate"><span class="pre">eps=1e-3</span></code> means that
+<code class="docutils literal notranslate"><span class="pre">alpha_min</span> <span class="pre">/</span> <span class="pre">alpha_max</span> <span class="pre">=</span> <span class="pre">1e-3</span></code>.</p>
+</dd>
+<dt><strong>n_alphas</strong><span class="classifier">int, optional</span></dt><dd><p>Number of alphas along the regularization path.</p>
+</dd>
+<dt><strong>alphas</strong><span class="classifier">numpy array, optional</span></dt><dd><p>List of alphas where to compute the models.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> alphas are set automatically</p>
+</dd>
+<dt><strong>fit_intercept</strong><span class="classifier">boolean, default True</span></dt><dd><p>whether to calculate the intercept for this model. If set
+to false, no intercept will be used in calculations
+(e.g. data is expected to be already centered).</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>This parameter is ignored when <code class="docutils literal notranslate"><span class="pre">fit_intercept</span></code> is set to False.
+If True,  the regressors X will be normalized before regression by
+subtracting the mean and dividing by the l2-norm.</p>
+</dd>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (subproblem definitions).</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
+gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
+reached.</p>
+</dd>
+<dt><strong>cv</strong><span class="classifier">int, cross-validation generator or an iterable, optional</span></dt><dd><p>Determines the cross-validation splitting strategy.
+Possible inputs for cv are:
+- None, to use the default 3-fold cross-validation,
+- integer, to specify the number of folds.
+- An object to be used as a cross-validation generator.
+- An iterable yielding train/test splits.
+For integer/None inputs, sklearn <cite>KFold</cite> is used.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool or integer</span></dt><dd><p>Amount of verbosity.</p>
+</dd>
+<dt><strong>gap_freq</strong><span class="classifier">int, optional (default=10)</span></dt><dd><p>In the inner loop, the duality gap is computed every <cite>gap_freq</cite>
+coordinate descent epochs.</p>
+</dd>
+<dt><strong>max_epochs</strong><span class="classifier">int, optional (default=50000)</span></dt><dd><p>Maximum number of coordinate descent epochs when solving a subproblem.</p>
+</dd>
+<dt><strong>p0</strong><span class="classifier">int, optional (default=10)</span></dt><dd><p>Number of features in the first working set.</p>
+</dd>
+<dt><strong>prune</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>Whether to use pruning when growing the working sets.</p>
+</dd>
+<dt><strong>precompute</strong><span class="classifier">ignored parameter, kept for sklearn compatibility.</span></dt><dd></dd>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, forces the coefficients to be positive.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int or None, optional (default=None)</span></dt><dd><p>Number of CPUs to use during the cross validation.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> means 1 unless in a <code class="xref py py-obj docutils literal notranslate"><span class="pre">joblib.parallel_backend</span></code> context.
+<code class="docutils literal notranslate"><span class="pre">-1</span></code> means using all processors.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="celer.GroupLasso.html#celer.GroupLasso" title="celer.GroupLasso"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupLasso</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>alpha_</strong><span class="classifier">float</span></dt><dd><p>The amount of penalization chosen by cross validation</p>
+</dd>
+<dt><strong>coef_</strong><span class="classifier">array, shape (n_features,)</span></dt><dd><p>parameter vector (w in the cost function formula)</p>
+</dd>
+<dt><strong>intercept_</strong><span class="classifier">float</span></dt><dd><p>independent term in decision function.</p>
+</dd>
+<dt><strong>mse_path_</strong><span class="classifier">array, shape (n_alphas, n_folds)</span></dt><dd><p>mean square error for the test set on each fold, varying alpha</p>
+</dd>
+<dt><strong>alphas_</strong><span class="classifier">numpy array, shape (n_alphas,)</span></dt><dd><p>The grid of alphas used for fitting</p>
+</dd>
+<dt><strong>dual_gap_</strong><span class="classifier">ndarray, shape ()</span></dt><dd><p>The dual gap at the end of the optimization for the optimal alpha
+(<code class="docutils literal notranslate"><span class="pre">alpha_</span></code>).</p>
+</dd>
+<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>number of iterations run by the coordinate descent solver to reach
+the specified tolerance for the optimal alpha.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="celer.GroupLassoCV.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">groups=None</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">cv=None</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">precompute='auto'</em>, <em class="sig-param">positive=False</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.GroupLassoCV.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#celer.GroupLassoCV.__init__" title="celer.GroupLassoCV.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self[, groups, eps, n_alphas, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(self, X, y)</p></td>
+<td><p>Fit linear model with coordinate descent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(self, X, y, alphas[, coef_init])</p></td>
+<td><p>Compute GroupLasso path with Celer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(self, X)</p></td>
+<td><p>Predict using the linear model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(self, X, y[, sample_weight])</p></td>
+<td><p>Return the coefficient of determination R^2 of the prediction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(self, \*\*params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 

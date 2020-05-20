@@ -20,7 +20,7 @@
     <script src="_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="celer.celer" href="generated/celer.celer.html" />
+    <link rel="next" title="celer.celer_path" href="generated/celer.celer_path.html" />
     <link rel="prev" title="Celer" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -75,7 +75,7 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">API Documentation</a><ul>
-<li><a class="reference internal" href="#celer">CELER</a><ul>
+<li><a class="reference internal" href="#celer">Celer</a><ul>
 </ul>
 </li>
 </ul>
@@ -116,7 +116,7 @@
   <div class="section" id="api-documentation">
 <span id="id1"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="celer">
-<h2>CELER<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h2>
+<h2>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h2>
 <p>Functions</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -124,11 +124,8 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.celer.html#celer.celer" title="celer.celer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer</span></code></a>(X, y, pb, alpha[, w_init, max_iter, …])</p></td>
-<td><p>Compute the Lasso or Logistic regression solution with the Celer algorithm.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a>(X, y, pb[, solver, eps, …])</p></td>
-<td><p>Compute Lasso path with Celer as inner solver.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a>(X, y, pb[, eps, n_alphas, …])</p></td>
+<td><p>Compute optimization path with Celer as inner solver.</p></td>
 </tr>
 </tbody>
 </table>
@@ -139,6 +136,12 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.GroupLasso.html#celer.GroupLasso" title="celer.GroupLasso"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupLasso</span></code></a>([groups, alpha, max_iter, …])</p></td>
+<td><p>Group Lasso scikit-learn estimator based on Celer solver</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/celer.GroupLassoCV.html#celer.GroupLassoCV" title="celer.GroupLassoCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupLassoCV</span></code></a>([groups, eps, n_alphas, …])</p></td>
+<td><p>GroupLassoCV scikit-learn estimator based on Celer solver</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.Lasso.html#celer.Lasso" title="celer.Lasso"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lasso</span></code></a>([alpha, max_iter, gap_freq, …])</p></td>
 <td><p>Lasso scikit-learn estimator based on Celer solver</p></td>
 </tr>

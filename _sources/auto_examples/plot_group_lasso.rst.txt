@@ -7,38 +7,11 @@
 .. _sphx_glr_auto_examples_plot_group_lasso.py:
 
 
-=============================================
-Run GroupLasso for structured sparse recovery
-=============================================
+===============================================================
+Run GroupLasso and GroupLasso CV for structured sparse recovery
+===============================================================
 
 The example runs the GroupLasso scikit-learn like estimators.
-
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_001.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    /home/mathurin/workspace/celer/examples/plot_group_lasso.py:45: UserWarning: In Matplotlib 3.3 individual lines on a stem plot will be added as a LineCollection instead of individual lines. This significantly improves the performance of a stem plot. To remove this warning and switch to the new behaviour, set the "use_line_collection" keyword argument to True.
-      m, s, _ = plt.stem(w_true, label=r"true regression coefficients")
-    /home/mathurin/workspace/celer/examples/plot_group_lasso.py:47: UserWarning: In Matplotlib 3.3 individual lines on a stem plot will be added as a LineCollection instead of individual lines. This significantly improves the performance of a stem plot. To remove this warning and switch to the new behaviour, set the "use_line_collection" keyword argument to True.
-      markerfmt='x')
-    /home/mathurin/workspace/celer/examples/plot_group_lasso.py:51: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show(block=False)
-
-
-
-
-
-
-|
 
 
 .. code-block:: default
@@ -49,7 +22,7 @@ The example runs the GroupLasso scikit-learn like estimators.
 
     from sklearn.utils import check_random_state
 
-    from celer import GroupLasso
+    from celer import GroupLasso, GroupLassoCV
     from celer.plot_utils import configure_plt
 
     print(__doc__)
@@ -77,21 +50,120 @@ The example runs the GroupLasso scikit-learn like estimators.
     clf = GroupLasso(groups=groups, alpha=1.1)
     clf.fit(X, y)
 
-    # Display results
 
-    fig = plt.figure(figsize=(13, 4))
-    m, s, _ = plt.stem(w_true, label=r"true regression coefficients")
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+
+    GroupLasso(alpha=1.1, groups=5)
+
+
+
+Display results
+
+
+.. code-block:: default
+
+
+    fig = plt.figure(figsize=(10, 4))
+    m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
+                       use_line_collection=True)
     m, s, _ = plt.stem(clf.coef_, label=r"estimated regression coefficients",
-                       markerfmt='x')
+                       markerfmt='x', use_line_collection=True)
     plt.setp([m, s], color='#ff7f0e')
     plt.xlabel("feature index")
     plt.legend()
     plt.show(block=False)
 
 
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_001.png
+    :class: sphx-glr-single-img
+
+
+
+
+
+Get optimal alpha for prediction by cross validation
+
+
+.. code-block:: default
+
+    model = GroupLassoCV(groups=groups)
+    model.fit(X, y)
+
+    print("Estimated regularization parameter alpha: %s" % model.alpha_)
+
+    fig = plt.figure(figsize=(11, 4.5))
+    plt.semilogx(model.alphas_, model.mse_path_, ':')
+    plt.semilogx(model.alphas_, model.mse_path_.mean(axis=-1), 'k',
+                 label='Average across the folds', linewidth=2)
+    plt.axvline(model.alpha_, linestyle='--', color='k',
+                label='alpha: CV estimate')
+
+    plt.legend()
+
+    plt.xlabel(r'$\alpha$')
+    plt.ylabel('Mean square error')
+    plt.show(block=False)
+
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_002.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Estimated regularization parameter alpha: 0.11884335951055021
+
+
+
+
+Show optimal regression vector for prediction, obtained by cross validation
+
+
+.. code-block:: default
+
+
+    fig = plt.figure(figsize=(10, 4))
+    m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
+                       use_line_collection=True)
+    m, s, _ = plt.stem(model.coef_, label=r"CV-estimated regression coefficients",
+                       markerfmt='x', use_line_collection=True)
+    plt.setp([m, s], color='#ff7f0e')
+    plt.xlabel("feature index")
+    plt.legend()
+    plt.show(block=False)
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_003.png
+    :class: sphx-glr-single-img
+
+
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.155 seconds)
+   **Total running time of the script:** ( 0 minutes  2.482 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:

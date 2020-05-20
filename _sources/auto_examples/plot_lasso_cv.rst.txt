@@ -51,7 +51,7 @@ using the Celer algorithm.
 
 
     Loading data...
-    /home/mathurin/workspace/celer/celer/homotopy.py:241: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Fitting data with very small alpha may cause precision problems.
+    /home/mathurin/workspace/celer/celer/homotopy.py:250: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Fitting data with very small alpha may cause precision problems.
       ConvergenceWarning)
     Estimated regularization parameter alpha: 81.38126193253959
 
@@ -90,7 +90,7 @@ Display results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.936 seconds)
+   **Total running time of the script:** ( 0 minutes  2.011 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:

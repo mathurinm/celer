@@ -20,8 +20,8 @@
     <script src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="celer.Lasso" href="celer.Lasso.html" />
-    <link rel="prev" title="celer.celer" href="celer.celer.html" />
+    <link rel="next" title="celer.GroupLasso" href="celer.GroupLasso.html" />
+    <link rel="prev" title="API Documentation" href="../api.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -112,8 +112,16 @@
 <h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer_path">
-<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer_path</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">pb</em>, <em class="sig-param">solver='celer'</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">coef_init=None</em>, <em class="sig-param">max_iter=20</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">verbose_inner=0</em>, <em class="sig-param">tol=1e-06</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">return_thetas=False</em>, <em class="sig-param">X_offset=None</em>, <em class="sig-param">X_scale=None</em>, <em class="sig-param">return_n_iter=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute Lasso path with Celer as inner solver.</p>
+<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer_path</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">pb</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">coef_init=None</em>, <em class="sig-param">max_iter=20</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">verbose_inner=0</em>, <em class="sig-param">tol=1e-06</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">groups=None</em>, <em class="sig-param">return_thetas=False</em>, <em class="sig-param">use_PN=False</em>, <em class="sig-param">X_offset=None</em>, <em class="sig-param">X_scale=None</em>, <em class="sig-param">return_n_iter=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute optimization path with Celer as inner solver.</p>
+<p>With <cite>n = len(y)</cite> the number of samples, the losses are:</p>
+<p>Lasso:</p>
+<div class="math notranslate nohighlight">
+\[\frac{||y - X w||_2^2}{2 n} + \alpha ||w||_1\]</div>
+<p>Logreg:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) +
+\alpha  ||w||_1\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -122,9 +130,7 @@ sparse format (CSC) to avoid unnecessary memory duplication.</p>
 </dd>
 <dt><strong>y</strong><span class="classifier">ndarray, shape (n_samples,)</span></dt><dd><p>Target values</p>
 </dd>
-<dt><strong>pb</strong><span class="classifier">“lasso” | “logreg”</span></dt><dd><p>Optimization problem to solve.</p>
-</dd>
-<dt><strong>solver</strong><span class="classifier">“celer” | “PN”</span></dt><dd><p>Algorithm to use if pb == “logreg”.</p>
+<dt><strong>pb</strong><span class="classifier">“lasso” | “logreg” | “grouplasso”</span></dt><dd><p>Optimization problem to solve.</p>
 </dd>
 <dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Length of the path. <code class="docutils literal notranslate"><span class="pre">eps=1e-3</span></code> means that
 <code class="docutils literal notranslate"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
@@ -138,10 +144,10 @@ If <code class="docutils literal notranslate"><span class="pre">None</span></cod
 </dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (subproblem definitions)</p>
 </dd>
-<dt><strong>gap_freq</strong><span class="classifier">int, optional</span></dt><dd><p>Number of coordinate descent epochs between each duality gap
+<dt><strong>gap_freq</strong><span class="classifier">int, optional</span></dt><dd><p>Number of (block) coordinate descent epochs between each duality gap
 computations.</p>
 </dd>
-<dt><strong>max_epochs</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of CD epochs on each subproblem.</p>
+<dt><strong>max_epochs</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of (block) CD epochs on each subproblem.</p>
 </dd>
 <dt><strong>p0</strong><span class="classifier">int, optional</span></dt><dd><p>First working set size.</p>
 </dd>
@@ -155,7 +161,13 @@ reached.</p>
 </dd>
 <dt><strong>prune</strong><span class="classifier">0 | 1, optional</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
 </dd>
+<dt><strong>groups</strong><span class="classifier">int or list of ints or list of list of ints, optional</span></dt><dd><p>Used for the group Lasso only. See the documentation of the
+GroupLasso class.</p>
+</dd>
 <dt><strong>return_thetas</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, dual variables along the path are returned.</p>
+</dd>
+<dt><strong>use_PN</strong><span class="classifier">bool, optional</span></dt><dd><p>If pb == “logreg”, use ProxNewton solver instead of coordinate
+descent.</p>
 </dd>
 <dt><strong>X_offset</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to center sparse X without breaking sparsity. Mean of each column.
 See sklearn.linear_model.base._preprocess_data().</p>
@@ -165,8 +177,7 @@ centered column. See sklearn.linear_model.base._preprocess_data().</p>
 </dd>
 <dt><strong>return_n_iter</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, number of iterations along the path are returned.</p>
 </dd>
-<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>When set to True, if pb == “lasso”, forces the coefficients to be
-positive.</p>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>If True and pb == “lasso”, forces the coefficients to be positive.</p>
 </dd>
 </dl>
 </dd>

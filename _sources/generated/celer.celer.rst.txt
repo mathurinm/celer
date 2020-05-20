@@ -1,6 +1,0 @@
-celer.celer
-===========
-
-.. currentmodule:: celer
-
-.. autofunction:: celer

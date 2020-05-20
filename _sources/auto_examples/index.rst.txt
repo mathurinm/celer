@@ -74,6 +74,26 @@ Examples Gallery
    :hidden:
 
    /auto_examples/plot_finance_path
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the GroupLasso scikit-learn like estimators.">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_group_lasso_thumb.png
+
+     :ref:`sphx_glr_auto_examples_plot_group_lasso.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_group_lasso
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
