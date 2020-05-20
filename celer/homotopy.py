@@ -373,6 +373,8 @@ def mtl_path(
         coef_init=None):
     X = check_array(X, "csc", dtype=[
         np.float64, np.float32], order="F", copy=False)
+    Y = check_array(Y, "csc", dtype=[
+        np.float64, np.float32], order="F", copy=False)
     # TODO check Y is fortran too
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]
@@ -395,14 +397,17 @@ def mtl_path(
 
     norms_X_col = np.linalg.norm(X, axis=0)
     Y = np.asfortranarray(Y)
-    R = Y.copy(order='F')
-    theta = np.zeros_like(R, order='F')
+    # R = Y.copy(order='F')
+    theta = np.zeros_like(Y, order='F')
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
+        alpha = alphas[t]
+
         if verbose:
             print("#" * 60)
-            print("##### Computing %dth alpha" % (t + 1))
+            print("##### Computing alpha %d/%d" % (t + 1, n_alphas))
+            print("alpha=%f" % alpha)
             print("#" * 60)
         if t > 0:
             W = coefs[:, :, t - 1].copy()
@@ -410,9 +415,18 @@ def mtl_path(
         else:
             W = coefs[:, :, t].copy()
             p_t = 10
+        print("norm W, ",  norm(W))
+
+        W = np.zeros([n_features, n_tasks], order='C')
+
+        R = np.asfortranarray(Y - X @ W)
+        print(Y[0, :])
+        print(Y[0, :].shape)
+        print(Y.shape)
 
         alpha = alphas[t]
 
+        print("o ", norm(R) ** 2 / len(R) / 2 + alpha * norm(W, axis=1).sum())
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
             prune=prune, max_iter=max_iter, max_epochs=max_epochs,

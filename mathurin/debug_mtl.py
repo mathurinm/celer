@@ -24,6 +24,7 @@ X = np.load(data_path + 'X_MTL.npy')
 Y = np.load(data_path + 'Y_MTL.npy')
 
 Y = np.asfortranarray(Y)
+# X /= norm(X, axis=0)[None, :]
 
 n_samples, n_features = X.shape
 n_targets = Y.shape[1]
@@ -34,7 +35,7 @@ if int(max_iter / 5) <= n_features:
 if adjust_celer_tol:
     tol = tol * 1e-2
 clf = \
-    MTLCV_celer(tol=tol, max_iter=10, cv=2, eps=1e-1,
+    MTLCV_celer(tol=tol, max_iter=5, cv=2, eps=1e-1,
                 n_jobs=n_jobs, fit_intercept=False,
                 normalize=False, verbose=2, n_alphas=2)
 clf.fit(X, Y)
