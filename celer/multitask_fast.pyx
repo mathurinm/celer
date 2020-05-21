@@ -310,9 +310,14 @@ cpdef void inner_solver(
             p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
+            # tmp = 1. / (alpha * n_samples)
+            tmp = 1. / alpha
+            fscal(&n_obs, &tmp, &theta[0, 0], &inc)
+
             scal = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta, X, ws_size,
                 &C[0], &dummy_screened[0], &Xj_theta[0])
+
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_obs, &tmp, &theta[0, 0], &inc)
@@ -323,10 +328,14 @@ cpdef void inner_solver(
                     LASSO, n_obs, epoch, gap_freq, alpha,
                     &R[0, 0], &theta_acc[0, 0], &last_K_R[0, 0], U, UtU,
                     onesK, onesK)  # passing onesK as y which is ignored
+                    # account for wrong n_samples passed to create_accel_pt
+                tmp = n_tasks
+                fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
                 if epoch // gap_freq >= K:
                     scal = dual_scaling_mtl(
                         n_features, n_samples, n_tasks, theta_acc, X, ws_size,
                         &C[0], &dummy_screened[0], &Xj_theta[0])
+
                     if scal > 1.:
                         tmp = 1. / scal
                         fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
