@@ -175,7 +175,6 @@ def celer_mtl(
     for t in range(max_iter):
         # if t != 0: TODO
         p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
-        print("p_obj", p_obj)
         # theta = R / alpha:
         fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
         tmp = 1. / alpha
