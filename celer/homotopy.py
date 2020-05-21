@@ -405,10 +405,10 @@ def mtl_path(
         alpha = alphas[t]
 
         if verbose:
-            print("#" * 60)
-            print("##### Computing alpha %d/%d" % (t + 1, n_alphas))
-            print("alpha=%f" % alpha)
-            print("#" * 60)
+            msg = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
+            print("#" * len(msg))
+            print(msg)
+            print("#" * len(msg))
         if t > 0:
             W = coefs[:, :, t - 1].copy()
             p_t = max(len(np.where(W[:, 0] != 0)[0]), p0)

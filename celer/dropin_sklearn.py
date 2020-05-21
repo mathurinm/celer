@@ -460,7 +460,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     p0 : int, optional (default=10)
         Number of features in the first working set.
 
-    prune : bool, optional (default=False)
+    prune : bool, optional (default=True)
         Whether to use pruning when growing the working sets.
 
     precompute : ignored parameter, kept for sklearn compatibility.
@@ -502,7 +502,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, gap_freq=10,
-                 max_epochs=50000, p0=10, prune=0, precompute='auto',
+                 max_epochs=50000, p0=10, prune=True, precompute='auto',
                  n_jobs=1):
         super().__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
