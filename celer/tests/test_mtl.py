@@ -209,14 +209,9 @@ if __name__ == "__main__":
 
     groups = [grp.tolist() for grp in grp_indices.reshape(n_features, 3)]
     clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
-                      fit_intercept=False, tol=1e-8, verbose=2, normalize=0, max_iter=20)
+                      fit_intercept=False, tol=1e-8, verbose=2, normalize=0, max_iter=10)
     clf1.fit(X, y)
 
     a = clf1.coef_.reshape(3, -1).T
-    b = clf.coef_.T
-    np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=0)
-
-    dscal_grp(
-        False, y - X @ clf1.coef_, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
-        np.zeros(1, dtype=np.int32), False)
+    # b = clf.coef_.T
+    # np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=0)

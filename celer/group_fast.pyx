@@ -282,7 +282,7 @@ cpdef celer_grp(
             nnz = 0
             for g in range(n_groups):
                 # TODO this is a hack, will fail for sparse group lasso
-                if w[grp_ptr[g]] != 0:
+                if w[grp_indices[grp_ptr[g]]] != 0:
                     prios[g] = -1.
                     nnz += 1
 
@@ -293,7 +293,7 @@ cpdef celer_grp(
 
         else:
             for g in range(n_groups):
-                if w[grp_ptr[g]] != 0:
+                if w[grp_indices[grp_ptr[g]]] != 0:
                     prios[g] = - 1  # include active features
             if t == 0:
                 ws_size = p0
