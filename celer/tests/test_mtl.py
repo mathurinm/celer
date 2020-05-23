@@ -111,8 +111,8 @@ def test_mtl():
 def test_dropin_MultiTaskLassoCV():
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=3)
-    params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2, n_jobs=2,
-                  fit_intercept=False, verbose=True)
+    params = dict(eps=1e-2, n_alphas=10, tol=1e-10, cv=2, n_jobs=1,
+                  fit_intercept=False, verbose=2)
 
     clf = MultiTaskLassoCV(**params)
     clf.fit(X, y)
@@ -127,16 +127,17 @@ def test_dropin_MultiTaskLassoCV():
     np.testing.assert_allclose(clf.coef_, clf2.coef_,
                                rtol=1e-05)
 
-    check_estimator(MultiTaskLassoCV)
+    check_estimator(clf)
 
 
-def test_dropin_MultiTaskLasso():
+@pytest.mark.parametrize("fit_intercept", [True, False])
+def test_dropin_MultiTaskLasso(fit_intercept):
     """Test that our MultiTaskLasso class behaves as sklearn's."""
     X, Y, _, _ = build_dataset(n_samples=20, n_features=30, n_targets=10)
     alpha_max = np.max(norm(X.T.dot(Y), axis=1)) / X.shape[0]
 
     alpha = alpha_max / 2.
-    params = dict(alpha=alpha, fit_intercept=False, tol=1e-10,
+    params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
                   normalize=True)
     clf = MultiTaskLasso(**params)
     clf.fit(X, Y)
@@ -144,10 +145,10 @@ def test_dropin_MultiTaskLasso():
     clf2 = sklearn_MultiTaskLasso(**params)
     clf2.fit(X, Y)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
-    # if fit_intercept:
-    #     np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
+    if fit_intercept:
+        np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
-    check_estimator(MultiTaskLasso)
+    check_estimator(clf)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
@@ -172,23 +173,38 @@ def test_GroupLasso(sparse_X):
         n_samples=11, n_features=n_features, sparse_X=sparse_X,
         n_informative_features=n_features)[:2]
 
-    tol = 1e-4
-    clf = GroupLasso(alpha=0.01, groups=10, tol=tol)
+    tol = 1e-8
+    clf = GroupLasso(alpha=0.8, groups=10, tol=tol)
     clf.fit(X, y)
     np.testing.assert_array_less(clf.dual_gap_, tol)
 
 
 if __name__ == "__main__":
-    n_features = 1000
-    sparse_X = False
-    X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=sparse_X,
-        n_informative_features=None)[:2]
-    # alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
-    import time
-    t0 = time.time()
-    clf = GroupLassoCV(groups=5, fit_intercept=False,
-                       n_alphas=10, eps=1e-3, verbose=1)
+    X = np.array([[1.6464405, 2.145568, 1.80829, 1.6346495, 1.2709644],
+                  [1.9376824, 1.3127615, 2.675319, 2.8909883, 1.1503246],
+                  [2.375175, 1.5866847, 1.7041336, 2.77679, 0.21310817],
+                  [0.2613879, 0.06065519, 2.4978595, 2.3344703, 2.6100364],
+                  [2.935855, 2.3974757, 1.384438, 2.3415875, 0.3548233],
+                  [1.9197631, 0.43005985, 2.8340068, 1.565545, 1.2439859],
+                  [0.79366684, 2.322701, 1.368451, 1.7053018, 0.0563694],
+                  [1.8529065, 1.8362871, 1.850802, 2.8312442, 2.0454607],
+                  [1.0785236, 1.3110958, 2.0928936, 0.18067642, 2.0003002],
+                  [2.0119135, 0.6311477, 0.3867789, 0.946285, 1.0911323]],
+                 dtype=np.float32)
+
+    y = np.array([[1.],
+                  [1.],
+                  [2.],
+                  [0.],
+                  [2.],
+                  [1.],
+                  [0.],
+                  [1.],
+                  [1.],
+                  [2.]], dtype=np.float32)
+
+    params = dict(eps=1e-2, n_alphas=10, tol=1e-10, cv=2, n_jobs=1,
+                  fit_intercept=False, verbose=2)
+
+    clf = MultiTaskLassoCV(**params)
     clf.fit(X, y)
-    t1 = time.time() - t0
-    print(t1)
