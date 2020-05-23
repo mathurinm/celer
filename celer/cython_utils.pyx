@@ -226,7 +226,7 @@ cdef int create_accel_pt(
     cdef int info_dposv
 
     cdef int i, j, k
-    # warning: this is wrong (n_samples) for MTL, is is handled outside
+    # warning: this is wrong (n_samples) for MTL, it is handled outside
     cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
 
     if epoch // gap_freq < K:
