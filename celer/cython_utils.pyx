@@ -226,6 +226,7 @@ cdef int create_accel_pt(
     cdef int info_dposv
 
     cdef int i, j, k
+    # warning: this is wrong (n_samples) for MTL, it is handled outside
     cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
 
     if epoch // gap_freq < K:
@@ -239,12 +240,12 @@ cdef int create_accel_pt(
         fcopy(&n_samples, R, &inc, &last_K_R[(K - 1) * n_samples], &inc)
         for k in range(K - 1):
             for i in range(n_samples):
-                U[k, i] = last_K_R[(k + 1) * n_samples + i] - last_K_R[k * n_samples + i]
+                U[k, i] = last_K_R[(k + 1) * n_samples + i] - \
+                          last_K_R[k * n_samples + i]
 
         for k in range(K - 1):
             for j in range(k, K - 1):
-                UtU[k, j] = fdot(&n_samples, &U[k, 0], &inc,
-                                  &U[j, 0], &inc)
+                UtU[k, j] = fdot(&n_samples, &U[k, 0], &inc, &U[j, 0], &inc)
                 UtU[j, k] = UtU[k, j]
 
         # refill onesK with ones because it has been overwritten

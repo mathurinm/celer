@@ -9,9 +9,10 @@ from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.utils.validation import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.linear_model import MultiTaskLasso as MultiTaskLasso_sklearn
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
-                                  LogisticRegression as LogReg_sklearn)
+                                  LogisticRegression as LogReg_sklearn,
+                                  MultiTaskLasso as MultiTaskLasso_sklearn)
+from sklearn.linear_model._base import _preprocess_data
 from sklearn.preprocessing import LabelEncoder
 from sklearn.multiclass import OneVsRestClassifier
 
@@ -386,15 +387,44 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         self.p0 = p0
         self.prune = prune
 
-    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
-        """Compute Lasso path with Celer."""
-        results = mtl_path(
-            X, y, alphas=alphas, coef_init=coef_init,
-            max_iter=self.max_iter, return_n_iter=return_n_iter,
-            gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, tol=self.tol, prune=self.prune)
+    def fit(self, X, y):
+        """Fit MultiTaskLasso model with Celer"""
+        # Need to validate separately here.
+        # We can't pass multi_ouput=True because that would allow y to be csr.
+        check_X_params = dict(dtype=[np.float64, np.float32], order='F',
+                              copy=self.copy_X and self.fit_intercept)
+        check_y_params = dict(ensure_2d=False, order='F')
+        X, y = self._validate_data(X, y, validate_separately=(check_X_params,
+                                                              check_y_params))
+        y = y.astype(X.dtype)
 
-        return results
+        if y.ndim == 1:
+            raise ValueError("For mono-task outputs, use Lasso")
+
+        n_samples = X.shape[0]
+
+        if n_samples != y.shape[0]:
+            raise ValueError("X and y have inconsistent dimensions (%d != %d)"
+                             % (n_samples, y.shape[0]))
+
+        X, y, X_offset, y_offset, X_scale = _preprocess_data(
+            X, y, self.fit_intercept, self.normalize, copy=False)
+
+        if not self.warm_start or not hasattr(self, "coef_"):
+            self.coef_ = None
+
+        _, coefs, dual_gaps = mtl_path(
+            X, y, alphas=[self.alpha], coef_init=self.coef_,
+            max_iter=self.max_iter, gap_freq=self.gap_freq,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            verbose_inner=max(0, self.verbose-1), tol=self.tol,
+            prune=self.prune)
+
+        self.coef_, self.dual_gap_ = coefs[..., 0], dual_gaps[-1]
+        self.n_iter_ = len(dual_gaps)
+        self._set_intercept(X_offset, y_offset, X_scale)
+
+        return self
 
 
 class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
@@ -460,7 +490,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     p0 : int, optional (default=10)
         Number of features in the first working set.
 
-    prune : bool, optional (default=False)
+    prune : bool, optional (default=True)
         Whether to use pruning when growing the working sets.
 
     precompute : ignored parameter, kept for sklearn compatibility.
@@ -502,7 +532,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, gap_freq=10,
-                 max_epochs=50000, p0=10, prune=0, precompute='auto',
+                 max_epochs=50000, p0=10, prune=True, precompute='auto',
                  n_jobs=1):
         super().__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
@@ -517,9 +547,9 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
         """Compute Lasso path with Celer."""
 
         alphas, coefs, dual_gaps = mtl_path(
-            X, y, alphas=alphas, coef_init=coef_init,
-            max_iter=self.max_iter, gap_freq=self.gap_freq,
-            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            X, y, alphas=alphas, coef_init=coef_init, max_iter=self.max_iter,
+            gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
+            verbose=self.verbose, verbose_inner=max(0, self.verbose-1),
             tol=self.tol, prune=self.prune)
 
         return alphas, coefs, dual_gaps
