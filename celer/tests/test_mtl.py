@@ -178,7 +178,7 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
-    n_samples, n_features = 30, 50
+    n_samples, n_features = 30, 20
     X_, Y_ = build_dataset(n_samples, n_features, n_targets=3)
     y = Y_.reshape(-1, order='F')
     X = np.zeros([3 * n_samples, 3 * n_features], order='F')
@@ -203,13 +203,20 @@ if __name__ == "__main__":
         np.zeros(1, dtype=np.int32), False)
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
-    alpha = alpha_max / 10
+    alpha = alpha_max / 20
     clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8, verbose=2)
     clf.fit(X_, Y_)
 
-    groups = [grp.tolist() for grp in grp_indices.reshape(50, 3)]
+    groups = [grp.tolist() for grp in grp_indices.reshape(n_features, 3)]
     clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
-                      fit_intercept=False, tol=1e-8, verbose=2)
+                      fit_intercept=False, tol=1e-8, verbose=2, normalize=0, max_iter=20)
     clf1.fit(X, y)
 
-    np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=1e-4)
+    a = clf1.coef_.reshape(3, -1).T
+    b = clf.coef_.T
+    np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=0)
+
+    dscal_grp(
+        False, y - X @ clf1.coef_, grp_ptr, grp_indices, X, X_data,
+        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
+        np.zeros(1, dtype=np.int32), False)
