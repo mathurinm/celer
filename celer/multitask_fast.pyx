@@ -309,13 +309,14 @@ cpdef void inner_solver(
             p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-            # tmp = 1. / (alpha * n_samples)
-            tmp = 1. / alpha
+            tmp = 1. / (alpha * n_samples)
+            # tmp = 1. / alpha
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
             scal = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta, X, ws_size,
                 &C[0], &dummy_screened[0], &Xj_theta[0])
+
 
             if scal > 1.:
                 tmp = 1. / scal
@@ -344,7 +345,6 @@ cpdef void inner_solver(
                         d_obj = d_obj_acc
                         fcopy(&n_obs, &theta_acc[0, 0], &inc, &theta[0, 0],
                               &inc)
-
             highest_d_obj = max(highest_d_obj, d_obj)
             gap = p_obj - highest_d_obj
             if verbose:

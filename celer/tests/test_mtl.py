@@ -8,7 +8,7 @@ from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
 from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
 from sklearn.linear_model import lasso_path
 
-from celer import (Lasso, GroupLasso, GroupLassoCV, MultiTaskLasso,
+from celer import (Lasso, GroupLasso, MultiTaskLasso,
                    MultiTaskLassoCV)
 from celer.homotopy import celer_path, mtl_path, _grp_converter
 from celer.group_fast import dscal_grp
@@ -67,12 +67,12 @@ def test_group_lasso_multitask():
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
     alpha = alpha_max / 10
-    clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8)
+    clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8, verbose=2)
     clf.fit(X_, Y_)
 
     groups = [grp.tolist() for grp in grp_indices.reshape(50, 3)]
     clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
-                      fit_intercept=False, tol=1e-8)
+                      fit_intercept=False, tol=1e-8, verbose=2)
     clf1.fit(X, y)
 
     np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=1e-4)
@@ -95,8 +95,6 @@ def test_convert_groups():
 
 
 def test_mtl():
-    # n_samples, n_features = 30, 70
-    # X, Y, _, _ = build_dataset(n_samples, n_features, n_targets=10)
     X, Y, _, _ = build_dataset(n_targets=10)
     tol = 1e-9
     alphas, coefs, gaps = mtl_path(X, Y, eps=1e-2, tol=tol)
@@ -111,6 +109,7 @@ def test_mtl():
 def test_dropin_MultiTaskLassoCV():
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=3)
+
     params = dict(eps=1e-2, n_alphas=10, tol=1e-10, cv=2, n_jobs=1,
                   fit_intercept=False, verbose=2)
 
@@ -127,6 +126,9 @@ def test_dropin_MultiTaskLassoCV():
     np.testing.assert_allclose(clf.coef_, clf2.coef_,
                                rtol=1e-05)
 
+    # check_estimator tests float32 so we using tol < 1e-7 causes precision
+    # issues
+    clf.tol = 1e-5
     check_estimator(clf)
 
 
@@ -180,31 +182,4 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
-    X = np.array([[1.6464405, 2.145568, 1.80829, 1.6346495, 1.2709644],
-                  [1.9376824, 1.3127615, 2.675319, 2.8909883, 1.1503246],
-                  [2.375175, 1.5866847, 1.7041336, 2.77679, 0.21310817],
-                  [0.2613879, 0.06065519, 2.4978595, 2.3344703, 2.6100364],
-                  [2.935855, 2.3974757, 1.384438, 2.3415875, 0.3548233],
-                  [1.9197631, 0.43005985, 2.8340068, 1.565545, 1.2439859],
-                  [0.79366684, 2.322701, 1.368451, 1.7053018, 0.0563694],
-                  [1.8529065, 1.8362871, 1.850802, 2.8312442, 2.0454607],
-                  [1.0785236, 1.3110958, 2.0928936, 0.18067642, 2.0003002],
-                  [2.0119135, 0.6311477, 0.3867789, 0.946285, 1.0911323]],
-                 dtype=np.float32)
-
-    y = np.array([[1.],
-                  [1.],
-                  [2.],
-                  [0.],
-                  [2.],
-                  [1.],
-                  [0.],
-                  [1.],
-                  [1.],
-                  [2.]], dtype=np.float32)
-
-    params = dict(eps=1e-2, n_alphas=10, tol=1e-10, cv=2, n_jobs=1,
-                  fit_intercept=False, verbose=2)
-
-    clf = MultiTaskLassoCV(**params)
-    clf.fit(X, y)
+    pass
