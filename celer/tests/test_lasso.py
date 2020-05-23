@@ -24,8 +24,8 @@ from celer.utils.testing import build_dataset
 
 
 def test_logreg():
-    X, y, _, _ = build_dataset(
-        n_samples=100, n_features=100, sparse_X=True)
+    X, y = build_dataset(
+        n_samples=50, n_features=100, sparse_X=True)
     y = np.sign(y)
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     alphas = alpha_max * np.geomspace(1, 1e-2, 10)
@@ -35,7 +35,8 @@ def test_logreg():
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
         solver='liblinear', tol=tol)
 
-    _, coefs_c, gaps = celer_path(X, y, "logreg", alphas=alphas, tol=tol)
+    _, coefs_c, gaps = celer_path(
+        X, y, "logreg", alphas=alphas, tol=tol, verbose=2)
 
     np.testing.assert_array_less(gaps, tol)
     np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
@@ -76,7 +77,7 @@ def test_dropin_logreg():
                                  ["lasso", "logreg"]))
 def test_celer_path(sparse_X, alphas, pb):
     """Test Lasso path convergence."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     if pb == "logreg":
         y = np.sign(y)
     n_samples = X.shape[0]
@@ -95,7 +96,7 @@ def test_celer_path(sparse_X, alphas, pb):
 
 
 def test_convergence_warning():
-    X, y, _, _ = build_dataset(n_samples=10, n_features=10)
+    X, y = build_dataset(n_samples=10, n_features=10)
     tol = - 1  # gap canot be negative, a covnergence warning should be raised
     alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
     clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
@@ -111,7 +112,7 @@ def test_convergence_warning():
 @pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
 def test_celer_path_vs_lasso_path(sparse_X, prune):
     """Test that celer_path matches sklearn lasso_path."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
     params = dict(eps=1e-2, n_alphas=10, tol=1e-12)
     alphas1, coefs1, gaps1 = celer_path(
@@ -127,9 +128,9 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
                          product([False, True], [False, True], [False, True]))
 def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
-                  fit_intercept=fit_intercept, positive=positive)
+                  fit_intercept=fit_intercept, positive=positive, verbose=2)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
@@ -151,7 +152,7 @@ def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
                          product([False, True], [False, True], [False, True]))
 def test_dropin_lasso(sparse_X, fit_intercept, positive):
     """Test that our Lasso class behaves as sklearn's Lasso."""
-    X, y, _, _ = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
     if not positive:
         alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     else:
@@ -175,7 +176,7 @@ def test_dropin_lasso(sparse_X, fit_intercept, positive):
 @pytest.mark.parametrize("sparse_X, pb",
                          product([True, False], ["lasso", "logreg"]))
 def test_celer_single_alpha(sparse_X, pb):
-    X, y, _, _ = build_dataset(n_samples=20, n_features=100, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples=20, n_features=100, sparse_X=sparse_X)
     if pb == "logreg":
         y = np.sign(y)
     alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
@@ -187,7 +188,7 @@ def test_celer_single_alpha(sparse_X, pb):
 
 @pytest.mark.parametrize("sparse_X", [True, False])
 def test_zero_column(sparse_X):
-    X, y, _, _ = build_dataset(n_samples=60, n_features=50, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples=60, n_features=50, sparse_X=sparse_X)
     n_zero_columns = 20
     if sparse_X:
         X.data[:X.indptr[n_zero_columns]].fill(0.)
@@ -204,7 +205,7 @@ def test_zero_column(sparse_X):
 
 def test_warm_start():
     """Test Lasso path convergence."""
-    X, y, _, _ = build_dataset(
+    X, y = build_dataset(
         n_samples=100, n_features=100, sparse_X=True)
     n_samples, n_features = X.shape
     alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples

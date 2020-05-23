@@ -21,7 +21,7 @@ def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
     # check that group Lasso with groups of size 1 gives Lasso
     n_features = 1000
     X, y = build_dataset(
-        n_samples=100, n_features=n_features, sparse_X=sparse_X)[:2]
+        n_samples=100, n_features=n_features, sparse_X=sparse_X)
     alpha_max = norm(X.T @ y, ord=np.inf) / len(y)
     alpha = alpha_max / 10
     clf = Lasso(alpha, tol=1e-12, fit_intercept=fit_intercept,
@@ -41,8 +41,7 @@ def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
 def test_group_lasso_multitask():
     "Group Lasso and Multitask Lasso equivalence."""
     n_samples, n_features = 30, 50
-    X_, Y_ = build_dataset(n_samples, n_features,
-                           n_informative_features=n_features, n_targets=3)[:2]
+    X_, Y_ = build_dataset(n_samples, n_features, n_targets=3)
     y = Y_.reshape(-1, order='F')
     X = np.zeros([3 * n_samples, 3 * n_features], order='F')
 
@@ -126,7 +125,7 @@ def test_dropin_MultiTaskLassoCV():
     np.testing.assert_allclose(clf.coef_, clf2.coef_,
                                rtol=1e-05)
 
-    # check_estimator tests float32 so we using tol < 1e-7 causes precision
+    # check_estimator tests float32 so using tol < 1e-7 causes precision
     # issues
     clf.tol = 1e-5
     check_estimator(clf)
@@ -157,8 +156,7 @@ def test_dropin_MultiTaskLasso(fit_intercept):
 def test_group_lasso_path(sparse_X):
     n_features = 50
     X, y = build_dataset(
-        n_samples=11, n_features=n_features, sparse_X=sparse_X,
-        n_informative_features=n_features)[:2]
+        n_samples=11, n_features=n_features, sparse_X=sparse_X)
 
     alphas, coefs, gaps = celer_path(
         X, y, "grouplasso", groups=5, eps=1e-2, n_alphas=10, tol=1e-8)
@@ -172,8 +170,7 @@ def test_group_lasso_path(sparse_X):
 def test_GroupLasso(sparse_X):
     n_features = 50
     X, y = build_dataset(
-        n_samples=11, n_features=n_features, sparse_X=sparse_X,
-        n_informative_features=n_features)[:2]
+        n_samples=11, n_features=n_features, sparse_X=sparse_X)
 
     tol = 1e-8
     clf = GroupLasso(alpha=0.8, groups=10, tol=tol)

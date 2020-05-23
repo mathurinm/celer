@@ -336,8 +336,8 @@ cpdef celer_grp(
                         LASSO, n_samples, epoch, gap_freq, alpha,
                         &R[0], &thetaccel[0], &last_K_R[0, 0], U, UtU, onesK, y)
 
-                    if info_dposv != 0 and verbose:
-                        print("linear system solving failed")
+                    # if info_dposv != 0 and verbose:
+                    #     print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
                         scal = dscal_grp(
