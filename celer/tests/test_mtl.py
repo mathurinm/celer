@@ -17,8 +17,8 @@ from celer.utils.testing import build_dataset
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, normalize",
                          itertools.product([0, 1], [0, 1], [0, 1]))
-def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
-    # check that group Lasso with groups of size 1 gives Lasso
+def test_GroupLasso_Lasso_equivalence(sparse_X, fit_intercept, normalize):
+    """Check that GroupLasso with groups of size 1 gives Lasso."""
     n_features = 1000
     X, y = build_dataset(
         n_samples=100, n_features=n_features, sparse_X=sparse_X)
@@ -28,7 +28,6 @@ def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
                 normalize=normalize, verbose=0)
     clf.fit(X, y)
     # take groups of size 1:
-
     clf1 = GroupLasso(alpha=alpha, groups=1, tol=1e-12,
                       fit_intercept=fit_intercept, normalize=normalize,
                       verbose=0)
@@ -38,8 +37,8 @@ def test_group_lasso_lasso(sparse_X, fit_intercept, normalize):
     np.testing.assert_allclose(clf1.intercept_, clf.intercept_, rtol=1e-4)
 
 
-def test_group_lasso_multitask():
-    "Group Lasso and Multitask Lasso equivalence."""
+def test_GroupLasso_MultitaskLasso_equivalence():
+    "GroupLasso and MultitaskLasso equivalence."""
     n_samples, n_features = 30, 50
     X_, Y_ = build_dataset(n_samples, n_features, n_targets=3)
     y = Y_.reshape(-1, order='F')
@@ -93,8 +92,8 @@ def test_convert_groups():
     np.testing.assert_equal(grp_indices, [0, 2, 5, 1, 3, 4])
 
 
-def test_mtl():
-    X, Y, _, _ = build_dataset(n_targets=10)
+def test_mtl_path():
+    X, Y = build_dataset(n_targets=10)
     tol = 1e-9
     alphas, coefs, gaps = mtl_path(X, Y, eps=1e-2, tol=tol)
     np.testing.assert_array_less(gaps, tol)
@@ -105,9 +104,9 @@ def test_mtl():
     np.testing.assert_allclose(alphas, sk_alphas)
 
 
-def test_dropin_MultiTaskLassoCV():
-    """Test that our LassoCV behaves like sklearn's LassoCV."""
-    X, y, _, _ = build_dataset(n_samples=30, n_features=50, n_targets=3)
+def test_MultiTaskLassoCV():
+    """Test that our MultitaskLassoCV behaves like sklearn's."""
+    X, y = build_dataset(n_samples=30, n_features=50, n_targets=3)
 
     params = dict(eps=1e-2, n_alphas=10, tol=1e-10, cv=2, n_jobs=1,
                   fit_intercept=False, verbose=2)
@@ -119,11 +118,11 @@ def test_dropin_MultiTaskLassoCV():
     clf2.fit(X, y)
 
     np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_,
-                               rtol=1e-04)
+                               atol=1e-4, rtol=1e-04)
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_,
-                               rtol=1e-05)
+                               atol=1e-4, rtol=1e-04)
     np.testing.assert_allclose(clf.coef_, clf2.coef_,
-                               rtol=1e-05)
+                               atol=1e-4, rtol=1e-04)
 
     # check_estimator tests float32 so using tol < 1e-7 causes precision
     # issues
@@ -132,9 +131,9 @@ def test_dropin_MultiTaskLassoCV():
 
 
 @pytest.mark.parametrize("fit_intercept", [True, False])
-def test_dropin_MultiTaskLasso(fit_intercept):
-    """Test that our MultiTaskLasso class behaves as sklearn's."""
-    X, Y, _, _ = build_dataset(n_samples=20, n_features=30, n_targets=10)
+def test_MultiTaskLasso(fit_intercept):
+    """Test that our MultiTaskLasso behaves as sklearn's."""
+    X, Y = build_dataset(n_samples=20, n_features=30, n_targets=10)
     alpha_max = np.max(norm(X.T.dot(Y), axis=1)) / X.shape[0]
 
     alpha = alpha_max / 2.

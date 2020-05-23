@@ -43,17 +43,17 @@ def test_logreg():
     np.testing.assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
 
 
-def test_dropin_logreg():
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_dropin_logreg(sparse_X):
     np.random.seed(1409)
-    check_estimator(LogisticRegression)
-    X, y, _, _ = build_dataset(
-        n_samples=100, n_features=100, sparse_X=True)
+    X, y = build_dataset(
+        n_samples=50, n_features=100, sparse_X=sparse_X)
     y = np.sign(y)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / 10
     C = 30. / alpha_max
 
     tol = 1e-8
-    clf1 = LogisticRegression(C=C, tol=tol)
+    clf1 = LogisticRegression(C=C, tol=tol, verbose=2)
     clf1.fit(X, y)
 
     clf2 = sklearn_Logreg(
@@ -61,15 +61,23 @@ def test_dropin_logreg():
     clf2.fit(X, y)
     np.testing.assert_allclose(clf1.coef_, clf2.coef_, rtol=1e-3, atol=1e-5)
 
-    # multinomial test:
+    # this uses float32 so we increase the tol else there are precision issues
+    clf1.tol = 1e-4
+    check_estimator(clf1)
+
+    # multinomial test, need to have a slightly lower tol
+    # for results to be comparable
     y = np.random.choice(4, len(y))
-    clf3 = LogisticRegression(C=C, tol=tol)
+    clf3 = LogisticRegression(C=C, tol=tol, verbose=2)
     clf3.fit(X, y)
 
     clf4 = sklearn_Logreg(
         C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
     clf4.fit(X, y)
-    np.testing.assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-4)
+    np.testing.assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-3)
+
+    clf3.tol = 1e-3
+    check_estimator(clf3)
 
 
 @pytest.mark.parametrize("sparse_X, alphas, pb",
@@ -126,7 +134,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
                          product([False, True], [False, True], [False, True]))
-def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
+def test_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
     params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
@@ -138,19 +146,16 @@ def test_dropin_LassoCV(sparse_X, fit_intercept, positive):
     clf2 = sklearn_LassoCV(**params)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_,
-                               rtol=1e-04)
-    np.testing.assert_allclose(clf.alpha_, clf2.alpha_,
-                               rtol=1e-05)
-    np.testing.assert_allclose(clf.coef_, clf2.coef_,
-                               rtol=1e-05)
+    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-04)
+    np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
+    np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
 
     check_estimator(LassoCV)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
                          product([False, True], [False, True], [False, True]))
-def test_dropin_lasso(sparse_X, fit_intercept, positive):
+def test_Lasso(sparse_X, fit_intercept, positive):
     """Test that our Lasso class behaves as sklearn's Lasso."""
     X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
     if not positive:
