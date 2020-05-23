@@ -97,7 +97,7 @@ def test_celer_path(sparse_X, alphas, pb):
     tol = 1e-6
     alphas, coefs, gaps, thetas, n_iters = celer_path(
         X, y, pb, alphas=alphas, tol=tol, return_thetas=True,
-        verbose=False, verbose_inner=False, return_n_iter=True)
+        verbose=1, return_n_iter=True)
     np.testing.assert_array_less(gaps, tol)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)

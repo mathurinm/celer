@@ -29,7 +29,7 @@ def celer(
         floating[:] theta, floating[:] norms_X_col, int max_iter,
         int max_epochs, int gap_freq=10, float tol_ratio_inner=0.3,
         float tol=1e-6, int p0=100, int verbose=0,
-        int verbose_inner=0, int use_accel=1, int prune=0, bint positive=0,
+        int use_accel=1, int prune=0, bint positive=0,
         int better_lc=1):
     """R/Xw and w are modified in place and assumed to match."""
     assert pb in (LASSO, LOGREG)
@@ -39,6 +39,7 @@ def celer(
     else:
         dtype = np.float32
 
+    cdef int verbose_inner = max(0, verbose - 1)
     cdef int n_features = w.shape[0]
     cdef int n_samples = y.shape[0]
 
