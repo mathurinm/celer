@@ -40,13 +40,13 @@ Cite
 
 If you use this code, please cite:
 
-.. code-block:: None
+.. code-block:: bibtex
 
   @InProceedings{pmlr-v80-massias18a,
     title = {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
     author = {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
     booktitle = {Proceedings of the 35th International Conference on Machine Learning},
-    pages = 3321--3330,
+    pages = {3321--3330},
     year = 2018,
     volume = 80,
   }
@@ -54,7 +54,7 @@ If you use this code, please cite:
   @article{massias2019dual,
     title = {Dual Extrapolation for Sparse Generalized Linear Models},
     author = {Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph},
-    journal = arXiv preprint arXiv:1907.05830,
+    journal = {arXiv preprint arXiv:1907.05830},
     year = 2019,
   }
 
@@ -63,9 +63,6 @@ ArXiv links:
 
 - https://arxiv.org/abs/1802.07481
 - https://arxiv.org/abs/1907.05830
-
-::
-
 
 
 Build the documentation

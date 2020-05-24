@@ -36,11 +36,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     .. math::
         \frac{||y - X w||_2^2}{2 n} + \alpha ||w||_1
+
     Logreg:
 
     .. math::
-        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) +
-        \alpha  ||w||_1
+        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha  ||w||_1
 
     Parameters
     ----------
