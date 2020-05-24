@@ -143,6 +143,7 @@
 <span class="c1"># Fit an adapted GroupLasso model</span>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">groups</span></a> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># groups are contiguous and of size 5</span>
+<span class="c1"># irregular groups are also supported,</span>
 <span class="n">clf</span> <span class="o">=</span> <span class="n">GroupLasso</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">groups</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">groups</span></a><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
 <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">y</span></a><span class="p">)</span>
 </pre></div>
@@ -202,7 +203,7 @@
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_group_lasso_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_group_lasso_003.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.482 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.096 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-group-lasso-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/433d4b2ff389555700f26fe734f79b9a/plot_group_lasso.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_group_lasso.py</span></code></a></p>

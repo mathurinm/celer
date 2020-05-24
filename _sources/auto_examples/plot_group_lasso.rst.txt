@@ -47,6 +47,7 @@ The example runs the GroupLasso scikit-learn like estimators.
     # Fit an adapted GroupLasso model
 
     groups = 5  # groups are contiguous and of size 5
+    # irregular groups are also supported,
     clf = GroupLasso(groups=groups, alpha=1.1)
     clf.fit(X, y)
 
@@ -163,7 +164,7 @@ Show optimal regression vector for prediction, obtained by cross validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.482 seconds)
+   **Total running time of the script:** ( 0 minutes  2.096 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:

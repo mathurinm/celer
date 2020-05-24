@@ -112,7 +112,7 @@
 <h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="celer.celer_path">
-<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer_path</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">pb</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">coef_init=None</em>, <em class="sig-param">max_iter=20</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">verbose_inner=0</em>, <em class="sig-param">tol=1e-06</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">groups=None</em>, <em class="sig-param">return_thetas=False</em>, <em class="sig-param">use_PN=False</em>, <em class="sig-param">X_offset=None</em>, <em class="sig-param">X_scale=None</em>, <em class="sig-param">return_n_iter=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer_path</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">pb</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">n_alphas=100</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">coef_init=None</em>, <em class="sig-param">max_iter=20</em>, <em class="sig-param">gap_freq=10</em>, <em class="sig-param">max_epochs=50000</em>, <em class="sig-param">p0=10</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">tol=1e-06</em>, <em class="sig-param">prune=0</em>, <em class="sig-param">groups=None</em>, <em class="sig-param">return_thetas=False</em>, <em class="sig-param">use_PN=False</em>, <em class="sig-param">X_offset=None</em>, <em class="sig-param">X_scale=None</em>, <em class="sig-param">return_n_iter=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute optimization path with Celer as inner solver.</p>
 <p>With <cite>n = len(y)</cite> the number of samples, the losses are:</p>
 <p>Lasso:</p>
@@ -151,9 +151,7 @@ computations.</p>
 </dd>
 <dt><strong>p0</strong><span class="classifier">int, optional</span></dt><dd><p>First working set size.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool or integer, optional</span></dt><dd><p>Amount of verbosity.</p>
-</dd>
-<dt><strong>verbose_inner</strong><span class="classifier">bool or integer</span></dt><dd><p>Amount of verbosity in the inner solver.</p>
+<dt><strong>verbose</strong><span class="classifier">bool or integer, optional</span></dt><dd><p>Amount of verbosity. 0/False is silent</p>
 </dd>
 <dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
 gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is

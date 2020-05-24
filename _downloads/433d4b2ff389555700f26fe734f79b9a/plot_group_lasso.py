@@ -36,6 +36,7 @@ y = X @ w_true + rng.randn(n_samples)
 # Fit an adapted GroupLasso model
 
 groups = 5  # groups are contiguous and of size 5
+# irregular groups are also supported,
 clf = GroupLasso(groups=groups, alpha=1.1)
 clf.fit(X, y)
 

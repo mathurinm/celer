@@ -217,13 +217,13 @@ initialization, otherwise, just erase the previous solution.</p>
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(self, X, y)</p></td>
-<td><p>Fit MultiTaskElasticNet model with coordinate descent</p></td>
+<td><p>Fit MultiTaskLasso model with Celer</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(self, X, y, alphas[, coef_init, …])</p></td>
-<td><p>Compute Lasso path with Celer.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(X, y[, l1_ratio, eps, n_alphas, …])</p></td>
+<td><p>Compute elastic net path with coordinate descent.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(self, X)</p></td>
 <td><p>Predict using the linear model.</p></td>
