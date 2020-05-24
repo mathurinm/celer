@@ -108,7 +108,7 @@ class Lasso(Lasso_sklearn):
     References
     ----------
     .. [1] M. Massias, A. Gramfort, J. Salmon
-       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
@@ -370,7 +370,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
     References
     ----------
     .. [1] M. Massias, A. Gramfort, J. Salmon
-       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
@@ -794,7 +794,7 @@ class GroupLasso(Lasso_sklearn):
         gap is smaller than ``tol`` or the maximum number of iteration is
         reached.
 
-    prune : bool, default=True
+    prune : bool, optional (default=True)
         Whether or not to use pruning when growing working sets.
 
     fit_intercept : bool, optional (default=True)
@@ -844,11 +844,11 @@ class GroupLasso(Lasso_sklearn):
     References
     ----------
     .. [1] M. Massias, A. Gramfort, J. Salmon
-       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
       http://proceedings.mlr.press/v80/massias18a.html
 
     .. [2] M. Massias, A. Gramfort, J. Salmon
-       "Dual extrapolation for sparse Generalized Linear Models", submitted,
+      "Dual extrapolation for sparse Generalized Linear Models", submitted,
       https://arxiv.org/abs/1907.05830
     """
 
