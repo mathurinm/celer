@@ -41,15 +41,16 @@ cpdef floating primal_grplasso(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef floating dscal_grp(
+cpdef floating dnorm_grp(
         bint is_sparse, floating[::1] theta, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data,
         int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
         int ws_size, int[:] C, bint center):
+    """Dual norm in the group case, i.e. L2/infty ofter groups."""
     cdef floating Xj_theta, tmp
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
-    cdef int i, j, g, g_idx, k, startptr, endptr, g_max
+    cdef int i, j, g, g_idx, k, startptr, endptr
     cdef int n_groups = grp_ptr.shape[0] - 1
     cdef int n_samples = theta.shape[0]
 
@@ -76,10 +77,7 @@ cpdef floating dscal_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            # if sqrt(tmp) > scal:
-            #     g_max = g
             scal = max(scal, sqrt(tmp))
-        # print(g_max)
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
@@ -139,10 +137,6 @@ cdef void set_prios_grp(
         prios[g] = (1. - nrm_Xgtheta) / norms_X_grp[g]
 
         if prios[g] > radius:
-            # pass
-            # print(np.linalg.norm(np.asarray(X).T[[np.asarray(grp_indices)[grp_ptr[g]:grp_ptr[g+1]]]] @ np.asarray(theta)))
-            # print(nrm_Xgtheta)
-            # print(prios[g], radius, np.asarray(w)[np.asarray(grp_indices)[grp_ptr[g]:grp_ptr[g+1]]])
             screened[g] = True
             n_screened[0] += 1
 
@@ -224,7 +218,7 @@ cpdef celer_grp(
         tmp = 1. / (alpha * n_samples)
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        scal = dscal_grp(
+        scal = dnorm_grp(
             is_sparse, theta, grp_ptr, grp_indices, X, X_data, X_indices,
             X_indptr, X_mean, n_groups, dummy_C, center)
 
@@ -237,7 +231,7 @@ cpdef celer_grp(
         if t > 0:
             pass
             # also test dual point returned by inner solver after 1st iter:
-            scal = dscal_grp(
+            scal = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, n_groups, dummy_C, center)
             if scal > 1.:
@@ -310,8 +304,6 @@ cpdef celer_grp(
         else:
             C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
             np.asarray(C).sort()
-        print(np.asarray(C))
-        print(np.asarray(prios))
         if prune:
             tol_in = 0.3 * gap
         else:
@@ -327,7 +319,7 @@ cpdef celer_grp(
                 tmp = 1. / (alpha * n_samples)
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
-                scal = dscal_grp(
+                scal = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, ws_size, C, center)
 
@@ -348,7 +340,7 @@ cpdef celer_grp(
                     #     print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        scal = dscal_grp(
+                        scal = dnorm_grp(
                             is_sparse, thetaccel, grp_ptr, grp_indices, X,
                             X_data, X_indices, X_indptr, X_mean, ws_size, C,
                             center)

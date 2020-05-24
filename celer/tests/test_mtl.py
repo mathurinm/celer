@@ -11,7 +11,7 @@ from sklearn.linear_model import lasso_path
 from celer import (Lasso, GroupLasso, MultiTaskLasso,
                    MultiTaskLassoCV)
 from celer.homotopy import celer_path, mtl_path, _grp_converter
-from celer.group_fast import dscal_grp
+from celer.group_fast import dnorm_grp
 from celer.utils.testing import build_dataset
 
 
@@ -58,7 +58,7 @@ def test_GroupLasso_MultitaskLasso_equivalence():
     X_data = np.empty([1], dtype=X.dtype)
     X_indices = np.empty([1], dtype=np.int32)
     X_indptr = np.empty([1], dtype=np.int32)
-    other = dscal_grp(
+    other = dnorm_grp(
         False, y, grp_ptr, grp_indices, X, X_data,
         X_indices, X_indptr, X_data, len(grp_ptr) - 1,
         np.zeros(1, dtype=np.int32), False)
@@ -178,40 +178,49 @@ def test_GroupLasso(sparse_X):
 
 
 if __name__ == "__main__":
-    n_samples, n_features = 30, 20
-    X_, Y_ = build_dataset(n_samples, n_features, n_targets=3)
-    y = Y_.reshape(-1, order='F')
-    X = np.zeros([3 * n_samples, 3 * n_features], order='F')
+    # n_samples, n_features = 30, 20
+    # X_, Y_ = build_dataset(n_samples, n_features, n_targets=3)
+    # y = Y_.reshape(-1, order='F')
+    # X = np.zeros([3 * n_samples, 3 * n_features], order='F')
 
-    # block filling new design
-    for i in range(3):
-        X[i * n_samples:(i + 1) * n_samples, i *
-          n_features:(i + 1) * n_features] = X_
+    # # block filling new design
+    # for i in range(3):
+    #     X[i * n_samples:(i + 1) * n_samples, i *
+    #       n_features:(i + 1) * n_features] = X_
 
-    grp_indices = np.arange(
-        3 * n_features).reshape(3, -1).reshape(-1, order='F').astype(np.int32)
-    grp_ptr = 3 * np.arange(n_features + 1).astype(np.int32)
+    # grp_indices = np.arange(
+    #     3 * n_features).reshape(3, -1).reshape(-1, order='F').astype(np.int32)
+    # grp_ptr = 3 * np.arange(n_features + 1).astype(np.int32)
 
-    alpha_max = np.max(norm(X_.T @ Y_, axis=1)) / len(Y_)
+    # alpha_max = np.max(norm(X_.T @ Y_, axis=1)) / len(Y_)
 
-    X_data = np.empty([1], dtype=X.dtype)
-    X_indices = np.empty([1], dtype=np.int32)
-    X_indptr = np.empty([1], dtype=np.int32)
-    other = dscal_grp(
-        False, y, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
-        np.zeros(1, dtype=np.int32), False)
-    np.testing.assert_allclose(alpha_max, other / len(Y_))
+    # X_data = np.empty([1], dtype=X.dtype)
+    # X_indices = np.empty([1], dtype=np.int32)
+    # X_indptr = np.empty([1], dtype=np.int32)
+    # other = dnorm_grp(
+    #     False, y, grp_ptr, grp_indices, X, X_data,
+    #     X_indices, X_indptr, X_data, len(grp_ptr) - 1,
+    #     np.zeros(1, dtype=np.int32), False)
+    # np.testing.assert_allclose(alpha_max, other / len(Y_))
 
-    alpha = alpha_max / 20
-    clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8, verbose=2)
-    clf.fit(X_, Y_)
+    # alpha = alpha_max / 20
+    # clf = MultiTaskLasso(alpha, fit_intercept=False, tol=1e-8, verbose=2)
+    # clf.fit(X_, Y_)
 
-    groups = [grp.tolist() for grp in grp_indices.reshape(n_features, 3)]
-    clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
-                      fit_intercept=False, tol=1e-8, verbose=2, normalize=0, max_iter=10)
-    clf1.fit(X, y)
+    # groups = [grp.tolist() for grp in grp_indices.reshape(n_features, 3)]
+    # clf1 = GroupLasso(alpha=alpha / 3, groups=groups,
+    #                   fit_intercept=False, tol=1e-8, verbose=2, normalize=0, max_iter=10)
+    # clf1.fit(X, y)
 
-    a = clf1.coef_.reshape(3, -1).T
+    # a = clf1.coef_.reshape(3, -1).T
     # b = clf.coef_.T
     # np.testing.assert_allclose(clf1.coef_, clf.coef_.reshape(-1), atol=0)
+    from celer.datasets import load_climate
+    X, y = load_climate()
+
+    from celer.homotopy import _alpha_max_grp
+    alpha_max = _alpha_max_grp(X, y, 7, False, False)
+    clf = GroupLasso(alpha=alpha_max / 100, groups=7,
+                     verbose=2, fit_intercept=False)
+    clf.fit(X, y)
+    # grp_indices, grp_ptr = _gr
