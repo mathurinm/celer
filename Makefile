@@ -16,6 +16,7 @@ clean-so:
 	find . -name "*.so" | xargs rm -f
 	find . -name "*.pyd" | xargs rm -f
 	find . -name "*.cpp" | xargs rm -f
+	find . -name "*.c" | xargs rm -f
 
 clean-build:
 	rm -rf build

@@ -10,10 +10,10 @@ from scipy import sparse
 from numpy.linalg import norm
 from sklearn.utils import check_array
 from sklearn.exceptions import ConvergenceWarning
+from sklearn.linear_model._base import _preprocess_data
 
 from .lasso_fast import celer
-from .group_fast import celer_grp, dscal_grp
-# TODO dnorm better name?
+from .group_fast import celer_grp, dnorm_grp
 from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
@@ -202,16 +202,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     if return_n_iter:
         n_iters = np.zeros(n_alphas, dtype=int)
 
-    if is_sparse:
-        X_dense = np.empty([1, 1], order='F', dtype=X.data.dtype)
-        X_data = X.data
-        X_indptr = X.indptr
-        X_indices = X.indices
-    else:
-        X_dense = X
-        X_data = np.empty([1], dtype=X.dtype)
-        X_indices = np.empty([1], dtype=np.int32)
-        X_indptr = np.empty([1], dtype=np.int32)
+    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     if pb == GRPLASSO:
         # TODO this must be included in compute_norm_Xcols when centering
@@ -270,7 +261,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
             elif pb == GRPLASSO:
                 theta = Xw.copy()
-                scal = dscal_grp(
+                scal = dnorm_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
                     len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
@@ -287,7 +278,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
                 prune=prune, verbose=verbose)
-            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
@@ -322,6 +312,36 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     return results
 
 
+def _sparse_and_dense(X):
+    if sparse.issparse(X):
+        X_dense = np.empty([1, 1], order='F', dtype=X.data.dtype)
+        X_data = X.data
+        X_indptr = X.indptr
+        X_indices = X.indices
+    else:
+        X_dense = X
+        X_data = np.empty([1], dtype=X.dtype)
+        X_indices = np.empty([1], dtype=np.int32)
+        X_indptr = np.empty([1], dtype=np.int32)
+    return X_dense, X_data, X_indices, X_indptr
+
+
+def _alpha_max_grp(X, y, groups, center=False, normalize=False):
+    """This costly function  (copies X) should only be used for debug."""
+    grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
+    X, y, X_offset, _, X_scale = _preprocess_data(
+        X, y, center, normalize, copy=True)
+
+    X_mean = X_offset / X_scale
+    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
+    alpha_max = dnorm_grp(
+        sparse.issparse(X), y, grp_ptr, grp_indices, X_dense, X_data,
+        X_indices, X_indptr, X_mean, len(grp_ptr) - 1,
+        np.zeros(1, dtype=np.int32), X_mean.any()) / len(y)
+
+    return alpha_max
+
+
 def _grp_converter(groups, n_features):
     if isinstance(groups, int):
         grp_size = groups
@@ -343,22 +363,12 @@ def _grp_converter(groups, n_features):
     return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
 
 
-# TODO put this in logreg_path with solver variable
 def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
               verbose_inner=False, tol=1e-4, prune=True, p0=10,
               use_accel=True, K=6, growth=2, blitz_sc=False):
     is_sparse = sparse.issparse(X)
     w = w_init.copy()
-    if is_sparse:
-        X_dense = np.empty([2, 2], order='F')
-        X_indices = X.indices.astype(np.int32)
-        X_indptr = X.indptr.astype(np.int32)
-        X_data = X.data
-    else:
-        X_dense = X
-        X_indices = np.empty([1], dtype=np.int32)
-        X_indptr = np.empty([1], dtype=np.int32)
-        X_data = np.empty([1])
+    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     return newton_celer(
         is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,

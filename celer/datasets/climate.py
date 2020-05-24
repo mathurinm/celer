@@ -24,12 +24,9 @@ def get_data(filename):
     data = xarray.open_dataset(
         pjoin(CELER_PATH, 'climate/surface', filename), decode_times=False)
 
-    n_times, n_lat, n_lon = data[list(data.data_vars.keys())[0]].shape
-    p = n_lat * n_lon
-    n = n_times
-    X = np.zeros((n, p))
+    n_times = data[list(data.data_vars.keys())[0]].shape[0]
 
-    X = np.array(data[list(data.data_vars.keys())[0]]).reshape(n, -1)
+    X = np.array(data[list(data.data_vars.keys())[0]]).reshape(n_times, -1)
 
     # remove seasonality
     period = 12
@@ -60,7 +57,7 @@ def target_region(lx, Lx):
     arrays = [get_data(filename) for filename in FILES]
 
     n, p = arrays[0].shape
-    X = np.zeros((n, 7 * (p - 1)))
+    X = np.zeros((n, 7 * (p - 1)), order='F')
 
     pos_lx = int((90 - lx) / 2.5)
     pos_Lx = (np.ceil(Lx / 2.5)).astype(int)
@@ -74,7 +71,7 @@ def target_region(lx, Lx):
             [arr[:, j] for arr in arrays]).T
         begin += 7
 
-    y = arrays[0][:, target]
+    y = arrays[0][:, target].astype(np.float64)
 
     # np.save(pjoin(path, 'climate_data.npy'), X)
     # np.save(pjoin(path, 'climate_target.npy'), y)
