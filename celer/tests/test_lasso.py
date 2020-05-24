@@ -23,7 +23,7 @@ from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
 
 
-def test_logreg():
+def test_celer_path_logreg():
     X, y = build_dataset(
         n_samples=50, n_features=100, sparse_X=True)
     y = np.sign(y)
@@ -44,10 +44,10 @@ def test_logreg():
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
-def test_dropin_logreg(sparse_X):
+def test_LogisticRegression(sparse_X):
     np.random.seed(1409)
     X, y = build_dataset(
-        n_samples=50, n_features=100, sparse_X=sparse_X)
+        n_samples=30, n_features=60, sparse_X=sparse_X)
     y = np.sign(y)
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     C = 30. / alpha_max
@@ -136,9 +136,11 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
                          product([False, True], [False, True], [False, True]))
 def test_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
-    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
-    params = dict(eps=1e-1, n_alphas=100, tol=1e-10, cv=2,
-                  fit_intercept=fit_intercept, positive=positive, verbose=2)
+
+    X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
+    params = dict(eps=0.05, n_alphas=10, tol=1e-8, cv=2,
+                  fit_intercept=fit_intercept, positive=positive, verbose=2,
+                  n_jobs=-1)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
@@ -146,10 +148,11 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     clf2 = sklearn_LassoCV(**params)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-04)
+    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-2)
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
 
+    # TODO this one is slow (3s * 8 tests). Pass an instance and icnrease tol
     check_estimator(LassoCV)
 
 

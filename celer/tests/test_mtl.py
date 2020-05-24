@@ -93,12 +93,13 @@ def test_convert_groups():
 
 
 def test_mtl_path():
-    X, Y = build_dataset(n_targets=10)
-    tol = 1e-9
-    alphas, coefs, gaps = mtl_path(X, Y, eps=1e-2, tol=tol)
+    X, Y = build_dataset(n_targets=3)
+    tol = 1e-10
+    params = dict(eps=0.01, tol=tol, n_alphas=10)
+    alphas, coefs, gaps = mtl_path(X, Y, **params)
     np.testing.assert_array_less(gaps, tol)
 
-    sk_alphas, sk_coefs, sk_gaps = lasso_path(X, Y, eps=1e-2, tol=tol)
+    sk_alphas, sk_coefs, sk_gaps = lasso_path(X, Y, **params, max_iter=10000)
     np.testing.assert_array_less(sk_gaps, tol * np.linalg.norm(Y, 'fro')**2)
     np.testing.assert_array_almost_equal(coefs, sk_coefs, decimal=5)
     np.testing.assert_allclose(alphas, sk_alphas)
@@ -115,6 +116,7 @@ def test_MultiTaskLassoCV():
     clf.fit(X, y)
 
     clf2 = sklearn_MultiTaskLassoCV(**params)
+    clf2.max_iter = 10000  # increase max_iter bc of low tol
     clf2.fit(X, y)
 
     np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_,
@@ -140,6 +142,7 @@ def test_MultiTaskLasso(fit_intercept):
     params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
                   normalize=True)
     clf = MultiTaskLasso(**params)
+    clf.verbose = 2
     clf.fit(X, Y)
 
     clf2 = sklearn_MultiTaskLasso(**params)
@@ -148,6 +151,7 @@ def test_MultiTaskLasso(fit_intercept):
     if fit_intercept:
         np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
+    clf.tol = 1e-7
     check_estimator(clf)
 
 
@@ -162,8 +166,6 @@ def test_group_lasso_path(sparse_X):
     tol = 1e-8
     np.testing.assert_array_less(gaps, tol)
 
-    check_estimator(GroupLasso)
-
 
 @pytest.mark.parametrize("sparse_X", [True, False])
 def test_GroupLasso(sparse_X):
@@ -176,17 +178,22 @@ def test_GroupLasso(sparse_X):
     clf.fit(X, y)
     np.testing.assert_array_less(clf.dual_gap_, tol)
 
+    clf.tol = 1e-6
+    clf.groups = 1  # unsatisfying but sklearn will fit of 5 features
+    check_estimator(clf)
+
 
 if __name__ == "__main__":
-    from celer.datasets import load_climate
-    X, y = load_climate()
+    pass
+    # from celer.datasets import load_climate
+    # X, y = load_climate()
 
-    center, normalize = True, True
+    # center, normalize = True, True
 
-    from celer.homotopy import _alpha_max_grp
-    alpha_max = _alpha_max_grp(X, y, 7, center, normalize)
+    # from celer.homotopy import _alpha_max_grp
+    # alpha_max = _alpha_max_grp(X, y, 7, center, normalize)
 
-    clf = GroupLasso(alpha=alpha_max / 100, groups=7,
-                     verbose=2, fit_intercept=center, normalize=normalize)
-    clf.alpha = alpha_max / 100
-    clf.fit(X, y)
+    # clf = GroupLasso(alpha=alpha_max / 100, groups=7,
+    #                  verbose=2, fit_intercept=center, normalize=normalize)
+    # clf.alpha = alpha_max / 100
+    # clf.fit(X, y)
