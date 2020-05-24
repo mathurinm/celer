@@ -132,8 +132,10 @@ def celer_mtl(
         floating[:, ::1] W, floating[::1, :] R, floating[::1, :] theta,
         floating[:] norms_X_col, int max_iter, int max_epochs,
         int gap_freq=10, floating tol_ratio=0.3, float tol=1e-6, int p0=100,
-        bint verbose=0, bint verbose_inner=0, bint use_accel=1, bint prune=1,
+        int verbose=0, bint use_accel=1, bint prune=1,
         int K=6):
+
+    cdef int verbose_inner = max(0, verbose - 1)
     if floating is double:
         dtype = np.float64
     else:

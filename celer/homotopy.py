@@ -25,7 +25,7 @@ GRPLASSO = 2
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
-               p0=10, verbose=0, verbose_inner=0, tol=1e-6, prune=0,
+               p0=10, verbose=0, tol=1e-6, prune=0,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
                X_scale=None, return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
@@ -82,10 +82,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         First working set size.
 
     verbose : bool or integer, optional
-        Amount of verbosity.
-
-    verbose_inner : bool or integer
-        Amount of verbosity in the inner solver.
+        Amount of verbosity. 0/False is silent
 
     tol : float, optional
         The tolerance for the optimization: the solver runs until the duality
@@ -135,6 +132,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         The dual variables along the path.
         (Is returned only when ``return_thetas`` is set to True).
     """
+
     if pb.lower() not in ("lasso", "logreg", "grouplasso"):
         raise ValueError("Unsupported problem %s" % pb)
     if pb.lower() == "lasso":
@@ -284,12 +282,12 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
                 alpha, w, Xw, theta, norms_X_col,
                 max_iter=max_iter, gap_freq=gap_freq, max_epochs=max_epochs,
-                p0=p0, verbose=verbose, verbose_inner=verbose_inner,
-                use_accel=1, tol=tol, prune=prune, positive=positive)
+                p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
+                positive=positive)
         else:  # pb == LOGREG and use_PN
             sol = newton_celer(
                 is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-                max_iter, verbose, verbose_inner, tol, prune, p0, True, K=6,
+                max_iter, verbose, tol, prune, p0, True, K=6,
                 growth=2, blitz_sc=False)
 
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
@@ -363,29 +361,28 @@ def _grp_converter(groups, n_features):
     return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
 
 
-def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
-              verbose_inner=False, tol=1e-4, prune=True, p0=10,
-              use_accel=True, K=6, growth=2, blitz_sc=False):
+def PN_solver(X, y, alpha, w_init, max_iter, verbose=0,
+              tol=1e-4, prune=True, p0=10, use_accel=True, K=6, growth=2,
+              blitz_sc=False):
     is_sparse = sparse.issparse(X)
     w = w_init.copy()
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     return newton_celer(
         is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-        max_iter, verbose, verbose_inner, tol, prune, p0, use_accel, K,
+        max_iter, verbose, tol, prune, p0, use_accel, K,
         growth=growth, blitz_sc=blitz_sc)
 
 
 def mtl_path(
         X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
-        max_epochs=50000, p0=10, verbose=False, verbose_inner=False, tol=1e-6,
+        max_epochs=50000, p0=10, verbose=0, tol=1e-6,
         prune=True, use_accel=True, return_thetas=False, K=6,
         coef_init=None):
     X = check_array(X, "csc", dtype=[
         np.float64, np.float32], order="F", copy=False)
     Y = check_array(Y, "csc", dtype=[
         np.float64, np.float32], order="F", copy=False)
-    # TODO check Y is fortran too
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]
     if alphas is None:
@@ -429,7 +426,7 @@ def mtl_path(
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
             prune=prune, max_iter=max_iter, max_epochs=max_epochs,
-            verbose=verbose_inner, use_accel=use_accel, gap_freq=gap_freq,
+            verbose=verbose, use_accel=use_accel, gap_freq=gap_freq,
             K=K)
 
         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
