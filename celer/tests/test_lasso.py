@@ -126,10 +126,11 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
 
-    alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params)
+    alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params,
+                                        max_iter=10000)
 
     np.testing.assert_allclose(alphas1, alphas2)
-    np.testing.assert_allclose(coefs1, coefs2, rtol=2e-03, atol=1e-4)
+    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-5)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
@@ -138,19 +139,19 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
 
     X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
-    params = dict(eps=0.05, n_alphas=10, tol=1e-8, cv=2,
+    params = dict(eps=0.05, n_alphas=10, tol=1e-10, cv=2,
                   fit_intercept=fit_intercept, positive=positive, verbose=2,
                   n_jobs=-1)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
 
-    clf2 = sklearn_LassoCV(**params)
+    clf2 = sklearn_LassoCV(**params, max_iter=10000)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, rtol=1e-2)
-    np.testing.assert_allclose(clf.alpha_, clf2.alpha_, rtol=1e-05)
-    np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-05)
+    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, atol=1e-4)
+    np.testing.assert_allclose(clf.alpha_, clf2.alpha_)
+    np.testing.assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
 
     # TODO this one is slow (3s * 8 tests). Pass an instance and icnrease tol
     check_estimator(LassoCV)

@@ -193,7 +193,7 @@ cpdef celer_grp(
 
     cdef floating[::1] gaps = np.zeros(max_iter, dtype=dtype)
     cdef floating[::1] theta_inner = np.zeros(n_samples, dtype=dtype)
-    cdef floating[::1] thetaccel = np.empty(n_samples, dtype=dtype)
+    cdef floating[::1] thetacc = np.empty(n_samples, dtype=dtype)
 
     cdef floating gap, p_obj, d_obj, scal, X_mean_j
     cdef floating gap_in, p_obj_in, d_obj_in, tol_in, d_obj_accel
@@ -302,15 +302,16 @@ cpdef celer_grp(
         if ws_size == n_groups:
             C = all_groups
         else:
-            C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
-            np.asarray(C).sort()
+            C = np.argpartition(np.asarray(prios),
+                                ws_size)[:ws_size].astype(np.int32)
         if prune:
             tol_in = 0.3 * gap
         else:
             tol_in = eps
 
         if verbose:
-            print(", %d groups in subpb (%d left)" % (len(C), n_groups - n_screened))
+            print(", %d groups in subpb (%d left)" %
+                  (len(C), n_groups - n_screened))
 
         highest_d_obj_in = 0.
         for epoch in range(max_epochs):
@@ -328,32 +329,32 @@ cpdef celer_grp(
                     fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
-                d_obj_in = dual(pb, n_samples, alpha, norm_y2, &theta_inner[0],
-                                &y[0])
+                d_obj_in = dual(
+                    pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
                         LASSO, n_samples, epoch, gap_freq, alpha, &R[0],
-                        &thetaccel[0], &last_K_R[0, 0], U, UtU, onesK, y)
+                        &thetacc[0], &last_K_R[0, 0], U, UtU, onesK, y)
 
                     # if info_dposv != 0 and verbose:
                     #     print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
                         scal = dnorm_grp(
-                            is_sparse, thetaccel, grp_ptr, grp_indices, X,
+                            is_sparse, thetacc, grp_ptr, grp_indices, X,
                             X_data, X_indices, X_indptr, X_mean, ws_size, C,
                             center)
 
                         if scal > 1.:
                             tmp = 1. / scal
-                            fscal(&n_samples, &tmp, &thetaccel[0], &inc)
+                            fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(pb, n_samples, alpha, norm_y2,
-                                           &thetaccel[0], &y[0])
+                                           &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
-                            fcopy(&n_samples, &thetaccel[0], &inc,
+                            fcopy(&n_samples, &thetacc[0], &inc,
                             &theta_inner[0], &inc)
 
 
@@ -363,11 +364,12 @@ cpdef celer_grp(
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
-                    print("Epoch %d, primal %.10f, gap: %.2e" % (epoch, p_obj_in, gap_in))
+                    print("Epoch %d, primal %.10f, gap: %.2e" %
+                          (epoch, p_obj_in, gap_in))
                 if gap_in < tol_in:
                     if verbose_in:
-                        print("Exit epoch %d, gap: %.2e < %.2e" % \
-                            (epoch, gap_in, tol_in))
+                        print("Exit epoch %d, gap: %.2e < %.2e" %
+                              (epoch, gap_in, tol_in))
                     break
 
             for g_idx in range(ws_size):
@@ -394,7 +396,8 @@ cpdef celer_grp(
                                     &inc) / lc_groups[g]
                     norm_wg += w[j] ** 2
                 norm_wg = sqrt(norm_wg)
-                bst_scal = max(0., 1. - alpha / lc_groups[g] * n_samples / norm_wg)
+                bst_scal = max(0.,
+                               1. - alpha / lc_groups[g] * n_samples / norm_wg)
 
                 for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                     j = grp_indices[grp_ptr[g] + k]
