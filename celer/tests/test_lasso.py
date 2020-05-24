@@ -49,7 +49,7 @@ def test_dropin_logreg(sparse_X):
     X, y = build_dataset(
         n_samples=50, n_features=100, sparse_X=sparse_X)
     y = np.sign(y)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / 10
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     C = 30. / alpha_max
 
     tol = 1e-8

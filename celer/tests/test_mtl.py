@@ -188,4 +188,5 @@ if __name__ == "__main__":
 
     clf = GroupLasso(alpha=alpha_max / 100, groups=7,
                      verbose=2, fit_intercept=center, normalize=normalize)
+    clf.alpha = alpha_max / 100
     clf.fit(X, y)

@@ -110,7 +110,7 @@ cdef void set_prios_grp(
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
         floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
         floating[::1] prios, uint8[::1] screened, floating radius,
-        int * n_screened, floating[:] w):
+        int * n_screened):
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -268,7 +268,7 @@ cpdef celer_grp(
 
         set_prios_grp(
             is_sparse, pb, theta, X, X_data, X_indices, X_indptr, lc_groups,
-            grp_ptr, grp_indices, prios, screened, radius, &n_screened, w)
+            grp_ptr, grp_indices, prios, screened, radius, &n_screened)
 
         if prune:
             nnz = 0

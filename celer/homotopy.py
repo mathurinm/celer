@@ -278,7 +278,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
                 prune=prune, verbose=verbose)
-            # coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
