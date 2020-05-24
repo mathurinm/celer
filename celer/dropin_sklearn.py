@@ -548,8 +548,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
         alphas, coefs, dual_gaps = mtl_path(
             X, y, alphas=alphas, coef_init=coef_init, max_iter=self.max_iter,
             gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, verbose_inner=max(0, self.verbose-1),
-            tol=self.tol, prune=self.prune)
+            verbose=self.verbose, tol=self.tol, prune=self.prune)
 
         return alphas, coefs, dual_gaps
 
