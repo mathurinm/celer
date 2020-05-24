@@ -222,7 +222,7 @@ def celer(
                         pb, n_samples, epoch, gap_freq, alpha, &Xw[0],
                         &thetacc[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
-                    if info_dposv != 0 and verbose:
+                    if info_dposv != 0 and verbose_in:
                         print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
@@ -252,7 +252,7 @@ def celer(
                     pb, alpha, n_samples, &Xw[0], &y[0], n_features, &w[0])
                 gap_in = p_obj_in - highest_d_obj_in
 
-                if verbose:
+                if verbose_in:
                     print("Epoch %d, primal %.10f, gap: %.2e" %
                           (epoch, p_obj_in, gap_in))
                 if gap_in < tol_in:
