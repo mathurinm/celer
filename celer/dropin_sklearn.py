@@ -38,10 +38,6 @@ class Lasso(Lasso_sklearn):
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
 
-    gap_freq : int
-        Number of coordinate descent epochs between each duality gap
-        computations.
-
     max_epochs : int
         Maximum number of CD epochs on each subproblem.
 
@@ -93,7 +89,7 @@ class Lasso(Lasso_sklearn):
     >>> from celer import Lasso
     >>> clf = Lasso(alpha=0.1)
     >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
-    Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,
+    Lasso(alpha=0.1, max_epochs=50000, max_iter=100,
     p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
     [0.85 0.  ]
@@ -112,16 +108,14 @@ class Lasso(Lasso_sklearn):
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., max_iter=100, gap_freq=10,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
-                 fit_intercept=True, normalize=False, warm_start=False,
-                 positive=False):
+    def __init__(self, alpha=1., max_iter=100, max_epochs=50000, p0=10,
+                 verbose=0, tol=1e-4, prune=True, fit_intercept=True,
+                 normalize=False, warm_start=False, positive=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, normalize=normalize,
             warm_start=warm_start)
         self.verbose = verbose
-        self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
@@ -132,9 +126,8 @@ class Lasso(Lasso_sklearn):
         results = celer_path(
             X, y, "lasso", alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,
-            gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
-            verbose=self.verbose, tol=self.tol, prune=self.prune,
-            positive=self.positive,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, prune=self.prune, positive=self.positive,
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
 
@@ -194,10 +187,6 @@ class LassoCV(RegressorMixin, sklearn_LinearModelCV):
     verbose : bool or integer
         Amount of verbosity.
 
-    gap_freq : int, optional (default=10)
-        In the inner loop, the duality gap is computed every `gap_freq`
-        coordinate descent epochs.
-
     max_epochs : int, optional (default=50000)
         Maximum number of coordinate descent epochs when solving a subproblem.
 
@@ -250,14 +239,12 @@ class LassoCV(RegressorMixin, sklearn_LinearModelCV):
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
-                 tol=1e-4, cv=None, verbose=0, gap_freq=10,
-                 max_epochs=50000, p0=10, prune=0, precompute='auto',
-                 positive=False, n_jobs=None):
+                 tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
+                 prune=True, precompute='auto', positive=False, n_jobs=None):
         super(LassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
             verbose=verbose, n_jobs=n_jobs)
-        self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
@@ -267,10 +254,9 @@ class LassoCV(RegressorMixin, sklearn_LinearModelCV):
         """Compute Lasso path with Celer."""
         alphas, coefs, dual_gaps = celer_path(
             X, y, "lasso", alphas=alphas, coef_init=coef_init,
-            max_iter=self.max_iter, gap_freq=self.gap_freq,
-            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
-            tol=self.tol, prune=self.prune, positive=self.positive,
-            X_scale=kwargs.get('X_scale', None),
+            max_iter=self.max_iter, max_epochs=self.max_epochs,
+            p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return alphas, coefs, dual_gaps
 
@@ -302,10 +288,6 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
-
-    gap_freq : int
-        Number of coordinate descent epochs between each duality gap
-        computations.
 
     max_epochs : int
         Maximum number of CD epochs on each subproblem.
@@ -355,7 +337,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
     >>> from celer import Lasso
     >>> clf = Lasso(alpha=0.1)
     >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
-    Lasso(alpha=0.1, gap_freq=10, max_epochs=50000, max_iter=100,
+    Lasso(alpha=0.1, max_epochs=50000, max_iter=100,
     p0=10, prune=0, tol=1e-06, verbose=0)
     >>> print(clf.coef_)
     [0.85 0.  ]
@@ -374,7 +356,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., max_iter=100, gap_freq=10,
+    def __init__(self, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
                  fit_intercept=True, normalize=False, warm_start=False):
         super().__init__(
@@ -382,7 +364,6 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
             fit_intercept=fit_intercept, normalize=normalize,
             warm_start=warm_start)
         self.verbose = verbose
-        self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
@@ -415,9 +396,8 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
 
         _, coefs, dual_gaps = mtl_path(
             X, y, alphas=[self.alpha], coef_init=self.coef_,
-            max_iter=self.max_iter, gap_freq=self.gap_freq,
-            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
-            tol=self.tol, prune=self.prune)
+            max_iter=self.max_iter, max_epochs=self.max_epochs, p0=self.p0,
+            verbose=self.verbose, tol=self.tol, prune=self.prune)
 
         self.coef_, self.dual_gap_ = coefs[..., 0], dual_gaps[-1]
         self.n_iter_ = len(dual_gaps)
@@ -479,10 +459,6 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     verbose : bool or integer
         Amount of verbosity.
 
-    gap_freq : int, optional (default=10)
-        In the inner loop, the duality gap is computed every `gap_freq`
-        coordinate descent epochs.
-
     max_epochs : int, optional (default=50000)
         Maximum number of coordinate descent epochs when solving a subproblem.
 
@@ -530,14 +506,13 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
-                 tol=1e-4, cv=None, verbose=0, gap_freq=10,
+                 tol=1e-4, cv=None, verbose=0,
                  max_epochs=50000, p0=10, prune=True, precompute='auto',
                  n_jobs=1):
         super().__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
             verbose=verbose, n_jobs=n_jobs)
-        self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
@@ -547,7 +522,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
 
         alphas, coefs, dual_gaps = mtl_path(
             X, y, alphas=alphas, coef_init=coef_init, max_iter=self.max_iter,
-            gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0,
+            max_epochs=self.max_epochs, p0=self.p0,
             verbose=self.verbose, tol=self.tol, prune=self.prune)
 
         return alphas, coefs, dual_gaps
@@ -776,10 +751,6 @@ class GroupLasso(Lasso_sklearn):
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
 
-    gap_freq : int
-        Number of block coordinate descent (BCD) epochs between each duality
-        gap computations.
-
     max_epochs : int
         Maximum number of BCD epochs on each subproblem.
 
@@ -828,7 +799,7 @@ class GroupLasso(Lasso_sklearn):
     >>> from celer import GroupLasso
     >>> clf = GroupLasso(alpha=0.5, groups=[[0, 1], [2]])
     >>> clf.fit([[0, 0, 1], [1, -1, 2], [2, 0, -1]], [1, 1, -1])
-    GroupLasso(alpha=0.5, fit_intercept=True, gap_freq=10,
+    GroupLasso(alpha=0.5, fit_intercept=True,
     groups=[[0, 1], [2]], max_epochs=50000, max_iter=100, normalize=False,
     p0=10, prune=True, tol=0.0001, verbose=0, warm_start=False)
     >>> print(clf.coef_)
@@ -852,7 +823,7 @@ class GroupLasso(Lasso_sklearn):
       https://arxiv.org/abs/1907.05830
     """
 
-    def __init__(self, groups=1, alpha=1., max_iter=100, gap_freq=10,
+    def __init__(self, groups=1, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
                  fit_intercept=True, normalize=False, warm_start=False):
         super(GroupLasso, self).__init__(
@@ -861,7 +832,6 @@ class GroupLasso(Lasso_sklearn):
             warm_start=warm_start)
         self.groups = groups
         self.verbose = verbose
-        self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
@@ -872,9 +842,8 @@ class GroupLasso(Lasso_sklearn):
         results = celer_path(
             X, y, "grouplasso", alphas=alphas, groups=self.groups,
             coef_init=coef_init, max_iter=self.max_iter,
-            return_n_iter=return_n_iter, gap_freq=self.gap_freq,
-            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
-            tol=self.tol, prune=self.prune,
+            return_n_iter=return_n_iter, max_epochs=self.max_epochs,
+            p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
 
@@ -945,10 +914,6 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
     verbose : bool or integer
         Amount of verbosity.
 
-    gap_freq : int, optional (default=10)
-        In the inner loop, the duality gap is computed every `gap_freq`
-        coordinate descent epochs.
-
     max_epochs : int, optional (default=50000)
         Maximum number of coordinate descent epochs when solving a subproblem.
 
@@ -1001,15 +966,13 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
 
     def __init__(self, groups=None, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
-                 tol=1e-4, cv=None, verbose=0, gap_freq=10,
-                 max_epochs=50000, p0=10, prune=0, precompute='auto',
-                 positive=False, n_jobs=None):
+                 tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
+                 prune=True, precompute='auto', positive=False, n_jobs=None):
         super(GroupLassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
             verbose=verbose, n_jobs=n_jobs)
         self.groups = groups
-        self.gap_freq = gap_freq
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
@@ -1019,8 +982,9 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
         alphas, coefs, dual_gaps = celer_path(
             X, y, "grouplasso", alphas=alphas, groups=self.groups,
             coef_init=coef_init, max_iter=self.max_iter,
-            gap_freq=self.gap_freq, max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
-            positive=self.positive, X_scale=kwargs.get('X_scale', None),
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, prune=self.prune, positive=self.positive,
+            X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return alphas, coefs, dual_gaps
 
