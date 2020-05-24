@@ -328,8 +328,9 @@ def _sparse_and_dense(X):
 
 
 def _alpha_max_grp(X, y, groups, center=False, normalize=False):
+    """This costly function  (copies X) should only be used for debug."""
     grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
-    _, y, X_offset, _, X_scale = _preprocess_data(
+    X, y, X_offset, _, X_scale = _preprocess_data(
         X, y, center, normalize, copy=True)
 
     X_mean = X_offset / X_scale
@@ -363,22 +364,12 @@ def _grp_converter(groups, n_features):
     return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
 
 
-# TODO put this in logreg_path with solver variable
 def PN_solver(X, y, alpha, w_init, max_iter, verbose=False,
               verbose_inner=False, tol=1e-4, prune=True, p0=10,
               use_accel=True, K=6, growth=2, blitz_sc=False):
     is_sparse = sparse.issparse(X)
     w = w_init.copy()
-    if is_sparse:
-        X_dense = np.empty([2, 2], order='F')
-        X_indices = X.indices.astype(np.int32)
-        X_indptr = X.indptr.astype(np.int32)
-        X_data = X.data
-    else:
-        X_dense = X
-        X_indices = np.empty([1], dtype=np.int32)
-        X_indptr = np.empty([1], dtype=np.int32)
-        X_data = np.empty([1])
+    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     return newton_celer(
         is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,

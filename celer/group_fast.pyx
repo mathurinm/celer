@@ -415,7 +415,6 @@ cpdef celer_grp(
                             faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0],
                                   &inc)
 
-    print(np.where(np.asarray(screened)))
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
 
