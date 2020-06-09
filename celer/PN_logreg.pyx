@@ -55,6 +55,7 @@ def newton_celer(
     cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
     cdef bint center = False
     # TODO support centering
+    cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
 
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
@@ -100,9 +101,8 @@ def newton_celer(
         # theta = y * sigmoid(-y * Xw) / alpha
         create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = compute_dual_scaling(
-            is_sparse, LOGREG, n_features, n_samples, &theta[0], X, X_data,
-            X_indices, X_indptr, n_features, &all_features[0], &screened[0],
-            X_mean, center, 0)
+            is_sparse, theta, X, X_data, X_indices, X_indptr,
+            n_features, all_features, screened, X_mean, center, 0)
 
         if norm_Xtheta > 1.:
             tmp = 1. / norm_Xtheta
@@ -164,9 +164,8 @@ def newton_celer(
                 exp_Xw[i] = exp(Xw[i])
 
             norm_Xtheta_acc = compute_dual_scaling(
-                is_sparse, LOGREG, n_features, n_samples, &theta_acc[0], X, X_data,
-                X_indices, X_indptr, n_features, &all_features[0], &screened[0],
-                X_mean, center, 0)
+                is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
+                n_features, all_features, screened, X_mean, center, 0)
 
             if norm_Xtheta_acc > 1.:
                 tmp = 1. / norm_Xtheta_acc
@@ -224,7 +223,7 @@ def newton_celer(
 
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
-                  aux, is_positive_label, blitz_sc)
+                  aux, is_positive_label, screened, X_mean, center, blitz_sc)
 
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
@@ -238,7 +237,8 @@ cpdef int PN_logreg(
         int[:] X_indptr, floating[:] y, floating alpha,
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
-        int[:] is_positive_label, bint blitz_sc):
+        int[:] is_positive_label, int[:] screened, floating[:] X_mean,
+        bint center, bint blitz_sc):
 
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]
@@ -361,8 +361,8 @@ cpdef int PN_logreg(
         else:
             # rescale aux to create dual point
             norm_Xaux = compute_dual_scaling(
-                is_sparse, LOGREG, n_features, n_samples, &aux[0], X,
-                X_data, X_indices, X_indptr, ws_size, &WS[0])
+                is_sparse, aux, X, X_data, X_indices, X_indptr, ws_size,
+                WS, screend, X_mean, center, 0)
 
 
         for i in range(n_samples):

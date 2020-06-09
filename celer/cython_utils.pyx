@@ -349,18 +349,19 @@ cpdef void compute_Xw(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating compute_dual_scaling(
-        bint is_sparse, int pb, int n_features, int n_samples,
-        floating * theta, floating[::1, :] X, floating[:] X_data,
-        int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
-        uint8 * screened, floating[:] X_mean, bint center, bint positive) nogil:
+        bint is_sparse, floating[:] theta, floating[::1, :] X,
+        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int ws_size,
+        int[:] C, int[:] screened, floating[:] X_mean, bint center,
+        bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
+    cdef int n_samples = theta.shape[0]
+    cdef int n_features = screened.shape[0]
     cdef floating Xj_theta
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
-    # TODO variable pb is not used
 
     if is_sparse:
         if center:
