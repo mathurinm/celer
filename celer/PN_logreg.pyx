@@ -48,14 +48,16 @@ def newton_celer(
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
     # cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
-    cdef long[:] all_features = np.arange(n_features)
+    cdef int[:] all_features = np.arange(n_features)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef long[:] WS  # hacky for now TODO fix, int causing runtime error
+    cdef int[:] WS  # hacky for now TODO fix, int causing runtime error
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
     cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
     cdef bint center = False
     # TODO support centering
     cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
+    cdef int n_screened = 0
+    cdef floating radius = 10000
 
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
@@ -93,6 +95,7 @@ def newton_celer(
     cdef int one = 1
     cdef int Kminus1 = K - 1
     cdef floating sum_z
+    cdef bint positive = 0
 
     for t in range(max_iter):
         p_obj = primal(LOGREG, alpha, n_samples, &Xw[0], &y[0], n_features,
@@ -102,7 +105,7 @@ def newton_celer(
         create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = compute_dual_scaling(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
-            n_features, all_features, screened, X_mean, center, 0)
+            n_features, all_features, screened, X_mean, center, positive)
 
         if norm_Xtheta > 1.:
             tmp = 1. / norm_Xtheta
@@ -165,7 +168,7 @@ def newton_celer(
 
             norm_Xtheta_acc = compute_dual_scaling(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
-                n_features, all_features, screened, X_mean, center, 0)
+                n_features, all_features, screened, X_mean, center, positive)
 
             if norm_Xtheta_acc > 1.:
                 tmp = 1. / norm_Xtheta_acc
@@ -190,7 +193,7 @@ def newton_celer(
             break
 
         set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
-                  norms_X_col, prios, screened, radius, &n_screened[0], 0)
+                  norms_X_col, prios, screened, radius, &n_screened, 0)
 
         if prune:
             if t == 0:
@@ -232,7 +235,7 @@ def newton_celer(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef int PN_logreg(
-        bint is_sparse, floating[:] w, long[:] WS,
+        bint is_sparse, floating[:] w, int[:] WS,
         floating[::1, :] X, floating[:] X_data, int[:] X_indices,
         int[:] X_indptr, floating[:] y, floating alpha,
         floating tol_inner, floating[:] Xw,
@@ -362,7 +365,7 @@ cpdef int PN_logreg(
             # rescale aux to create dual point
             norm_Xaux = compute_dual_scaling(
                 is_sparse, aux, X, X_data, X_indices, X_indptr, ws_size,
-                WS, screend, X_mean, center, 0)
+                WS, screened, X_mean, center, 0)
 
 
         for i in range(n_samples):
@@ -381,7 +384,7 @@ cpdef int PN_logreg(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef void do_line_search(
-        floating[:] w, long[:] WS, floating[:] delta_w,
+        floating[:] w, int[:] WS, floating[:] delta_w,
         floating[:] X_delta_w, floating[:] Xw, floating alpha, bint is_sparse,
         floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, int MAX_BACKTRACK_ITR,
@@ -425,7 +428,7 @@ cpdef void do_line_search(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef floating compute_derivative(
-        floating[:] w, long[:] WS, floating[:] delta_w,
+        floating[:] w, int[:] WS, floating[:] delta_w,
         floating[:] X_delta_w, floating alpha, floating[:] aux,
         floating step_size, floating[:] y) nogil:
 
