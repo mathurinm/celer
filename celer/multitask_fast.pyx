@@ -9,8 +9,6 @@ from libc.math cimport fabs, sqrt
 from .cython_utils cimport fscal, fcopy, fnrm2, fdot, faxpy
 from .cython_utils cimport LASSO, create_accel_pt
 
-ctypedef np.uint8_t uint8
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
@@ -32,7 +30,7 @@ cdef void BST(int n_tasks, floating * x, floating u) nogil:
 @cython.cdivision(True)
 cdef floating dual_scaling_mtl(
         int n_features, int n_samples, int n_tasks, floating[::1, :] theta,
-        floating[::1, :] X, int ws_size, int * C, uint8 * screened,
+        floating[::1, :] X, int ws_size, int * C, int * screened,
         floating * Xj_theta) nogil:
     cdef int ind, j, k
     cdef int inc = 1
@@ -63,7 +61,7 @@ cdef floating dual_scaling_mtl(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_mtl(
-        int n_samples, int n_features, int n_tasks, uint8 * screened,
+        int n_samples, int n_features, int n_tasks, int * screened,
         floating[::1, :] X, floating[::1, :] theta, floating * norms_X_col,
         floating * Xj_theta, floating * prios, floating radius,
         int * n_screened) nogil:
@@ -159,7 +157,7 @@ def celer_mtl(
     cdef floating scal
     cdef int n_screened = 0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
+    cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
     cdef floating[:] Xj_theta = np.empty(n_tasks, dtype=dtype)
 
     cdef floating norm_Y2 = fnrm2(&n_obs, &Y[0, 0], &inc) ** 2
@@ -286,7 +284,7 @@ cpdef void inner_solver(
     cdef int inc = 1
     cdef int n_obs = n_samples * n_tasks
     cdef floating tmp, scal
-    cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
+    cdef int[:] dummy_screened = np.zeros(1, dtype=np.int32)
     cdef floating[:] Xj_theta = np.empty(n_tasks, dtype=dtype)
 
 

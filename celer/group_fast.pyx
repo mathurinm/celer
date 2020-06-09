@@ -12,7 +12,6 @@ from libc.math cimport fabs, sqrt
 from .cython_utils cimport (fdot, fasum, faxpy, fnrm2, fcopy, fscal, dual,
                             LASSO, LOGREG, create_accel_pt)
 
-ctypedef np.uint8_t uint8
 
 cdef:
     int inc = 1
@@ -109,7 +108,7 @@ cdef void set_prios_grp(
         bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
         floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
-        floating[::1] prios, uint8[::1] screened, floating radius,
+        floating[::1] prios, int[::1] screened, floating radius,
         int * n_screened):
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
@@ -175,7 +174,7 @@ cpdef celer_grp(
     cdef int i, j, g, g_idx, k, startptr, endptr, epoch, t
     cdef int nnz, ws_size
     cdef floating[::1] prios = np.empty(n_groups, dtype=dtype)
-    cdef uint8[::1] screened = np.zeros(n_groups, dtype=np.uint8)
+    cdef int[::1] screened = np.zeros(n_groups, dtype=np.int32)
     cdef int max_group_size = 0
 
     cdef bint center = False

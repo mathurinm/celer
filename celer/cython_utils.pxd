@@ -3,8 +3,6 @@
 from cython cimport floating
 cimport numpy as np
 
-ctypedef np.uint8_t uint8
-
 cdef int LASSO
 cdef int LOGREG
 
