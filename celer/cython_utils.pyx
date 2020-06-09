@@ -349,18 +349,19 @@ cpdef void compute_Xw(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating compute_dual_scaling(
-        bint is_sparse, int pb, int n_features, int n_samples,
-        floating * theta, floating[::1, :] X, floating[:] X_data,
-        int[:] X_indices, int[:] X_indptr, int ws_size, int * C,
-        uint8 * screened, floating[:] X_mean, bint center, bint positive) nogil:
+        bint is_sparse, floating[:] theta, floating[::1, :] X,
+        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int ws_size,
+        int[:] C, int[:] screened, floating[:] X_mean, bint center,
+        bint positive) nogil:
     """compute norm(X.T.dot(theta), ord=inf),
     with X restricted to features (columns) with indices in array C.
     if ws_size == n_features, C=np.arange(n_features is used)"""
+    cdef int n_samples = theta.shape[0]
+    cdef int n_features = screened.shape[0]
     cdef floating Xj_theta
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
-    # TODO variable pb is not used
 
     if is_sparse:
         if center:
@@ -410,14 +411,16 @@ cdef floating compute_dual_scaling(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios(
-    bint is_sparse, int pb, int n_samples, int n_features, floating * theta,
+    bint is_sparse, floating[:] theta,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
+    floating[:] norms_X_col, floating[:] prios, int[:] screened, floating radius,
     int * n_screened, bint positive) nogil:
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
+    cdef int n_samples = theta.shape[0]
+    cdef int n_features = prios.shape[0]
 
-    #TODO we do not substract theta_sum, which seems to indicate that theta is always centered...
+    # TODO we do not substract theta_sum, which seems to indicate that theta is always centered...
     for j in range(n_features):
         if screened[j] or norms_X_col[j] == 0.:
             prios[j] = 10000

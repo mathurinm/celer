@@ -13,7 +13,6 @@ from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
                             sigmoid, ST, LASSO, LOGREG, compute_dual_scaling,
                             set_prios)
-ctypedef np.uint8_t uint8
 
 cdef:
     int inc = 1
@@ -57,8 +56,8 @@ def celer(
     cdef bint center = False
     cdef floating old_w_j, X_mean_j, w_Cj
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef uint8[:] screened = np.zeros(n_features, dtype=np.uint8)
-    cdef uint8[:] dummy_screened = np.zeros(1, dtype=np.uint8)
+    cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
+    cdef int[:] dummy_screened = np.zeros(1, dtype=np.int32)
 
 
     # acceleration variables:
@@ -100,8 +99,8 @@ def celer(
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = compute_dual_scaling(
-                is_sparse, pb, n_features, n_samples, &theta[0], X, X_data,
-                X_indices, X_indptr, n_features, &dummy_C[0], &screened[0],
+                is_sparse, theta, X, X_data,
+                X_indices, X_indptr, n_features, dummy_C, screened,
                 X_mean, center, positive)
 
             if scal > 1. :
@@ -112,9 +111,8 @@ def celer(
 
             # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
-                is_sparse, pb, n_features, n_samples, &theta_in[0],
-                X, X_data, X_indices, X_indptr,
-                n_features, &dummy_C[0], &screened[0], X_mean, center, positive)
+                is_sparse, theta_in, X, X_data, X_indices, X_indptr,
+                n_features, dummy_C, screened, X_mean, center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
@@ -150,9 +148,8 @@ def celer(
             radius = sqrt(gap / 2.) / alpha
 
         set_prios(
-            is_sparse, pb, n_samples, n_features, &theta[0], X, X_data,
-            X_indices, X_indptr, &norms_X_col[0], &prios[0], &screened[0],
-            radius, &n_screened, positive)
+            is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
+            prios, screened, radius, &n_screened, positive)
 
         if prune:
             nnz = 0
@@ -206,9 +203,8 @@ def celer(
                     pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
 
                 scal = compute_dual_scaling(
-                    is_sparse, pb, n_features, n_samples, &theta_in[0], X,
-                    X_data, X_indices, X_indptr, ws_size, &C[0],
-                    &dummy_screened[0], X_mean, center, positive)
+                    is_sparse, theta_in, X, X_data, X_indices, X_indptr,
+                    ws_size, C, dummy_screened, X_mean, center, positive)
 
                 if scal > 1. :
                     tmp = 1. / scal
@@ -227,9 +223,9 @@ def celer(
 
                     if epoch // gap_freq >= K:
                         scal = compute_dual_scaling(
-                            is_sparse, pb, n_features, n_samples, &thetacc[0],
-                            X, X_data, X_indices, X_indptr, ws_size, &C[0],
-                            &dummy_screened[0], X_mean, center, positive)
+                            is_sparse, thetacc,
+                            X, X_data, X_indices, X_indptr, ws_size, C,
+                            dummy_screened, X_mean, center, positive)
 
                         if scal > 1. :
                             tmp = 1. / scal
