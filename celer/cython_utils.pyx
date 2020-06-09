@@ -413,7 +413,7 @@ cdef floating compute_dual_scaling(
 cdef void set_prios(
     bint is_sparse, floating[:] theta,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating[:] norms_X_col, floating[:] prios, uint8 * screened, floating radius,
+    floating[:] norms_X_col, floating[:] prios, int[:] screened, floating radius,
     int * n_screened, bint positive) nogil:
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
