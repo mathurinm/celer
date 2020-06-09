@@ -15,129 +15,11 @@ from libc.math cimport fabs, sqrt, exp
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                           sigmoid, ST, LOGREG)
+                            sigmoid, ST, LOGREG, compute_dual_scaling,
+                            compute_Xw, compute_norms_X_col, set_prios)
 
 cdef:
     int inc = 1
-
-# TODO move this to utils.pyx
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef floating dual_norm(
-    bint is_sparse, int n_features, int n_samples,
-    floating * theta, floating[::1, :] X,
-    floating[:] X_data, int[:] X_indices,
-    int[:] X_indptr, int ws_size, long * C) nogil:
-    """Compute norm(X.T.dot(theta), ord=inf),
-    with X restricted to features (columns) with indices in array C.
-    if ws_size == n_features, C=np.arange(n_features is used)"""
-    cdef floating Xj_theta
-    cdef floating scal = 0.
-    cdef int j
-    cdef int Cj
-    cdef int i
-    cdef int startptr, endptr
-    if ws_size == n_features:  # scaling wrt all features
-        for j in range(n_features):
-            if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                Xj_theta = 0.
-                for i in range(startptr, endptr):
-                    Xj_theta += X_data[i] * theta[X_indices[i]]
-            else:
-                Xj_theta = fdot(&n_samples, &X[0, j], &inc,
-                                &theta[0], &inc)
-
-            scal = max(scal, fabs(Xj_theta))
-    else:  # scaling wrt features in C only
-        for j in range(ws_size):
-            Cj = C[j]
-            if is_sparse:
-                startptr = X_indptr[Cj]
-                endptr = X_indptr[Cj + 1]
-                Xj_theta = 0.
-                for i in range(startptr, endptr):
-                    Xj_theta += X_data[i] * theta[X_indices[i]]
-            else:
-                Xj_theta = fdot(&n_samples, &X[0, Cj], &inc,
-                                &theta[0], &inc)
-            scal = max(scal, fabs(Xj_theta))
-
-    return scal
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef void compute_norms(
-        floating[:] norms_X_col, bint is_sparse, int n_features, int n_samples,
-        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-        int[:] X_indptr) nogil:
-    """Compute norms_X_col in place."""
-    cdef int j, startptr, endptr
-    cdef double tmp
-    if is_sparse:
-        for j in range(n_features):
-            tmp = 0
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            for i in range(startptr, endptr):
-                tmp += X_data[i] ** 2
-            norms_X_col[j] = sqrt(tmp)
-    else:
-        for j in range(n_features):
-            norms_X_col[j] = fnrm2(&n_samples, &X[0, j], &inc)
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef void set_feature_prios(
-        floating[:] prios, bint is_sparse, int n_features, int n_samples,
-        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-        int[:] X_indptr, floating[:] theta, floating[:] norms_X_col):
-    """Fill the array prios with priorities per feature."""
-    cdef int j, startptr, endptr
-    cdef double Xj_theta
-    for j in range(n_features):
-        if is_sparse:
-            Xj_theta = 0.
-            startptr = X_indptr[j]
-            endptr = X_indptr[j + 1]
-            for i in range(startptr, endptr):
-                Xj_theta += theta[X_indices[i]] * X_data[i]
-        else:
-            Xj_theta = fdot(&n_samples, &X[0, j], &inc, &theta[0], &inc)
-
-        prios[j] = (1. - fabs(Xj_theta)) / norms_X_col[j]
-
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cdef void compute_Xw(
-        floating[:] Xw, floating[:] w, bint is_sparse, floating[::1, :] X,
-        floating[:] X_data, int[:] X_indices, int[:] X_indptr) nogil:
-    """Compute X @ w in place."""
-    # TODO this function is available in cython_utils with sparse scaling
-    cdef int j
-    cdef int startptr, endptr
-    cdef int n_features = w.shape[0]
-    cdef int n_samples = Xw.shape[0]
-
-    for j in range(n_features):
-        if w[j] != 0:
-            if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                for i in range(startptr, endptr):
-                    Xw[X_indices[i]] += w[j] * X_data[i]
-            else:
-                faxpy(&n_samples, &w[j], &Xw[0], &inc, &X[0, j], &inc)
-
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -170,6 +52,9 @@ def newton_celer(
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef long[:] WS  # hacky for now TODO fix, int causing runtime error
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
+    cdef bint center = False
+    # TODO support centering
 
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
@@ -182,10 +67,11 @@ def newton_celer(
     cdef floating[:] onesK = np.ones((K - 1), dtype=dtype)
 
     cdef floating[:] norms_X_col = np.zeros(n_features, dtype=dtype)
-    compute_norms(norms_X_col, is_sparse, n_features, n_samples, X,
-                  X_data, X_indices, X_indptr)
+    compute_norms_X_col(is_sparse, norms_X_col, n_samples, X,
+                        X_data, X_indices, X_indptr, X_mean)
     cdef floating[:] Xw = np.zeros(n_samples, dtype=dtype)
-    compute_Xw(Xw, w, is_sparse, X, X_data, X_indices, X_indptr)
+    compute_Xw(is_sparse, LOGREG, Xw, w, y, center, X, X_data, X_indices,
+               X_indptr, X_mean)
 
     cdef floating[:] theta = np.empty(n_samples, dtype=dtype)
     cdef floating[:] theta_acc = np.empty(n_samples, dtype=dtype)
@@ -213,9 +99,10 @@ def newton_celer(
 
         # theta = y * sigmoid(-y * Xw) / alpha
         create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
-        norm_Xtheta = dual_norm(
-            is_sparse, n_features, n_samples, &theta[0], X, X_data,
-            X_indices, X_indptr, n_features, &all_features[0])
+        norm_Xtheta = compute_dual_scaling(
+            is_sparse, LOGREG, n_features, n_samples, &theta[0], X, X_data,
+            X_indices, X_indptr, n_features, &all_features[0], &screened[0],
+            X_mean, center, 0)
 
         if norm_Xtheta > 1.:
             tmp = 1. / norm_Xtheta
@@ -276,9 +163,10 @@ def newton_celer(
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
 
-            norm_Xtheta_acc = dual_norm(
-                is_sparse, n_features, n_samples, &theta_acc[0], X, X_data,
-                X_indices, X_indptr, n_features, &all_features[0])
+            norm_Xtheta_acc = compute_dual_scaling(
+                is_sparse, LOGREG, n_features, n_samples, &theta_acc[0], X, X_data,
+                X_indices, X_indptr, n_features, &all_features[0], &screened[0],
+                X_mean, center, 0)
 
             if norm_Xtheta_acc > 1.:
                 tmp = 1. / norm_Xtheta_acc
@@ -302,9 +190,8 @@ def newton_celer(
                 print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
-        set_feature_prios(prios, is_sparse, n_features, n_samples, X,
-                          X_data, X_indices, X_indptr, theta,
-                          norms_X_col)
+        set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
+                  norms_X_col, prios, &screened[0], radius, &n_screened[0], 0)
 
         if prune:
             if t == 0:
@@ -473,8 +360,8 @@ cpdef int PN_logreg(
 
         else:
             # rescale aux to create dual point
-            norm_Xaux = dual_norm(
-                is_sparse, n_features, n_samples, &aux[0], X,
+            norm_Xaux = compute_dual_scaling(
+                is_sparse, LOGREG, n_features, n_samples, &aux[0], X,
                 X_data, X_indices, X_indptr, ws_size, &WS[0])
 
 

@@ -150,9 +150,8 @@ def celer(
             radius = sqrt(gap / 2.) / alpha
 
         set_prios(
-            is_sparse, pb, n_samples, n_features, &theta[0], X, X_data,
-            X_indices, X_indptr, &norms_X_col[0], &prios[0], &screened[0],
-            radius, &n_screened, positive)
+            is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
+            prios, &screened[0], radius, &n_screened, positive)
 
         if prune:
             nnz = 0

@@ -410,14 +410,16 @@ cdef floating compute_dual_scaling(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios(
-    bint is_sparse, int pb, int n_samples, int n_features, floating * theta,
+    bint is_sparse, floating[:] theta,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
-    floating * norms_X_col, floating * prios, uint8 * screened, floating radius,
+    floating[:] norms_X_col, floating[:] prios, uint8 * screened, floating radius,
     int * n_screened, bint positive) nogil:
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
+    cdef int n_samples = theta.shape[0]
+    cdef int n_features = prios.shape[0]
 
-    #TODO we do not substract theta_sum, which seems to indicate that theta is always centered...
+    # TODO we do not substract theta_sum, which seems to indicate that theta is always centered...
     for j in range(n_features):
         if screened[j] or norms_X_col[j] == 0.:
             prios[j] = 10000

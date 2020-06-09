@@ -51,5 +51,5 @@ cdef floating compute_dual_scaling(
 
 
 cdef void set_prios(
-    bint, int, int, int, floating *, floating[::1, :], floating[:], int[:],
-    int[:], floating *, floating *, uint8 *, floating, int *, bint) nogil
+    bint, floating[:], floating[::1, :], floating[:], int[:],
+    int[:], floating[:], floating[:], uint8 *, floating, int *, bint) nogil
