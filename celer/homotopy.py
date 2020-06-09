@@ -287,8 +287,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         else:  # pb == LOGREG and use_PN
             sol = newton_celer(
                 is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-                max_iter, verbose, tol, prune, p0, True, K=6,
-                growth=2, blitz_sc=False)
+                max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
 
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         if return_n_iter:

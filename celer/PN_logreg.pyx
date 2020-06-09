@@ -145,20 +145,23 @@ cdef void compute_Xw(
 def newton_celer(
         bint is_sparse, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] y, floating alpha,
-        floating[:] w, int max_iter, bint verbose, bint verbose_inner,
-        floating tol, bint prune, int p0, bint use_accel, int K,
-        floating growth=2., floating eps_inner=0.1, bint blitz_sc=False):
+        floating[:] w, int max_iter, floating tol=1e-4, int p0=100,
+        int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False):
 
     if floating is double:
         dtype = np.float64
     else:
         dtype = np.float32
 
+    cdef int verbose_in = max(0, verbose - 1)
+
     cdef int i, j, t, k
     cdef floating p_obj, d_obj, gap, norm_Xtheta, norm_Xtheta_acc
     cdef floating tmp
     cdef int info_dposv
     cdef int ws_size
+    cdef floating eps_inner = 0.1
+    cdef floating growth = 2.
 
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
@@ -171,6 +174,8 @@ def newton_celer(
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
 
+
+    cdef int K = 6
     cdef floating[:, :] last_K_Xw = np.zeros((K, n_samples), dtype=dtype)
     cdef floating[:, :] U = np.zeros((K - 1, n_samples), dtype=dtype)
     cdef floating[:, :] UUt = np.zeros((K - 1, K - 1), dtype=dtype)
