@@ -153,8 +153,9 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
 
-    # TODO this one is slow (3s * 8 tests). Pass an instance and icnrease tol
-    check_estimator(LassoCV)
+    # TODO this one is slow (3s * 8 tests). Pass an instance and increase tol
+    clf.tol = 1e-4
+    check_estimator(clf)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
