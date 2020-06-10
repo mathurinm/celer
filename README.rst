@@ -88,7 +88,7 @@ ArXiv links:
 - https://arxiv.org/abs/1802.07481
 - https://arxiv.org/abs/1907.05830
 
-.. |image0| image:: https://travis-ci.org/mathurinm/celer.svg?branch=master
-   :target: https://travis-ci.org/mathurinm/celer/
+.. |image0| image:: https://travis-ci.com/mathurinm/celer.svg?branch=master
+   :target: https://travis-ci.com/mathurinm/celer/
 .. |image1| image:: https://codecov.io/gh/mathurinm/celer/branch/master/graphs/badge.svg?branch=master
    :target: https://codecov.io/gh/mathurinm/celer

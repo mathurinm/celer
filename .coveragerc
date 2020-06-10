@@ -5,7 +5,6 @@ branch = True
 source = celer
 include = */celer/*
 omit = */setup.py
-       */celer/examples_utils/*
        */celer/plot_utils.py
 
 [report]
