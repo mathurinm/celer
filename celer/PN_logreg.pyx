@@ -15,7 +15,7 @@ from libc.math cimport fabs, sqrt, exp
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                            sigmoid, ST, LOGREG, compute_dual_scaling,
+                            sigmoid, ST, LOGREG, dnorm_l1,
                             compute_Xw, compute_norms_X_col, set_prios)
 
 cdef:
@@ -48,6 +48,7 @@ def newton_celer(
 
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
+    cdef floating[:] weights_pen = np.ones(n_features, dtype=dtype)
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] WS
@@ -98,13 +99,13 @@ def newton_celer(
 
     for t in range(max_iter):
         p_obj = primal(LOGREG, alpha, n_samples, &Xw[0], &y[0], n_features,
-                      &w[0])
+                      &w[0], &weights_pen[0])
 
         # theta = y * sigmoid(-y * Xw) / alpha
         create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
-        norm_Xtheta = compute_dual_scaling(
+        norm_Xtheta = dnorm_l1(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
-            screened, X_mean, center, positive)
+            screened, X_mean, weights_pen, center, positive)
 
         if norm_Xtheta > 1.:
             tmp = 1. / norm_Xtheta
@@ -164,9 +165,9 @@ def newton_celer(
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
 
-            norm_Xtheta_acc = compute_dual_scaling(
+            norm_Xtheta_acc = dnorm_l1(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
-                screened, X_mean, center, positive)
+                screened, X_mean, weights_pen, center, positive)
 
             if norm_Xtheta_acc > 1.:
                 tmp = 1. / norm_Xtheta_acc
@@ -188,7 +189,8 @@ def newton_celer(
 
 
         set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
-                  norms_X_col, prios, screened, radius, &n_screened, 0)
+                  norms_X_col, weights_pen, prios, screened, radius,
+                  &n_screened, 0)
 
         if prune:
             if t == 0:
@@ -218,8 +220,8 @@ def newton_celer(
 
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
-                  aux, is_positive_label, X_mean, center, blitz_sc,
-                  verbose_in, max_pn_iter)
+                  aux, is_positive_label, X_mean, weights_pen, center,
+                  blitz_sc, verbose_in, max_pn_iter)
 
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
@@ -234,7 +236,8 @@ cpdef int PN_logreg(
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
         int[:] is_positive_label, floating[:] X_mean,
-        bint center, bint blitz_sc, int verbose_in, int max_pn_iter):
+        bint center, floating[:] weights_pen, bint blitz_sc, int verbose_in,
+        int max_pn_iter):
 
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]
@@ -360,16 +363,16 @@ cpdef int PN_logreg(
 
         else:
             # rescale aux to create dual point
-            norm_Xaux = compute_dual_scaling(
+            norm_Xaux = dnorm_l1(
                 is_sparse, aux, X, X_data, X_indices, X_indptr,
-                notin_WS, X_mean, center, 0)
+                notin_WS, X_mean, weights_pen, center, 0)
 
         for i in range(n_samples):
             aux[i] /= max(1, norm_Xaux)
 
         d_obj = dual(LOGREG, n_samples, alpha, 0, &aux[0], &y[0])
         p_obj = primal(LOGREG, alpha, n_samples, &Xw[0], &y[0],
-                       n_features, &w[0])
+                       n_features, &w[0], &weights_pen[0])
 
         gap = p_obj - d_obj
         if verbose_in:
