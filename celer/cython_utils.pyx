@@ -119,16 +119,18 @@ cdef inline floating sigmoid(floating x) nogil:
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating primal_logreg(
-    floating alpha, int n_samples, floating * Xw, floating * y, int n_features,
-    floating * w, floating * weights) nogil:
+    floating alpha, floating[:] Xw, floating[:] y, floating[:] w,
+    floating[:] weights) nogil:
     cdef int inc = 1
+    cdef int n_samples = Xw.shape[0]
+    cdef int n_features = w.shape[0]
     cdef floating p_obj = 0.
     cdef int i, j
     for i in range(n_samples):
         p_obj += log_1pexp(- y[i] * Xw[i])
-    # for j in range(n_features):
-    #     p_obj += alpha * weights[j] * fabs(w[j])
-    p_obj += alpha * fasum(&n_features, w, &inc)
+    for j in range(n_features):
+        p_obj += alpha * weights[j] * fabs(w[j])
+    # p_obj += alpha * fasum(&n_features, w, &inc)
     return p_obj
 
 
@@ -137,27 +139,27 @@ cdef floating primal_logreg(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating primal_lasso(
-        floating alpha, int n_samples, floating * R, int n_features,
-        floating * w, floating * weights) nogil:
+        floating alpha, floating[:] R, floating[:] w,
+        floating[:] weights) nogil:
+    cdef int n_samples = R.shape[0]
+    cdef int n_features = w.shape[0]
     cdef int inc = 1
     cdef int j
     cdef floating p_obj = 0.
-    p_obj = fdot(&n_samples, R, &inc, R, &inc) / (2. * n_samples)
-    # for j in range(n_features):
-    #     p_obj += alpha * weights[j] * fabs(w[j])
-    p_obj += alpha * fasum(&n_features, w, &inc)
+    p_obj = fdot(&n_samples, &R[0], &inc, &R[0], &inc) / (2. * n_samples)
+    for j in range(n_features):
+        p_obj += alpha * weights[j] * fabs(w[j])
+    # p_obj += alpha * fasum(&n_features, w, &inc)
     return p_obj
 
 
 cdef floating primal(
-    int pb, floating alpha, int n_samples, floating * R, floating * y,
-    int n_features, floating * w, floating * weights) nogil:
+    int pb, floating alpha, floating[:] R, floating[:] y,
+    floating[:] w, floating[:] weights) nogil:
     if pb == LASSO:
-        return primal_lasso(alpha, n_samples, &R[0], n_features, &w[0],
-                            weights)
+        return primal_lasso(alpha, R, w, weights)
     else:
-        return primal_logreg(alpha, n_samples, &R[0], &y[0], n_features,
-                             &w[0], weights)
+        return primal_logreg(alpha, R, y, w, weights)
 
 
 @cython.boundscheck(False)
@@ -361,7 +363,8 @@ cpdef void compute_Xw(
 cdef floating dnorm_l1(
         bint is_sparse, floating[:] theta, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
-        floating[:] X_mean, bint center, bint positive) nogil:
+        floating[:] X_mean, floating[:] weights, bint center,
+        bint positive) nogil:
     """compute norm(X[:, ~skip].T.dot(theta), ord=inf)"""
     cdef int n_samples = theta.shape[0]
     cdef int n_features = skip.shape[0]

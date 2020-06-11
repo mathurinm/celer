@@ -134,8 +134,7 @@ def celer(
             highest_d_obj = d_obj
             # TODO implement a best_theta
 
-        p_obj = primal(pb, alpha, n_samples, &Xw[0], &y[0], n_features,
-                       &w[0], &weights[0])
+        p_obj = primal(pb, alpha, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
         if verbose:
@@ -254,8 +253,7 @@ def celer(
                 # CAUTION: code does not yet  include a best_theta.
                 # Can be an issue in screening: dgap and theta might disagree.
 
-                p_obj_in = primal(pb, alpha, n_samples, &Xw[0], &y[0],
-                                  n_features, &w[0], &weights[0])
+                p_obj_in = primal(pb, alpha, Xw, y, w, weights)
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
