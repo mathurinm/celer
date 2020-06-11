@@ -428,12 +428,11 @@ cdef void set_prios(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
-        Xj_theta /= weights[j]
 
         if positive:
-            prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]
+            prios[j] = fabs(Xj_theta - weights[j]) / norms_X_col[j]
         else:
-            prios[j] = (1. - fabs(Xj_theta)) / norms_X_col[j]
+            prios[j] = (weights[j] - fabs(Xj_theta)) / norms_X_col[j]
 
         if prios[j] > radius:
             screened[j] = True
