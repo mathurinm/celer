@@ -110,7 +110,8 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, max_epochs=50000, p0=10,
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
-                 normalize=False, warm_start=False, positive=False):
+                 weights=None, normalize=False, warm_start=False,
+                 positive=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, normalize=normalize,
@@ -120,6 +121,7 @@ class Lasso(Lasso_sklearn):
         self.p0 = p0
         self.prune = prune
         self.positive = positive
+        self.weights = weights
 
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
@@ -127,8 +129,8 @@ class Lasso(Lasso_sklearn):
             X, y, "lasso", alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
-            tol=self.tol, prune=self.prune, positive=self.positive,
-            X_scale=kwargs.get('X_scale', None),
+            tol=self.tol, prune=self.prune, weights=self.weights,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
 
         return results

@@ -239,7 +239,7 @@ def test_warm_start():
 
 
 def test_weights():
-    sparse_X, prune = 1, 1
+    sparse_X = 1
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
     np.random.seed(0)
@@ -255,7 +255,8 @@ def test_weights():
         X / weights[None, :], y, "lasso", **params)
 
     np.testing.assert_allclose(alphas1, alphas2)
-    np.testing.assert_allclose(coefs1, coefs2 / weights[:, None], atol=1e-4)
+    np.testing.assert_allclose(
+        coefs1, coefs2 / weights[:, None], atol=1e-5, rtol=1e-3)
     np.testing.assert_array_less(gaps1, tol)
     np.testing.assert_array_less(gaps2, tol)
 
