@@ -122,7 +122,8 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     """Test that celer_path matches sklearn lasso_path."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
-    params = dict(eps=1e-3, n_alphas=10, tol=1e-12)
+    tol = 1e-12
+    params = dict(eps=1e-3, n_alphas=10, tol=tol)
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
 
