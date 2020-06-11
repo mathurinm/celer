@@ -44,8 +44,8 @@ cpdef void compute_norms_X_col(
 
 
 cdef floating compute_dual_scaling(
-        bint, int, floating[:], floating[::1, :], floating[:],
-        int[:], int[:], int, int[:], int[:], floating[:], bint, bint) nogil
+        bint, floating[:], floating[::1, :], floating[:],
+        int[:], int[:], int[:], floating[:], bint, bint) nogil
 
 
 cdef void set_prios(
