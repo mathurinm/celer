@@ -360,7 +360,7 @@ cpdef void compute_Xw(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dnorm_l1(
+cpdef floating dnorm_l1(
         bint is_sparse, floating[:] theta, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
         floating[:] X_mean, floating[:] weights, bint center,
@@ -396,7 +396,7 @@ cdef floating dnorm_l1(
 
         if not positive:
             Xj_theta = fabs(Xj_theta)
-        scal = max(scal, Xj_theta)
+        scal = max(scal, Xj_theta / weights[j])
     return scal
 
 
@@ -416,8 +416,7 @@ cdef void set_prios(
     # TODO we do not substract theta_sum, which seems to indicate that theta
     # is always centered...
     for j in range(n_features):
-        if screened[j] or norms_X_col[j] == 0.: # or weights[j] == 0.:
-            # TODO weights 0 (unpenalized, included) vs -1 (excluded) ?
+        if screened[j] or norms_X_col[j] == 0. or weights[j] == 0.:
             prios[j] = 10000
             continue
         if is_sparse:
@@ -429,7 +428,7 @@ cdef void set_prios(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
-        # Xj_theta /= weights[j]
+        Xj_theta /= weights[j]
 
         if positive:
             prios[j] = fabs(Xj_theta - 1.) / norms_X_col[j]

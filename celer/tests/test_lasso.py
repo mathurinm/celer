@@ -238,16 +238,41 @@ def test_warm_start():
         np.testing.assert_array_less(reg1.n_iter_, 2.01)
 
 
+def test_weights():
+    sparse_X, prune = 0, 1
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+
+    np.random.seed(0)
+    weights = np.abs(np.random.randn(X.shape[1]))
+
+    tol = 1e-10
+    params = {'n_alphas': 10, 'tol': tol}
+    alphas1, coefs1, gaps1 = celer_path(
+        X, y, "lasso", weights=weights, verbose=1,
+        **params)
+
+    alphas2, coefs2, gaps2 = celer_path(
+        X / weights[None, :], y, "lasso", **params)
+
+    np.testing.assert_allclose(alphas1, alphas2)
+    np.testing.assert_allclose(coefs1, coefs2 / weights[:, None])
+
+
 if __name__ == "__main__":
     sparse_X, prune = 0, 1
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
-    params = dict(eps=1e-2, n_alphas=10, tol=1e-12)
-    alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
+    np.random.seed(0)
+    weights = np.abs(np.random.randn(X.shape[1]))
 
-    alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params,
-                                        max_iter=10000)
+    tol = 1e-10
+    params = {'n_alphas': 10, 'tol': tol}
+    alphas1, coefs1, gaps1 = celer_path(
+        X, y, "lasso", weights=weights, verbose=1,
+        **params)
+
+    alphas2, coefs2, gaps2 = celer_path(
+        X / weights[None, :], y, "lasso", **params)
 
     np.testing.assert_allclose(alphas1, alphas2)
-    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-5)
+    np.testing.assert_allclose(coefs1, coefs2 / weights[:, None])
