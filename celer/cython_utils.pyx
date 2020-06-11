@@ -350,60 +350,40 @@ cpdef void compute_Xw(
 @cython.cdivision(True)
 cdef floating compute_dual_scaling(
         bint is_sparse, floating[:] theta, floating[::1, :] X,
-        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int ws_size,
-        int[:] C, int[:] screened, floating[:] X_mean, bint center,
-        bint positive) nogil:
-    """compute norm(X.T.dot(theta), ord=inf),
-    with X restricted to features (columns) with indices in array C.
-    if ws_size == n_features, C=np.arange(n_features is used)"""
+        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
+        floating[:] X_mean, bint center, bint positive) nogil:
+    """compute norm(X[:, ~skip].T.dot(theta), ord=inf)"""
     cdef int n_samples = theta.shape[0]
-    cdef int n_features = screened.shape[0]
+    cdef int n_features = skip.shape[0]
     cdef floating Xj_theta
     cdef floating scal = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
 
     if is_sparse:
+        # TODO by design theta_sum should always be 0 when center
         if center:
             for i in range(n_samples):
                 theta_sum += theta[i]
 
-    if ws_size == n_features: # scaling wrt all features
-        for j in range(n_features):
-            if screened[j]:
-                continue
-            if is_sparse:
-                startptr = X_indptr[j]
-                endptr = X_indptr[j + 1]
-                Xj_theta = 0.
-                for i in range(startptr, endptr):
-                    Xj_theta += X_data[i] * theta[X_indices[i]]
-                if center:
-                    Xj_theta -= theta_sum * X_mean[j]
-            else:
-                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
+    # max over feature for which skip[j] == False
+    for j in range(n_features):
+        if skip[j]:
+            continue
+        if is_sparse:
+            startptr = X_indptr[j]
+            endptr = X_indptr[j + 1]
+            Xj_theta = 0.
+            for i in range(startptr, endptr):
+                Xj_theta += X_data[i] * theta[X_indices[i]]
+            if center:
+                Xj_theta -= theta_sum * X_mean[j]
+        else:
+            Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
-            if not positive:
-                Xj_theta = fabs(Xj_theta)
-            scal = max(scal, Xj_theta)
-    else: # scaling wrt features in C only
-        for j in range(ws_size):
-            Cj = C[j]
-            if is_sparse:
-                startptr = X_indptr[Cj]
-                endptr = X_indptr[Cj + 1]
-                Xj_theta = 0.
-                for i in range(startptr, endptr):
-                    Xj_theta += X_data[i] * theta[X_indices[i]]
-                if center:
-                    Xj_theta -= theta_sum * X_mean[j]
-            else:
-                Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, Cj], &inc)
-
-            if not positive:
-                Xj_theta = fabs(Xj_theta)
-
-            scal = max(scal, Xj_theta)
+        if not positive:
+            Xj_theta = fabs(Xj_theta)
+        scal = max(scal, Xj_theta)
     return scal
 
 

@@ -57,7 +57,7 @@ def celer(
     cdef floating old_w_j, X_mean_j, w_Cj
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
-    cdef int[:] dummy_screened = np.zeros(1, dtype=np.int32)
+    cdef int[:] notin_WS = np.zeros(n_features, dtype=np.int32)
 
 
     # acceleration variables:
@@ -90,7 +90,6 @@ def celer(
     cdef floating[:] thetacc = np.zeros(n_samples, dtype=dtype)
     cdef floating d_obj_from_inner = 0.
 
-    cdef int[:] dummy_C = np.zeros(1, dtype=np.int32)
     cdef int[:] C
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
@@ -99,8 +98,7 @@ def celer(
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = compute_dual_scaling(
-                is_sparse, theta, X, X_data,
-                X_indices, X_indptr, n_features, dummy_C, screened,
+                is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
                 X_mean, center, positive)
 
             if scal > 1. :
@@ -112,7 +110,7 @@ def celer(
             # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
                 is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                n_features, dummy_C, screened, X_mean, center, positive)
+                screened, X_mean, center, positive)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
@@ -185,6 +183,12 @@ def celer(
             C = all_features
         else:
             C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
+
+        for j in range(n_features):
+            notin_WS[j] = 1
+        for idx in range(ws_size):
+            notin_WS[C[idx]] = 0
+
         if prune:
             tol_in = 0.3 * gap
         else:
@@ -204,7 +208,9 @@ def celer(
 
                 scal = compute_dual_scaling(
                     is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                    ws_size, C, dummy_screened, X_mean, center, positive)
+                    notin_WS, X_mean, center, positive)
+                # print(scal)
+                # print(np.linalg.norm(np.asarray(X)[:, np.asarray(C)].T @ np.asarray(theta_in), ord=np.inf))
 
                 if scal > 1. :
                     tmp = 1. / scal
@@ -219,13 +225,13 @@ def celer(
                         &thetacc[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
                     if info_dposv != 0 and verbose_in:
-                        print("linear system solving failed")
+                        pass
+                        # print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
                         scal = compute_dual_scaling(
-                            is_sparse, thetacc,
-                            X, X_data, X_indices, X_indptr, ws_size, C,
-                            dummy_screened, X_mean, center, positive)
+                            is_sparse, thetacc, X, X_data, X_indices,
+                            X_indptr, notin_WS, X_mean, center, positive)
 
                         if scal > 1. :
                             tmp = 1. / scal

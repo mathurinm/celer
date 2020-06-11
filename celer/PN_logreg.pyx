@@ -105,7 +105,7 @@ def newton_celer(
         create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = compute_dual_scaling(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
-            n_features, all_features, screened, X_mean, center, positive)
+            screened, X_mean, center, positive)
 
         if norm_Xtheta > 1.:
             tmp = 1. / norm_Xtheta
@@ -168,7 +168,7 @@ def newton_celer(
 
             norm_Xtheta_acc = compute_dual_scaling(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
-                n_features, all_features, screened, X_mean, center, positive)
+                screened, X_mean, center, positive)
 
             if norm_Xtheta_acc > 1.:
                 tmp = 1. / norm_Xtheta_acc
@@ -226,7 +226,7 @@ def newton_celer(
 
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
-                  aux, is_positive_label, screened, X_mean, center, blitz_sc)
+                  aux, is_positive_label, X_mean, center, blitz_sc)
 
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
@@ -240,7 +240,7 @@ cpdef int PN_logreg(
         int[:] X_indptr, floating[:] y, floating alpha,
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
-        int[:] is_positive_label, int[:] screened, floating[:] X_mean,
+        int[:] is_positive_label, floating[:] X_mean,
         bint center, bint blitz_sc):
 
     cdef int n_samples = Xw.shape[0]
@@ -281,6 +281,10 @@ cpdef int PN_logreg(
     cdef int start_ptr, end_ptr
     cdef floating  gap, p_obj, d_obj, norm_Xtheta, norm_Xaux
     cdef floating tmp, new_value, old_value, diff
+
+    cdef int[:] notin_WS = np.ones(n_features, dtype=np.int32)
+    for ind in range(ws_size):
+        notin_WS[WS[ind]] = 0
 
 
     while True:
@@ -364,8 +368,8 @@ cpdef int PN_logreg(
         else:
             # rescale aux to create dual point
             norm_Xaux = compute_dual_scaling(
-                is_sparse, aux, X, X_data, X_indices, X_indptr, ws_size,
-                WS, screened, X_mean, center, 0)
+                is_sparse, aux, X, X_data, X_indices, X_indptr,
+                notin_WS, X_mean, center, 0)
 
 
         for i in range(n_samples):
