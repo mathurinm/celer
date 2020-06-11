@@ -122,14 +122,15 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     """Test that celer_path matches sklearn lasso_path."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
-    params = dict(eps=1e-2, n_alphas=10, tol=1e-12)
+    params = dict(eps=1e-3, n_alphas=10, tol=1e-12)
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
 
-    alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params,
-                                        max_iter=10000)
+    alphas2, coefs2, _ = lasso_path(X, y, verbose=False, **params,
+                                    max_iter=10000)
 
     np.testing.assert_allclose(alphas1, alphas2)
+    np.testing.assert_array_less(gaps1, tol)
     np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-5)
 
 
@@ -234,16 +235,4 @@ def test_warm_start():
 
 
 if __name__ == "__main__":
-    sparse_X, prune = 0, 1
-    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
-
-    params = dict(eps=1e-2, n_alphas=10, tol=1e-12)
-
-    alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params,
-                                        max_iter=10000)
-
-    for _ in range(100):
-        alphas1, coefs1, gaps1 = celer_path(
-            X, y, "lasso", return_thetas=False, verbose=2, prune=prune, **params)
-        np.testing.assert_allclose(alphas1, alphas2)
-        np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-5)
+    pass

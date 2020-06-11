@@ -345,9 +345,9 @@ cpdef void compute_Xw(
             R[i] = y[i] - R[i]
 
 
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-# @cython.cdivision(True)
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
 cdef floating compute_dual_scaling(
         bint is_sparse, floating[:] theta, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,

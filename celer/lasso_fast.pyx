@@ -18,9 +18,9 @@ cdef:
     int inc = 1
 
 
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-# @cython.cdivision(True)
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
 def celer(
         bint is_sparse, int pb, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
@@ -183,6 +183,12 @@ def celer(
             C = all_features
         else:
             C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
+
+        for j in range(n_features):
+            notin_WS[j] = 1
+        for idx in range(ws_size):
+            notin_WS[C[idx]] = 0
+
         if prune:
             tol_in = 0.3 * gap
         else:
