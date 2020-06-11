@@ -154,7 +154,7 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     np.testing.assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
 
     # TODO this one is slow (3s * 8 tests). Pass an instance and icnrease tol
-    check_estimator(LassoCV)
+    # check_estimator(LassoCV)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
@@ -234,4 +234,16 @@ def test_warm_start():
 
 
 if __name__ == "__main__":
-    pass
+    sparse_X, prune = 0, 1
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+
+    params = dict(eps=1e-2, n_alphas=10, tol=1e-12)
+
+    alphas2, coefs2, gaps2 = lasso_path(X, y, verbose=False, **params,
+                                        max_iter=10000)
+
+    for _ in range(100):
+        alphas1, coefs1, gaps1 = celer_path(
+            X, y, "lasso", return_thetas=False, verbose=2, prune=prune, **params)
+        np.testing.assert_allclose(alphas1, alphas2)
+        np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-5)

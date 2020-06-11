@@ -99,7 +99,7 @@ def celer(
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = compute_dual_scaling(
-                is_sparse, theta, X, X_data,
+                is_sparse, n_features, theta, X, X_data,
                 X_indices, X_indptr, n_features, dummy_C, screened,
                 X_mean, center, positive)
 
@@ -111,7 +111,7 @@ def celer(
 
             # also test dual point returned by inner solver after 1st iter:
             scal = compute_dual_scaling(
-                is_sparse, theta_in, X, X_data, X_indices, X_indptr,
+                is_sparse, n_features, theta_in, X, X_data, X_indices, X_indptr,
                 n_features, dummy_C, screened, X_mean, center, positive)
             if scal > 1.:
                 tmp = 1. / scal
@@ -203,7 +203,7 @@ def celer(
                     pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
 
                 scal = compute_dual_scaling(
-                    is_sparse, theta_in, X, X_data, X_indices, X_indptr,
+                    is_sparse, n_features, theta_in, X, X_data, X_indices, X_indptr,
                     ws_size, C, dummy_screened, X_mean, center, positive)
 
                 if scal > 1. :
@@ -223,7 +223,7 @@ def celer(
 
                     if epoch // gap_freq >= K:
                         scal = compute_dual_scaling(
-                            is_sparse, thetacc,
+                            is_sparse, n_features, thetacc,
                             X, X_data, X_indices, X_indptr, ws_size, C,
                             dummy_screened, X_mean, center, positive)
 

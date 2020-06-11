@@ -104,7 +104,7 @@ def newton_celer(
         # theta = y * sigmoid(-y * Xw) / alpha
         create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = compute_dual_scaling(
-            is_sparse, theta, X, X_data, X_indices, X_indptr,
+            is_sparse, n_features, theta, X, X_data, X_indices, X_indptr,
             n_features, all_features, screened, X_mean, center, positive)
 
         if norm_Xtheta > 1.:
@@ -167,7 +167,7 @@ def newton_celer(
                 exp_Xw[i] = exp(Xw[i])
 
             norm_Xtheta_acc = compute_dual_scaling(
-                is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
+                is_sparse, n_features, theta_acc, X, X_data, X_indices, X_indptr,
                 n_features, all_features, screened, X_mean, center, positive)
 
             if norm_Xtheta_acc > 1.:
@@ -364,7 +364,7 @@ cpdef int PN_logreg(
         else:
             # rescale aux to create dual point
             norm_Xaux = compute_dual_scaling(
-                is_sparse, aux, X, X_data, X_indices, X_indptr, ws_size,
+                is_sparse, n_features, aux, X, X_data, X_indices, X_indptr, ws_size,
                 WS, screened, X_mean, center, 0)
 
 
