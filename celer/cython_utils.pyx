@@ -345,9 +345,9 @@ cpdef void compute_Xw(
             R[i] = y[i] - R[i]
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
 cdef floating compute_dual_scaling(
         bint is_sparse, int n_features, floating[:] theta, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int ws_size,
@@ -367,6 +367,8 @@ cdef floating compute_dual_scaling(
         if center:
             for i in range(n_samples):
                 theta_sum += theta[i]
+    # with gil:
+    #     print(center, theta_sum)
 
     if ws_size == n_features: # scaling wrt all features
         for j in range(n_features):
@@ -387,6 +389,7 @@ cdef floating compute_dual_scaling(
                 Xj_theta = fabs(Xj_theta)
             scal = max(scal, Xj_theta)
     else: # scaling wrt features in C only
+        # do not use screening as a dummy array is passed
         for j in range(ws_size):
             Cj = C[j]
             if is_sparse:

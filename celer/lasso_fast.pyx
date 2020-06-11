@@ -18,9 +18,9 @@ cdef:
     int inc = 1
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
 def celer(
         bint is_sparse, int pb, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
@@ -205,6 +205,8 @@ def celer(
                 scal = compute_dual_scaling(
                     is_sparse, n_features, theta_in, X, X_data, X_indices, X_indptr,
                     ws_size, C, dummy_screened, X_mean, center, positive)
+                print(scal)
+                print(np.linalg.norm(np.asarray(X)[:, np.asarray(C)].T @ np.asarray(theta_in), ord=np.inf))
 
                 if scal > 1. :
                     tmp = 1. / scal
@@ -219,7 +221,8 @@ def celer(
                         &thetacc[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
                     if info_dposv != 0 and verbose_in:
-                        print("linear system solving failed")
+                        pass
+                        # print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
                         scal = compute_dual_scaling(
