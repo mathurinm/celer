@@ -125,7 +125,8 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     tol = 1e-12
     params = dict(eps=1e-3, n_alphas=10, tol=tol)
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", return_thetas=False, verbose=1, prune=prune, **params)
+        X, y, "lasso", return_thetas=False, verbose=1, prune=prune,
+        max_iter=30, **params)
 
     alphas2, coefs2, _ = lasso_path(X, y, verbose=False, **params,
                                     max_iter=10000)
