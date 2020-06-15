@@ -25,7 +25,7 @@ class Lasso(Lasso_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * ||w||_1
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_j weights_j |w_j|
 
     Parameters
     ----------
@@ -57,6 +57,10 @@ class Lasso(Lasso_sklearn):
 
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
+
+    weights : array, shape (n_features,), optional (default=None)
+        Weights used in the L1 penalty part of the Lasso objective.
+        If None, weights equal to 1 are used.
 
     normalize : bool, optional (default=False)
         This parameter is ignored when ``fit_intercept`` is set to False.
