@@ -3,7 +3,7 @@ celer
 
 |image0| |image1|
 
-Fast algorithm to solve the Lasso with dual extrapolation
+Fast algorithm to solve Lasso-like problems with dual extrapolation. The package can handle the following problems: Lasso, Sparse Logistic regression, GroupLasso and MultiTaskLasso.
 
 Documentation
 =============
