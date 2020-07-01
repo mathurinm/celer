@@ -17,6 +17,7 @@ from .group_fast import celer_grp, dnorm_grp
 from .cython_utils import compute_norms_X_col, compute_Xw
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
+from .non_convex import mcp
 
 LASSO = 0
 LOGREG = 1
@@ -358,6 +359,22 @@ def _grp_converter(groups, n_features):
     else:
         raise ValueError("Unsupported group format.")
     return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
+
+
+def mcp_path(X, y, alphas, gamma, max_iter=1000, verbose=0, tol=1e-4):
+    X = check_array(X, dtype=[np.float64, np.float32], order='F', copy=False)
+    y = check_array(y, dtype=X.dtype.type, order='F', copy=False,
+                    ensure_2d=False)
+
+    n_alphas = len(alphas)
+    n_features = X.shape[1]
+    coefs = np.zeros((n_alphas, n_features), dtype=X.dtype)
+
+    for t, alpha in enumerate(alphas):
+        w_init = w if t > 0 else np.zeros(n_features)
+        w = mcp(X, y, alpha, gamma, w_init, max_iter, verbose, tol)
+        coefs[t] = w
+    return coefs
 
 
 def mtl_path(

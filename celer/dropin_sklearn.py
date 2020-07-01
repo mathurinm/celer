@@ -6,7 +6,6 @@ import numpy as np
 
 from celer.tmp_hack_sklearn import sklearn_LinearModelCV
 from sklearn.base import RegressorMixin, MultiOutputMixin
-from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.utils.validation import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
@@ -16,7 +15,7 @@ from sklearn.linear_model._base import _preprocess_data
 from sklearn.preprocessing import LabelEncoder
 from sklearn.multiclass import OneVsRestClassifier
 
-from .homotopy import celer_path, mtl_path
+from .homotopy import celer_path, mtl_path, mcp_path
 
 
 class Lasso(Lasso_sklearn):
@@ -1003,3 +1002,209 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
 
     def _is_multitask(self):
         return False
+
+
+class MinimaxConcavePenalty(Lasso_sklearn):
+    r"""
+    MCP scikit-learn estimator
+
+    The optimization objective for MCP is::
+
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + \alpha * \sum_j p(w_j)
+
+    where::
+
+    p(x) = \alpha |x| - x^2 / 2 \alpha \gamma   if |x| \leq \gamma \lambda
+    = \gamma \lambda / 2    else
+
+    Parameters
+    ----------
+    alpha : float, optional (default=1)
+        First parameter of the penalty. Higher alpha gives sparser solutions.
+
+    gamma : float >= 1, optional (default=3)
+        Second penalty parameter. gamma = 1 yields the L0 minimization problem,
+        when gamma goes to infinity the Lasso problem is recovered.
+
+    max_iter : int, optional
+        The maximum number of coordinate descent epochs.
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    tol : float, optional
+        The tolerance for the optimization. TODO specify KKT
+
+    fit_intercept : bool, optional (default=True)
+        Whether or not to fit an intercept.
+
+    normalize : bool, optional (default=False)
+        This parameter is ignored when ``fit_intercept`` is set to False.
+        If True,  the regressors X will be normalized before regression by
+        subtracting the mean and dividing by the l2-norm.
+
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+
+    Attributes
+    ----------
+    coef_ : array, shape (n_features,)
+        Parameter vector (w in the cost function formula)
+
+    sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
+        ``sparse_coef_`` is a readonly property derived from ``coef_``
+
+    intercept_ : float
+        Constant term in decision function.
+
+    n_iter_ : int
+        Number of subproblems solved to reach the specified tolerance.
+
+    See also
+    --------
+    MCPCV
+
+    References
+    ----------
+    .. TODO
+    """
+
+    def __init__(self, alpha=1., gamma=3., max_iter=1000,
+                 verbose=0, tol=1e-4, fit_intercept=True,
+                 normalize=False, warm_start=False):
+        super(Lasso, self).__init__(
+            alpha=alpha, tol=tol, max_iter=max_iter,
+            fit_intercept=fit_intercept, normalize=normalize,
+            warm_start=warm_start)
+        self.gamma = gamma
+        self.verbose = verbose
+
+    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
+        """Compute MCP path."""
+        results = mcp_path(
+            X, y, alphas=alphas, coef_init=coef_init,
+            max_iter=self.max_iter, verbose=self.verbose, tol=self.tol,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+        return results
+
+
+class MCPCV(RegressorMixin, sklearn_LinearModelCV):
+    """
+    MCP scikit-learn estimator.
+
+    The best model is selected by cross-validation.
+
+    The optimization objective for MCP is::
+
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_j p(w_j)
+
+    where ``p`` is the minimax concave penalty.
+
+    Only alpha is cross validated now. TODO do the same as in Enet sklearn.
+
+    Parameters
+    ----------
+    eps : float, optional
+        Length of the path. ``eps=1e-3`` means that
+        ``alpha_min / alpha_max = 1e-3``.
+
+    n_alphas : int, optional
+        Number of alphas along the regularization path.
+
+    alphas : numpy array, optional
+        List of alphas where to compute the models.
+        If ``None`` alphas are set automatically
+
+    fit_intercept : boolean, default True
+        whether to calculate the intercept for this model. If set
+        to false, no intercept will be used in calculations
+        (e.g. data is expected to be already centered).
+
+    normalize : bool, optional (default=False)
+        This parameter is ignored when ``fit_intercept`` is set to False.
+        If True,  the regressors X will be normalized before regression by
+        subtracting the mean and dividing by the l2-norm.
+
+    max_iter : int, optional
+        The maximum number of iterations (subproblem definitions).
+
+    tol : float, optional
+        The tolerance for the optimization: the solver runs until the duality
+        gap is smaller than ``tol`` or the maximum number of iteration is
+        reached.
+
+    cv : int, cross-validation generator or an iterable, optional
+        Determines the cross-validation splitting strategy.
+        Possible inputs for cv are:
+        - None, to use the default 3-fold cross-validation,
+        - integer, to specify the number of folds.
+        - An object to be used as a cross-validation generator.
+        - An iterable yielding train/test splits.
+        For integer/None inputs, sklearn `KFold` is used.
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    precompute : ignored parameter, kept for sklearn compatibility.
+
+    n_jobs : int or None, optional (default=None)
+        Number of CPUs to use during the cross validation.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors.
+
+    Attributes
+    ----------
+    alpha_ : float
+        The amount of penalization chosen by cross validation
+
+    coef_ : array, shape (n_features,)
+        parameter vector (w in the cost function formula)
+
+    intercept_ : float
+        independent term in decision function.
+
+    mse_path_ : array, shape (n_alphas, n_folds)
+        mean square error for the test set on each fold, varying alpha
+
+    alphas_ : numpy array, shape (n_alphas,)
+        The grid of alphas used for fitting
+
+    n_iter_ : int
+        number of iterations run by the coordinate descent solver to reach
+        the specified tolerance for the optimal alpha.
+
+    See also
+    --------
+    MCP
+    """
+
+    def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
+                 gamma=3, fit_intercept=False, normalize=False, max_iter=1000,
+                 tol=1e-4, cv=None, verbose=0,
+                 precompute='auto', n_jobs=None):
+        super(MCPCV, self).__init__(
+            eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
+            tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
+            verbose=verbose, n_jobs=n_jobs)
+        self.gamma = gamma
+
+    def path(self, X, y, alphas, coef_init=None, **kwargs):
+        """Compute MCP path."""
+        alphas, coefs = mcp_path(
+            X, y, alphas=alphas, gamma=self.gamma, coef_init=coef_init,
+            max_iter=self.max_iter, verbose=self.verbose, tol=self.tol,
+            # X_scale=kwargs.get('X_scale', None),
+            # X_offset=kwargs.get('X_offset', None)
+        )
+        return alphas, coefs
+
+    def _get_estimator(self):
+        return Lasso()
+
+    def _is_multitask(self):
+        return False
+
+    def _more_tags(self):
+        return {'multioutput': False}
