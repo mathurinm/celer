@@ -1004,7 +1004,8 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
         return False
 
 
-class MinimaxConcavePenalty(Lasso_sklearn):
+# TODO name is OK ? or MinimaxConcavePenalty is more explicit ?
+class MCP(Lasso_sklearn):
     r"""
     MCP scikit-learn estimator
 
@@ -1073,7 +1074,7 @@ class MinimaxConcavePenalty(Lasso_sklearn):
     def __init__(self, alpha=1., gamma=3., max_iter=1000,
                  verbose=0, tol=1e-4, fit_intercept=True,
                  normalize=False, warm_start=False):
-        super(Lasso, self).__init__(
+        super(MCP, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, normalize=normalize,
             warm_start=warm_start)
@@ -1083,10 +1084,8 @@ class MinimaxConcavePenalty(Lasso_sklearn):
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute MCP path."""
         results = mcp_path(
-            X, y, alphas=alphas, coef_init=coef_init,
-            max_iter=self.max_iter, verbose=self.verbose, tol=self.tol,
-            positive=self.positive, X_scale=kwargs.get('X_scale', None),
-            X_offset=kwargs.get('X_offset', None))
+            X, y, alphas, self.gamma, coef_init=coef_init,
+            max_iter=self.max_iter, verbose=self.verbose, tol=self.tol, return_n_iter=return_n_iter)
         return results
 
 
@@ -1192,16 +1191,16 @@ class MCPCV(RegressorMixin, sklearn_LinearModelCV):
 
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute MCP path."""
-        alphas, coefs = mcp_path(
-            X, y, alphas=alphas, gamma=self.gamma, coef_init=coef_init,
+        results = mcp_path(
+            X, y, alphas, self.gamma, coef_init=coef_init,
             max_iter=self.max_iter, verbose=self.verbose, tol=self.tol,
             # X_scale=kwargs.get('X_scale', None),
             # X_offset=kwargs.get('X_offset', None)
         )
-        return alphas, coefs
+        return results
 
     def _get_estimator(self):
-        return Lasso()
+        return MCP()
 
     def _is_multitask(self):
         return False

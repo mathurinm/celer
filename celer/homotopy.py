@@ -361,20 +361,29 @@ def _grp_converter(groups, n_features):
     return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
 
 
-def mcp_path(X, y, alphas, gamma, max_iter=1000, verbose=0, tol=1e-4):
+def mcp_path(X, y, alphas, gamma, coef_init=None, max_iter=1000, verbose=0,
+             tol=1e-4, return_n_iter=False):
     X = check_array(X, dtype=[np.float64, np.float32], order='F', copy=False)
     y = check_array(y, dtype=X.dtype.type, order='F', copy=False,
                     ensure_2d=False)
 
     n_alphas = len(alphas)
     n_features = X.shape[1]
-    coefs = np.zeros((n_alphas, n_features), dtype=X.dtype)
+    coefs = np.zeros((n_features, n_alphas), dtype=X.dtype, order='F')
+    dual_gaps = np.zeros(n_alphas)  # TODO
+    n_iters = np.zeros(n_alphas)
+    if coef_init is None:
+        coef_init = np.zeros(n_features)
 
     for t, alpha in enumerate(alphas):
-        w_init = w if t > 0 else np.zeros(n_features)
-        w = mcp(X, y, alpha, gamma, w_init, max_iter, verbose, tol)
-        coefs[t] = w
-    return coefs
+        w_init = w if t > 0 else coef_init
+        w, E = mcp(X, y, alpha, gamma, w_init, max_iter, verbose, tol)
+        coefs[:, t] = w
+        n_iters[t] = len(E) * 10
+    if return_n_iter:
+        return alphas, coefs, dual_gaps, n_iters
+    else:
+        return alphas, coefs, dual_gaps
 
 
 def mtl_path(
