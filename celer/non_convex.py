@@ -17,6 +17,7 @@ def prox_mcp(x, alpha, gamma):
 @njit
 def primal_mcp(R, alpha, gamma, w):
     p_obj = (R ** 2).sum() / (2 * len(R))
+    # TODO fix
     for j in range(len(w)):
         if abs(w[j]) < gamma * alpha:
             continue
