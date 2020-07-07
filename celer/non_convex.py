@@ -64,12 +64,10 @@ if __name__ == "__main__":
     gamma = 1000
     alpha = alpha_max_lasso / 10
 
-    w, E = mcp(X, y, alpha, gamma, np.zeros(X.shape[1]), 100, True, 1e-4)
+    _, E = mcp(X, y, alpha, gamma, np.zeros(X.shape[1]), 100, True, 1e-4)
     import matplotlib.pyplot as plt
     plt.close('all')
     plt.figure()
-    # plt.plot(E)
-    # plt.show(block=False)
 
     from celer import MCP
     clf1 = MCP(alpha=alpha, gamma=gamma, verbose=1,
@@ -78,6 +76,10 @@ if __name__ == "__main__":
 
     from celer import MCPCV
     clf2 = MCPCV(fit_intercept=False, gamma=3, n_jobs=-1).fit(X, y)
+
+    from celer import LassoCV
+    clf = LassoCV(n_jobs=-1, fit_intercept=False).fit(X, y)
+    w_bis = clf.coef_
 
     for model in (clf, clf2):
         plt.figure()
@@ -95,7 +97,3 @@ if __name__ == "__main__":
         plt.title("%s, sparsity: %d" % (model.__class__.__name__,
                                         (model.coef_ != 0).sum()))
         plt.show(block=False)
-
-    from celer import Lasso, LassoCV
-    clf = LassoCV(n_jobs=-1, fit_intercept=False).fit(X, y)
-    w_bis = clf.coef_

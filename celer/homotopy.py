@@ -376,7 +376,7 @@ def mcp_path(X, y, alphas, gamma, coef_init=None, max_iter=1000, verbose=0,
         coef_init = np.zeros(n_features)
 
     for t, alpha in enumerate(alphas):
-        w_init = w if t > 0 else coef_init
+        w_init = w if t > 0 else coef_init  # noqa F821
         w, E = mcp(X, y, alpha, gamma, w_init, max_iter, verbose, tol)
         coefs[:, t] = w
         n_iters[t] = len(E) * 10
