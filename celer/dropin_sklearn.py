@@ -1116,6 +1116,10 @@ class MCPCV(RegressorMixin, sklearn_LinearModelCV):
         List of alphas where to compute the models.
         If ``None`` alphas are set automatically
 
+    gamma : float >= 1, optional (default=3)
+        Second penalty parameter. gamma = 1 yields the L0 minimization problem,
+        when gamma goes to infinity the Lasso problem is recovered.
+
     fit_intercept : boolean, default True
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations

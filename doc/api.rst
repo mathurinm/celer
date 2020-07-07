@@ -26,5 +26,7 @@ Estimators
    Lasso
    LassoCV
    LogisticRegression
+   MCP
+   MCPCV
    MultiTaskLasso
    MultiTaskLassoCV
