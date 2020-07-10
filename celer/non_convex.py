@@ -95,6 +95,6 @@ if __name__ == "__main__":
         plt.xlabel(r'$\alpha$')
         plt.ylabel('Mean square error')
         plt.axis('tight')
-        plt.title("%s, sparsity: %d" % (model.__class__.__name__,
+        plt.title(r"$%s, ||w||_0: %d$" % (model.__class__.__name__,
                                         (model.coef_ != 0).sum()))
         plt.show(block=False)
