@@ -71,7 +71,7 @@ jobs:
             command: |
               cd doc;
               make clean;
-              make html;
+              make html-noplot;
 
         # Save the outputs
         - store_artifacts:
