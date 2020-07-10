@@ -81,6 +81,25 @@ jobs:
             paths:
               - html
 
+    deploy:
+      docker:
+        - image: circleci/python:3.8.1-buster
+      steps:
+        - attach_workspace:
+            at: /tmp/build
+        - run:
+            name: Fetch docs
+            command: |
+              set -e
+              mkdir -p ~/.ssh
+              echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
+              chmod og= ~/.ssh/config
+        - run:
+            name: Deploy docs
+            command: |
+              set -e;
+              ls;
+              make install;
 
 workflows:
   version: 2
@@ -88,3 +107,11 @@ workflows:
   default:
     jobs:
       - build_docs
+      - deploy:
+          requires:
+            - build_docs
+          filters:
+            branches:
+              only:
+                - circleci_doc
+                # - master
