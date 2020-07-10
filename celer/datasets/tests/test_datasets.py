@@ -1,6 +1,6 @@
-import numpy as np
+# import numpy as np
 
-from celer.datasets import load_libsvm
+# from celer.datasets import load_libsvm
 
 
 # def test_news20():
