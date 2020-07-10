@@ -62,8 +62,8 @@ jobs:
         - run:
             name: Check installation
             command: |
-               which python
-               python -c "import celer"
+              which python
+              python -c "import celer"
 
         # Build docs
         - run:
@@ -72,6 +72,7 @@ jobs:
               cd doc;
               make clean;
               make html-noplot;
+              cd ..;
 
         # Save the outputs
         - store_artifacts:
@@ -98,10 +99,10 @@ jobs:
         - run:
             name: Deploy docs
             command: |
-              ls;
-              cd doc;
-              set -e;
-              make install;
+              ls
+              cd doc
+              set -e
+              make install
 
 workflows:
   version: 2
