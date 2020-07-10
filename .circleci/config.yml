@@ -98,9 +98,9 @@ jobs:
         - run:
             name: Deploy docs
             command: |
+              ls;
               cd doc;
               set -e;
-              ls;
               make install;
 
 workflows:
