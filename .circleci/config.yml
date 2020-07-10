@@ -1,0 +1,90 @@
+# Tagging a commit with [circle front] will build the front page and perform test-doc.
+# Tagging a commit with [circle full] will build everything.
+version: 2
+jobs:
+    build_docs:
+      docker:
+        - image: circleci/python:3.8.1-buster
+      steps:
+        - checkout
+        - run:
+            name: Set BASH_ENV
+            command: |
+              echo "set -e" >> $BASH_ENV
+              echo "export DISPLAY=:99" >> $BASH_ENV
+              echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
+              echo "BASH_ENV:"
+              cat $BASH_ENV
+
+        - run:
+            name: Merge with upstream
+            command: |
+              echo $(git log -1 --pretty=%B) | tee gitlog.txt
+              echo ${CI_PULL_REQUEST//*pull\//} | tee merge.txt
+              if [[ $(cat merge.txt) != "" ]]; then
+                echo "Merging $(cat merge.txt)";
+                git remote add upstream git://github.com/mathurinm/celer.git;
+                git pull --ff-only upstream "refs/pull/$(cat merge.txt)/merge";
+                git fetch upstream master;
+              fi
+
+        # Load our data
+        - restore_cache:
+            keys:
+              - data-cache-0
+              - pip-cache
+              - celer_data
+
+        - run:
+            name: Spin up Xvfb
+            command: |
+              /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render -noreset;
+
+        - run:
+            name: Get Python running
+            command: |
+              python -m pip install --user --upgrade --progress-bar off pip
+              python -m pip install --user --upgrade --progress-bar off -r requirements.txt
+              python -m pip install --user --upgrade --progress-bar off -r doc/doc-requirements.txt
+              python -m pip install --user -e .
+
+        - save_cache:
+            key: celer_data
+            paths:
+              - $HOME/celer_data
+
+        - save_cache:
+            key: pip-cache
+            paths:
+              - ~/.cache/pip
+
+        # Look at what we have and fail early if there is some library conflict
+        - run:
+            name: Check installation
+            command: |
+               which python
+               python -c "import celer"
+
+        # Build docs
+        - run:
+            name: make html
+            command: |
+              cd doc;
+              make html;
+
+        # Save the outputs
+        - store_artifacts:
+            path: doc/_build/html/
+            destination: dev
+        - persist_to_workspace:
+            root: doc/_build
+            paths:
+              - html
+
+
+workflows:
+  version: 2
+
+  default:
+    jobs:
+      - build_docs
