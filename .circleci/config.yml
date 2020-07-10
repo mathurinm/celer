@@ -70,6 +70,7 @@ jobs:
             name: make html
             command: |
               cd doc;
+              make clean;
               make html;
 
         # Save the outputs
