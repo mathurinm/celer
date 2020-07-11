@@ -84,6 +84,7 @@ jobs:
                 echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
                 chmod og= ~/.ssh/config
                 cd doc;
+                pip install ghp-import;
                 make install
               fi
 
