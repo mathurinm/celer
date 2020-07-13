@@ -3,6 +3,7 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
