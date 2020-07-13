@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_plot_finance_path.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_plot_finance_path.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_finance_path.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_finance_path.py:
 
 
 =======================================================
@@ -44,24 +46,6 @@ implementation as it makes the example too long to run.
     alphas = alpha_max * np.geomspace(1, 0.05, n_alphas)
 
 
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    *** Warning: this example may take more than 5 minutes to run ***
-    Dataset: finance
-    Replace is False and data exists, so doing nothing. Use replace==True to re-download the data.
-    Dataset size: 16087 samples, 1668737 features
-
-
-
-
 Run Celer on a grid of regularization parameters, for various tolerances:
 
 
@@ -85,23 +69,6 @@ Run Celer on a grid of regularization parameters, for various tolerances:
     plt.show(block=False)
 
 
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_finance_path_001.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Starting path computation...
-
-
-
-
 Measure the influence of regularization on the sparsity of the solutions:
 
 
@@ -117,15 +84,6 @@ Measure the influence of regularization on the sparsity of the solutions:
     ax.set_xticks(np.arange(n_alphas)[::2])
     ax.set_xticklabels(map(lambda x: "%.2f" % x, alphas[::2] / alphas[0]))
     plt.show(block=False)
-
-
-
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_finance_path_002.png
-    :class: sphx-glr-single-img
-
-
 
 
 
@@ -146,18 +104,9 @@ Check convergence guarantees: gap is inferior to tolerance
     plt.show(block=False)
 
 
-
-.. image:: /auto_examples/images/sphx_glr_plot_finance_path_003.png
-    :class: sphx-glr-single-img
-
-
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  23.313 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_finance_path.py:
@@ -170,13 +119,13 @@ Check convergence guarantees: gap is inferior to tolerance
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: plot_finance_path.py <plot_finance_path.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: plot_finance_path.ipynb <plot_finance_path.ipynb>`
 

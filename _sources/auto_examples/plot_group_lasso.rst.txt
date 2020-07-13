@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_plot_group_lasso.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_plot_group_lasso.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_group_lasso.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_group_lasso.py:
 
 
 ===============================================================
@@ -52,21 +54,6 @@ The example runs the GroupLasso scikit-learn like estimators.
     clf.fit(X, y)
 
 
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-
-    GroupLasso(alpha=1.1, groups=5)
-
-
-
 Display results
 
 
@@ -82,15 +69,6 @@ Display results
     plt.xlabel("feature index")
     plt.legend()
     plt.show(block=False)
-
-
-
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_001.png
-    :class: sphx-glr-single-img
-
-
 
 
 
@@ -119,23 +97,6 @@ Get optimal alpha for prediction by cross validation
 
 
 
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_002.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Estimated regularization parameter alpha: 0.11884335951055021
-
-
-
-
 Show optimal regression vector for prediction, obtained by cross validation
 
 
@@ -153,18 +114,9 @@ Show optimal regression vector for prediction, obtained by cross validation
     plt.show(block=False)
 
 
-
-.. image:: /auto_examples/images/sphx_glr_plot_group_lasso_003.png
-    :class: sphx-glr-single-img
-
-
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.096 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:
@@ -177,13 +129,13 @@ Show optimal regression vector for prediction, obtained by cross validation
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: plot_group_lasso.py <plot_group_lasso.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: plot_group_lasso.ipynb <plot_group_lasso.ipynb>`
 
