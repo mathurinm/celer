@@ -15,12 +15,13 @@ C_LIST_DARK = sns.color_palette("dark", 8)
 def configure_plt():
     rc('font', **{'family': 'sans-serif',
                   'sans-serif': ['Computer Modern Roman']})
+    usetex = matplotlib.checkdep_usetex(True)
     params = {'axes.labelsize': 12,
               'font.size': 12,
               'legend.fontsize': 12,
               'xtick.labelsize': 10,
               'ytick.labelsize': 10,
-              'text.usetex': True,
+              'text.usetex': usetex,
               'figure.figsize': (8, 6)}
     plt.rcParams.update(params)
 
