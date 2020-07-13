@@ -49,11 +49,6 @@ jobs:
               python -m pip install --user -e .
 
         - save_cache:
-            key: celer_data
-            paths:
-              - $HOME/celer_data
-
-        - save_cache:
             key: pip-cache
             paths:
               - ~/.cache/pip
@@ -62,15 +57,37 @@ jobs:
         - run:
             name: Check installation
             command: |
-               which python
-               python -c "import celer"
+              which python
+              python -c "import celer"
 
         # Build docs
         - run:
             name: make html
+            no_output_timeout: 30m
             command: |
               cd doc;
+              make clean;
               make html;
+              cd ..;
+
+        - save_cache:
+            key: celer_data
+            paths:
+              - $HOME/celer_data
+
+        # Deploy docs
+        - run:
+            name: deploy
+            command: |
+              if [[ ${CIRCLE_BRANCH} == "master" ]]; then
+                set -e
+                mkdir -p ~/.ssh
+                echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
+                chmod og= ~/.ssh/config
+                cd doc;
+                pip install ghp-import;
+                make install
+              fi
 
         # Save the outputs
         - store_artifacts:
