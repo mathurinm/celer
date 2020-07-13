@@ -14,6 +14,12 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.utils import check_random_state
+
+from celer import GroupLasso, GroupLassoCV
+from celer.plot_utils import configure_plt
+
+
 print(__doc__)
 
 print("Loading data...")
