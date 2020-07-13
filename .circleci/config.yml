@@ -71,7 +71,7 @@ jobs:
             command: |
               cd doc;
               make clean;
-              make html-noplot;
+              make html;
               cd ..;
 
         # Deploy docs
