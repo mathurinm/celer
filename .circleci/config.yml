@@ -87,6 +87,9 @@ jobs:
                 pip install ghp-import;
                 make install
               fi
+            filters:
+              branches:
+                only: master
 
         # Save the outputs
         - store_artifacts:
