@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lasso path computation on Leukemia dataset &#8212; celer 0.5dev documentation</title>
+    <title>Run GroupLasso and GroupLasso CV for structured sparse recovery &#8212; celer 0.5dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -75,7 +75,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Lasso path computation on Leukemia dataset</a></li>
+<li><a class="reference internal" href="#">Run GroupLasso and GroupLasso CV for structured sparse recovery</a></li>
 </ul>
 </ul>
 </li>
@@ -87,7 +87,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/auto_examples/plot_dummy.rst.txt"
+  <a href="../_sources/auto_examples/plot_group_lasso.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -111,24 +111,19 @@
   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-dummy-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-group-lasso-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="lasso-path-computation-on-leukemia-dataset">
-<span id="sphx-glr-auto-examples-plot-dummy-py"></span><h1>Lasso path computation on Leukemia dataset<a class="headerlink" href="#lasso-path-computation-on-leukemia-dataset" title="Permalink to this headline">¶</a></h1>
-<p>The example runs the Celer algorithm on the Leukemia
-dataset which is a dense dataset.</p>
-<p>Running time is compared with the scikit-learn implementation.</p>
-<img alt="plot dummy" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_dummy_001.png" />
+<div class="sphx-glr-example-title section" id="run-grouplasso-and-grouplasso-cv-for-structured-sparse-recovery">
+<span id="sphx-glr-auto-examples-plot-group-lasso-py"></span><h1>Run GroupLasso and GroupLasso CV for structured sparse recovery<a class="headerlink" href="#run-grouplasso-and-grouplasso-cv-for-structured-sparse-recovery" title="Permalink to this headline">¶</a></h1>
+<p>The example runs the GroupLasso scikit-learn like estimators.</p>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading data...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>usetex mode requires TeX.
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
@@ -136,24 +131,88 @@ dataset which is a dense dataset.</p>
 <span class="kn">from</span> <span class="nn">celer</span> <span class="kn">import</span> <span class="n">GroupLasso</span><span class="p">,</span> <span class="n">GroupLassoCV</span>
 <span class="kn">from</span> <span class="nn">celer.plot_utils</span> <span class="kn">import</span> <span class="n">configure_plt</span>
 
-
 <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="n">configure_plt</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading data...&quot;</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">**</span> <span class="mi">2</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<span class="c1"># Generating X and y data</span>
+
+<span class="c1"># n_samples, n_features = 30, 50</span>
+<span class="c1"># rng = check_random_state(0)</span>
+<span class="c1"># X = rng.randn(n_samples, n_features)</span>
+
+
+<span class="c1"># # Create true regression coefficients with 3 groups of 5 non-zero values</span>
+
+<span class="c1"># w_true = np.zeros(n_features)</span>
+<span class="c1"># w_true[:5] = 1</span>
+<span class="c1"># w_true[20:25] = -2</span>
+<span class="c1"># w_true[40:45] = 1</span>
+<span class="c1"># y = X @ w_true + rng.randn(n_samples)</span>
+
+
+<span class="c1"># # Fit an adapted GroupLasso model</span>
+
+<span class="c1"># groups = 5  # groups are contiguous and of size 5</span>
+<span class="c1"># # irregular groups are also supported,</span>
+<span class="c1"># clf = GroupLasso(groups=groups, alpha=1.1)</span>
+<span class="c1"># clf.fit(X, y)</span>
+
+<span class="c1"># ###############################################################################</span>
+<span class="c1"># # Display results</span>
+
+<span class="c1"># fig = plt.figure(figsize=(10, 4))</span>
+<span class="c1"># m, s, _ = plt.stem(w_true, label=r&quot;true regression coefficients&quot;,</span>
+<span class="c1">#                    use_line_collection=True)</span>
+<span class="c1"># m, s, _ = plt.stem(clf.coef_, label=r&quot;estimated regression coefficients&quot;,</span>
+<span class="c1">#                    markerfmt=&#39;x&#39;, use_line_collection=True)</span>
+<span class="c1"># plt.setp([m, s], color=&#39;#ff7f0e&#39;)</span>
+<span class="c1"># plt.xlabel(&quot;feature index&quot;)</span>
+<span class="c1"># plt.legend()</span>
+<span class="c1"># plt.show(block=False)</span>
+
+
+<span class="c1"># ###############################################################################</span>
+<span class="c1"># # Get optimal alpha for prediction by cross validation</span>
+<span class="c1"># model = GroupLassoCV(groups=groups)</span>
+<span class="c1"># model.fit(X, y)</span>
+
+<span class="c1"># print(&quot;Estimated regularization parameter alpha: %s&quot; % model.alpha_)</span>
+
+<span class="c1"># fig = plt.figure(figsize=(11, 4.5))</span>
+<span class="c1"># plt.semilogx(model.alphas_, model.mse_path_, &#39;:&#39;)</span>
+<span class="c1"># plt.semilogx(model.alphas_, model.mse_path_.mean(axis=-1), &#39;k&#39;,</span>
+<span class="c1">#              label=&#39;Average across the folds&#39;, linewidth=2)</span>
+<span class="c1"># plt.axvline(model.alpha_, linestyle=&#39;--&#39;, color=&#39;k&#39;,</span>
+<span class="c1">#             label=&#39;alpha: CV estimate&#39;)</span>
+
+<span class="c1"># plt.legend()</span>
+
+<span class="c1"># plt.xlabel(r&#39;$\alpha$&#39;)</span>
+<span class="c1"># plt.ylabel(&#39;Mean square error&#39;)</span>
+<span class="c1"># plt.show(block=False)</span>
+
+
+<span class="c1"># ###############################################################################</span>
+<span class="c1"># # Show optimal regression vector for prediction, obtained by cross validation</span>
+
+<span class="c1"># fig = plt.figure(figsize=(10, 4))</span>
+<span class="c1"># m, s, _ = plt.stem(w_true, label=r&quot;true regression coefficients&quot;,</span>
+<span class="c1">#                    use_line_collection=True)</span>
+<span class="c1"># m, s, _ = plt.stem(model.coef_, label=r&quot;CV-estimated regression coefficients&quot;,</span>
+<span class="c1">#                    markerfmt=&#39;x&#39;, use_line_collection=True)</span>
+<span class="c1"># plt.setp([m, s], color=&#39;#ff7f0e&#39;)</span>
+<span class="c1"># plt.xlabel(&quot;feature index&quot;)</span>
+<span class="c1"># plt.legend()</span>
+<span class="c1"># plt.show(block=False)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.235 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-dummy-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.001 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-group-lasso-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/2bb7e870a0f73b47d785caa602c95abe/plot_dummy.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_dummy.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/433d4b2ff389555700f26fe734f79b9a/plot_group_lasso.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_group_lasso.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/96ab5c0492cc749204c31ed73f3fbb2e/plot_dummy.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dummy.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/d9eb92dfee59a65a789fccd58fdc9de1/plot_group_lasso.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_group_lasso.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
