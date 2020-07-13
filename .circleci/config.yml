@@ -49,11 +49,6 @@ jobs:
               python -m pip install --user -e .
 
         - save_cache:
-            key: celer_data
-            paths:
-              - $HOME/celer_data
-
-        - save_cache:
             key: pip-cache
             paths:
               - ~/.cache/pip
@@ -75,11 +70,16 @@ jobs:
               make html;
               cd ..;
 
+        - save_cache:
+          key: celer_data
+            paths:
+              - $HOME/celer_data
+
         # Deploy docs
         - run:
             name: deploy
             command: |
-              if [[ ${CIRCLE_BRANCH} == "circleci_doc" ]]; then
+              if [[ ${CIRCLE_BRANCH} == "master" ]]; then
                 set -e
                 mkdir -p ~/.ssh
                 echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -88,9 +88,6 @@ jobs:
                 pip install ghp-import;
                 make install
               fi
-            filters:
-              branches:
-                only: master
 
         # Save the outputs
         - store_artifacts:
