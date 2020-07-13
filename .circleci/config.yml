@@ -71,7 +71,7 @@ jobs:
               cd ..;
 
         - save_cache:
-          key: celer_data
+            key: celer_data
             paths:
               - $HOME/celer_data
 
