@@ -3,6 +3,10 @@
 version: 2
 jobs:
     build_docs:
+      filters:
+        branches:
+          ignore:
+            - gh-pages
       docker:
         - image: circleci/python:3.8.1-buster
       steps:
