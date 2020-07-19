@@ -83,7 +83,7 @@ if __name__ == "__main__":
     w_bis = clf.coef_
 
     for model in (clf, clf2):
-        plt.figure()
+        fig = plt.figure(constrained_layout=True)
         plt.semilogx(model.alphas_, model.mse_path_, ':')
         plt.semilogx(model.alphas_, model.mse_path_.mean(axis=-1), 'k',
                      label='Average across the folds', linewidth=2)
@@ -96,5 +96,7 @@ if __name__ == "__main__":
         plt.ylabel('Mean square error')
         plt.axis('tight')
         plt.title(r"$%s, ||w||_0: %d$" % (model.__class__.__name__,
-                                        (model.coef_ != 0).sum()))
+                                          (model.coef_ != 0).sum()))
         plt.show(block=False)
+
+        fig.savefig("./%s.pdf" % model.__class__.__name__)
