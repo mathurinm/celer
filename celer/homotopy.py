@@ -101,7 +101,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
 
-    weights : ndarray, shape (n_features,), optional
+    weights : ndarray, shape (n_features,) or (n_groups,), optional
         Feature/group weights used in the penalty. Default to array of ones.
 
     groups : int or list of ints or list of list of ints, optional
@@ -269,9 +269,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 w = np.zeros(n_features, dtype=X.dtype)
                 Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
 
-            # different link equations and noramlization scal for dual point:
-            # if pb == LASSO:
-            #     theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
+            # different link equations and normalization scal for dual point:
             if pb in (LASSO, LOGREG):
                 if pb == LASSO:
                     theta = Xw.copy()
@@ -287,9 +285,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
                     X_sparse_scaling.any())
             theta /= scal
-            # elif pb == LOGREG:
-            #     theta = y / (1 + np .exp(y * Xw)) / alpha
-            #     theta /= np.linalg.norm(X.T @ theta, ord=np.inf)
 
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:  # TODO this if else scheme is complicated

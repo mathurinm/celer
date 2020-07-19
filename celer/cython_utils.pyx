@@ -130,7 +130,6 @@ cdef floating primal_logreg(
         p_obj += log_1pexp(- y[i] * Xw[i])
     for j in range(n_features):
         p_obj += alpha * weights[j] * fabs(w[j])
-    # p_obj += alpha * fasum(&n_features, w, &inc)
     return p_obj
 
 
@@ -149,7 +148,6 @@ cdef floating primal_lasso(
     p_obj = fdot(&n_samples, &R[0], &inc, &R[0], &inc) / (2. * n_samples)
     for j in range(n_features):
         p_obj += alpha * weights[j] * fabs(w[j])
-    # p_obj += alpha * fasum(&n_features, w, &inc)
     return p_obj
 
 
