@@ -155,7 +155,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     is_sparse = sparse.issparse(X)
 
     X = check_array(X, 'csc', dtype=[np.float64, np.float32],
-                    order='F', copy=False)
+                    order='F', copy=False, accept_large_sparse=False)
     y = check_array(y, 'csc', dtype=X.dtype.type, order='F', copy=False,
                     ensure_2d=False)
 

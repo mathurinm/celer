@@ -182,7 +182,7 @@ def test_Lasso(sparse_X, fit_intercept, positive):
     if fit_intercept:
         np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
-    check_estimator(Lasso)
+    check_estimator(clf)
 
 
 @pytest.mark.parametrize("sparse_X, pb",

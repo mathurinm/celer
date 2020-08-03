@@ -195,7 +195,8 @@ cdef void create_dual_pt(
         floating * R, floating * y) nogil:
     """It is scaled by alpha for both Lasso and Logreg"""
     cdef floating tmp = 1. / alpha
-    if pb == LASSO:  # out = R / alpha
+    if pb == LASSO:  # out = R / (alpha * n_samples)
+        tmp /= n_samples
         fcopy(&n_samples, &R[0], &inc, &out[0], &inc)
     else:  # out = y * sigmoid(-y * Xw) / alpha
         for i in range(n_samples):
