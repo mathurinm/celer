@@ -4,10 +4,10 @@
 # License: BSD 3 clause
 
 import matplotlib
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import rc
 import seaborn as sns
+
+from matplotlib import rc
 
 C_LIST = sns.color_palette("colorblind", 8)
 C_LIST_DARK = sns.color_palette("dark", 8)
