@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>celer.celer_path &#8212; celer 0.5dev documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/js/jquery-fix.js"></script>
+    <script src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="celer.GroupLasso" href="celer.GroupLasso.html" />
+    <link rel="prev" title="API Documentation" href="../api.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          celer</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5dev</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/mathurinm/celer">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">celer.celer_path</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/celer.celer_path.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="section" id="celer-celer-path">
+<h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="celer.celer_path">
+<code class="sig-prename descclassname">celer.</code><code class="sig-name descname">celer_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">pb</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">n_alphas</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">alphas</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">coef_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">gap_freq</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">max_epochs</span><span class="o">=</span><span class="default_value">50000</span></em>, <em class="sig-param"><span class="n">p0</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">1e-06</span></em>, <em class="sig-param"><span class="n">prune</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_thetas</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_PN</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">X_offset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">X_scale</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_n_iter</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">positive</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute optimization path with Celer as inner solver.</p>
+<p>With <cite>n = len(y)</cite> the number of samples, the losses are:</p>
+<p>Lasso:</p>
+<div class="math notranslate nohighlight">
+\[\frac{||y - X w||_2^2}{2 n} + \alpha ||w||_1\]</div>
+<p>Logreg:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha  ||w||_1\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt><dd><p>Training data. Pass directly as Fortran-contiguous data or column
+sparse format (CSC) to avoid unnecessary memory duplication.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">ndarray, shape (n_samples,)</span></dt><dd><p>Target values</p>
+</dd>
+<dt><strong>pb</strong><span class="classifier">“lasso” | “logreg” | “grouplasso”</span></dt><dd><p>Optimization problem to solve.</p>
+</dd>
+<dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Length of the path. <code class="docutils literal notranslate"><span class="pre">eps=1e-3</span></code> means that
+<code class="docutils literal notranslate"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
+</dd>
+<dt><strong>n_alphas</strong><span class="classifier">int, optional</span></dt><dd><p>Number of alphas along the regularization path</p>
+</dd>
+<dt><strong>alphas</strong><span class="classifier">ndarray, optional</span></dt><dd><p>List of alphas where to compute the models.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> alphas are set automatically</p>
+</dd>
+<dt><strong>coef_init</strong><span class="classifier">ndarray, shape (n_features,) | None, optional, (defualt=None)</span></dt><dd><p>Initial value of coefficients. If None, np.zeros(n_features) is used.</p>
+</dd>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (subproblem definitions)</p>
+</dd>
+<dt><strong>gap_freq</strong><span class="classifier">int, optional</span></dt><dd><p>Number of (block) coordinate descent epochs between each duality gap
+computations.</p>
+</dd>
+<dt><strong>max_epochs</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of (block) CD epochs on each subproblem.</p>
+</dd>
+<dt><strong>p0</strong><span class="classifier">int, optional</span></dt><dd><p>First working set size.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool or integer, optional</span></dt><dd><p>Amount of verbosity. 0/False is silent</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
+gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
+reached.</p>
+</dd>
+<dt><strong>prune</strong><span class="classifier">0 | 1, optional</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
+</dd>
+<dt><strong>groups</strong><span class="classifier">int or list of ints or list of list of ints, optional</span></dt><dd><p>Used for the group Lasso only. See the documentation of the
+GroupLasso class.</p>
+</dd>
+<dt><strong>return_thetas</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, dual variables along the path are returned.</p>
+</dd>
+<dt><strong>use_PN</strong><span class="classifier">bool, optional</span></dt><dd><p>If pb == “logreg”, use ProxNewton solver instead of coordinate
+descent.</p>
+</dd>
+<dt><strong>X_offset</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to center sparse X without breaking sparsity. Mean of each column.
+See sklearn.linear_model.base._preprocess_data().</p>
+</dd>
+<dt><strong>X_scale</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to scale centered sparse X without breaking sparsity. Norm of each
+centered column. See sklearn.linear_model.base._preprocess_data().</p>
+</dd>
+<dt><strong>return_n_iter</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, number of iterations along the path are returned.</p>
+</dd>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>If True and pb == “lasso”, forces the coefficients to be positive.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>alphas</strong><span class="classifier">array, shape (n_alphas,)</span></dt><dd><p>The alphas along the path where models are computed.</p>
+</dd>
+<dt><strong>coefs</strong><span class="classifier">array, shape (n_features, n_alphas)</span></dt><dd><p>Coefficients along the path.</p>
+</dd>
+<dt><strong>dual_gaps</strong><span class="classifier">array, shape (n_alphas,)</span></dt><dd><p>Duality gaps returned by the solver along the path.</p>
+</dd>
+<dt><strong>thetas</strong><span class="classifier">array, shape (n_alphas, n_samples)</span></dt><dd><p>The dual variables along the path.
+(Is returned only when <code class="docutils literal notranslate"><span class="pre">return_thetas</span></code> is set to True).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+</div>
+
+<!-- Github "fork me" ribbon -->
+<a href="https://github.com/mathurinm/celer"><img style="position: absolute; top: 50px; right: 0; border: 0;"
+src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+alt="Fork me on GitHub"
+data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Mathurin Massias.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

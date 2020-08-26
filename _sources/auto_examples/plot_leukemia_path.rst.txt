@@ -1,0 +1,260 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_leukemia_path.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_leukemia_path.py:
+
+
+=======================================================
+Lasso path computation on Leukemia dataset
+=======================================================
+
+The example runs the Celer algorithm on the Leukemia
+dataset which is a dense dataset.
+
+Running time is compared with the scikit-learn implementation.
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_leukemia_path_001.png
+    :alt: plot leukemia path
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    Loading data...
+    Starting path computation...
+    Celer time: 0.03 s
+    Celer time: 0.18 s
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008778628904741126, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010492050372493678, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.016376337800864782, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.012173382164156754, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010057749890655554, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.01088992204018635, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008812617306893866, tolerance: 0.007200000000000001
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011756282285238617, tolerance: 0.007200000000000001
+      positive)
+    Celer time: 0.58 s
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 7.64228354590557e-05, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00028090672918557047, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.0002013005638445975, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00022056005711634796, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00016644175341529177, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00031150182383665737, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.009224619083991747, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.009231128214422402, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00845459987152708, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.006061950360019441, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.005396189855424449, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.006628774631489032, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010601387520582595, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.016340662590583754, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.004871324698801027, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.013110441511652748, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00995523750115268, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010991290337875048, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.007476322147024206, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.006293996738598651, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008953593706121366, tolerance: 7.2e-05
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011950366675552604, tolerance: 7.2e-05
+      positive)
+    Celer time: 0.97 s
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 3.6916061612046747e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 5.579020924351141e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 6.0920681095311124e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 5.354826962289394e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 1.4048790112575205e-05, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 2.42934115473048e-05, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 2.166073752896125e-05, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 1.9779893980498287e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 3.053549393339239e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 3.339301446469989e-06, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 7.421917709260484e-05, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 7.637124457060551e-05, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 6.518710597225308e-05, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.0002808979545072532, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00020130053679290327, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00022056005704573778, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00016644175340907452, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00031150182380779157, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.009224619083985086, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.009231128214408635, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008454599871507984, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.0060619503600252145, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.0053961898554157894, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.006628774631553647, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010601387520584815, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.01634066259061484, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.0048713246987923675, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.013110441511650972, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00995523750114824, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.010991290337856618, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.007476322147013104, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.006293996738635066, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.008953593706116925, tolerance: 7.2e-07
+      positive)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011950366675537838, tolerance: 7.2e-07
+      positive)
+
+
+
+
+
+
+|
+
+
+.. code-block:: default
+
+
+    import time
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    from sklearn.linear_model import lasso_path
+    from sklearn.datasets import fetch_openml
+
+    from celer import celer_path
+
+    print(__doc__)
+
+    print("Loading data...")
+    dataset = fetch_openml("leukemia")
+    X = np.asfortranarray(dataset.data.astype(float))
+    y = 2 * ((dataset.target != "AML") - 0.5)
+    n_samples = len(y)
+
+    y -= np.mean(y)
+    y /= np.std(y)
+
+    print("Starting path computation...")
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+
+    n_alphas = 100
+    alphas = alpha_max * np.geomspace(1, 0.01, n_alphas)
+
+    tols = [1e-2, 1e-4, 1e-6, 1e-8]
+    results = np.zeros([2, len(tols)])
+    for tol_ix, tol in enumerate(tols):
+        t0 = time.time()
+        _, coefs, gaps = celer_path(
+            X, y, pb='lasso', alphas=alphas, tol=tol, prune=True)
+        results[0, tol_ix] = time.time() - t0
+        print('Celer time: %.2f s' % results[0, tol_ix])
+
+        t0 = time.time()
+        _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
+        results[1, tol_ix] = time.time() - t0
+
+    df = pd.DataFrame(results.T, columns=["Celer", "scikit-learn"])
+    df.index = tols
+    df.plot.bar(rot=0)
+    plt.xlabel("stopping tolerance")
+    plt.ylabel("path computation time (s)")
+    plt.tight_layout()
+    plt.show()
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  55.399 seconds)
+
+
+.. _sphx_glr_download_auto_examples_plot_leukemia_path.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: plot_leukemia_path.py <plot_leukemia_path.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_leukemia_path.ipynb <plot_leukemia_path.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

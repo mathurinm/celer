@@ -1,0 +1,28 @@
+celer.LassoCV
+=============
+
+.. currentmodule:: celer
+
+.. autoclass:: LassoCV
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LassoCV.__init__
+      ~LassoCV.fit
+      ~LassoCV.get_params
+      ~LassoCV.path
+      ~LassoCV.predict
+      ~LassoCV.score
+      ~LassoCV.set_params
+   
+   
+
+   
+   
+   

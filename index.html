@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Celer &#8212; celer 0.5dev documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/js/jquery-fix.js"></script>
+    <script src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          celer</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5dev</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="https://github.com/mathurinm/celer">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Celer</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#cite">Cite</a></li>
+<li><a class="reference internal" href="#build-the-documentation">Build the documentation</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/index.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="section" id="celer">
+<h1>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
+<p>This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
+This algorithm uses an extrapolated dual point which enables a tight control of optimality and quick feature identification.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>First clone the repository available at <a class="reference external" href="https://github.com/mathurinm/celer">https://github.com/mathurinm/celer</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/mathurinm/celer.git
+$ cd celer/
+</pre></div>
+</div>
+<p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.</p>
+<p>From a working environment, you can compile the Cython code and install the package with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
+</pre></div>
+</div>
+<p>To check if everything worked fine, you can do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import celer&#39;
+</pre></div>
+</div>
+<p>and it should not give any error message.</p>
+<p>From a Python shell you can just do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">celer</span>
+</pre></div>
+</div>
+<p>If you don’t want to use Anaconda, you should still be able to install using <cite>pip</cite>.</p>
+</div>
+<div class="section" id="cite">
+<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
+<p>If you use this code, please cite:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@InProceedings</span><span class="p">{</span><span class="nl">pmlr-v80-massias18a</span><span class="p">,</span>
+  <span class="na">title</span> <span class="p">=</span> <span class="s">{Celer: a Fast Solver for the Lasso with Dual Extrapolation}</span><span class="p">,</span>
+  <span class="na">author</span> <span class="p">=</span> <span class="s">{Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph}</span><span class="p">,</span>
+  <span class="na">booktitle</span> <span class="p">=</span> <span class="s">{Proceedings of the 35th International Conference on Machine Learning}</span><span class="p">,</span>
+  <span class="na">pages</span> <span class="p">=</span> <span class="s">{3321--3330}</span><span class="p">,</span>
+  <span class="na">year</span> <span class="p">=</span> <span class="m">2018</span><span class="p">,</span>
+  <span class="na">volume</span> <span class="p">=</span> <span class="m">80</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="nc">@article</span><span class="p">{</span><span class="nl">massias2019dual</span><span class="p">,</span>
+  <span class="na">title</span> <span class="p">=</span> <span class="s">{Dual Extrapolation for Sparse Generalized Linear Models}</span><span class="p">,</span>
+  <span class="na">author</span> <span class="p">=</span> <span class="s">{Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph}</span><span class="p">,</span>
+  <span class="na">journal</span> <span class="p">=</span> <span class="s">{arXiv preprint arXiv:1907.05830}</span><span class="p">,</span>
+  <span class="na">year</span> <span class="p">=</span> <span class="m">2019</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ArXiv links:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://arxiv.org/abs/1802.07481">https://arxiv.org/abs/1802.07481</a></p></li>
+<li><p><a class="reference external" href="https://arxiv.org/abs/1907.05830">https://arxiv.org/abs/1907.05830</a></p></li>
+</ul>
+</div>
+<div class="section" id="build-the-documentation">
+<h2>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permalink to this headline">¶</a></h2>
+<p>To build the documentation you will need to run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx_gallery</span> <span class="n">sphinx_bootstrap_theme</span>
+<span class="n">cd</span> <span class="n">doc</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<!-- Github "fork me" ribbon -->
+<a href="https://github.com/mathurinm/celer"><img style="position: absolute; top: 50px; right: 0; border: 0;"
+src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+alt="Fork me on GitHub"
+data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Mathurin Massias.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

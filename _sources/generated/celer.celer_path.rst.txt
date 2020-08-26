@@ -1,0 +1,6 @@
+celer.celer\_path
+=================
+
+.. currentmodule:: celer
+
+.. autofunction:: celer_path
