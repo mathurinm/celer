@@ -97,7 +97,7 @@ Running time is compared with the scikit-learn implementation.
       model = cd_fast.enet_coordinate_descent(
     /home/circleci/.local/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011950366675567592, tolerance: 7.200000000000004e-05
       model = cd_fast.enet_coordinate_descent(
-    Celer time: 0.90 s
+    Celer time: 0.91 s
     /home/circleci/.local/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 3.6916061612046747e-06, tolerance: 7.200000000000004e-07
       model = cd_fast.enet_coordinate_descent(
     /home/circleci/.local/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 5.5790209056993945e-06, tolerance: 7.200000000000004e-07
@@ -166,7 +166,6 @@ Running time is compared with the scikit-learn implementation.
       model = cd_fast.enet_coordinate_descent(
     /home/circleci/.local/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011950366675538948, tolerance: 7.200000000000004e-07
       model = cd_fast.enet_coordinate_descent(
-    usetex mode requires TeX.
 
 
 
@@ -180,7 +179,7 @@ Running time is compared with the scikit-learn implementation.
 
 
     import time
-
+    import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
 
@@ -188,7 +187,6 @@ Running time is compared with the scikit-learn implementation.
     from sklearn.datasets import fetch_openml
 
     from celer import celer_path
-    from celer.plot_utils import plot_path_hist
 
     print(__doc__)
 
@@ -220,15 +218,18 @@ Running time is compared with the scikit-learn implementation.
         _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
         results[1, tol_ix] = time.time() - t0
 
-    labels = [r"\sc{Celer}", "scikit-learn"]
-    figsize = (7.1, 4.3)
-    fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
+    df = pd.DataFrame(results.T, columns=["Celer", "scikit-learn"])
+    df.index = tols
+    df.plot.bar(rot=0)
+    plt.xlabel("stopping tolerance")
+    plt.ylabel("path computation time (s)")
+    plt.tight_layout()
     plt.show()
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  34.876 seconds)
+   **Total running time of the script:** ( 0 minutes  35.802 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:

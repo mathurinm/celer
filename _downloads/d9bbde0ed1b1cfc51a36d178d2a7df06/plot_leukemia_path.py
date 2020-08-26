@@ -10,7 +10,7 @@ Running time is compared with the scikit-learn implementation.
 """
 
 import time
-
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -18,7 +18,6 @@ from sklearn.linear_model import lasso_path
 from sklearn.datasets import fetch_openml
 
 from celer import celer_path
-from celer.plot_utils import plot_path_hist
 
 print(__doc__)
 
@@ -50,7 +49,10 @@ for tol_ix, tol in enumerate(tols):
     _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
     results[1, tol_ix] = time.time() - t0
 
-labels = [r"\sc{Celer}", "scikit-learn"]
-figsize = (7.1, 4.3)
-fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
+df = pd.DataFrame(results.T, columns=["Celer", "scikit-learn"])
+df.index = tols
+df.plot.bar(rot=0)
+plt.xlabel("stopping tolerance")
+plt.ylabel("path computation time (s)")
+plt.tight_layout()
 plt.show()
