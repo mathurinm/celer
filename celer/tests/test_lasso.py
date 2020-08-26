@@ -143,8 +143,7 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
 
     X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
     params = dict(eps=0.05, n_alphas=10, tol=1e-10, cv=2,
-                  fit_intercept=fit_intercept, positive=positive, verbose=2,
-                  n_jobs=-1)
+                  fit_intercept=fit_intercept, positive=positive, n_jobs=-1)
 
     clf = LassoCV(**params)
     clf.fit(X, y)
@@ -182,7 +181,7 @@ def test_Lasso(sparse_X, fit_intercept, positive):
     if fit_intercept:
         np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
-    check_estimator(clf)
+    check_estimator(Lasso)
 
 
 @pytest.mark.parametrize("sparse_X, pb",
