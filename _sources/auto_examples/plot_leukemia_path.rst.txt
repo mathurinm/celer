@@ -52,7 +52,7 @@ Running time is compared with the scikit-learn implementation.
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011756282285238617, tolerance: 0.007200000000000001
       positive)
-    Celer time: 0.58 s
+    Celer time: 0.55 s
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 7.64228354590557e-05, tolerance: 7.2e-05
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.00028090672918557047, tolerance: 7.2e-05
@@ -97,7 +97,7 @@ Running time is compared with the scikit-learn implementation.
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 0.011950366675552604, tolerance: 7.2e-05
       positive)
-    Celer time: 0.97 s
+    Celer time: 0.93 s
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 3.6916061612046747e-06, tolerance: 7.2e-07
       positive)
     /home/mathurin/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/_coordinate_descent.py:529: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 5.579020924351141e-06, tolerance: 7.2e-07
@@ -229,7 +229,7 @@ Running time is compared with the scikit-learn implementation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  55.399 seconds)
+   **Total running time of the script:** ( 0 minutes  54.120 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:

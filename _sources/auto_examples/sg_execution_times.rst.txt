@@ -5,12 +5,12 @@
 
 Computation times
 =================
-**00:58.568** total execution time for **auto_examples** files:
+**00:57.077** total execution time for **auto_examples** files:
 
 +---------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``plot_leukemia_path.py``) | 00:55.399 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``plot_leukemia_path.py``) | 00:54.120 | 0.0 MB |
 +---------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``plot_lasso_cv.py``)           | 00:02.424 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``plot_lasso_cv.py``)           | 00:02.203 | 0.0 MB |
 +---------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_group_lasso.py` (``plot_group_lasso.py``)     | 00:00.745 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_group_lasso.py` (``plot_group_lasso.py``)     | 00:00.754 | 0.0 MB |
 +---------------------------------------------------------------------------------+-----------+--------+
