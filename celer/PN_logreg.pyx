@@ -21,14 +21,15 @@ from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
 cdef:
     int inc = 1
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
 def newton_celer(
         bint is_sparse, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] y, floating alpha,
         floating[:] w, int max_iter, floating tol=1e-4, int p0=100,
-        int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False):
+        int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False,
+        int max_pn_iter=50):
 
     if floating is double:
         dtype = np.float64
@@ -47,8 +48,8 @@ def newton_celer(
 
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
-    # cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
-    cdef int[:] all_features = np.arange(n_features)
+    cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
+    # cdef int[:] all_features = np.arange(n_features)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] WS  # hacky for now TODO fix, int causing runtime error
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
@@ -61,7 +62,6 @@ def newton_celer(
 
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
-
 
     cdef int K = 6
     cdef floating[:, :] last_K_Xw = np.zeros((K, n_samples), dtype=dtype)
@@ -217,7 +217,7 @@ def newton_celer(
             ws_size = n_features
             WS = all_features  # argpartition breaks otherwise
         else:
-            WS = np.asarray(np.argpartition(prios, ws_size)[:ws_size])
+            WS = np.asarray(np.argpartition(prios, ws_size)[:ws_size]).astype(np.int32)
             np.asarray(WS).sort()
 
         tol_inner = eps_inner * gap
@@ -226,7 +226,8 @@ def newton_celer(
 
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
-                  aux, is_positive_label, X_mean, center, blitz_sc)
+                  aux, is_positive_label, X_mean, center, blitz_sc,
+                  verbose_in, max_pn_iter)
 
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
@@ -241,7 +242,7 @@ cpdef int PN_logreg(
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
         int[:] is_positive_label, floating[:] X_mean,
-        bint center, bint blitz_sc):
+        bint center, bint blitz_sc, int verbose_in, int max_pn_iter):
 
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]
@@ -287,7 +288,9 @@ cpdef int PN_logreg(
         notin_WS[WS[ind]] = 0
 
 
-    while True:
+    cdef int pn_iter
+    # while True:
+    for pn_iter in range(max_pn_iter):
         # run prox newton iterations:
         for i in range(n_samples):
             prob = 1. / (1. + exp(y[i] * Xw[i]))
@@ -344,6 +347,9 @@ cpdef int PN_logreg(
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
 
+        Xw = np.dot(np.asarray(X), np.asarray(w))
+        aux = np.asarray(y) / (1. + np.exp(np.asarray(y) * np.asarray(Xw))) / alpha
+        print(np.max(np.abs(np.asarray(aux))) * alpha)
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
             for ind in range(ws_size):
@@ -371,16 +377,20 @@ cpdef int PN_logreg(
                 is_sparse, aux, X, X_data, X_indices, X_indptr,
                 notin_WS, X_mean, center, 0)
 
-
+        print("norm Xaux", norm_Xaux)
         for i in range(n_samples):
-            aux[i] /= - max(alpha, norm_Xaux)
+            aux[i] /= max(1, norm_Xaux)
 
         d_obj = dual(LOGREG, n_samples, alpha, 0, &aux[0], &y[0])
         p_obj = primal(LOGREG, alpha, n_samples, &Xw[0], &y[0],
                        n_features, &w[0])
 
         gap = p_obj - d_obj
+        if verbose_in:
+            print("iter %d, p_obj %.10f, d_obj % .10f" % (pn_iter, p_obj, d_obj))
         if gap < tol_inner:
+            if verbose_in:
+                print("%.2e < %.2e, exit." % (gap, tol_inner))
             break
 
 
