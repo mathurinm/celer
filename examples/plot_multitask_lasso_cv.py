@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from celer import MultiTaskLassoCV
 from numpy.linalg import norm
 from sklearn.utils import check_random_state
-from sklearn.linear_model import MultiTaskLassoCV as MultiTaskLassoCV_sklearn
+from sklearn import linear_model
 
 rng = check_random_state(0)
 
@@ -40,7 +40,7 @@ clf = MultiTaskLassoCV(**params).fit(X, Y)
 t_celer = time.perf_counter() - t0
 
 t0 = time.perf_counter()
-clf_sklearn = MultiTaskLassoCV_sklearn(**params).fit(X, Y)
+clf_sklearn = linear_model.MultiTaskLassoCV(**params).fit(X, Y)
 t_sklearn = time.perf_counter() - t0
 
 ###############################################################################
