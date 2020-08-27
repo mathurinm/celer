@@ -1,4 +1,5 @@
 numpydoc
+pandas
 pillow
 sphinx-bootstrap-theme
 sphinx-gallery
