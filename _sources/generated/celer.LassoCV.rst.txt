@@ -1,4 +1,4 @@
-celer.LassoCV
+﻿celer.LassoCV
 =============
 
 .. currentmodule:: celer

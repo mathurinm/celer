@@ -52,10 +52,11 @@ using the Celer algorithm.
  .. code-block:: none
 
 
+    usetex mode requires TeX.
     Loading data...
-    /home/mathurin/workspace/celer/celer/homotopy.py:301: ConvergenceWarning: Objective did not converge. Increasing `tol` may make the solver faster without affecting the results much. 
+    /home/circleci/project/celer/homotopy.py:297: ConvergenceWarning: Objective did not converge. Increasing `tol` may make the solver faster without affecting the results much. 
     Fitting data with very small alpha causes precision issues.
-      ConvergenceWarning)
+      warnings.warn(
     Estimated regularization parameter alpha: 81.38126193253959
 
 
@@ -94,7 +95,7 @@ Display results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.203 seconds)
+   **Total running time of the script:** ( 0 minutes  4.939 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:

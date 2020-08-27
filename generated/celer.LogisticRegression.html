@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>celer.LogisticRegression &#8212; celer 0.5dev documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,11 +16,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script src="../_static/js/jquery-fix.js"></script>
-    <script src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script src="../_static/bootstrap-sphinx.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="celer.MultiTaskLasso" href="celer.MultiTaskLasso.html" />
@@ -28,6 +25,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -159,7 +160,7 @@ Only False is supported so far.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="ra8751a6fb477-1"><span class="brackets">Ra8751a6fb477-1</span></dt>
+<dt class="label" id="ra8751a6fb477-1"><span class="brackets">1</span></dt>
 <dd><p>M. Massias, S. Vaiter, A. Gramfort, J. Salmon
 “Dual Extrapolation for Sparse Generalized Linear Models”,
 preprint, <a class="reference external" href="https://arxiv.org/abs/1907.05830">https://arxiv.org/abs/1907.05830</a></p>
@@ -194,7 +195,7 @@ preprint, <a class="reference external" href="https://arxiv.org/abs/1907.05830">
 </dl>
 <dl class="py method">
 <dt id="celer.LogisticRegression.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">C</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">penalty</span><span class="o">=</span><span class="default_value">'l1'</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">0.0001</span></em>, <em class="sig-param"><span class="n">fit_intercept</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_epochs</span><span class="o">=</span><span class="default_value">50000</span></em>, <em class="sig-param"><span class="n">p0</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">warm_start</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LogisticRegression.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">C</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">penalty</span><span class="o">=</span><span class="default_value">'l1'</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">0.0001</span></em>, <em class="sig-param"><span class="n">fit_intercept</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_epochs</span><span class="o">=</span><span class="default_value">50000</span></em>, <em class="sig-param"><span class="n">p0</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">warm_start</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#celer.LogisticRegression.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -205,40 +206,40 @@ preprint, <a class="reference external" href="https://arxiv.org/abs/1907.05830">
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#celer.LogisticRegression.__init__" title="celer.LogisticRegression.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self[, C, penalty, tol, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#celer.LogisticRegression.__init__" title="celer.LogisticRegression.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([C, penalty, tol, fit_intercept, …])</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code>(self, X)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code>(X)</p></td>
 <td><p>Predict confidence scores for samples.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">densify</span></code>(self)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">densify</span></code>()</p></td>
 <td><p>Convert coefficient matrix to dense array format.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(self, X, y)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(X, y)</p></td>
 <td><p>Fit the model according to the given training data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>([deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(self, X, y, Cs[, coef_init])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(X, y, Cs[, coef_init])</p></td>
 <td><p>Compute sparse Logistic Regression path with Celer-PN.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(self, X)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(X)</p></td>
 <td><p>Predict class labels for samples in X.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_log_proba</span></code>(self, X)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_log_proba</span></code>(X)</p></td>
 <td><p>Predict logarithm of probability estimates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_proba</span></code>(self, X)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_proba</span></code>(X)</p></td>
 <td><p>Probability estimates.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(self, X, y[, sample_weight])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(X, y[, sample_weight])</p></td>
 <td><p>Return the mean accuracy on the given test data and labels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(self, \*\*params)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparsify</span></code>(self)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparsify</span></code>()</p></td>
 <td><p>Convert coefficient matrix to sparse format.</p></td>
 </tr>
 </tbody>
@@ -263,7 +264,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
 </footer>

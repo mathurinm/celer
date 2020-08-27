@@ -1,4 +1,4 @@
-celer.MultiTaskLasso
+﻿celer.MultiTaskLasso
 ====================
 
 .. currentmodule:: celer

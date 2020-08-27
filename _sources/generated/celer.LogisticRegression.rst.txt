@@ -1,4 +1,4 @@
-celer.LogisticRegression
+﻿celer.LogisticRegression
 ========================
 
 .. currentmodule:: celer

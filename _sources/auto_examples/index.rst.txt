@@ -59,6 +59,27 @@ Examples Gallery
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the MultitaskLassoCV scikit-learn like estimator.">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_multitask_lasso_cv_thumb.png
+     :alt: Run MultitaskLassoCV and compare performance with scikit-learn
+
+     :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_multitask_lasso_cv
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The example runs the GroupLasso scikit-learn like estimators.">
 
 .. only:: html
@@ -91,13 +112,13 @@ Examples Gallery
 
   .. container:: sphx-glr-download sphx-glr-download-python
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/mathurin/workspace/celer/doc/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/circleci/project/doc/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/mathurin/workspace/celer/doc/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/circleci/project/doc/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

@@ -1,4 +1,4 @@
-celer.GroupLassoCV
+﻿celer.GroupLassoCV
 ==================
 
 .. currentmodule:: celer
