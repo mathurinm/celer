@@ -49,9 +49,8 @@ def newton_celer(
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
-    # cdef int[:] all_features = np.arange(n_features)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef int[:] WS  # hacky for now TODO fix, int causing runtime error
+    cdef int[:] WS
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
     cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
     cdef bint center = False
@@ -180,17 +179,13 @@ def newton_celer(
                 gap = p_obj - d_obj_acc
 
         if verbose:
-            print("############ Iteration %d #################" % t)
-            print("Primal {:.10f}".format(p_obj))
-            print("Dual {:.10f}, (gap: {:.2e})".format(d_obj, p_obj - d_obj))
-            if use_accel:
-                print("Acce {:.10f}, (gap: {:.2e})".format(
-                    d_obj_acc, p_obj - d_obj_acc))
+            print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap))
 
         if gap < tol:
             if verbose:
                 print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
+
 
         set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
                   norms_X_col, prios, screened, radius, &n_screened, 0)
@@ -205,12 +200,10 @@ def newton_celer(
                         prios[j] = -1
                         ws_size += 1
                 ws_size = 2 * ws_size
-                # ws_size += 1
         else:
             if t == 0:
                 ws_size = p0
             else:
-                #  ws_size = int(growth * ws_size)
                  ws_size *= 2
 
         if ws_size >= n_features:
@@ -219,7 +212,6 @@ def newton_celer(
         else:
             WS = np.asarray(np.argpartition(prios, ws_size)[:ws_size]).astype(np.int32)
             np.asarray(WS).sort()
-
         tol_inner = eps_inner * gap
         if verbose:
             print("Solving subproblem with %d constraints" % len(WS))
@@ -301,7 +293,7 @@ cpdef int PN_logreg(
             lc[ind] = wdot(Xw, weights, WS[ind], is_sparse, X, X_data,
                          X_indices, X_indptr, 1)
             bias[ind] = xj_dot(grad, WS[ind], is_sparse, X,
-                             X_data, X_indices, X_indptr, n_features)
+                             X_data, X_indices, X_indptr, n_samples)
 
         if first_pn_iteration:
             # very weird: first cd iter, do only
@@ -346,10 +338,10 @@ cpdef int PN_logreg(
                        X_indices, X_indptr, MAX_BACKTRACK_ITR, y,
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
-
-        Xw = np.dot(np.asarray(X), np.asarray(w))
-        aux = np.asarray(y) / (1. + np.exp(np.asarray(y) * np.asarray(Xw))) / alpha
-        print(np.max(np.abs(np.asarray(aux))) * alpha)
+        create_dual_pt(LOGREG, n_samples, alpha, &aux[0], &Xw[0], &y[0])
+        # Xw = np.dot(np.asarray(X), np.asarray(w))
+        # aux = np.asarray(y) / (1. + np.exp(np.asarray(y) * np.asarray(Xw))) / alpha
+        # print(np.max(np.abs(np.asarray(aux))) * alpha)
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
             for ind in range(ws_size):
@@ -377,7 +369,6 @@ cpdef int PN_logreg(
                 is_sparse, aux, X, X_data, X_indices, X_indptr,
                 notin_WS, X_mean, center, 0)
 
-        print("norm Xaux", norm_Xaux)
         for i in range(n_samples):
             aux[i] /= max(1, norm_Xaux)
 
@@ -411,7 +402,6 @@ cpdef void do_line_search(
 
     cdef int n_samples = y.shape[0]
     fcopy(&n_samples, &exp_Xw[0], &inc, &low_exp_Xw[0], &inc)
-
     for i in range(n_samples):
         exp_Xw[i] = exp(Xw[i] + X_delta_w[i])
 
@@ -519,7 +509,7 @@ cpdef floating wdot(floating[:] v, floating[:] weights, int j,
 @cython.cdivision(True)
 cpdef double xj_dot(floating[:] v, int j,  bint is_sparse,
        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-       int[:] X_indptr, int n_features) nogil:
+       int[:] X_indptr, int n_samples) nogil:
     """Dot product between j-th column of X and v."""
     cdef floating tmp = 0
     cdef int start, end
@@ -531,7 +521,7 @@ cpdef double xj_dot(floating[:] v, int j,  bint is_sparse,
         for i in range(start, end):
             tmp += X_data[i] * v[X_indices[i]]
     else:
-        for i in range(n_features):
+        for i in range(n_samples):
             tmp += X[i, j] * v[i]
     return tmp
 
