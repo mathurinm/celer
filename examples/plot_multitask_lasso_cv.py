@@ -29,7 +29,7 @@ for k in support:
 
 X = rng.randn(n_samples, n_features)
 Y = np.dot(X, coef.T) + rng.randn(n_samples, n_tasks)
-Y /= norm(Y)
+Y /= norm(Y, ord='fro')
 
 
 ###############################################################################
