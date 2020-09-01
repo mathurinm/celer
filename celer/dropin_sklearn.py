@@ -557,6 +557,12 @@ class LogisticRegression(LogReg_sklearn):
     penalty : 'l1'.
         Other penalties are not supported.
 
+    solver : "celer" | "celer-pn", default="celer-pn"
+        Algorithm to use in the optimization problem.
+
+        - celer-pn uses working sets and prox-Newton solver on the working set.
+        - celer uses working sets and coordinate descent
+
     tol : float, optional
         The tolerance for the optimization: the solver runs until the duality
         gap is smaller than ``tol`` or the maximum number of iteration is
@@ -622,9 +628,9 @@ class LogisticRegression(LogReg_sklearn):
        preprint, https://arxiv.org/abs/1907.05830
     """
 
-    def __init__(self, C=1., penalty='l1', tol=1e-4, fit_intercept=False,
-                 max_iter=50, verbose=False, max_epochs=50000,
-                 p0=10, warm_start=False):
+    def __init__(self, C=1., penalty='l1', solver="celer-pn", tol=1e-4,
+                 fit_intercept=False, max_iter=50, verbose=False,
+                 max_epochs=50000, p0=10, warm_start=False):
         super(LogisticRegression, self).__init__(
             tol=tol, C=C)
 
@@ -634,6 +640,7 @@ class LogisticRegression(LogReg_sklearn):
         self.max_iter = max_iter
         self.penalty = penalty
         self.fit_intercept = fit_intercept
+        self.solver = solver
 
     def fit(self, X, y):
         """
@@ -676,7 +683,7 @@ class LogisticRegression(LogReg_sklearn):
 
         if n_classes <= 2:
             coefs = self.path(
-                X, 2 * y_ind - 1, np.array([self.C]))[0]
+                X, 2 * y_ind - 1, np.array([self.C]), solver=self.solver)[0]
             self.coef_ = coefs.T  # must be [1, n_features]
             self.intercept_ = 0
         else:
@@ -687,7 +694,7 @@ class LogisticRegression(LogReg_sklearn):
 
         return self
 
-    def path(self, X, y, Cs, coef_init=None, **kwargs):
+    def path(self, X, y, Cs, solver, coef_init=None, **kwargs):
         """
         Compute sparse Logistic Regression path with Celer-PN.
 
@@ -704,6 +711,9 @@ class LogisticRegression(LogReg_sklearn):
             Values of regularization strenghts for which solutions are
             computed
 
+        solver : "celer-pn" | "celer"
+            Algorithm used to solve the optimization problem.
+
         coef_init : array, shape (n_features,), optional
             Initial value of the coefficients.
 
@@ -719,7 +729,7 @@ class LogisticRegression(LogReg_sklearn):
             X, y, "logreg", alphas=1. / Cs, coef_init=coef_init,
             max_iter=self.max_iter, max_epochs=self.max_epochs,
             p0=self.p0, verbose=self.verbose, tol=self.tol,
-            X_scale=kwargs.get('X_scale', None),
+            use_PN=(solver == "celer-pn"), X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return coefs, dual_gaps
 

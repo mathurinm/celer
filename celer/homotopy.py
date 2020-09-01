@@ -360,19 +360,6 @@ def _grp_converter(groups, n_features):
     return grp_ptr.astype(np.int32), grp_indices.astype(np.int32)
 
 
-def PN_solver(X, y, alpha, w_init, max_iter, verbose=0,
-              tol=1e-4, prune=True, p0=10, use_accel=True, K=6, growth=2,
-              blitz_sc=False):
-    is_sparse = sparse.issparse(X)
-    w = w_init.copy()
-    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
-
-    return newton_celer(
-        is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-        max_iter, verbose, tol, prune, p0, use_accel, K,
-        growth=growth, blitz_sc=blitz_sc)
-
-
 def mtl_path(
         X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
         max_epochs=50000, p0=10, verbose=0, tol=1e-6,

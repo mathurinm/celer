@@ -3,16 +3,14 @@
 # BSD License
 
 import os
-from pathlib import Path
 from os.path import join as pjoin
 
 import numpy as np
 import xarray
 import download
-
 from scipy.signal import detrend
 
-CELER_PATH = str(Path.home()) + '/celer_data/'
+from celer.datasets import CELER_PATH
 
 FILES = ["air.mon.mean.nc", 'pres.mon.mean.nc', 'pr_wtr.mon.mean.nc',
          "rhum.mon.mean.nc", 'slp.mon.mean.nc', "uwnd.mon.mean.nc",

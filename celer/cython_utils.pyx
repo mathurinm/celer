@@ -105,7 +105,6 @@ cdef inline floating Nh(floating x) nogil:
     if 0. <= x <= 1.:
         return xlogx(x) + xlogx(1. - x)
     else:
-        # print(x)
         return INFINITY  # not - INFINITY
 
 

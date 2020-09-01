@@ -28,7 +28,8 @@ def newton_celer(
         bint is_sparse, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] y, floating alpha,
         floating[:] w, int max_iter, floating tol=1e-4, int p0=100,
-        int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False):
+        int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False,
+        int max_pn_iter=50):
 
     if floating is double:
         dtype = np.float64
@@ -47,10 +48,9 @@ def newton_celer(
 
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
-    # cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
-    cdef int[:] all_features = np.arange(n_features)
+    cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
-    cdef int[:] WS  # hacky for now TODO fix, int causing runtime error
+    cdef int[:] WS
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
     cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
     cdef bint center = False
@@ -61,7 +61,6 @@ def newton_celer(
 
     cdef floating d_obj_acc = 0.
     cdef floating tol_inner
-
 
     cdef int K = 6
     cdef floating[:, :] last_K_Xw = np.zeros((K, n_samples), dtype=dtype)
@@ -113,7 +112,6 @@ def newton_celer(
 
         d_obj = dual(LOGREG, n_samples, alpha, 0., &theta[0], &y[0])
         gap = p_obj - d_obj
-        gaps[t] = gap
 
         if t != 0 and use_accel:
             # do some epochs of CD to create an extrapolated dual point
@@ -179,18 +177,15 @@ def newton_celer(
                 fcopy(&n_samples, &theta_acc[0], &inc, &theta[0], &inc)
                 gap = p_obj - d_obj_acc
 
+        gaps[t] = gap
         if verbose:
-            print("############ Iteration %d #################" % t)
-            print("Primal {:.10f}".format(p_obj))
-            print("Dual {:.10f}, (gap: {:.2e})".format(d_obj, p_obj - d_obj))
-            if use_accel:
-                print("Acce {:.10f}, (gap: {:.2e})".format(
-                    d_obj_acc, p_obj - d_obj_acc))
+            print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap))
 
         if gap < tol:
             if verbose:
                 print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
+
 
         set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
                   norms_X_col, prios, screened, radius, &n_screened, 0)
@@ -205,28 +200,26 @@ def newton_celer(
                         prios[j] = -1
                         ws_size += 1
                 ws_size = 2 * ws_size
-                # ws_size += 1
         else:
             if t == 0:
                 ws_size = p0
             else:
-                #  ws_size = int(growth * ws_size)
                  ws_size *= 2
 
         if ws_size >= n_features:
             ws_size = n_features
             WS = all_features  # argpartition breaks otherwise
         else:
-            WS = np.asarray(np.argpartition(prios, ws_size)[:ws_size])
+            WS = np.asarray(np.argpartition(prios, ws_size)[:ws_size]).astype(np.int32)
             np.asarray(WS).sort()
-
         tol_inner = eps_inner * gap
         if verbose:
             print("Solving subproblem with %d constraints" % len(WS))
 
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
-                  aux, is_positive_label, X_mean, center, blitz_sc)
+                  aux, is_positive_label, X_mean, center, blitz_sc,
+                  verbose_in, max_pn_iter)
 
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
@@ -241,7 +234,7 @@ cpdef int PN_logreg(
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
         int[:] is_positive_label, floating[:] X_mean,
-        bint center, bint blitz_sc):
+        bint center, bint blitz_sc, int verbose_in, int max_pn_iter):
 
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]
@@ -275,7 +268,7 @@ cpdef int PN_logreg(
     cdef floating approx_grad, actual_grad, sum_sq_hess_diff, pn_epsilon
     cdef floating[:] pn_grad_cache = np.zeros(ws_size, dtype=dtype)
 
-    cdef int i, j, ind, max_cd_itr, cd_itr
+    cdef int i, j, ind, max_cd_itr, cd_itr, pn_iter
     cdef floating prob
 
     cdef int start_ptr, end_ptr
@@ -286,8 +279,7 @@ cpdef int PN_logreg(
     for ind in range(ws_size):
         notin_WS[WS[ind]] = 0
 
-
-    while True:
+    for pn_iter in range(max_pn_iter):
         # run prox newton iterations:
         for i in range(n_samples):
             prob = 1. / (1. + exp(y[i] * Xw[i]))
@@ -298,7 +290,7 @@ cpdef int PN_logreg(
             lc[ind] = wdot(Xw, weights, WS[ind], is_sparse, X, X_data,
                          X_indices, X_indptr, 1)
             bias[ind] = xj_dot(grad, WS[ind], is_sparse, X,
-                             X_data, X_indices, X_indptr, n_features)
+                             X_data, X_indices, X_indptr, n_samples)
 
         if first_pn_iteration:
             # very weird: first cd iter, do only
@@ -343,6 +335,7 @@ cpdef int PN_logreg(
                        X_indices, X_indptr, MAX_BACKTRACK_ITR, y,
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
+        create_dual_pt(LOGREG, n_samples, alpha, &aux[0], &Xw[0], &y[0])
 
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
@@ -371,16 +364,19 @@ cpdef int PN_logreg(
                 is_sparse, aux, X, X_data, X_indices, X_indptr,
                 notin_WS, X_mean, center, 0)
 
-
         for i in range(n_samples):
-            aux[i] /= - max(alpha, norm_Xaux)
+            aux[i] /= max(1, norm_Xaux)
 
         d_obj = dual(LOGREG, n_samples, alpha, 0, &aux[0], &y[0])
         p_obj = primal(LOGREG, alpha, n_samples, &Xw[0], &y[0],
                        n_features, &w[0])
 
         gap = p_obj - d_obj
+        if verbose_in:
+            print("iter %d, p_obj %.10f, d_obj % .10f" % (pn_iter, p_obj, d_obj))
         if gap < tol_inner:
+            if verbose_in:
+                print("%.2e < %.2e, exit." % (gap, tol_inner))
             break
 
 
@@ -401,7 +397,6 @@ cpdef void do_line_search(
 
     cdef int n_samples = y.shape[0]
     fcopy(&n_samples, &exp_Xw[0], &inc, &low_exp_Xw[0], &inc)
-
     for i in range(n_samples):
         exp_Xw[i] = exp(Xw[i] + X_delta_w[i])
 
@@ -509,7 +504,7 @@ cpdef floating wdot(floating[:] v, floating[:] weights, int j,
 @cython.cdivision(True)
 cpdef double xj_dot(floating[:] v, int j,  bint is_sparse,
        floating[::1, :] X, floating[:] X_data, int[:] X_indices,
-       int[:] X_indptr, int n_features) nogil:
+       int[:] X_indptr, int n_samples) nogil:
     """Dot product between j-th column of X and v."""
     cdef floating tmp = 0
     cdef int start, end
@@ -521,7 +516,7 @@ cpdef double xj_dot(floating[:] v, int j,  bint is_sparse,
         for i in range(start, end):
             tmp += X_data[i] * v[X_indices[i]]
     else:
-        for i in range(n_features):
+        for i in range(n_samples):
             tmp += X[i, j] * v[i]
     return tmp
 

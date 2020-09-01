@@ -3,7 +3,6 @@
 
 import os
 from os.path import join as pjoin
-from pathlib import Path
 from bz2 import BZ2Decompressor
 
 import numpy as np
@@ -12,7 +11,7 @@ from download import download
 from sklearn import preprocessing
 from sklearn.datasets import load_svmlight_file
 
-CELER_PATH = pjoin(str(Path.home()), 'celer_data')
+from celer.datasets import CELER_PATH
 
 
 NAMES = {'rcv1_train': 'binary/rcv1_train.binary',
@@ -20,6 +19,8 @@ NAMES = {'rcv1_train': 'binary/rcv1_train.binary',
          'finance': 'regression/log1p.E2006.train',
          'kdda_train': 'binary/kdda',
          'rcv1_topics_test': 'multilabel/rcv1_topics_test_2.svm',
+         'sector_train': 'multiclass/sector/sector',
+         'sector_test': 'multiclass/sector/sector.t',
          'url': 'binary/url_combined',
          'webspam': 'binary/webspam_wc_normalized_trigram.svm'}
 
@@ -28,6 +29,8 @@ N_FEATURES = {'finance': 4272227,
               'rcv1_train': 47236,
               'kdda_train': 20216830,
               'rcv1_topics_test': 47236,
+              'sector_train': 55197,
+              'sector_test': 55197,
               'url': 3231961,
               'webspam': 16609143}
 
@@ -123,7 +126,8 @@ def load_libsvm(dataset, replace=False, normalize=True, min_nnz=3):
     """
     paths = [CELER_PATH, pjoin(CELER_PATH, 'regression'),
              pjoin(CELER_PATH, 'binary'),
-             pjoin(CELER_PATH, 'multilabel')]
+             pjoin(CELER_PATH, 'multilabel'),
+             pjoin(CELER_PATH, 'multiclass')]
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
