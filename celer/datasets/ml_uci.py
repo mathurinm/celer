@@ -1,6 +1,11 @@
+import os
 import numpy as np
 import pandas as pd
 from scipy import sparse
+
+from os.path import join as pjoin
+
+from celer.datasets import CELER_PATH
 
 BASE = 'https://archive.ics.uci.edu/ml/machine-learning-databases/'
 
@@ -8,12 +13,24 @@ NAMES = {'gisette_train': 'gisette/GISETTE/gisette_train'}
 
 
 def load_ml_uci(dataset):
+    if not os.path.exists(pjoin(CELER_PATH, "ml_uci")):
+        os.mkdir(pjoin(CELER_PATH, "ml_uci"))
+
     if dataset not in NAMES:
         raise ValueError("Unsupported dataset %s" % dataset)
 
-    df = pd.read_csv(BASE + NAMES[dataset] + '.data', sep=' ', header=None)
-    X = sparse.csc_matrix(df.values[:, :-1])  # trailing wspace > extra column
-    y = np.array(pd.read_csv(BASE + NAMES[dataset] + '.labels',
-                             header=None)).ravel()
+    X_path = pjoin(CELER_PATH, "ml_uci", dataset + '_data.npz')
+    y_path = pjoin(CELER_PATH, "ml_uci", dataset + '_target.npy')
+    try:
+        X = sparse.load_npz(X_path)
+        y = np.load(y_path)
+    except FileNotFoundError:
+        df = pd.read_csv(BASE + NAMES[dataset] + '.data', sep=' ', header=None)
+        # trailing wspace > extra column
+        X = sparse.csc_matrix(df.values[:, :-1])
+        y = np.array(pd.read_csv(BASE + NAMES[dataset] + '.labels',
+                                 header=None)).ravel()
+        sparse.save_npz(X_path, X)
+        np.save(y_path, y)
 
     return X, y
