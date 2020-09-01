@@ -17,6 +17,27 @@ Examples Gallery
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Use LogisticRegression class with Celer and Prox-Newton solvers">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_logreg_timings_thumb.png
+     :alt: Use LogisticRegression class with Celer and Prox-Newton solvers
+
+     :ref:`sphx_glr_auto_examples_plot_logreg_timings.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_logreg_timings
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The example runs the LassoCV scikit-learn like estimator using the Celer algorithm.">
 
 .. only:: html
