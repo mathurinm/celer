@@ -21,9 +21,9 @@ from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
 cdef:
     int inc = 1
 
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-# @cython.cdivision(True)
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
 def newton_celer(
         bint is_sparse, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] y, floating alpha,
@@ -268,7 +268,7 @@ cpdef int PN_logreg(
     cdef floating approx_grad, actual_grad, sum_sq_hess_diff, pn_epsilon
     cdef floating[:] pn_grad_cache = np.zeros(ws_size, dtype=dtype)
 
-    cdef int i, j, ind, max_cd_itr, cd_itr
+    cdef int i, j, ind, max_cd_itr, cd_itr, pn_iter
     cdef floating prob
 
     cdef int start_ptr, end_ptr
@@ -279,9 +279,6 @@ cpdef int PN_logreg(
     for ind in range(ws_size):
         notin_WS[WS[ind]] = 0
 
-
-    cdef int pn_iter
-    # while True:
     for pn_iter in range(max_pn_iter):
         # run prox newton iterations:
         for i in range(n_samples):
@@ -339,9 +336,7 @@ cpdef int PN_logreg(
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
         create_dual_pt(LOGREG, n_samples, alpha, &aux[0], &Xw[0], &y[0])
-        # Xw = np.dot(np.asarray(X), np.asarray(w))
-        # aux = np.asarray(y) / (1. + np.exp(np.asarray(y) * np.asarray(Xw))) / alpha
-        # print(np.max(np.abs(np.asarray(aux))) * alpha)
+
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
             for ind in range(ws_size):

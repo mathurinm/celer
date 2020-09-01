@@ -11,6 +11,8 @@ from download import download
 from sklearn import preprocessing
 from sklearn.datasets import load_svmlight_file
 
+from celer.datasets import CELER_PATH
+
 
 NAMES = {'rcv1_train': 'binary/rcv1_train.binary',
          'news20': 'binary/news20.binary',
