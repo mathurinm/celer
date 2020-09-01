@@ -112,7 +112,6 @@ def newton_celer(
 
         d_obj = dual(LOGREG, n_samples, alpha, 0., &theta[0], &y[0])
         gap = p_obj - d_obj
-        gaps[t] = gap
 
         if t != 0 and use_accel:
             # do some epochs of CD to create an extrapolated dual point
@@ -178,6 +177,7 @@ def newton_celer(
                 fcopy(&n_samples, &theta_acc[0], &inc, &theta[0], &inc)
                 gap = p_obj - d_obj_acc
 
+        gaps[t] = gap
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap))
 
