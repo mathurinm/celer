@@ -235,7 +235,7 @@ cpdef int PN_logreg(
         floating tol_inner, floating[:] Xw,
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
         int[:] is_positive_label, floating[:] X_mean,
-        bint center, floating[:] weights_pen, bint blitz_sc, int verbose_in,
+        floating[:] weights_pen, bint center, bint blitz_sc, int verbose_in,
         int max_pn_iter):
 
     cdef int n_samples = Xw.shape[0]
