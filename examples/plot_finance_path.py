@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 
 from celer import celer_path
 from celer.datasets import load_libsvm
-from celer.plot_utils import plot_path_hist
 
 print(__doc__)
 
@@ -49,7 +48,13 @@ for tol_ix, tol in enumerate(tols):
 
 labels = [r"\sc{Celer}"]
 figsize = (7, 4)
-fig = plot_path_hist(results, labels, tols, figsize, ylim=None)
+
+df = pd.DataFrame(results.T, columns=["Celer"])
+df.index = tols
+df.plot.bar(rot=0)
+plt.xlabel("stopping tolerance")
+plt.ylabel("path computation time (s)")
+plt.tight_layout()
 plt.show(block=False)
 
 ###############################################################################
