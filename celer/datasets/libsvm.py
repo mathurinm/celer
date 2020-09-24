@@ -89,7 +89,7 @@ def get_X_y(dataset, compressed_path, multilabel, replace=False):
     return X, y
 
 
-def load_libsvm(dataset, replace=False, normalize=True, min_nnz=3):
+def fetch_libsvm(dataset, replace=False, normalize=True, min_nnz=3):
     """
     Download a dataset from LIBSVM website.
 
@@ -158,4 +158,4 @@ def load_libsvm(dataset, replace=False, normalize=True, min_nnz=3):
 
 if __name__ == "__main__":
     for dataset in NAMES:
-        load_libsvm(dataset, replace=False)
+        fetch_libsvm(dataset, replace=False)

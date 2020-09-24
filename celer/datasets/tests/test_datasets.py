@@ -1,6 +1,6 @@
 # import numpy as np
 
-# from celer.datasets import load_libsvm
+# from celer.datasets import fetch_libsvm
 
 
 # def test_news20():
@@ -8,10 +8,10 @@
 #     # dataset = np.random.choice(list(NAMES.keys()))
 #     # print(dataset)
 #     dataset = 'news20'
-#     X, y = load_libsvm(dataset)
+#     X, y = fetch_libsvm(dataset)
 #     np.testing.assert_equal(X.shape[0], y.shape[0])
 
 
 # # def test_climate():
-#     # X, y = load_climate()
+#     # X, y = fetch_climate()
 #     # np.testing.assert_equal(X.shape[0], y.shape[0])
