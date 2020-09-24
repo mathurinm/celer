@@ -55,10 +55,10 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
     from sklearn import linear_model
 
     from celer import LogisticRegression
-    from celer.datasets import load_ml_uci
+    from celer.datasets import fetch_ml_uci
 
     dataset = "gisette_train"
-    X, y = load_ml_uci(dataset)
+    X, y = fetch_ml_uci(dataset)
 
     C_min = 2 / norm(X.T @ y, ord=np.inf)
     C = 5 * C_min
@@ -72,7 +72,7 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  15.192 seconds)
+   **Total running time of the script:** ( 0 minutes  15.714 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_logreg_timings.py:

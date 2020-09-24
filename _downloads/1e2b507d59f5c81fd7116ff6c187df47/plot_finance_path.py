@@ -17,12 +17,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from celer import celer_path
-from celer.datasets import load_libsvm
+from celer.datasets import fetch_libsvm
 
 print(__doc__)
 
 print("*** Warning: this example may take more than 5 minutes to run ***")
-X, y = load_libsvm('finance')
+X, y = fetch_libsvm('finance')
 n_samples, n_features = X.shape
 alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 print("Dataset size: %d samples, %d features" % X.shape)
