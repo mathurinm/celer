@@ -185,15 +185,3 @@ def test_GroupLasso(sparse_X):
 
 if __name__ == "__main__":
     pass
-    # from celer.datasets import load_climate
-    # X, y = load_climate()
-
-    # center, normalize = True, True
-
-    # from celer.homotopy import _alpha_max_grp
-    # alpha_max = _alpha_max_grp(X, y, 7, center, normalize)
-
-    # clf = GroupLasso(alpha=alpha_max / 100, groups=7,
-    #                  verbose=2, fit_intercept=center, normalize=normalize)
-    # clf.alpha = alpha_max / 100
-    # clf.fit(X, y)
