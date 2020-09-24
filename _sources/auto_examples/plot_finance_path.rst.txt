@@ -1,0 +1,511 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_finance_path.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_finance_path.py:
+
+
+=======================================================
+Lasso path computation on Finance/log1p dataset
+=======================================================
+
+The example runs the Celer algorithm on the Finance dataset
+which is a large sparse dataset.
+
+Running time is not compared with the scikit-learn
+implementation as it makes the example too long to run.
+
+
+.. code-block:: default
+
+
+    import time
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    from celer import celer_path
+    from celer.datasets import load_libsvm
+
+    print(__doc__)
+
+    print("*** Warning: this example may take more than 5 minutes to run ***")
+    X, y = load_libsvm('finance')
+    n_samples, n_features = X.shape
+    alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
+    print("Dataset size: %d samples, %d features" % X.shape)
+
+    # construct grid of regularization parameters alpha
+    n_alphas = 11
+    alphas = alpha_max * np.geomspace(1, 0.05, n_alphas)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    *** Warning: this example may take more than 5 minutes to run ***
+    Dataset: finance
+    Downloading data from https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/log1p.E2006.train.bz2 (234.3 MB)
+
+    file_sizes:   0%|                                    | 0.00/246M [00:00<?, ?B/s]    file_sizes:   0%|                            | 24.6k/246M [00:00<36:40, 112kB/s]    file_sizes:   0%|                            | 49.2k/246M [00:00<37:35, 109kB/s]    file_sizes:   0%|                             | 106k/246M [00:00<31:01, 132kB/s]    file_sizes:   0%|                             | 221k/246M [00:00<24:04, 170kB/s]    file_sizes:   0%|                             | 451k/246M [00:01<18:04, 226kB/s]    file_sizes:   0%|1                            | 909k/246M [00:01<13:13, 308kB/s]    file_sizes:   1%|2                           | 1.83M/246M [00:01<09:32, 426kB/s]    file_sizes:   1%|4                           | 3.66M/246M [00:01<06:46, 595kB/s]    file_sizes:   2%|5                           | 5.23M/246M [00:02<04:53, 820kB/s]    file_sizes:   3%|7                          | 6.81M/246M [00:02<03:33, 1.12MB/s]    file_sizes:   3%|8                          | 7.59M/246M [00:02<02:49, 1.40MB/s]    file_sizes:   4%|#                          | 9.17M/246M [00:02<02:08, 1.85MB/s]    file_sizes:   4%|#                          | 9.95M/246M [00:02<01:49, 2.16MB/s]    file_sizes:   5%|#2                         | 11.5M/246M [00:03<01:26, 2.72MB/s]    file_sizes:   5%|#4                         | 13.1M/246M [00:03<01:09, 3.33MB/s]    file_sizes:   6%|#6                         | 14.7M/246M [00:03<00:58, 3.96MB/s]    file_sizes:   7%|#7                         | 16.2M/246M [00:03<00:50, 4.55MB/s]    file_sizes:   7%|#9                         | 17.8M/246M [00:04<00:44, 5.08MB/s]    file_sizes:   8%|##1                        | 19.4M/246M [00:04<00:41, 5.51MB/s]    file_sizes:   9%|##3                        | 21.0M/246M [00:04<00:38, 5.87MB/s]    file_sizes:   9%|##4                        | 22.5M/246M [00:04<00:46, 4.83MB/s]    file_sizes:  10%|##6                        | 24.1M/246M [00:05<00:41, 5.31MB/s]    file_sizes:  10%|##8                        | 25.7M/246M [00:05<00:38, 5.69MB/s]    file_sizes:  11%|##9                        | 27.3M/246M [00:05<00:36, 5.99MB/s]    file_sizes:  12%|###1                       | 28.8M/246M [00:05<00:34, 6.29MB/s]    file_sizes:  12%|###3                       | 30.4M/246M [00:06<00:33, 6.43MB/s]    file_sizes:  13%|###5                       | 32.0M/246M [00:06<00:32, 6.50MB/s]    file_sizes:  14%|###6                       | 33.5M/246M [00:06<00:32, 6.47MB/s]    file_sizes:  14%|###8                       | 35.1M/246M [00:06<00:31, 6.61MB/s]    file_sizes:  15%|###9                       | 36.2M/246M [00:07<00:35, 5.94MB/s]    file_sizes:  15%|####1                      | 37.5M/246M [00:07<00:34, 5.97MB/s]    file_sizes:  16%|####3                      | 39.3M/246M [00:07<00:31, 6.49MB/s]    file_sizes:  17%|####5                      | 41.1M/246M [00:07<00:29, 6.85MB/s]    file_sizes:  17%|####6                      | 42.7M/246M [00:07<00:29, 6.89MB/s]    file_sizes:  18%|####8                      | 43.8M/246M [00:08<00:32, 6.18MB/s]    file_sizes:  19%|#####                      | 45.6M/246M [00:08<00:30, 6.62MB/s]    file_sizes:  19%|#####1                     | 47.2M/246M [00:08<00:29, 6.76MB/s]    file_sizes:  20%|#####3                     | 48.8M/246M [00:08<00:28, 6.82MB/s]    file_sizes:  20%|#####5                     | 50.3M/246M [00:09<00:28, 6.86MB/s]    file_sizes:  21%|#####7                     | 51.9M/246M [00:09<00:28, 6.79MB/s]    file_sizes:  22%|#####9                     | 53.7M/246M [00:09<00:26, 7.13MB/s]    file_sizes:  23%|######                     | 55.3M/246M [00:09<00:26, 7.06MB/s]    file_sizes:  23%|######2                    | 56.9M/246M [00:09<00:26, 7.01MB/s]    file_sizes:  24%|######4                    | 58.4M/246M [00:10<00:26, 7.02MB/s]    file_sizes:  25%|######6                    | 60.5M/246M [00:10<00:24, 7.55MB/s]    file_sizes:  25%|######8                    | 62.1M/246M [00:10<00:24, 7.38MB/s]    file_sizes:  26%|######9                    | 63.7M/246M [00:10<00:24, 7.30MB/s]    file_sizes:  27%|#######1                   | 65.3M/246M [00:11<00:25, 7.21MB/s]    file_sizes:  27%|#######3                   | 66.8M/246M [00:11<00:25, 7.09MB/s]    file_sizes:  28%|#######5                   | 68.4M/246M [00:11<00:25, 7.09MB/s]    file_sizes:  28%|#######6                   | 69.5M/246M [00:11<00:27, 6.31MB/s]    file_sizes:  29%|#######7                   | 70.8M/246M [00:11<00:27, 6.30MB/s]    file_sizes:  30%|#######9                   | 72.6M/246M [00:12<00:25, 6.69MB/s]    file_sizes:  30%|########1                  | 74.2M/246M [00:12<00:25, 6.80MB/s]    file_sizes:  31%|########2                  | 75.5M/246M [00:12<00:25, 6.64MB/s]    file_sizes:  31%|########4                  | 77.1M/246M [00:12<00:24, 6.77MB/s]    file_sizes:  32%|########6                  | 78.6M/246M [00:13<00:24, 6.87MB/s]    file_sizes:  33%|########8                  | 80.2M/246M [00:13<00:23, 6.93MB/s]    file_sizes:  33%|########9                  | 81.8M/246M [00:13<00:24, 6.77MB/s]    file_sizes:  34%|#########1                 | 83.6M/246M [00:13<00:22, 7.08MB/s]    file_sizes:  35%|#########3                 | 85.2M/246M [00:14<00:23, 6.93MB/s]    file_sizes:  35%|#########5                 | 86.5M/246M [00:14<00:23, 6.73MB/s]    file_sizes:  36%|#########6                 | 88.1M/246M [00:14<00:24, 6.54MB/s]    file_sizes:  36%|#########8                 | 89.6M/246M [00:14<00:30, 5.11MB/s]    file_sizes:  37%|##########                 | 91.5M/246M [00:15<00:27, 5.68MB/s]    file_sizes:  38%|##########2                | 93.1M/246M [00:15<00:26, 5.81MB/s]    file_sizes:  38%|##########3                | 93.8M/246M [00:15<00:33, 4.55MB/s]    file_sizes:  39%|##########4                | 95.4M/246M [00:15<00:31, 4.78MB/s]    file_sizes:  39%|##########5                | 96.2M/246M [00:16<00:36, 4.13MB/s]    file_sizes:  40%|##########7                | 97.8M/246M [00:16<00:32, 4.61MB/s]    file_sizes:  40%|##########8                | 98.3M/246M [00:16<00:42, 3.45MB/s]    file_sizes:  41%|###########4                | 100M/246M [00:16<00:34, 4.16MB/s]    file_sizes:  41%|###########5                | 102M/246M [00:17<00:30, 4.71MB/s]    file_sizes:  42%|###########6                | 102M/246M [00:17<00:33, 4.34MB/s]    file_sizes:  42%|###########8                | 104M/246M [00:17<00:29, 4.88MB/s]    file_sizes:  43%|############                | 106M/246M [00:17<00:26, 5.35MB/s]    file_sizes:  43%|############1               | 106M/246M [00:18<00:30, 4.56MB/s]    file_sizes:  44%|############3               | 108M/246M [00:18<00:27, 4.96MB/s]    file_sizes:  45%|############4               | 110M/246M [00:18<00:25, 5.29MB/s]    file_sizes:  45%|############6               | 111M/246M [00:18<00:23, 5.61MB/s]    file_sizes:  46%|############7               | 112M/246M [00:19<00:28, 4.63MB/s]    file_sizes:  46%|############9               | 114M/246M [00:19<00:26, 5.07MB/s]    file_sizes:  47%|#############1              | 115M/246M [00:19<00:23, 5.51MB/s]    file_sizes:  47%|#############2              | 117M/246M [00:19<00:22, 5.77MB/s]    file_sizes:  48%|#############3              | 117M/246M [00:20<00:26, 4.90MB/s]    file_sizes:  49%|#############5              | 119M/246M [00:20<00:22, 5.55MB/s]    file_sizes:  49%|#############7              | 121M/246M [00:20<00:21, 5.88MB/s]    file_sizes:  50%|#############8              | 122M/246M [00:20<00:24, 4.98MB/s]    file_sizes:  50%|##############              | 123M/246M [00:20<00:22, 5.45MB/s]    file_sizes:  51%|##############2             | 125M/246M [00:21<00:20, 5.86MB/s]    file_sizes:  51%|##############3             | 126M/246M [00:21<00:19, 6.17MB/s]    file_sizes:  52%|##############4             | 127M/246M [00:21<00:23, 5.15MB/s]    file_sizes:  52%|##############6             | 128M/246M [00:21<00:21, 5.37MB/s]    file_sizes:  53%|##############7             | 130M/246M [00:22<00:21, 5.51MB/s]    file_sizes:  54%|##############9             | 132M/246M [00:22<00:18, 6.09MB/s]    file_sizes:  54%|###############1            | 133M/246M [00:22<00:17, 6.35MB/s]    file_sizes:  55%|###############3            | 135M/246M [00:22<00:16, 6.55MB/s]    file_sizes:  55%|###############4            | 136M/246M [00:22<00:20, 5.32MB/s]    file_sizes:  56%|###############6            | 138M/246M [00:23<00:21, 5.11MB/s]    file_sizes:  57%|###############8            | 139M/246M [00:23<00:19, 5.51MB/s]    file_sizes:  57%|################            | 141M/246M [00:23<00:17, 5.88MB/s]    file_sizes:  58%|################1           | 142M/246M [00:24<00:21, 4.95MB/s]    file_sizes:  58%|################2           | 142M/246M [00:24<00:23, 4.45MB/s]    file_sizes:  59%|################3           | 144M/246M [00:24<00:20, 4.93MB/s]    file_sizes:  59%|################4           | 145M/246M [00:24<00:22, 4.43MB/s]    file_sizes:  60%|################6           | 146M/246M [00:24<00:20, 4.91MB/s]    file_sizes:  60%|################7           | 147M/246M [00:25<00:22, 4.42MB/s]    file_sizes:  60%|################9           | 149M/246M [00:25<00:19, 4.97MB/s]    file_sizes:  61%|#################           | 149M/246M [00:25<00:21, 4.48MB/s]    file_sizes:  61%|#################2          | 151M/246M [00:25<00:18, 5.02MB/s]    file_sizes:  62%|#################2          | 152M/246M [00:26<00:20, 4.51MB/s]    file_sizes:  62%|#################4          | 153M/246M [00:26<00:18, 5.05MB/s]    file_sizes:  63%|#################5          | 154M/246M [00:26<00:20, 4.46MB/s]    file_sizes:  63%|#################7          | 156M/246M [00:26<00:18, 4.98MB/s]    file_sizes:  64%|#################9          | 157M/246M [00:26<00:16, 5.45MB/s]    file_sizes:  64%|##################          | 158M/246M [00:27<00:19, 4.51MB/s]    file_sizes:  65%|##################1         | 159M/246M [00:27<00:19, 4.40MB/s]    file_sizes:  65%|##################2         | 160M/246M [00:27<00:17, 4.76MB/s]    file_sizes:  66%|##################4         | 162M/246M [00:27<00:16, 5.02MB/s]    file_sizes:  66%|##################5         | 163M/246M [00:28<00:15, 5.18MB/s]    file_sizes:  67%|##################7         | 165M/246M [00:28<00:14, 5.70MB/s]    file_sizes:  68%|##################9         | 166M/246M [00:28<00:13, 6.02MB/s]    file_sizes:  68%|###################1        | 168M/246M [00:28<00:12, 6.22MB/s]    file_sizes:  69%|###################2        | 169M/246M [00:29<00:22, 3.38MB/s]    file_sizes:  70%|###################4        | 171M/246M [00:29<00:18, 4.10MB/s]    file_sizes:  70%|###################5        | 172M/246M [00:29<00:19, 3.87MB/s]    file_sizes:  70%|###################6        | 173M/246M [00:30<00:17, 4.07MB/s]    file_sizes:  71%|###################7        | 173M/246M [00:30<00:18, 3.90MB/s]    file_sizes:  71%|###################8        | 174M/246M [00:30<00:18, 3.81MB/s]    file_sizes:  71%|###################9        | 175M/246M [00:30<00:16, 4.26MB/s]    file_sizes:  72%|####################        | 176M/246M [00:30<00:17, 4.03MB/s]    file_sizes:  72%|####################1       | 177M/246M [00:31<00:17, 3.82MB/s]    file_sizes:  73%|####################3       | 179M/246M [00:31<00:14, 4.51MB/s]    file_sizes:  73%|####################4       | 179M/246M [00:31<00:18, 3.58MB/s]    file_sizes:  73%|####################5       | 180M/246M [00:31<00:18, 3.57MB/s]    file_sizes:  74%|####################6       | 181M/246M [00:32<00:18, 3.54MB/s]    file_sizes:  74%|####################7       | 182M/246M [00:32<00:18, 3.45MB/s]    file_sizes:  74%|####################8       | 183M/246M [00:32<00:18, 3.42MB/s]    file_sizes:  75%|####################8       | 183M/246M [00:32<00:18, 3.42MB/s]    file_sizes:  75%|####################9       | 184M/246M [00:32<00:17, 3.43MB/s]    file_sizes:  75%|#####################       | 185M/246M [00:33<00:17, 3.43MB/s]    file_sizes:  76%|#####################1      | 186M/246M [00:33<00:17, 3.39MB/s]    file_sizes:  76%|#####################2      | 187M/246M [00:33<00:17, 3.37MB/s]    file_sizes:  76%|#####################4      | 188M/246M [00:33<00:15, 3.75MB/s]    file_sizes:  77%|#####################4      | 189M/246M [00:34<00:16, 3.54MB/s]    file_sizes:  77%|#####################5      | 189M/246M [00:34<00:16, 3.42MB/s]    file_sizes:  77%|#####################6      | 190M/246M [00:34<00:16, 3.42MB/s]    file_sizes:  78%|#####################7      | 191M/246M [00:34<00:15, 3.47MB/s]    file_sizes:  78%|#####################9      | 192M/246M [00:35<00:13, 3.94MB/s]    file_sizes:  79%|######################      | 193M/246M [00:35<00:13, 3.82MB/s]    file_sizes:  79%|######################      | 194M/246M [00:35<00:13, 3.76MB/s]    file_sizes:  79%|######################1     | 195M/246M [00:35<00:13, 3.71MB/s]    file_sizes:  80%|######################2     | 196M/246M [00:35<00:12, 3.93MB/s]    file_sizes:  80%|######################4     | 197M/246M [00:36<00:12, 3.99MB/s]    file_sizes:  80%|######################4     | 197M/246M [00:36<00:12, 3.89MB/s]    file_sizes:  81%|######################6     | 198M/246M [00:36<00:11, 4.08MB/s]    file_sizes:  81%|######################7     | 199M/246M [00:36<00:11, 3.94MB/s]    file_sizes:  82%|######################8     | 200M/246M [00:37<00:10, 4.23MB/s]    file_sizes:  82%|######################9     | 201M/246M [00:37<00:11, 4.01MB/s]    file_sizes:  82%|#######################     | 202M/246M [00:37<00:11, 3.87MB/s]    file_sizes:  83%|#######################1    | 203M/246M [00:37<00:10, 3.96MB/s]    file_sizes:  83%|#######################2    | 204M/246M [00:37<00:10, 4.01MB/s]    file_sizes:  83%|#######################3    | 205M/246M [00:38<00:10, 4.01MB/s]    file_sizes:  84%|#######################4    | 206M/246M [00:38<00:09, 4.02MB/s]    file_sizes:  84%|#######################5    | 207M/246M [00:38<00:09, 4.06MB/s]    file_sizes:  84%|#######################6    | 207M/246M [00:38<00:09, 4.08MB/s]    file_sizes:  85%|#######################7    | 209M/246M [00:39<00:08, 4.28MB/s]    file_sizes:  85%|#######################8    | 209M/246M [00:39<00:09, 3.96MB/s]    file_sizes:  86%|#######################9    | 210M/246M [00:39<00:08, 4.13MB/s]    file_sizes:  86%|########################    | 211M/246M [00:39<00:08, 3.97MB/s]    file_sizes:  86%|########################1   | 212M/246M [00:40<00:08, 4.11MB/s]    file_sizes:  87%|########################2   | 213M/246M [00:40<00:08, 3.92MB/s]    file_sizes:  87%|########################4   | 214M/246M [00:40<00:07, 4.01MB/s]    file_sizes:  87%|########################4   | 215M/246M [00:40<00:08, 3.50MB/s]    file_sizes:  88%|########################6   | 216M/246M [00:41<00:08, 3.48MB/s]    file_sizes:  88%|########################7   | 217M/246M [00:41<00:08, 3.44MB/s]    file_sizes:  89%|########################8   | 218M/246M [00:41<00:07, 3.72MB/s]    file_sizes:  89%|########################9   | 219M/246M [00:41<00:07, 3.72MB/s]    file_sizes:  89%|#########################   | 220M/246M [00:41<00:06, 3.94MB/s]    file_sizes:  90%|#########################1  | 221M/246M [00:42<00:06, 4.12MB/s]    file_sizes:  90%|#########################2  | 222M/246M [00:42<00:05, 4.04MB/s]    file_sizes:  91%|#########################3  | 223M/246M [00:42<00:05, 4.13MB/s]    file_sizes:  91%|#########################4  | 224M/246M [00:42<00:05, 4.27MB/s]    file_sizes:  91%|#########################5  | 224M/246M [00:43<00:05, 4.18MB/s]    file_sizes:  92%|#########################6  | 225M/246M [00:43<00:04, 4.31MB/s]    file_sizes:  92%|#########################8  | 226M/246M [00:43<00:04, 4.39MB/s]    file_sizes:  93%|#########################9  | 228M/246M [00:43<00:04, 4.49MB/s]    file_sizes:  93%|##########################  | 228M/246M [00:43<00:03, 4.44MB/s]    file_sizes:  93%|##########################1 | 229M/246M [00:44<00:03, 5.19MB/s]    file_sizes:  94%|##########################2 | 230M/246M [00:44<00:03, 5.05MB/s]    file_sizes:  94%|##########################3 | 231M/246M [00:44<00:03, 4.02MB/s]    file_sizes:  94%|##########################4 | 232M/246M [00:44<00:03, 4.33MB/s]    file_sizes:  95%|##########################5 | 233M/246M [00:44<00:03, 4.20MB/s]    file_sizes:  95%|##########################6 | 234M/246M [00:45<00:02, 4.38MB/s]    file_sizes:  96%|##########################7 | 235M/246M [00:45<00:02, 4.66MB/s]    file_sizes:  96%|##########################9 | 236M/246M [00:45<00:01, 4.78MB/s]    file_sizes:  97%|########################### | 237M/246M [00:45<00:01, 4.98MB/s]    file_sizes:  97%|###########################2| 239M/246M [00:46<00:01, 5.25MB/s]    file_sizes:  98%|###########################3| 240M/246M [00:46<00:01, 4.76MB/s]    file_sizes:  98%|###########################4| 241M/246M [00:46<00:00, 5.01MB/s]    file_sizes:  99%|###########################6| 242M/246M [00:46<00:00, 5.25MB/s]    file_sizes:  99%|###########################7| 244M/246M [00:46<00:00, 5.44MB/s]    file_sizes: 100%|###########################9| 245M/246M [00:47<00:00, 5.61MB/s]    file_sizes: 100%|###########################9| 246M/246M [00:47<00:00, 4.19MB/s]    file_sizes: 100%|############################| 246M/246M [00:47<00:00, 5.19MB/s]
+    Successfully downloaded file to /home/circleci/celer_data/regression/log1p.E2006.train.bz2
+    Decompressing...
+    Loading svmlight file...
+    /home/circleci/.local/lib/python3.8/site-packages/sklearn/utils/validation.py:67: FutureWarning: Pass n_features=4272227 as keyword args. From version 0.25 passing these as positional arguments will result in an error
+      warnings.warn("Pass {} as keyword args. From version 0.25 "
+    Dataset size: 16087 samples, 1668737 features
+
+
+
+
+Run Celer on a grid of regularization parameters, for various tolerances:
+
+
+.. code-block:: default
+
+    tols = [1e-2, 1e-4, 1e-6]
+    results = np.zeros([1, len(tols)])
+    gaps = np.zeros((len(tols), len(alphas)))
+
+    print("Starting path computation...")
+    for tol_ix, tol in enumerate(tols):
+        t0 = time.time()
+        res = celer_path(X, y, 'lasso', alphas=alphas,
+                         tol=tol, prune=True, verbose=1)
+        results[0, tol_ix] = time.time() - t0
+        _, coefs, gaps[tol_ix] = res
+
+
+    labels = [r"\sc{Celer}"]
+    figsize = (7, 4)
+
+    df = pd.DataFrame(results.T, columns=["Celer"])
+    df.index = tols
+    df.plot.bar(rot=0)
+    plt.xlabel("stopping tolerance")
+    plt.ylabel("path computation time (s)")
+    plt.tight_layout()
+    plt.show(block=False)
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_finance_path_001.png
+    :alt: plot finance path
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Starting path computation...
+    ##########################
+    ##### Computing alpha 1/11
+    ##########################
+    Iter 0: primal 0.5000000000, gap 0.00e+00
+    Early exit, gap: 0.00e+00 < 1.00e-02
+    ##########################
+    ##### Computing alpha 2/11
+    ##########################
+    Iter 0: primal 0.5000000000, gap 3.35e-02, 1 feats in subpb (1668737 left)
+    Iter 1: primal 0.4972375400, gap 2.40e-02, 2 feats in subpb (1668737 left)
+    Iter 2: primal 0.4955922519, gap 1.76e-02, 4 feats in subpb (75790 left)
+    Iter 3: primal 0.4944363884, gap 9.28e-03
+    Early exit, gap: 9.28e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 3/11
+    ##########################
+    Iter 0: primal 0.4835895267, gap 5.44e-02, 4 feats in subpb (1668737 left)
+    Iter 1: primal 0.4779592492, gap 4.87e-02, 8 feats in subpb (1668737 left)
+    Iter 2: primal 0.4734102744, gap 1.83e-02, 16 feats in subpb (1668737 left)
+    Iter 3: primal 0.4719158780, gap 3.89e-03
+    Early exit, gap: 3.89e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 4/11
+    ##########################
+    Iter 0: primal 0.4494757871, gap 3.43e-02, 15 feats in subpb (1668737 left)
+    Iter 1: primal 0.4447454080, gap 2.33e-02, 30 feats in subpb (1668737 left)
+    Iter 2: primal 0.4435232002, gap 5.02e-03
+    Early exit, gap: 5.02e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 5/11
+    ##########################
+    Iter 0: primal 0.4180950716, gap 3.26e-02, 27 feats in subpb (1668737 left)
+    Iter 1: primal 0.4147116716, gap 2.92e-02, 52 feats in subpb (1668737 left)
+    Iter 2: primal 0.4134340694, gap 3.71e-03
+    Early exit, gap: 3.71e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 6/11
+    ##########################
+    Iter 0: primal 0.3876228460, gap 2.74e-02, 42 feats in subpb (1668737 left)
+    Iter 1: primal 0.3849388309, gap 2.48e-02, 80 feats in subpb (1668737 left)
+    Iter 2: primal 0.3844713186, gap 1.89e-03
+    Early exit, gap: 1.89e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 7/11
+    ##########################
+    Iter 0: primal 0.3602317706, gap 2.28e-02, 70 feats in subpb (1668737 left)
+    Iter 1: primal 0.3577100775, gap 2.03e-02, 138 feats in subpb (1668737 left)
+    Iter 2: primal 0.3569907369, gap 6.04e-03
+    Early exit, gap: 6.04e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 8/11
+    ##########################
+    Iter 0: primal 0.3336553093, gap 2.80e-02, 120 feats in subpb (1668737 left)
+    Iter 1: primal 0.3305701173, gap 2.49e-02, 230 feats in subpb (1668737 left)
+    Iter 2: primal 0.3297151806, gap 5.67e-03
+    Early exit, gap: 5.67e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 9/11
+    ##########################
+    Iter 0: primal 0.3066786725, gap 2.57e-02, 183 feats in subpb (1668737 left)
+    Iter 1: primal 0.3037446738, gap 2.28e-02, 362 feats in subpb (1668737 left)
+    Iter 2: primal 0.3029285049, gap 7.91e-03
+    Early exit, gap: 7.91e-03 < 1.00e-02
+    ###########################
+    ##### Computing alpha 10/11
+    ###########################
+    Iter 0: primal 0.2800622403, gap 2.63e-02, 295 feats in subpb (1668737 left)
+    Iter 1: primal 0.2774641715, gap 2.37e-02, 586 feats in subpb (1668737 left)
+    Iter 2: primal 0.2730094553, gap 1.92e-02, 974 feats in subpb (1668737 left)
+    Iter 3: primal 0.2726103572, gap 5.35e-03
+    Early exit, gap: 5.35e-03 < 1.00e-02
+    ###########################
+    ##### Computing alpha 11/11
+    ###########################
+    Iter 0: primal 0.2453726586, gap 1.87e-02, 816 feats in subpb (1668737 left)
+    Iter 1: primal 0.2397991550, gap 1.32e-02, 1600 feats in subpb (1668737 left)
+    Iter 2: primal 0.2391132633, gap 8.88e-03
+    Early exit, gap: 8.88e-03 < 1.00e-02
+    ##########################
+    ##### Computing alpha 1/11
+    ##########################
+    Iter 0: primal 0.5000000000, gap 0.00e+00
+    Early exit, gap: 0.00e+00 < 1.00e-04
+    ##########################
+    ##### Computing alpha 2/11
+    ##########################
+    Iter 0: primal 0.5000000000, gap 3.35e-02, 1 feats in subpb (1668737 left)
+    Iter 1: primal 0.4972375400, gap 2.40e-02, 2 feats in subpb (1668737 left)
+    Iter 2: primal 0.4955922519, gap 1.76e-02, 4 feats in subpb (75790 left)
+    Iter 3: primal 0.4944363884, gap 9.28e-03, 8 feats in subpb (4100 left)
+    Iter 4: primal 0.4936142970, gap 9.70e-04, 16 feats in subpb (91 left)
+    Iter 5: primal 0.4936030427, gap 1.57e-05
+    Early exit, gap: 1.57e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 3/11
+    ##########################
+    Iter 0: primal 0.4804653192, gap 2.97e-02, 12 feats in subpb (1668737 left)
+    Iter 1: primal 0.4723477193, gap 1.51e-02, 24 feats in subpb (1668737 left)
+    Iter 2: primal 0.4718651251, gap 1.26e-04, 38 feats in subpb (54 left)
+    Iter 3: primal 0.4718634468, gap 1.42e-05
+    Early exit, gap: 1.42e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 4/11
+    ##########################
+    Iter 0: primal 0.4491461081, gap 2.58e-02, 19 feats in subpb (1668737 left)
+    Iter 1: primal 0.4440727341, gap 1.59e-02, 38 feats in subpb (1668737 left)
+    Iter 2: primal 0.4434841929, gap 9.20e-04, 68 feats in subpb (773 left)
+    Iter 3: primal 0.4434772686, gap 1.62e-04, 70 feats in subpb (132 left)
+    Iter 4: primal 0.4434769879, gap 3.99e-05
+    Early exit, gap: 3.99e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 5/11
+    ##########################
+    Iter 0: primal 0.4178039832, gap 2.32e-02, 35 feats in subpb (1668737 left)
+    Iter 1: primal 0.4136662883, gap 1.90e-02, 68 feats in subpb (1668737 left)
+    Iter 2: primal 0.4133898024, gap 5.58e-04, 96 feats in subpb (1167 left)
+    Iter 3: primal 0.4133867057, gap 1.31e-04, 96 feats in subpb (234 left)
+    Iter 4: primal 0.4133866253, gap 2.36e-05
+    Early exit, gap: 2.36e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 6/11
+    ##########################
+    Iter 0: primal 0.3875986335, gap 2.11e-02, 48 feats in subpb (1668737 left)
+    Iter 1: primal 0.3848296261, gap 1.83e-02, 88 feats in subpb (1668737 left)
+    Iter 2: primal 0.3844717274, gap 1.13e-03, 144 feats in subpb (71615 left)
+    Iter 3: primal 0.3844579012, gap 1.83e-04, 148 feats in subpb (821 left)
+    Iter 4: primal 0.3844577127, gap 5.28e-05
+    Early exit, gap: 5.28e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 7/11
+    ##########################
+    Iter 0: primal 0.3602248691, gap 1.96e-02, 73 feats in subpb (1668737 left)
+    Iter 1: primal 0.3576252779, gap 1.70e-02, 142 feats in subpb (1668737 left)
+    Iter 2: primal 0.3569305057, gap 3.86e-03, 248 feats in subpb (1668737 left)
+    Iter 3: primal 0.3568310593, gap 1.10e-03, 252 feats in subpb (1550444 left)
+    Iter 4: primal 0.3568255224, gap 3.31e-04, 250 feats in subpb (16169 left)
+    Iter 5: primal 0.3568247353, gap 8.31e-05
+    Early exit, gap: 8.31e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 8/11
+    ##########################
+    Iter 0: primal 0.3330450237, gap 1.79e-02, 125 feats in subpb (1668737 left)
+    Iter 1: primal 0.3301633584, gap 1.50e-02, 242 feats in subpb (1668737 left)
+    Iter 2: primal 0.3295771653, gap 1.65e-03, 370 feats in subpb (1668737 left)
+    Iter 3: primal 0.3295597625, gap 3.86e-04, 390 feats in subpb (389925 left)
+    Iter 4: primal 0.3295591993, gap 8.43e-05
+    Early exit, gap: 8.43e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 9/11
+    ##########################
+    Iter 0: primal 0.3063165929, gap 1.62e-02, 196 feats in subpb (1668737 left)
+    Iter 1: primal 0.3036161606, gap 1.35e-02, 388 feats in subpb (1668737 left)
+    Iter 2: primal 0.3029770819, gap 8.81e-03, 578 feats in subpb (1668737 left)
+    Iter 3: primal 0.3028619185, gap 2.03e-03, 856 feats in subpb (1668737 left)
+    Iter 4: primal 0.3028240226, gap 4.32e-04, 836 feats in subpb (1668737 left)
+    Iter 5: primal 0.3028226442, gap 1.13e-04, 834 feats in subpb (111362 left)
+    Iter 6: primal 0.3028224684, gap 2.94e-05
+    Early exit, gap: 2.94e-05 < 1.00e-04
+    ###########################
+    ##### Computing alpha 10/11
+    ###########################
+    Iter 0: primal 0.2791399004, gap 1.42e-02, 415 feats in subpb (1668737 left)
+    Iter 1: primal 0.2731227702, gap 8.20e-03, 810 feats in subpb (1668737 left)
+    Iter 2: primal 0.2724613977, gap 7.25e-03, 1364 feats in subpb (1668737 left)
+    Iter 3: primal 0.2724299566, gap 1.24e-03, 1642 feats in subpb (1668737 left)
+    Iter 4: primal 0.2724066200, gap 2.31e-04, 1616 feats in subpb (1668737 left)
+    Iter 5: primal 0.2724057316, gap 5.91e-05
+    Early exit, gap: 5.91e-05 < 1.00e-04
+    ###########################
+    ##### Computing alpha 11/11
+    ###########################
+    Iter 0: primal 0.2443099853, gap 1.11e-02, 813 feats in subpb (1668737 left)
+    Iter 1: primal 0.2396647865, gap 6.42e-03, 1586 feats in subpb (1668737 left)
+    Iter 2: primal 0.2390851454, gap 5.84e-03, 2690 feats in subpb (1668737 left)
+    Iter 3: primal 0.2390731992, gap 9.32e-04, 3086 feats in subpb (1668737 left)
+    Iter 4: primal 0.2390704863, gap 1.65e-04, 3120 feats in subpb (1668737 left)
+    Iter 5: primal 0.2390703296, gap 3.85e-05
+    Early exit, gap: 3.85e-05 < 1.00e-04
+    ##########################
+    ##### Computing alpha 1/11
+    ##########################
+    Iter 0: primal 0.5000000000, gap 0.00e+00
+    Early exit, gap: 0.00e+00 < 1.00e-06
+    ##########################
+    ##### Computing alpha 2/11
+    ##########################
+    Iter 0: primal 0.5000000000, gap 3.35e-02, 1 feats in subpb (1668737 left)
+    Iter 1: primal 0.4972375400, gap 2.40e-02, 2 feats in subpb (1668737 left)
+    Iter 2: primal 0.4955922519, gap 1.76e-02, 4 feats in subpb (75790 left)
+    Iter 3: primal 0.4944363884, gap 9.28e-03, 8 feats in subpb (4100 left)
+    Iter 4: primal 0.4936142970, gap 9.70e-04, 16 feats in subpb (91 left)
+    Iter 5: primal 0.4936030427, gap 1.57e-05, 18 feats in subpb (18 left)
+    Iter 6: primal 0.4936030137, gap 7.59e-07
+    Early exit, gap: 7.59e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 3/11
+    ##########################
+    Iter 0: primal 0.4804621499, gap 2.97e-02, 12 feats in subpb (1668737 left)
+    Iter 1: primal 0.4723462125, gap 1.51e-02, 24 feats in subpb (1668737 left)
+    Iter 2: primal 0.4718631666, gap 6.25e-05, 38 feats in subpb (42 left)
+    Iter 3: primal 0.4718625966, gap 1.70e-05, 30 feats in subpb (30 left)
+    Iter 4: primal 0.4718625840, gap 3.75e-06, 24 feats in subpb (24 left)
+    Iter 5: primal 0.4718625805, gap 1.10e-06, 22 feats in subpb (22 left)
+    Iter 6: primal 0.4718625793, gap 3.19e-07
+    Early exit, gap: 3.19e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 4/11
+    ##########################
+    Iter 0: primal 0.4491462052, gap 2.57e-02, 19 feats in subpb (1668737 left)
+    Iter 1: primal 0.4440634675, gap 1.59e-02, 36 feats in subpb (1668737 left)
+    Iter 2: primal 0.4434901650, gap 2.18e-03, 64 feats in subpb (3813 left)
+    Iter 3: primal 0.4434776319, gap 7.25e-05, 72 feats in subpb (82 left)
+    Iter 4: primal 0.4434770874, gap 9.87e-06, 50 feats in subpb (50 left)
+    Iter 5: primal 0.4434770130, gap 9.24e-07
+    Early exit, gap: 9.24e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 5/11
+    ##########################
+    Iter 0: primal 0.4178038750, gap 2.31e-02, 36 feats in subpb (1668737 left)
+    Iter 1: primal 0.4136505750, gap 1.89e-02, 68 feats in subpb (1668737 left)
+    Iter 2: primal 0.4133917661, gap 9.88e-04, 96 feats in subpb (3139 left)
+    Iter 3: primal 0.4133869283, gap 1.61e-04, 98 feats in subpb (274 left)
+    Iter 4: primal 0.4133867103, gap 2.31e-05, 96 feats in subpb (98 left)
+    Iter 5: primal 0.4133866405, gap 4.35e-06, 66 feats in subpb (66 left)
+    Iter 6: primal 0.4133866086, gap 8.85e-07
+    Early exit, gap: 8.85e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 6/11
+    ##########################
+    Iter 0: primal 0.3875989422, gap 2.10e-02, 48 feats in subpb (1668737 left)
+    Iter 1: primal 0.3848163733, gap 1.82e-02, 90 feats in subpb (1668737 left)
+    Iter 2: primal 0.3844647210, gap 8.64e-04, 144 feats in subpb (22356 left)
+    Iter 3: primal 0.3844578627, gap 1.94e-04, 148 feats in subpb (874 left)
+    Iter 4: primal 0.3844577136, gap 3.39e-05, 148 feats in subpb (236 left)
+    Iter 5: primal 0.3844577001, gap 7.76e-06, 139 feats in subpb (139 left)
+    Iter 6: primal 0.3844576999, gap 9.38e-07
+    Early exit, gap: 9.38e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 7/11
+    ##########################
+    Iter 0: primal 0.3602221233, gap 1.95e-02, 73 feats in subpb (1668737 left)
+    Iter 1: primal 0.3576451445, gap 1.69e-02, 140 feats in subpb (1668737 left)
+    Iter 2: primal 0.3568817718, gap 5.57e-03, 238 feats in subpb (1668737 left)
+    Iter 3: primal 0.3568367920, gap 1.28e-03, 256 feats in subpb (1668737 left)
+    Iter 4: primal 0.3568258354, gap 3.73e-04, 252 feats in subpb (22726 left)
+    Iter 5: primal 0.3568247261, gap 7.12e-05, 250 feats in subpb (868 left)
+    Iter 6: primal 0.3568246864, gap 1.88e-05, 250 feats in subpb (344 left)
+    Iter 7: primal 0.3568246853, gap 4.53e-06, 210 feats in subpb (210 left)
+    Iter 8: primal 0.3568246852, gap 8.01e-07
+    Early exit, gap: 8.01e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 8/11
+    ##########################
+    Iter 0: primal 0.3330504388, gap 1.78e-02, 125 feats in subpb (1668737 left)
+    Iter 1: primal 0.3301661736, gap 1.49e-02, 244 feats in subpb (1668737 left)
+    Iter 2: primal 0.3295840876, gap 3.38e-03, 370 feats in subpb (1668737 left)
+    Iter 3: primal 0.3295615154, gap 6.02e-04, 390 feats in subpb (1548266 left)
+    Iter 4: primal 0.3295592930, gap 1.17e-04, 394 feats in subpb (14726 left)
+    Iter 5: primal 0.3295590900, gap 3.49e-05, 392 feats in subpb (1933 left)
+    Iter 6: primal 0.3295590862, gap 9.34e-06, 392 feats in subpb (604 left)
+    Iter 7: primal 0.3295590857, gap 2.77e-06, 360 feats in subpb (360 left)
+    Iter 8: primal 0.3295590856, gap 8.27e-07
+    Early exit, gap: 8.27e-07 < 1.00e-06
+    ##########################
+    ##### Computing alpha 9/11
+    ##########################
+    Iter 0: primal 0.3063156655, gap 1.61e-02, 196 feats in subpb (1668737 left)
+    Iter 1: primal 0.3036386782, gap 1.34e-02, 384 feats in subpb (1668737 left)
+    Iter 2: primal 0.3029507109, gap 8.32e-03, 592 feats in subpb (1668737 left)
+    Iter 3: primal 0.3028354178, gap 2.05e-03, 840 feats in subpb (1668737 left)
+    Iter 4: primal 0.3028235581, gap 4.73e-04, 834 feats in subpb (1668737 left)
+    Iter 5: primal 0.3028225993, gap 1.16e-04, 824 feats in subpb (118633 left)
+    Iter 6: primal 0.3028224647, gap 2.88e-05, 824 feats in subpb (8961 left)
+    Iter 7: primal 0.3028224520, gap 7.12e-06, 822 feats in subpb (2062 left)
+    Iter 8: primal 0.3028224512, gap 2.08e-06, 830 feats in subpb (985 left)
+    Iter 9: primal 0.3028224510, gap 6.07e-07
+    Early exit, gap: 6.07e-07 < 1.00e-06
+    ###########################
+    ##### Computing alpha 10/11
+    ###########################
+    Iter 0: primal 0.2791303543, gap 1.42e-02, 416 feats in subpb (1668737 left)
+    Iter 1: primal 0.2732154549, gap 8.25e-03, 812 feats in subpb (1668737 left)
+    Iter 2: primal 0.2724367686, gap 6.96e-03, 1354 feats in subpb (1668737 left)
+    Iter 3: primal 0.2724129539, gap 1.59e-03, 1628 feats in subpb (1668737 left)
+    Iter 4: primal 0.2724062333, gap 4.37e-04, 1624 feats in subpb (1668737 left)
+    Iter 5: primal 0.2724057610, gap 7.43e-05, 1626 feats in subpb (234590 left)
+    Iter 6: primal 0.2724057128, gap 1.87e-05, 1624 feats in subpb (19564 left)
+    Iter 7: primal 0.2724057109, gap 5.49e-06, 1624 feats in subpb (4953 left)
+    Iter 8: primal 0.2724057106, gap 1.44e-06, 1624 feats in subpb (2114 left)
+    Iter 9: primal 0.2724057106, gap 3.77e-07
+    Early exit, gap: 3.77e-07 < 1.00e-06
+    ###########################
+    ##### Computing alpha 11/11
+    ###########################
+    Iter 0: primal 0.2443033697, gap 1.10e-02, 812 feats in subpb (1668737 left)
+    Iter 1: primal 0.2396737702, gap 6.35e-03, 1598 feats in subpb (1668737 left)
+    Iter 2: primal 0.2390888195, gap 5.77e-03, 2710 feats in subpb (1668737 left)
+    Iter 3: primal 0.2390715698, gap 1.65e-03, 3122 feats in subpb (1668737 left)
+    Iter 4: primal 0.2390705663, gap 4.60e-04, 3118 feats in subpb (1668737 left)
+    Iter 5: primal 0.2390703460, gap 1.09e-04, 3128 feats in subpb (1668737 left)
+    Iter 6: primal 0.2390703271, gap 3.25e-05, 3122 feats in subpb (202068 left)
+    Iter 7: primal 0.2390703259, gap 9.10e-06, 3122 feats in subpb (27638 left)
+    Iter 8: primal 0.2390703258, gap 1.59e-06, 3122 feats in subpb (5636 left)
+    Iter 9: primal 0.2390703258, gap 4.29e-07
+    Early exit, gap: 4.29e-07 < 1.00e-06
+
+
+
+
+Measure the influence of regularization on the sparsity of the solutions:
+
+
+.. code-block:: default
+
+
+    fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True)
+    plt.bar(np.arange(n_alphas), (coefs != 0).sum(axis=0))
+    plt.title("Sparsity of solution along regularization path")
+    ax.set_ylabel(r"$||\hat w||_0$")
+    ax.set_xlabel(r"$\lambda / \lambda_{\mathrm{max}}$")
+    ax.set_yscale('log')
+    ax.set_xticks(np.arange(n_alphas)[::2])
+    ax.set_xticklabels(map(lambda x: "%.2f" % x, alphas[::2] / alphas[0]))
+    plt.show(block=False)
+
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_finance_path_002.png
+    :alt: Sparsity of solution along regularization path
+    :class: sphx-glr-single-img
+
+
+
+
+
+Check convergence guarantees: gap is inferior to tolerance
+
+
+.. code-block:: default
+
+
+    df = pd.DataFrame(gaps.T, columns=map(lambda x: r"tol=%.0e" % x, tols))
+    df.index = map(lambda x: "%.2f" % x, alphas / alphas[0])
+    ax = df.plot.bar(figsize=(12, 5))
+    ax.set_ylabel("duality gap reached")
+    ax.set_xlabel(r"$\lambda / \lambda_{\mathrm{max}}$")
+    ax.set_yscale('log')
+    ax.set_yticks(tols)
+    plt.tight_layout()
+    plt.show(block=False)
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_finance_path_003.png
+    :alt: plot finance path
+    :class: sphx-glr-single-img
+
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 5 minutes  10.848 seconds)
+
+
+.. _sphx_glr_download_auto_examples_plot_finance_path.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: plot_finance_path.py <plot_finance_path.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_finance_path.ipynb <plot_finance_path.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
