@@ -28,12 +28,16 @@ jobs:
                 git fetch upstream master;
               fi
 
-        # Load our data
+        # If both keys are in the same command only one is restored
         - restore_cache:
             keys:
-              - data-cache-0
               - pip-cache
-              - celer_data
+
+        # do not merge with above, only the first cache is restored then
+        - restore_cache:
+            keys:
+              - celer-data-1
+
 
         - run:
             name: Spin up Xvfb
@@ -70,10 +74,16 @@ jobs:
               make SPHINXOPTS=-v html;
               cd ..;
 
+        - run:
+            name: List celer after make
+            command: |
+              ls $HOME/celer_data
+              find $HOME/celer_data -maxdepth 3
+
         - save_cache:
-            key: celer_data
+            key: celer-data-1
             paths:
-              - $HOME/celer_data
+              - /home/circleci/celer_data
 
         # Deploy docs
         - run:
