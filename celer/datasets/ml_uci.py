@@ -12,7 +12,7 @@ BASE = 'https://archive.ics.uci.edu/ml/machine-learning-databases/'
 NAMES = {'gisette_train': 'gisette/GISETTE/gisette_train'}
 
 
-def load_ml_uci(dataset):
+def fetch_ml_uci(dataset):
     if not os.path.exists(pjoin(CELER_PATH, "ml_uci")):
         os.makedirs(pjoin(CELER_PATH, "ml_uci"))
 

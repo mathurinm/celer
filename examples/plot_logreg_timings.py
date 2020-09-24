@@ -10,10 +10,10 @@ from numpy.linalg import norm
 from sklearn import linear_model
 
 from celer import LogisticRegression
-from celer.datasets import load_ml_uci
+from celer.datasets import fetch_ml_uci
 
 dataset = "gisette_train"
-X, y = load_ml_uci(dataset)
+X, y = fetch_ml_uci(dataset)
 
 C_min = 2 / norm(X.T @ y, ord=np.inf)
 C = 5 * C_min

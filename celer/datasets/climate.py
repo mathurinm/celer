@@ -77,7 +77,7 @@ def target_region(lx, Lx):
     return X, y
 
 
-def load_climate(replace=False):
+def fetch_climate(replace=False):
     path = pjoin(CELER_PATH, 'climate')
     if not os.path.exists(path):
         os.mkdir(path)
@@ -92,5 +92,5 @@ def load_climate(replace=False):
 
 if __name__ == "__main__":
     lx, Lx = 14, 17  # Dakar
-    load_climate(replace=False)
+    fetch_climate(replace=False)
     X, y = target_region(lx, Lx)
