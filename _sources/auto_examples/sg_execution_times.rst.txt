@@ -5,18 +5,18 @@
 
 Computation times
 =================
-**03:00.671** total execution time for **auto_examples** files:
+**03:35.073** total execution time for **auto_examples** files:
 
 +-------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_finance_path.py` (``plot_finance_path.py``)             | 01:54.727 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_finance_path.py` (``plot_finance_path.py``)             | 02:17.660 | 0.0 MB |
 +-------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``plot_leukemia_path.py``)           | 00:34.086 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``plot_leukemia_path.py``)           | 00:47.302 | 0.0 MB |
 +-------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_logreg_timings.py` (``plot_logreg_timings.py``)         | 00:18.475 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_logreg_timings.py` (``plot_logreg_timings.py``)         | 00:14.868 | 0.0 MB |
 +-------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py` (``plot_multitask_lasso_cv.py``) | 00:08.114 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py` (``plot_multitask_lasso_cv.py``) | 00:09.654 | 0.0 MB |
 +-------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``plot_lasso_cv.py``)                     | 00:04.749 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``plot_lasso_cv.py``)                     | 00:04.937 | 0.0 MB |
 +-------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_group_lasso.py` (``plot_group_lasso.py``)               | 00:00.519 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_group_lasso.py` (``plot_group_lasso.py``)               | 00:00.652 | 0.0 MB |
 +-------------------------------------------------------------------------------------------+-----------+--------+
