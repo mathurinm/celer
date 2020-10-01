@@ -19,6 +19,7 @@ NAMES = {'rcv1_train': 'binary/rcv1_train.binary',
          'finance': 'regression/log1p.E2006.train',
          'kdda_train': 'binary/kdda',
          'rcv1_topics_test': 'multilabel/rcv1_topics_test_2.svm',
+         'real-sim': 'binary/real-sim',
          'sector_train': 'multiclass/sector/sector',
          'sector_test': 'multiclass/sector/sector.t',
          'url': 'binary/url_combined',
@@ -29,6 +30,7 @@ N_FEATURES = {'finance': 4272227,
               'rcv1_train': 47236,
               'kdda_train': 20216830,
               'rcv1_topics_test': 47236,
+              'real-sim': 20958,
               'sector_train': 55197,
               'sector_test': 55197,
               'url': 3231961,
@@ -64,7 +66,7 @@ def get_X_y(dataset, compressed_path, multilabel, replace=False):
         print("Loading svmlight file...")
         with open(tmp_path, 'rb') as f:
             X, y = load_svmlight_file(
-                f, n_features_total, multilabel=multilabel)
+                f, n_features=n_features_total, multilabel=multilabel)
 
         os.remove(tmp_path)
         X = sparse.csc_matrix(X)
