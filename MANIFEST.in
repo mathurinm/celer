@@ -3,6 +3,7 @@ include *.md
 include *.in
 include LICENSE
 include celer/__init__.py
+include requirement.txt
 
 recursive-include examples *.py
 recursive-include examples *.txt
@@ -15,7 +16,7 @@ recursive-include celer *.pxd
 
 exclude Makefile
 exclude .coveragerc
-exclude *.yml
+recursive-exclude ./ *.yml
 exclude .mailmap
 recursive-exclude celer *.pyc
 
