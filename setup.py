@@ -1,12 +1,10 @@
 from setuptools.command.build_ext import build_ext
-from setuptools import setup, Extension
+from setuptools import dist, setup, Extension, find_packages
 import os
-from setuptools import dist
 dist.Distribution().fetch_build_eggs(['numpy>=1.12'])
-import numpy as np
+import numpy as np  # noqa
 
-
-descr = 'Fast algorithm with dual extrapolation for the Lasso'
+descr = 'Fast algorithm with dual extrapolation for sparse problems'
 
 version = None
 with open(os.path.join('celer', '__init__.py'), 'r') as fid:
@@ -38,7 +36,7 @@ setup(name='celer',
       install_requires=['numpy>=1.12', 'seaborn>=0.7', 'scipy>=0.18.0',
                         'matplotlib>=2.0.0', 'Cython>=0.26',
                         'scikit-learn>=0.23', 'xarray', 'download', 'tqdm'],
-      packages=['celer'],
+      packages=find_packages(),
       cmdclass={'build_ext': build_ext},
       ext_modules=[
           Extension('celer.lasso_fast',
