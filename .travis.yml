@@ -17,6 +17,7 @@ install:
   - pip install flake8 check-manifest codecov
   - pip install -e .
 script:
+  - check-manifest
   - pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
   - flake8 --count celer
 after_success:
