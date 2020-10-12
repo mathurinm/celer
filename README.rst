@@ -49,17 +49,15 @@ To build the documentation you will need to run:
 Demos & Examples
 ================
 
-You find on the documentation examples on the `Leukemia
-dataset <https://mathurinm.github.io/celer/auto_examples/plot_leukemia_path.html>`__
-(comparison with scikit-learn) and on the `Finance/log1p
-dataset <https://mathurinm.github.io/celer/auto_examples/plot_finance_path.html>`__
-(more significant, but it takes times to download the data, preprocess
-it, and compute the path).
+In the `example section <https://mathurinm.github.io/celer/auto_examples/index.html>`__ of the documentation,
+you will find numerous examples on real life datasets,
+timing comparison with other estimators, easy and fast ways to perform cross validation, etc.
+
 
 Dependencies
 ============
 
-All dependencies are in ``./setup.py`` file.
+All dependencies are in the ``./requirements.txt`` file.
 
 Cite
 ====
