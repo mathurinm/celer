@@ -8,7 +8,7 @@ from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
 from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
 from sklearn.linear_model import lasso_path
 
-from celer import (Lasso, GroupLasso, MultiTaskLasso,
+from celer import (Lasso, GroupLasso, GroupLassoCV, MultiTaskLasso,
                    MultiTaskLassoCV)
 from celer.homotopy import celer_path, mtl_path, _grp_converter
 from celer.group_fast import dnorm_grp
@@ -179,7 +179,23 @@ def test_GroupLasso(sparse_X):
     np.testing.assert_array_less(clf.dual_gap_, tol)
 
     clf.tol = 1e-6
-    clf.groups = 1  # unsatisfying but sklearn will fit of 5 features
+    clf.groups = 1  # unsatisfying but sklearn will fit out of 5 features
+    check_estimator(clf)
+
+
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_GroupLassoCV(sparse_X):
+    n_features = 50
+    X, y = build_dataset(
+        n_samples=11, n_features=n_features, sparse_X=sparse_X)
+
+    tol = 1e-8
+    clf = GroupLassoCV(groups=10, tol=tol)
+    clf.fit(X, y)
+    np.testing.assert_array_less(clf.dual_gap_, tol)
+
+    clf.tol = 1e-6
+    clf.groups = 1  # unsatisfying but sklearn will fit with 5 features
     check_estimator(clf)
 
 

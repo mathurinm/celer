@@ -930,7 +930,7 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
     p0 : int, optional (default=10)
         Number of features in the first working set.
 
-    prune : bool, optional (default=False)
+    prune : bool, optional (default=True)
         Whether to use pruning when growing the working sets.
 
     precompute : ignored parameter, kept for sklearn compatibility.
@@ -986,6 +986,7 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
+        self.precompute = precompute
 
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute GroupLasso path with Celer."""
