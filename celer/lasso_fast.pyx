@@ -75,12 +75,15 @@ def celer(
                 center = True
                 break
 
-    cdef floating[:] inv_lc
-    if pb == LOGREG:
-        inv_lc = 4. / np.asarray(norms_X_col) ** 2
-    else:
-        inv_lc = 1. / np.asarray(norms_X_col) ** 2
+    cdef floating[:] inv_lc = np.zeros(n_features)
 
+    for j in range(n_features):
+        # can have 0 features when performing CV on sparse X
+        if norms_X_col[j]:
+            if pb == LOGREG:
+                inv_lc[j] = 4. / norms_X_col[j] ** 2
+            else:
+                inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
@@ -131,7 +134,6 @@ def celer(
         p_obj = primal(pb, alpha, n_samples, &Xw[0], &y[0], n_features, &w[0])
         gap = p_obj - highest_d_obj
         gaps[t] = gap
-
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
@@ -144,11 +146,9 @@ def celer(
             radius = sqrt(2 * gap / n_samples) / alpha
         else:
             radius = sqrt(gap / 2.) / alpha
-
         set_prios(
             is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
             prios, screened, radius, &n_screened, positive)
-
         if prune:
             nnz = 0
             for j in range(n_features):
@@ -173,7 +173,6 @@ def celer(
                         # include previous features, if not screened
                         prios[C[j]] = -1
                 ws_size = 2 * ws_size
-
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
 
@@ -197,7 +196,6 @@ def celer(
         if verbose:
             print(", %d feats in subpb (%d left)" %
                   (len(C), n_features - n_screened))
-
 
         # calling inner solver which will modify w and R inplace
         highest_d_obj_in = 0
