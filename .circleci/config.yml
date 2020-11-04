@@ -1,5 +1,3 @@
-# Tagging a commit with [circle front] will build the front page and perform test-doc.
-# Tagging a commit with [circle full] will build everything.
 version: 2
 jobs:
     build_docs:
@@ -13,6 +11,7 @@ jobs:
               echo "set -e" >> $BASH_ENV
               echo "export DISPLAY=:99" >> $BASH_ENV
               echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
+              echo "export LIBSVMDATA_HOME=$HOME/celer_data" >> $BASH_ENV
               echo "BASH_ENV:"
               cat $BASH_ENV
 
@@ -37,7 +36,6 @@ jobs:
         - restore_cache:
             keys:
               - celer-data-1
-
 
         - run:
             name: Spin up Xvfb
