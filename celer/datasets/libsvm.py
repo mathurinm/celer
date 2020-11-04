@@ -4,7 +4,6 @@
 import warnings
 
 import libsvmdata
-import numpy as np
 
 
 def fetch_libsvm(dataset, replace=False, normalize=True, min_nnz=3):
