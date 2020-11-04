@@ -15,9 +15,9 @@ import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from libsvmdata import fetch_libsvm
 
 from celer import celer_path
-from celer.datasets import fetch_libsvm
 
 print(__doc__)
 
