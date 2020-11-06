@@ -15,6 +15,7 @@ from sklearn.linear_model._base import _preprocess_data
 from .lasso_fast import celer
 from .group_fast import celer_grp, dnorm_grp
 from .cython_utils import compute_norms_X_col, compute_Xw
+from .cython_utils import dnorm_l1 as dnorm_l1_cython
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
 
@@ -25,22 +26,30 @@ GRPLASSO = 2
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
-               p0=10, verbose=0, tol=1e-6, prune=0,
+               p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
                X_scale=None, return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
-    With `n = len(y)` the number of samples, the losses are:
+    With `n = len(y)` and `p = len(w)` the number of samples and features,
+    the losses are:
 
     Lasso:
 
     .. math::
-        \frac{||y - X w||_2^2}{2 n} + \alpha ||w||_1
+        \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|
 
     Logreg:
 
     .. math::
-        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha  ||w||_1
+        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + alpha
+        \sum_1^p weights_j |w_j|
+
+    GroupLasso, with `G` the number of groups and `w_{[g]}` the subvector
+    corresponding the group `g`:
+
+    .. math::
+        \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^G weights_g ||w_{[g]}||_2
 
     Parameters
     ----------
@@ -91,6 +100,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
+
+    weights : ndarray, shape (n_features,) or (n_groups,), optional
+        Feature/group weights used in the penalty. Default to array of ones.
 
     groups : int or list of ints or list of list of ints, optional
         Used for the group Lasso only. See the documentation of the
@@ -169,15 +181,19 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     else:
         X_sparse_scaling = np.zeros(n_features, dtype=X.dtype)
 
+    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
+
+    if weights is None:
+        weights = np.ones(n_groups) if pb == GRPLASSO else np.ones(n_features)
+        weights = weights.astype(X.dtype)
+
     if alphas is None:
-        # TODO this is wrong is X_sparse_scaling is used
         if pb == LASSO:
-            if positive:
-                alpha_max = np.max(X.T.dot(y)) / n_samples
-            else:
-                alpha_max = norm(X.T @ y, ord=np.inf) / n_samples
+            alpha_max = dnorm_l1(X, y, weights, X_sparse_scaling,
+                                 positive) / n_samples
         elif pb == LOGREG:
-            alpha_max = norm(X.T @ y, ord=np.inf) / 2.
+            alpha_max = dnorm_l1(X, y, weights, X_sparse_scaling,
+                                 positive) / 2
         elif pb == GRPLASSO:
             # TODO compute it with dscal to handle centering sparse
             alpha_max = 0
@@ -199,8 +215,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     if return_n_iter:
         n_iters = np.zeros(n_alphas, dtype=int)
-
-    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     if pb == GRPLASSO:
         # TODO this must be included in compute_norm_Xcols when centering
@@ -255,8 +269,14 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 w = np.zeros(n_features, dtype=X.dtype)
                 Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
 
-            if pb == LASSO:
-                theta = Xw / np.linalg.norm(X.T.dot(Xw), ord=np.inf)
+            # different link equations and normalization scal for dual point:
+            if pb in (LASSO, LOGREG):
+                if pb == LASSO:
+                    theta = Xw.copy()
+                elif pb == LOGREG:
+                    theta = y / (1 + np .exp(y * Xw)) / alpha
+                scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
+                                positive)
             elif pb == GRPLASSO:
                 theta = Xw.copy()
                 scal = dnorm_grp(
@@ -264,10 +284,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
                     len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
                     X_sparse_scaling.any())
-                theta /= scal
-            elif pb == LOGREG:
-                theta = y / (1 + np .exp(y * Xw)) / alpha
-                theta /= np.linalg.norm(X.T @ theta, ord=np.inf)
+            theta /= scal
+
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:  # TODO this if else scheme is complicated
             sol = celer_grp(
@@ -280,7 +298,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
-                alpha, w, Xw, theta, norms_X_col,
+                alpha, w, Xw, theta, norms_X_col, weights,
                 max_iter=max_iter, gap_freq=gap_freq, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
                 positive=positive)
@@ -323,8 +341,18 @@ def _sparse_and_dense(X):
     return X_dense, X_data, X_indices, X_indptr
 
 
+def dnorm_l1(X, theta, weights, X_sparse_scaling, positive):
+    """Theta should be centered."""
+    X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
+    skip = np.zeros(X.shape[1], dtype=np.int32)
+    scal = dnorm_l1_cython(
+        sparse.issparse(X), theta, X_dense, X_data, X_indices, X_indptr,
+        skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive)
+    return scal
+
+
 def _alpha_max_grp(X, y, groups, center=False, normalize=False):
-    """This costly function  (copies X) should only be used for debug."""
+    """This costly function (copies X) should only be used for debug."""
     grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
     X, y, X_offset, _, X_scale = _preprocess_data(
         X, y, center, normalize, copy=True)
