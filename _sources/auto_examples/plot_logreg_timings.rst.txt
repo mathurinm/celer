@@ -27,7 +27,7 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
     #########################
     Iter 0: primal 4158.8830833601, gap 2.21e+03
     Solving subproblem with 10 constraints
-    Iter 1: primal 3659.3205933346, gap 1.80e+03
+    Iter 1: primal 3659.3205933345, gap 1.80e+03
     Solving subproblem with 20 constraints
     Iter 2: primal 3346.2823037166, gap 4.77e+02
     Solving subproblem with 40 constraints
@@ -72,7 +72,7 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  12.649 seconds)
+   **Total running time of the script:** ( 0 minutes  2.419 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_logreg_timings.py:
