@@ -1,5 +1,6 @@
 Cython>=0.26
 download
+libsvmdata
 matplotlib>=2.0.0
 numpy>=1.12
 scikit-learn>=0.23

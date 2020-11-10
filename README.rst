@@ -3,9 +3,16 @@ celer
 
 |image0| |image1|
 
-Fast algorithm to solve Lasso-like problems with dual extrapolation. Currently, the package handles the following problems: Lasso, Sparse Logistic regression, Group Lasso and Multitask Lasso.
-The estimators follow the scikit-learn API, come with automated cross-validation, and support sparse and dense data with feature centering and normalization.
-The solvers used allow for solving large scale problems with millions of features.
+Fast algorithm to solve Lasso-like problems with dual extrapolation. Currently, the package handles the following problems:
+
+- Lasso
+- weighted Lasso
+- Sparse Logistic regression
+- Group Lasso
+- Multitask Lasso.
+
+The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionnaly feature centering, normalization, and unpenalized intercept fitting.
+The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
 
 Documentation
 =============
@@ -16,7 +23,7 @@ of the documentation.
 Install the released version
 ============================
 
-Assuming you have a working Python environment, e.g. with Anaconda you
+Assuming you have a working Python environment, e.g., with Anaconda you
 can `install celer with pip <https://pypi.python.org/pypi/celer/>`__.
 
 From a console or terminal install celer with pip:
@@ -58,6 +65,7 @@ Dependencies
 ============
 
 All dependencies are in the ``./requirements.txt`` file.
+They are installed automatically when ``pip install -e .`` is run.
 
 Cite
 ====
