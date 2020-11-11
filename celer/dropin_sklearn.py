@@ -502,18 +502,16 @@ class AdaptiveLassoCV(LassoCV):
     Lasso
     """
 
-    def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
+    def __init__(self, n_reweightings=5, eps=1e-3, n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
-        super(LassoCV, self).__init__(
+        super(AdaptiveLassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
-            verbose=verbose, n_jobs=n_jobs)
-        self.max_epochs = max_epochs
-        self.p0 = p0
-        self.prune = prune
-        self.positive = positive
+            verbose=verbose, n_jobs=n_jobs, max_epochs=max_epochs, p0=p0,
+            prune=prune, positive=positive)
+        self.n_reweightings = n_reweightings
 
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute Lasso path with Celer."""

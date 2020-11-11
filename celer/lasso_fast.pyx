@@ -106,7 +106,10 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        if t != 0:
+        # if t != 0:
+        if True:
+            # weights may have changed, hence we can cannot rely on a
+            # previously feasible theta
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = dnorm_l1(

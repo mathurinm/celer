@@ -311,6 +311,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
                     reweights, max_iter, max_epochs, tol=tol, p0=p0,
                     verbose=verbose, prune=prune, positive=positive)
+                print("Inside w ", w)
+
                 reweights = np.zeros(n_features)
                 reweights[w != 0] = 1. / np.abs(w[w != 0])
                 reweights *= weights  # take into account original weighting
@@ -319,7 +321,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
                 max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
 
-        coefs[:, t], thetas[t], dual_gaps[t] = w, theta, sol[2][-1]
+        coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         if return_n_iter:
             n_iters[t] = len(sol[2])
 
