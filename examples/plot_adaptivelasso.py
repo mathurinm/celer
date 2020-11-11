@@ -19,7 +19,7 @@ configure_plt()
 
 # Generating X and y data
 
-n_samples, n_features = 100, 160
+n_samples, n_features = 200, 300
 rng = check_random_state(0)
 X = rng.multivariate_normal(size=n_samples, mean=np.zeros(n_features),
                             cov=toeplitz(0.7 ** np.arange(n_features)))
@@ -35,13 +35,25 @@ y = X @ w_true
 y += noise / norm(noise) * 0.5 * norm(y)
 
 
-# Fit an adapted AdaptiveLasso clf
+# Fit a LassoCV and an AdaptiveLassoCV classifiers
 
-lasso = LassoCV().fit(X, y)
-adaptive_lasso = AdaptiveLassoCV().fit(X, y)
+lasso = LassoCV(n_jobs=-1).fit(X, y)
+adaptive_lasso = AdaptiveLassoCV(n_jobs=-1).fit(X, y)
 
-fig, axarr = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True,
-                          sharey=True)
+# Evaluate in terms of support recovery
+
+for model in (lasso, adaptive_lasso):
+    FP = np.sum(model.coef_[w_true == 0] != 0)
+    FN = np.sum(model.coef_[w_true != 0] == 0)
+
+    print(f"{model.__class__.__name__}: {FP} false positives, "
+          f"{FN} false negatives")
+
+
+# Plot left out MSE values and recovered coefficients
+
+fig1, axarr = plt.subplots(1, 2, figsize=(14, 4), constrained_layout=True,
+                           sharey=True)
 
 for i, model in enumerate([lasso, adaptive_lasso]):
     ax = axarr[i]
@@ -59,7 +71,7 @@ axarr[0].set_ylabel('Mean square error')
 plt.show(block=False)
 
 
-fig, ax = plt.subplots(figsize=(12, 4), constrained_layout=True)
+fig2, ax = plt.subplots(figsize=(12, 4), constrained_layout=True)
 m, s, _ = ax.stem(w_true, label=r"true coef",
                   use_line_collection=True)
 m, s, _ = ax.stem(lasso.coef_, label=r"LassoCV coef",
