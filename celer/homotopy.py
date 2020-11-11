@@ -25,6 +25,7 @@ GRPLASSO = 2
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
+               n_reweightings=1,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
                X_scale=None, return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
@@ -83,7 +84,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         resolution of problem restricted to features in working set)
 
     max_epochs : int, optional
-        Maximum number of (block) CD epochs on each subproblem.
+        Maximum number of coordinate descent epochs on each subproblem.
 
     p0 : int, optional
         First working set size.
@@ -96,12 +97,19 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         gap is smaller than ``tol`` or the maximum number of iteration is
         reached.
 
-    prune : 0 | 1, optional
+    prune : bool, optional
         Whether or not to use pruning when growing working sets.
 
     weights : ndarray, shape (n_features,) or (n_groups,), optional
         Feature/group weights used in the penalty. Default to array of ones.
         Features with weights equal to np.inf are ignored.
+
+    n_reweightings : int, optional (default=1)
+        If > 1, for each :math:`\alpha`, `n_reweightings` weighted Lassos are
+        solved, taking the inverse magnitude of the previous coefficient as
+        weights.
+        This procedure amounts to a majorization-minimization approach to
+        handle L0.5 regularization, and should reduce the coefficient bias.
 
     groups : int or list of ints or list of list of ints, optional
         Used for the group Lasso only. See the documentation of the
@@ -288,7 +296,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             theta /= scal
 
         # celer modifies w, Xw, and theta in place:
-        if pb == GRPLASSO:  # TODO this if else scheme is complicated
+        if pb == GRPLASSO:
             sol = celer_grp(
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
                 X_indices,
@@ -296,19 +304,22 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 norms_X_grp, tol, max_iter, max_epochs, p0=p0,
                 prune=prune, verbose=verbose)
         elif pb == LASSO or (pb == LOGREG and not use_PN):
-            sol = celer(
-                is_sparse, pb,
-                X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
-                alpha, w, Xw, theta, norms_X_col, weights,
-                max_iter=max_iter, max_epochs=max_epochs,
-                p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
-                positive=positive)
+            reweights = weights.copy()
+            for _ in range(n_reweightings):
+                sol = celer(
+                    is_sparse, pb, X_dense, X_data, X_indices, X_indptr,
+                    X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
+                    reweights, max_iter, max_epochs, tol=tol, p0=p0,
+                    verbose=verbose, prune=prune, positive=positive)
+                reweights = np.zeros(n_features)
+                reweights[w != 0] = 1. / np.abs(w[w != 0])
+                reweights *= weights  # take into account original weighting
         else:  # pb == LOGREG and use_PN
             sol = newton_celer(
                 is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
                 max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
 
-        coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+        coefs[:, t], thetas[t], dual_gaps[t] = w, theta, sol[2][-1]
         if return_n_iter:
             n_iters[t] = len(sol[2])
 
