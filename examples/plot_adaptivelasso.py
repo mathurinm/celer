@@ -40,7 +40,8 @@ y += noise / norm(noise) * 0.5 * norm(y)
 lasso = LassoCV().fit(X, y)
 adaptive_lasso = AdaptiveLassoCV().fit(X, y)
 
-fig, axarr = plt.subplots(1, 2, figsize=(10, 3), constrained_layout=True)
+fig, axarr = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True,
+                          sharey=True)
 
 for i, model in enumerate([lasso, adaptive_lasso]):
     ax = axarr[i]
@@ -54,7 +55,7 @@ for i, model in enumerate([lasso, adaptive_lasso]):
     ax.set_title(model.__class__.__name__)
 
     ax.set_xlabel(r'$\alpha$')
-    ax.set_ylabel('Mean square error')
+ax[0].set_ylabel('Mean square error')
 plt.show(block=False)
 
 
