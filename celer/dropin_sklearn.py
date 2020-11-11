@@ -22,10 +22,10 @@ class Lasso(Lasso_sklearn):
     """
     Lasso scikit-learn estimator based on Celer solver
 
-    With :math:`n=\mathrm{n\_samples}`, the optimization objective for Lasso
+    With :math:`n` the number of samples, the optimization objective for Lasso
     is::
 
-    ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j|
+        ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j|
 
     Parameters
     ----------
@@ -146,10 +146,11 @@ class LassoCV(RegressorMixin, LinearModelCV):
 
     The best model is selected by cross-validation.
 
-    With :math:`n=\mathrm{n\_samples}`, the optimization objective for Lasso
+    With :math:`n` the number of samples, the optimization objective for Lasso
     is::
 
-    ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j|
+        ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j|
+
 
     Parameters
     ----------
@@ -279,22 +280,23 @@ class LassoCV(RegressorMixin, LinearModelCV):
 
 class AdaptiveLasso(Lasso):
     """
-    AdaptiveLasso scikit-learn estimator based on Celer solver
+    AdaptiveLasso scikit-learn estimator based on Celer solver.
 
-    With :math:`n=\mathrm{n\_samples}`, the optimization objective for Lasso
+    With :math:`n` the number of samples, the optimization objective for Lasso
     is::
 
-    ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j|
+        ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j|
 
-    The adaptive lasso solves a sequence of `n_reweightings` Lassos, with
+    The Adaptive Lasso solves a sequence of ``n_reweightings`` Lassos, with
     weights equal to the inverse magnitude of the coefficients at previous
     iteration::
 
-    w^{it} = argmin ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j |w_j| /
-                |w^{it - 1}|
+        w^{it} = argmin ||y - X w||^2_2 / (2 n) + alpha * \sum_j weights_j \
+w_j| / |w_j^{it - 1}|
 
     Features which had a zero coef at previous iterations have an infinite
     weight and are thus excluded from the model.
+
 
     Parameters
     ----------
@@ -401,7 +403,7 @@ class AdaptiveLassoCV(LassoCV):
 
     The AdaptiveLasso solves a sequence of weighted Lassos::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * sum_j weights_j |w_j|
+        (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * sum_j weights_j |w_j|
 
     Parameters
     ----------
@@ -539,7 +541,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
 
     The optimization objective for MultiTaskLasso is::
 
-    (1 / (2 * n_samples)) * ||y - X W||^2_2 + alpha * ||W||_{21}
+        (1 / (2 * n_samples)) * ||y - X W||^2_2 + alpha * ||W||_{21}
 
     Parameters
     ----------
@@ -665,7 +667,7 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
 
     The optimization objective for Multi-task Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X W||^2_2 + alpha * ||W||_{21}
+        (1 / (2 * n_samples)) * ||y - X W||^2_2 + alpha * ||W||_{21}
 
     Parameters
     ----------
@@ -794,7 +796,7 @@ class LogisticRegression(LogReg_sklearn):
 
     The optimization objective for sparse Logistic regression is::
 
-    \sum_1^n_samples log(1 + e^{-y_i x_i^T w}) + 1. / C * ||w||_1
+        \sum_1^n_samples log(1 + e^{-y_i x_i^T w}) + 1. / C * ||w||_1
 
     The solvers use a working set strategy. To solve problems restricted to a
     subset of features, Celer uses coordinate descent while PN-Celer uses
@@ -991,7 +993,7 @@ class GroupLasso(Lasso_sklearn):
 
     The optimization objective for the Group Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g ||w_g||_2
+        (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g ||w_g||_2
 
     where `w_g` is the weight vector of group number `g`.
 
@@ -1119,7 +1121,7 @@ class GroupLassoCV(LassoCV, LinearModelCV):
 
     The optimization objective for the Group Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g ||w_g||_2
+        (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g ||w_g||_2
 
     where `w_g` is the weight vector of group number `g`.
 
