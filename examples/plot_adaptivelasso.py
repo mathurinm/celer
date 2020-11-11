@@ -55,7 +55,7 @@ for i, model in enumerate([lasso, adaptive_lasso]):
     ax.set_title(model.__class__.__name__)
 
     ax.set_xlabel(r'$\alpha$')
-ax[0].set_ylabel('Mean square error')
+axarr[0].set_ylabel('Mean square error')
 plt.show(block=False)
 
 

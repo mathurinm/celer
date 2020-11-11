@@ -525,7 +525,7 @@ class AdaptiveLassoCV(LassoCV):
         return alphas, coefs, dual_gaps
 
     def _get_estimator(self):
-        return Lasso()
+        return AdaptiveLasso()
 
     def _is_multitask(self):
         return False
