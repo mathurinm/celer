@@ -311,7 +311,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
                     reweights, max_iter, max_epochs, tol=tol, p0=p0,
                     verbose=verbose, prune=prune, positive=positive)
-                print("Inside w ", w)
 
                 reweights = np.zeros(n_features)
                 reweights[w != 0] = 1. / np.abs(w[w != 0])

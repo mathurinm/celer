@@ -519,7 +519,8 @@ class AdaptiveLassoCV(LassoCV):
             X, y, "lasso", alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, max_epochs=self.max_epochs,
             p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
-            positive=self.positive, X_scale=kwargs.get('X_scale', None),
+            n_reweightings=self.n_reweightings, positive=self.positive,
+            X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return alphas, coefs, dual_gaps
 
