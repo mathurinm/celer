@@ -2,10 +2,10 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
 
+cimport cython
 import numpy as np
 cimport numpy as np
-cimport cython
-
+from numpy.math cimport INFINITY
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 
@@ -117,7 +117,7 @@ cdef void set_prios_grp(
 
     for g in range(n_groups):
         if screened[g] or norms_X_grp[g] == 0.:
-            prios[g] = 10000
+            prios[g] = INFINITY
             continue
         nrm_Xgtheta = 0
         for k in range(grp_ptr[g], grp_ptr[g + 1]):
@@ -200,7 +200,7 @@ cpdef celer_grp(
     cdef floating highest_d_obj = 0.
     cdef floating highest_d_obj_in = 0.
     cdef floating tmp, R_sum, norm_wg, bst_scal
-    cdef floating radius = 10000 # TODO
+    cdef floating radius = INFINITY
 
     # acceleration variables:
     cdef int K = 6

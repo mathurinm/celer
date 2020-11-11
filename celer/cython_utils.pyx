@@ -415,7 +415,7 @@ cdef void set_prios(
     # is always centered...
     for j in range(n_features):
         if screened[j] or norms_X_col[j] == 0. or weights[j] == 0.:
-            prios[j] = 10000
+            prios[j] = INFINITY
             continue
         if is_sparse:
             Xj_theta = 0

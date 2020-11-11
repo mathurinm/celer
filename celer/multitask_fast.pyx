@@ -5,6 +5,7 @@ cimport numpy as np
 import numpy as np
 from cython cimport floating
 from libc.math cimport fabs, sqrt
+from numpy.math cimport INFINITY
 
 from .cython_utils cimport fscal, fcopy, fnrm2, fdot, faxpy
 from .cython_utils cimport LASSO, create_accel_pt
@@ -72,7 +73,7 @@ cdef void set_prios_mtl(
 
     for j in range(n_features):
         if screened[j]:
-            prios[j] = 10000  # TODO
+            prios[j] = INFINITY
             continue
         for k in range(n_tasks):
             Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
