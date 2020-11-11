@@ -19,30 +19,29 @@ configure_plt()
 
 # Generating X and y data
 
-n_samples, n_features = 50, 100
+n_samples, n_features = 200, 100
 rng = check_random_state(0)
 X = rng.multivariate_normal(size=n_samples, mean=np.zeros(n_features),
-                            cov=toeplitz(0.99 ** np.arange(n_features)))
+                            cov=toeplitz(0.5 ** np.arange(n_features)))
 
 
-# Create true regression coefficients with 3 groups of 5 non-zero values
+# Create true regression coefficients
 
 w_true = np.zeros(n_features)
-size_supp = 5
-idx = np.random.choice(
-    X.shape[0], size_supp, replace=False)
+size_supp = 10
+idx = rng.choice(X.shape[1], size_supp, replace=False)
 w_true[idx] = (-1) ** np.arange(size_supp)
 noise = rng.randn(n_samples)
 y = X @ w_true
-y += noise / norm(noise) * 0.1 * norm(y)
+y += noise / norm(noise) * 0.5 * norm(y)
 
 
 # Fit an adapted AdaptiveLasso clf
-alpha_max = np.max(np.abs(X.T @ y)) / n_samples
-clf = LassoCV(verbose=1, tol=1e-10)
+
+clf = LassoCV(verbose=0, tol=1e-10)
 clf.fit(X, y)
 
-plt.figure()
+plt.figure(figsize=(6, 4), constrained_layout=True)
 plt.semilogx(clf.alphas_, clf.mse_path_, ':')
 plt.semilogx(clf.alphas_, clf.mse_path_.mean(axis=-1), 'k',
              label='Average across the folds', linewidth=2)
@@ -58,15 +57,14 @@ plt.show(block=False)
 
 model = Lasso(alpha=clf.alpha_, warm_start=True)
 model.coef_ = clf.coef_.copy()  # it is important to do a copy here
-for _ in range(100):
+for _ in range(5):
     model.weights = np.zeros(n_features)
     c = model.coef_
     model.weights[c != 0] = 1 / np.abs(c[c != 0])
     model.fit(X, y)
-    print(model.coef_[model.coef_ != 0])
 
 
-fig = plt.figure(figsize=(10, 4))
+fig = plt.figure(figsize=(10, 4), constrained_layout=True)
 m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
                    use_line_collection=True)
 m, s, _ = plt.stem(clf.coef_, label=r"LassoCV coefficients",
