@@ -1,7 +1,15 @@
 """
-============================================================
-Run AdaptiveLasso to illustrate its smaller coefficient bias
-============================================================
+=============================================
+The smaller coefficient bias of AdaptiveLasso
+=============================================
+
+This examples illustrates the estimation/prediction dilemma of the Lasso:
+to obtain correct prediction (on left out data), the lasso penalty must be
+small and hence the true support is overestimated.
+
+Thanks to its reweighting procedure, the Adaptive Lasso does not suffer from
+the same issue: it reaches a comparable prediction error, while having
+a much better support estimation performance.
 """
 
 import numpy as np
@@ -17,6 +25,7 @@ from celer.plot_utils import configure_plt
 print(__doc__)
 configure_plt()
 
+###############################################################################
 # Generating X and y data
 
 n_samples, n_features = 200, 300
@@ -25,6 +34,7 @@ X = rng.multivariate_normal(size=n_samples, mean=np.zeros(n_features),
                             cov=toeplitz(0.7 ** np.arange(n_features)))
 
 
+###############################################################################
 # Create true regression coefficients
 
 w_true = np.zeros(n_features)
@@ -35,11 +45,13 @@ y = X @ w_true
 y += noise / norm(noise) * 0.5 * norm(y)
 
 
+###############################################################################
 # Fit a LassoCV and an AdaptiveLassoCV classifiers
 
 lasso = LassoCV(n_jobs=-1).fit(X, y)
 adaptive_lasso = AdaptiveLassoCV(n_jobs=-1).fit(X, y)
 
+###############################################################################
 # Evaluate in terms of support recovery
 
 for model in (lasso, adaptive_lasso):
@@ -50,7 +62,8 @@ for model in (lasso, adaptive_lasso):
           f"{FN} false negatives")
 
 
-# Plot left out MSE values and recovered coefficients
+###############################################################################
+# Plot left out MSE values
 
 fig1, axarr = plt.subplots(1, 2, figsize=(14, 4), constrained_layout=True,
                            sharey=True)
@@ -70,6 +83,8 @@ for i, model in enumerate([lasso, adaptive_lasso]):
 axarr[0].set_ylabel('Mean square error')
 plt.show(block=False)
 
+###############################################################################
+# Plot true and estimated coefficients
 
 fig2, ax = plt.subplots(figsize=(12, 4), constrained_layout=True)
 m, s, _ = ax.stem(w_true, label=r"true coef",
