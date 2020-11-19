@@ -35,12 +35,12 @@ plt.ylabel("Average MSE on test folds")
 plt.xlabel(r"$\alpha$")
 
 
-plt.figure()
+plt.figure(constrained_layout=True)
 plt.scatter(Ks, best_alphas)
 plt.xlabel("K")
-plt.ylabel(r"best $\alpha")
+plt.ylabel(r"best $\alpha$")
 
-plt.figure()
+plt.figure(constrained_layout=True)
 plt.scatter(Ks, val_mses)
 plt.xlabel("K")
 plt.ylabel(r"validation MSE")
