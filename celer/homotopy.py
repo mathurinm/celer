@@ -37,18 +37,21 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     Lasso:
 
     .. math::
+
         \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|
 
     Logreg:
 
     .. math::
-        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + alpha
+
+        \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha
         \sum_1^p weights_j |w_j|
 
     GroupLasso, with `G` the number of groups and `w_{[g]}` the subvector
     corresponding the group `g`:
 
     .. math::
+
         \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^G weights_g ||w_{[g]}||_2
 
     Parameters
