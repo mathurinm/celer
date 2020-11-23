@@ -19,7 +19,7 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="celer.GroupLasso" href="celer.GroupLasso.html" />
+    <link rel="next" title="celer.datasets.make_correlated_data" href="celer.datasets.make_correlated_data.html" />
     <link rel="prev" title="API Documentation" href="../api.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -124,7 +124,7 @@ the losses are:</p>
 \[\frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|\]</div>
 <p>Logreg:</p>
 <div class="math notranslate nohighlight">
-\[\sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + alpha
+\[\sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha
 \sum_1^p weights_j |w_j|\]</div>
 <p>GroupLasso, with <cite>G</cite> the number of groups and <cite>w_{[g]}</cite> the subvector
 corresponding the group <cite>g</cite>:</p>
@@ -223,7 +223,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
 </footer>

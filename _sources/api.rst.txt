@@ -15,6 +15,7 @@ Functions
    :toctree: generated/
 
    celer_path
+   celer.datasets.make_correlated_data
 
 Estimators
 

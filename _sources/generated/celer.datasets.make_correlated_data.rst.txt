@@ -1,0 +1,6 @@
+﻿celer.datasets.make\_correlated\_data
+=====================================
+
+.. currentmodule:: celer.datasets
+
+.. autofunction:: make_correlated_data
