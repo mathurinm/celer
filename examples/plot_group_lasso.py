@@ -9,63 +9,41 @@ The example runs the GroupLasso scikit-learn like estimators.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.utils import check_random_state
-
-from celer import GroupLasso, GroupLassoCV
+from celer import GroupLasso, GroupLassoCV, LassoCV
+from celer.datasets import make_correlated_data
 from celer.plot_utils import configure_plt
 
 print(__doc__)
-configure_plt()
+configure_plt(fontsize=16)
 
-# Generating X and y data
+# Generating X, y, and true regression coefs with 4 groups of 5 non-zero values
 
-n_samples, n_features = 30, 50
-rng = check_random_state(0)
-X = rng.randn(n_samples, n_features)
-
-
-# Create true regression coefficients with 3 groups of 5 non-zero values
+n_samples, n_features = 100, 50
 
 w_true = np.zeros(n_features)
 w_true[:5] = 1
-w_true[20:25] = -2
-w_true[40:45] = 1
-y = X @ w_true + rng.randn(n_samples)
+w_true[10:15] = 1
+w_true[30:35] = -1
+w_true[45:] = 1
+X, y, w_true = make_correlated_data(
+    n_samples, n_features, w_true=w_true, snr=5, random_state=0)
 
 
-# Fit an adapted GroupLasso model
+###############################################################################
+# Get group Lasso's optimal alpha for prediction by cross validation
 
 groups = 5  # groups are contiguous and of size 5
 # irregular groups are also supported,
-clf = GroupLasso(groups=groups, alpha=1.1)
-clf.fit(X, y)
+group_lasso = GroupLassoCV(groups=groups)
+group_lasso.fit(X, y)
 
-###############################################################################
-# Display results
+print("Estimated regularization parameter alpha: %s" % group_lasso.alpha_)
 
-fig = plt.figure(figsize=(10, 4))
-m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
-                   use_line_collection=True)
-m, s, _ = plt.stem(clf.coef_, label=r"estimated regression coefficients",
-                   markerfmt='x', use_line_collection=True)
-plt.setp([m, s], color='#ff7f0e')
-plt.xlabel("feature index")
-plt.legend()
-plt.show(block=False)
-
-
-###############################################################################
-# Get optimal alpha for prediction by cross validation
-model = GroupLassoCV(groups=groups)
-model.fit(X, y)
-
-print("Estimated regularization parameter alpha: %s" % model.alpha_)
-
-fig = plt.figure(figsize=(11, 4.5))
-plt.semilogx(model.alphas_, model.mse_path_, ':')
-plt.semilogx(model.alphas_, model.mse_path_.mean(axis=-1), 'k',
+fig = plt.figure(figsize=(8, 3))
+plt.semilogx(group_lasso.alphas_, group_lasso.mse_path_, ':')
+plt.semilogx(group_lasso.alphas_, group_lasso.mse_path_.mean(axis=-1), 'k',
              label='Average across the folds', linewidth=2)
-plt.axvline(model.alpha_, linestyle='--', color='k',
+plt.axvline(group_lasso.alpha_, linestyle='--', color='k',
             label='alpha: CV estimate')
 
 plt.legend()
@@ -75,15 +53,24 @@ plt.ylabel('Mean square error')
 plt.show(block=False)
 
 
+lasso = LassoCV().fit(X, y)
+
+
 ###############################################################################
 # Show optimal regression vector for prediction, obtained by cross validation
 
-fig = plt.figure(figsize=(10, 4))
-m, s, _ = plt.stem(w_true, label=r"true regression coefficients",
+fig = plt.figure(figsize=(8, 3), constrained_layout=True)
+m, s, _ = plt.stem(np.where(w_true)[0], w_true[w_true != 0],
+                   label=r"true regression coefficients",
                    use_line_collection=True)
-m, s, _ = plt.stem(model.coef_, label=r"CV-estimated regression coefficients",
-                   markerfmt='x', use_line_collection=True)
-plt.setp([m, s], color='#ff7f0e')
+labels = ["LassoCV-estimated regression coefficients",
+          "GroupLassoCV-estimated regression coefficients"]
+colors = [u'#ff7f0e', u'#2ca02c']
+
+for w, label, color in zip([lasso.coef_, group_lasso.coef_], labels, colors):
+    m, s, _ = plt.stem(np.where(w)[0], w[w != 0], label=label,
+                       markerfmt='x', use_line_collection=True)
+    plt.setp([m, s], color=color)
 plt.xlabel("feature index")
-plt.legend()
+plt.legend(fontsize=12)
 plt.show(block=False)
