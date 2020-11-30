@@ -28,7 +28,6 @@ w_true[45:] = 1
 X, y, w_true = make_correlated_data(
     n_samples, n_features, w_true=w_true, snr=5, random_state=0)
 
-
 ###############################################################################
 # Get group Lasso's optimal alpha for prediction by cross validation
 
@@ -39,7 +38,7 @@ group_lasso.fit(X, y)
 
 print("Estimated regularization parameter alpha: %s" % group_lasso.alpha_)
 
-fig = plt.figure(figsize=(8, 3))
+fig = plt.figure(figsize=(6, 3), constrained_layout=True)
 plt.semilogx(group_lasso.alphas_, group_lasso.mse_path_, ':')
 plt.semilogx(group_lasso.alphas_, group_lasso.mse_path_.mean(axis=-1), 'k',
              label='Average across the folds', linewidth=2)
@@ -49,7 +48,7 @@ plt.axvline(group_lasso.alpha_, linestyle='--', color='k',
 plt.legend()
 
 plt.xlabel(r'$\alpha$')
-plt.ylabel('Mean square error')
+plt.ylabel('Mean square prediction error')
 plt.show(block=False)
 
 
