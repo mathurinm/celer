@@ -23,13 +23,14 @@ print(__doc__)
 
 print("*** Warning: this example may take more than 5 minutes to run ***")
 X, y = fetch_libsvm('finance')
+y -= np.mean(y)
 n_samples, n_features = X.shape
 alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 print("Dataset size: %d samples, %d features" % X.shape)
 
 # construct grid of regularization parameters alpha
 n_alphas = 11
-alphas = alpha_max * np.geomspace(1, 0.05, n_alphas)
+alphas = alpha_max * np.geomspace(1, 0.1, n_alphas)
 
 ###############################################################################
 # Run Celer on a grid of regularization parameters, for various tolerances:
@@ -47,11 +48,11 @@ for tol_ix, tol in enumerate(tols):
 
 
 labels = [r"\sc{Celer}"]
-figsize = (7, 4)
+figsize = (4, 3.5)
 
 df = pd.DataFrame(results.T, columns=["Celer"])
 df.index = tols
-df.plot.bar(rot=0)
+df.plot.bar(rot=0, figsize=figsize)
 plt.xlabel("stopping tolerance")
 plt.ylabel("path computation time (s)")
 plt.tight_layout()
@@ -76,7 +77,7 @@ plt.show(block=False)
 
 df = pd.DataFrame(gaps.T, columns=map(lambda x: r"tol=%.0e" % x, tols))
 df.index = map(lambda x: "%.2f" % x, alphas / alphas[0])
-ax = df.plot.bar(figsize=(12, 5))
+ax = df.plot.bar(figsize=(7, 4))
 ax.set_ylabel("duality gap reached")
 ax.set_xlabel(r"$\lambda / \lambda_{\mathrm{max}}$")
 ax.set_yscale('log')
