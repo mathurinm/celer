@@ -9,9 +9,9 @@
     .. _sphx_glr_auto_examples_plot_lasso_cv.py:
 
 
-=======================================================
-Run LassoCV for cross-validation on Leukemia dataset
-=======================================================
+========================================================
+Run LassoCV for cross-validation on the Leukemia dataset
+========================================================
 
 The example runs the LassoCV scikit-learn like estimator
 using the Celer algorithm.
@@ -36,6 +36,8 @@ using the Celer algorithm.
     dataset = fetch_openml("leukemia")
     X = np.asfortranarray(dataset.data.astype(float))
     y = 2 * ((dataset.target == "AML") - 0.5)
+    y -= np.mean(y)
+    y /= np.std(y)
 
     kf = KFold(shuffle=True, n_splits=3, random_state=0)
     model = LassoCV(cv=kf, n_jobs=3)
@@ -56,7 +58,7 @@ using the Celer algorithm.
 
     usetex mode requires TeX.
     Loading data...
-    Estimated regularization parameter alpha: 163.51391726524915
+    Estimated regularization parameter alpha: 171.72688429211752
 
 
 
@@ -67,7 +69,7 @@ Display results
 .. code-block:: default
 
 
-    plt.figure(figsize=(7, 3.5), constrained_layout=True)
+    plt.figure(figsize=(5, 3), constrained_layout=True)
     plt.semilogx(model.alphas_, model.mse_path_, ':')
     plt.semilogx(model.alphas_, model.mse_path_.mean(axis=-1), 'k',
                  label='Average across the folds', linewidth=2)
@@ -77,8 +79,8 @@ Display results
     plt.legend()
 
     plt.xlabel(r'$\alpha$')
-    plt.ylabel('Mean square error')
-    plt.show()
+    plt.ylabel('Mean square prediction error')
+    plt.show(block=False)
 
 
 
@@ -93,7 +95,7 @@ Display results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.798 seconds)
+   **Total running time of the script:** ( 0 minutes  9.835 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:
