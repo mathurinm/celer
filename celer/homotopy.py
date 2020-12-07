@@ -25,9 +25,9 @@ GRPLASSO = 2
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
-               n_reweightings=1,
-               groups=None, return_thetas=False, use_PN=False, X_offset=None,
-               X_scale=None, return_n_iter=False, positive=False):
+               n_reweightings=1, groups=None, return_thetas=False,
+               use_PN=False, X_offset=None, X_scale=None, return_n_iter=False,
+               positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
     With `n = len(y)` and `p = len(w)` the number of samples and features,
@@ -253,76 +253,92 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             is_sparse, norms_X_col, n_samples, X_dense, X_data,
             X_indices, X_indptr, X_sparse_scaling)
 
-    # do not skip alphas[0], it is not always alpha_max
-    for t in range(n_alphas):
-        alpha = alphas[t]
-        if verbose:
-            to_print = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
-            print("#" * len(to_print))
-            print(to_print)
-            print("#" * len(to_print))
-        if t > 0:
-            w = coefs[:, t - 1].copy()
-            theta = thetas[t - 1].copy()
-            p0 = max(len(np.where(w != 0)[0]), 1)
-        else:
-            if coef_init is not None:
-                w = coef_init.copy()
-                p0 = max((w != 0.).sum(), p0)
-                # y - Xw for Lasso, Xw for Logreg:
-                Xw = np.zeros(n_samples, dtype=X.dtype)
-                compute_Xw(
-                    is_sparse, pb, Xw, w, y, X_sparse_scaling.any(), X_dense,
-                    X_data, X_indices, X_indptr, X_sparse_scaling)
+    for reweight_iter in range(n_reweightings):
+        # handle reweighting in a clever way: we must loop over reweighting
+        # then over alphas, in order to use warm start efficiently.
+        for t in range(n_alphas):
+            # do not skip alphas[0], it is not always alpha_max
+            alpha = alphas[t]
+            if verbose:
+                to_print = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
+                print("#" * len(to_print))
+                print(to_print)
+                print("#" * len(to_print))
+            if t > 0:
+                w = coefs[:, t - 1].copy()
+                theta = thetas[t - 1].copy()
+                p0 = max(len(np.where(w != 0)[0]), 1)
             else:
-                w = np.zeros(n_features, dtype=X.dtype)
-                Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
+                if coef_init is not None:
+                    w = coef_init.copy()
+                    p0 = max((w != 0.).sum(), p0)
+                    # y - Xw for Lasso, Xw for Logreg:
+                    Xw = np.zeros(n_samples, dtype=X.dtype)
+                    compute_Xw(
+                        is_sparse, pb, Xw, w, y, X_sparse_scaling.any(),
+                        X_dense, X_data, X_indices, X_indptr, X_sparse_scaling)
+                else:
+                    w = np.zeros(n_features, dtype=X.dtype)
+                    Xw = np.zeros(
+                        n_samples, X.dtype) if pb == LOGREG else y.copy()
 
-            # different link equations and normalization scal for dual point:
-            if pb in (LASSO, LOGREG):
-                if pb == LASSO:
+                # different link eqs and normalization scal for dual point:
+                if pb in (LASSO, LOGREG):
+                    if pb == LASSO:
+                        theta = Xw.copy()
+                    elif pb == LOGREG:
+                        theta = y / (1 + np .exp(y * Xw)) / alpha
+                    scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
+                                    positive)
+                elif pb == GRPLASSO:
                     theta = Xw.copy()
-                elif pb == LOGREG:
-                    theta = y / (1 + np .exp(y * Xw)) / alpha
-                scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
-                                positive)
-            elif pb == GRPLASSO:
-                theta = Xw.copy()
-                scal = dnorm_grp(
-                    is_sparse, theta, grp_ptr, grp_indices, X_dense,
-                    X_data, X_indices, X_indptr, X_sparse_scaling,
-                    len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
-                    X_sparse_scaling.any())
-            theta /= scal
+                    scal = dnorm_grp(
+                        is_sparse, theta, grp_ptr, grp_indices, X_dense,
+                        X_data, X_indices, X_indptr, X_sparse_scaling,
+                        len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
+                        X_sparse_scaling.any())
+                theta /= scal
 
-        # celer modifies w, Xw, and theta in place:
-        if pb == GRPLASSO:
-            sol = celer_grp(
-                is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
-                X_indices,
-                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
-                norms_X_grp, tol, max_iter, max_epochs, p0=p0,
-                prune=prune, verbose=verbose)
-        elif pb == LASSO or (pb == LOGREG and not use_PN):
-            reweights = weights.copy()
-            for _ in range(n_reweightings):
+            # celer modifies w, Xw, and theta in place:
+            if pb == GRPLASSO:
+                sol = celer_grp(
+                    is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
+                    X_indices,
+                    X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
+                    norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
+                    prune=prune, verbose=verbose)
+            elif pb == LASSO or (pb == LOGREG and not use_PN):
+                if reweight_iter > 0:
+                    # prev_w = coefs[:, t]  # w at previous reweighting
+                    reweights = np.zeros(n_features)
+                    prev_magnitudes = np.abs(coefs[:, t][coefs[:, t] != 0])
+                    reweights[coefs[:, t] != 0] = 1. / prev_magnitudes
+                    reweights *= weights
+                else:
+                    reweights = weights.copy()
+
                 sol = celer(
                     is_sparse, pb, X_dense, X_data, X_indices, X_indptr,
                     X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,
                     reweights, max_iter, max_epochs, tol=tol, p0=p0,
                     verbose=verbose, prune=prune, positive=positive)
 
-                reweights = np.zeros(n_features)
-                reweights[w != 0] = 1. / np.abs(w[w != 0])
-                reweights *= weights  # take into account original weighting
-        else:  # pb == LOGREG and use_PN
-            sol = newton_celer(
-                is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-                max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
+            else:  # pb == LOGREG and use_PN
+                sol = newton_celer(
+                    is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha,
+                    w, max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
 
-        coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
-        if return_n_iter:
-            n_iters[t] = len(sol[2])
+            coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
+            if return_n_iter:
+                n_iters[t] = len(sol[2])  # meaningless for reweightings > 0
+
+            if dual_gaps[t] > tol:
+                warnings.warn(
+                    'Objective did not converge. Increasing `tol` may make' +
+                    ' the solver faster without affecting the results much.' +
+                    '\nFitting data with very small alpha causes precision' +
+                    ' issues.',
+                    ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps
     if return_thetas:
