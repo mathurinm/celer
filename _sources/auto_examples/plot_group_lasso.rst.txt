@@ -101,7 +101,7 @@ Get group Lasso's optimal alpha for prediction by cross validation
 
  .. code-block:: none
 
-    Estimated regularization parameter alpha: 0.32321502557242576
+    Estimated regularization parameter alpha: 0.22996538352674312
 
 
 
@@ -141,7 +141,7 @@ Show optimal regression vector for prediction, obtained by cross validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.603 seconds)
+   **Total running time of the script:** ( 0 minutes  0.586 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:
