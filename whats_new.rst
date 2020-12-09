@@ -1,5 +1,14 @@
+Version 0.6
+-----------
+
+Changelog
+~~~~~~~~~
+- Added `weights` to the Lasso estimator.
+- Added `make_correlated_data` to the `datasets` module, to generate simulations with Toeplitz correlated design.
+
+
 Version 0.5
-------------
+-----------
 
 Changelog
 ~~~~~~~~~
@@ -9,7 +18,7 @@ Changelog
 - Added sklearn-like `LogisticRegression` class.
 
 Version 0.4
-------------
+-----------
 
 Changelog
 ~~~~~~~~~
@@ -17,7 +26,7 @@ Changelog
 
 
 Version 0.3.1
-------------
+-------------
 
 Changelog
 ~~~~~~~~~
