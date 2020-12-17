@@ -153,11 +153,12 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     clf2 = sklearn_LassoCV(**params, max_iter=10000)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(clf.mse_path_, clf2.mse_path_, atol=1e-4)
+    np.testing.assert_allclose(
+        clf.mse_path_, clf2.mse_path_, rtol=1e-3, atol=1e-4)
     np.testing.assert_allclose(clf.alpha_, clf2.alpha_)
     np.testing.assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
 
-    # TODO this one is slow (3s * 8 tests). Pass an instance and icnrease tol
+    # TODO this one is slow (3s * 8 tests). Pass an instance and increase tol
     # check_estimator(LassoCV)
 
 
