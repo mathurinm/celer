@@ -130,9 +130,9 @@ def celer(
             d_obj = d_obj_from_inner
             fcopy(&n_samples, &theta_in[0], &inc, &theta[0], &inc)
 
-        if t == 0 or d_obj > highest_d_obj:
-            highest_d_obj = d_obj
-            # TODO implement a best_theta
+        highest_d_obj = d_obj  # TODO monotonicity could be enforced but it
+        # would add yet another variable, best_theta. I'm not sure it brings
+        # anything.
 
         p_obj = primal(pb, alpha, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
