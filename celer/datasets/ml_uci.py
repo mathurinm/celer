@@ -13,6 +13,20 @@ NAMES = {'gisette_train': 'gisette/GISETTE/gisette_train'}
 
 
 def fetch_ml_uci(dataset):
+    """Get a datasest from ML UCI database.
+
+    Parameters
+    ----------
+    dataset: string
+        Dataset name. Must be in NAMES.keys()
+
+    Returns
+    -------
+    X: np.array, shape (n_samples, n_features)
+        Design matrix.
+    y: np.array, shape (n_samples)
+        Target vector.
+    """
     if not os.path.exists(pjoin(CELER_PATH, "ml_uci")):
         os.makedirs(pjoin(CELER_PATH, "ml_uci"))
 
