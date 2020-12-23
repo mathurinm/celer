@@ -4,19 +4,10 @@
 API Documentation
 =================
 
-.. currentmodule:: celer
-
-Celer
-=====
-
-Functions
-
-.. autosummary::
-   :toctree: generated/
-
-   celer_path
-
 Estimators
+==========
+
+.. currentmodule:: celer
 
 .. autosummary::
    :toctree: generated/
@@ -30,11 +21,30 @@ Estimators
    MultiTaskLassoCV
 
 
-Datasets fetchers
+Functions
+=========
+
 .. autosummary::
    :toctree: generated/
 
-   celer.datasets.make_correlated_data
-   celer.datasets.fetch_ml_uci
-   celer.datasets.fetch_libsvm
-   celer.datasets.fetch_climate
+   celer_path
+
+
+Datasets fetchers
+=================
+
+:py:mod:`celer.datasets`:
+
+.. currentmodule:: celer.datasets
+
+.. automodule:: celer.datasets
+   :no-members:
+   :no-inherited-members:
+
+.. autosummary::
+   :toctree: generated/
+
+   make_correlated_data
+   fetch_ml_uci
+   fetch_libsvm
+   fetch_climate
