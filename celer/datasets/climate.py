@@ -18,7 +18,7 @@ FILES = ["air.mon.mean.nc", 'pres.mon.mean.nc', 'pr_wtr.mon.mean.nc',
          ]
 
 
-def get_data(filename):
+def _get_data(filename):
     data = xarray.open_dataset(
         pjoin(CELER_PATH, 'climate/surface', filename), decode_times=False)
 
@@ -41,7 +41,7 @@ def get_data(filename):
     return X
 
 
-def download_climate(replace=False):
+def _download_climate(replace=False):
     prefix = "ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/"
 
     for fname in FILES:
@@ -50,9 +50,9 @@ def download_climate(replace=False):
                           replace=replace)
 
 
-def target_region(lx, Lx):
+def _target_region(lx, Lx):
 
-    arrays = [get_data(filename) for filename in FILES]
+    arrays = [_get_data(filename) for filename in FILES]
 
     n, p = arrays[0].shape
     X = np.zeros((n, 7 * (p - 1)), order='F')
@@ -78,19 +78,31 @@ def target_region(lx, Lx):
 
 
 def fetch_climate(replace=False):
+    """Get design matrix and observation for the climate dataset.
+
+    Parameters
+    ----------
+    replace: int (default=False)
+        Whether to redownload the files if already present on disk.
+
+    Returns
+    -------
+    X: np.array, shape (n_samples, n_features)
+        Design matrix.
+    y: np.array, shape (n_samples,)
+        Observations.
+    """
     path = pjoin(CELER_PATH, 'climate')
     if not os.path.exists(path):
         os.mkdir(path)
 
-    download_climate(replace=replace)
+    _download_climate(replace=replace)
     lx, Lx = 14, 17  # Dakar
     print("Preprocessing and loading target region...")
-    X, y = target_region(lx, Lx)
+    X, y = _target_region(lx, Lx)
 
     return X, y
 
 
 if __name__ == "__main__":
-    lx, Lx = 14, 17  # Dakar
-    fetch_climate(replace=False)
-    X, y = target_region(lx, Lx)
+    X, y = fetch_climate(replace=True)

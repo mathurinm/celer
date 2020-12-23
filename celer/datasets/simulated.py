@@ -7,7 +7,7 @@ from numpy.linalg import norm
 from sklearn.utils import check_random_state
 
 
-def make_correlated_data(n_samples=100, n_features=50, rho=0.6, snr=3,
+def make_correlated_data(n_samples=100, n_features=50, corr=0.6, snr=3,
                          density=0.2, w_true=None, random_state=None):
     r"""Generate correlated design matrix with decaying correlation rho**|i-j|.
     according to
@@ -38,14 +38,14 @@ def make_correlated_data(n_samples=100, n_features=50, rho=0.6, snr=3,
         :math:`C_{i, j}` in the correlation matrix will be
         :math:`\rho^{|i-j|}`. This parameter should be selected in
         :math:`[0, 1[`.
-    snr : float
+    snr: float
         Signal-to-noise ratio.
+    density: float
+        Proportion of non zero elements in w_true if it must be simulated.
     w_true: np.array, shape (n_features,) | None
         True regression coefficients. If None, an array with `nnz` non zero
         standard Gaussian entries is simulated.
-    nnz: int
-        Number of non zero elements in w_true if it must be simulated.
-    random_state : int | RandomState instance | None (default)
+    random_state: int | RandomState instance | None (default)
         Determines random number generation for data generation. Use an int to
         make the randomness deterministic.
 
@@ -58,26 +58,26 @@ def make_correlated_data(n_samples=100, n_features=50, rho=0.6, snr=3,
     w_true: ndarray, shape (n_features,)
         True regression vector of the model.
     """
-    if not 0 <= rho < 1:
-        raise ValueError("The correlation `rho` should be chosen in [0, 1[.")
+    if not 0 <= corr < 1:
+        raise ValueError("The correlation `corr` should be chosen in [0, 1[.")
     if not 0 < density <= 1:
         raise ValueError("The density should be chosen in ]0, 1].")
     rng = check_random_state(random_state)
     nnz = int(density * n_features)
 
-    if rho == 0:
+    if corr == 0:
         X = np.asfortranarray(np.random.randn(n_samples, n_features))
     else:
         # X is generated cleverly using an AR model with reason corr and
-        # innovation sigma^2 = 1 - \rho ** 2: X[:, j+1] = rho X[:, j] + eps_j
+        # innovation sigma^2 = 1 - corr ** 2: X[:, j+1] = corr X[:, j] + eps_j
         # where eps_j = sigma * np.random.randn(n_samples)
-        sigma = np.sqrt(1 - rho * rho)
+        sigma = np.sqrt(1 - corr ** 2)
         U = rng.randn(n_samples)
 
         X = np.empty([n_samples, n_features], order='F')
         X[:, 0] = U
         for j in range(1, n_features):
-            U *= rho
+            U *= corr
             U += sigma * rng.randn(n_samples)
             X[:, j] = U
 

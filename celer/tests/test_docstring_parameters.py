@@ -36,6 +36,7 @@ else:
 public_modules = [
     # the list of modules users need to access for all functionality
     'celer',
+    'celer.datasets'
 ]
 
 
