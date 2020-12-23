@@ -1,0 +1,6 @@
+﻿celer.datasets.fetch\_climate
+=============================
+
+.. currentmodule:: celer.datasets
+
+.. autofunction:: fetch_climate

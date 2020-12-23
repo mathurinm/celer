@@ -11,11 +11,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -187,7 +187,7 @@ initialization, otherwise, just erase the previous solution.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>coef_</strong><span class="classifier">array, shape (n_features,)</span></dt><dd><p>parameter vector (w in the cost function formula)</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code><span class="classifier">scipy.sparse matrix, shape (n_features, 1)</span></dt><dd><p>sparse representation of the fitted <code class="docutils literal notranslate"><span class="pre">coef_</span></code></p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code><span class="classifier">scipy.sparse matrix, shape (n_features, 1)</span></dt><dd><p>Sparse representation of the fitted <cite>coef_</cite>.</p>
 </dd>
 <dt><strong>intercept_</strong><span class="classifier">float</span></dt><dd><p>constant term in decision function.</p>
 </dd>
@@ -218,14 +218,14 @@ initialization, otherwise, just erase the previous solution.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>([deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>(X, y, *[, l1_ratio, eps, n_alphas, …])</p></td>
 <td><p>Compute elastic net path with coordinate descent.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(X)</p></td>
 <td><p>Predict using the linear model.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(X, y[, sample_weight])</p></td>
-<td><p>Return the coefficient of determination R^2 of the prediction.</p></td>
+<td><p>Return the coefficient of determination <span class="math notranslate nohighlight">\(R^2\)</span> of the prediction.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
@@ -240,7 +240,7 @@ initialization, otherwise, just erase the previous solution.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_coef_</span></code></p></td>
-<td><p>sparse representation of the fitted <code class="docutils literal notranslate"><span class="pre">coef_</span></code></p></td>
+<td><p>Sparse representation of the fitted <cite>coef_</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -264,7 +264,7 @@ data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.0.<br/>
     </p>
   </div>
 </footer>

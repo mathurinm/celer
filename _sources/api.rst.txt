@@ -15,7 +15,6 @@ Functions
    :toctree: generated/
 
    celer_path
-   celer.datasets.make_correlated_data
 
 Estimators
 
@@ -29,3 +28,13 @@ Estimators
    LogisticRegression
    MultiTaskLasso
    MultiTaskLassoCV
+
+
+Datasets fetchers
+.. autosummary::
+   :toctree: generated/
+
+   celer.datasets.make_correlated_data
+   celer.datasets.fetch_ml_uci
+   celer.datasets.fetch_libsvm
+   celer.datasets.fetch_climate

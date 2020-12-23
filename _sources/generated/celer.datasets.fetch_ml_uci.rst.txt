@@ -1,0 +1,6 @@
+﻿celer.datasets.fetch\_ml\_uci
+=============================
+
+.. currentmodule:: celer.datasets
+
+.. autofunction:: fetch_ml_uci

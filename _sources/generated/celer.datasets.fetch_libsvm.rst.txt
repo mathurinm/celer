@@ -1,0 +1,6 @@
+﻿celer.datasets.fetch\_libsvm
+============================
+
+.. currentmodule:: celer.datasets
+
+.. autofunction:: fetch_libsvm

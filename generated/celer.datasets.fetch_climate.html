@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>celer.datasets.make_correlated_data &#8212; celer 0.6.1dev documentation</title>
+    <title>celer.datasets.fetch_climate &#8212; celer 0.6.1dev documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -75,7 +75,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">celer.datasets.make_correlated_data</a></li>
+<li><a class="reference internal" href="#">celer.datasets.fetch_climate</a></li>
 </ul>
 </ul>
 </li>
@@ -87,7 +87,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/celer.datasets.make_correlated_data.rst.txt"
+  <a href="../_sources/generated/celer.datasets.fetch_climate.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -109,52 +109,24 @@
 
 <div class="container content-container">
   
-  <div class="section" id="celer-datasets-make-correlated-data">
-<h1>celer.datasets.make_correlated_data<a class="headerlink" href="#celer-datasets-make-correlated-data" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="celer-datasets-fetch-climate">
+<h1>celer.datasets.fetch_climate<a class="headerlink" href="#celer-datasets-fetch-climate" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="celer.datasets.make_correlated_data">
-<code class="sig-prename descclassname">celer.datasets.</code><code class="sig-name descname">make_correlated_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_samples</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">n_features</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">corr</span><span class="o">=</span><span class="default_value">0.6</span></em>, <em class="sig-param"><span class="n">snr</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">w_true</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#celer.datasets.make_correlated_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate correlated design matrix with decaying correlation rho**|i-j|.
-according to</p>
-<div class="math notranslate nohighlight">
-\[y = X w^* + \epsilon\]</div>
-<p>such that <span class="math notranslate nohighlight">\(||X w^*|| / ||\epsilon|| = snr\)</span>.</p>
-<p>The generated features have mean 0, variance 1 and the expected correlation
-structure:</p>
-<div class="math notranslate nohighlight">
-\[\mathbb E[x_i] = 0~, \quad \mathbb E[x_i^2] = 1  \quad
-\text{and} \quad \mathbb E[x_ix_j] = \rho^{|i-j|}\]</div>
+<dt id="celer.datasets.fetch_climate">
+<code class="sig-prename descclassname">celer.datasets.</code><code class="sig-name descname">fetch_climate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#celer.datasets.fetch_climate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get design matrix and observation for the climate dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>n_samples: int</strong></dt><dd><p>Number of samples in the design matrix.</p>
-</dd>
-<dt><strong>n_features: int</strong></dt><dd><p>Number of features in the design matrix.</p>
-</dd>
-<dt><strong>corr: float</strong></dt><dd><p>Correlation <span class="math notranslate nohighlight">\(\rho\)</span> between successive features. The element
-<span class="math notranslate nohighlight">\(C_{i, j}\)</span> in the correlation matrix will be
-<span class="math notranslate nohighlight">\(\rho^{|i-j|}\)</span>. This parameter should be selected in
-<span class="math notranslate nohighlight">\([0, 1[\)</span>.</p>
-</dd>
-<dt><strong>snr: float</strong></dt><dd><p>Signal-to-noise ratio.</p>
-</dd>
-<dt><strong>density: float</strong></dt><dd><p>Proportion of non zero elements in w_true if it must be simulated.</p>
-</dd>
-<dt><strong>w_true: np.array, shape (n_features,) | None</strong></dt><dd><p>True regression coefficients. If None, an array with <cite>nnz</cite> non zero
-standard Gaussian entries is simulated.</p>
-</dd>
-<dt><strong>random_state: int | RandomState instance | None (default)</strong></dt><dd><p>Determines random number generation for data generation. Use an int to
-make the randomness deterministic.</p>
+<dt><strong>replace: int (default=False)</strong></dt><dd><p>Whether to redownload the files if already present on disk.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>X: ndarray, shape (n_samples, n_features)</dt><dd><p>A design matrix with Toeplitz covariance.</p>
+<dt>X: np.array, shape (n_samples, n_features)</dt><dd><p>Design matrix.</p>
 </dd>
-<dt>y: ndarray, shape (n_samples,)</dt><dd><p>Observation vector.</p>
-</dd>
-<dt>w_true: ndarray, shape (n_features,)</dt><dd><p>True regression vector of the model.</p>
+<dt>y: np.array, shape (n_samples,)</dt><dd><p>Observations.</p>
 </dd>
 </dl>
 </dd>
