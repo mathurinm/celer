@@ -82,7 +82,7 @@ def fetch_climate(replace=False):
 
     Parameters
     ----------
-    replace: int (default=False)
+    replace: bool (default=False)
         Whether to redownload the files if already present on disk.
 
     Returns
