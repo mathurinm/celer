@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html>
@@ -8,6 +7,7 @@
     <title>API Documentation &#8212; celer 0.6.1dev documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
@@ -19,7 +19,7 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="celer.celer_path" href="generated/celer.celer_path.html" />
+    <link rel="next" title="celer.GroupLasso" href="generated/celer.GroupLasso.html" />
     <link rel="prev" title="Celer" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -68,35 +68,10 @@
 </ul>
 </li>
               
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">API Documentation</a><ul>
-<li><a class="reference internal" href="#celer">Celer</a><ul>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</ul>
-</li>
-              
             
             
             
             
-            
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="_sources/api.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
             
           </ul>
 
@@ -114,25 +89,14 @@
     </div>
   </div>
 
-<div class="container content-container">
-  
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
   <div class="section" id="api-documentation">
 <span id="id1"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="celer">
-<h2>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h2>
-<p>Functions</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a>(X, y, pb[, eps, n_alphas, …])</p></td>
-<td><p>Compute optimization path with Celer as inner solver.</p></td>
-</tr>
-</tbody>
-</table>
-<p>Estimators</p>
+<div class="section" id="estimators">
+<h2>Estimators<a class="headerlink" href="#estimators" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -162,27 +126,52 @@
 </tr>
 </tbody>
 </table>
-<p>Datasets fetchers
-.. autosummary:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">toctree</span><span class="p">:</span> <span class="n">generated</span><span class="o">/</span>
-
-<span class="n">celer</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">make_correlated_data</span>
-<span class="n">celer</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_ml_uci</span>
-<span class="n">celer</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_libsvm</span>
-<span class="n">celer</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_climate</span>
-</pre></div>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.celer_path.html#celer.celer_path" title="celer.celer_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">celer_path</span></code></a>(X, y, pb[, eps, n_alphas, …])</p></td>
+<td><p>Compute optimization path with Celer as inner solver.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="datasets-fetchers">
+<h2>Datasets fetchers<a class="headerlink" href="#datasets-fetchers" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-celer.datasets" title="celer.datasets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">celer.datasets</span></code></a>:</p>
+<span class="target" id="module-celer.datasets"></span><table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.datasets.make_correlated_data.html#celer.datasets.make_correlated_data" title="celer.datasets.make_correlated_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_correlated_data</span></code></a>([n_samples, …])</p></td>
+<td><p>Generate correlated design matrix with decaying correlation rho**|i-j|.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/celer.datasets.fetch_ml_uci.html#celer.datasets.fetch_ml_uci" title="celer.datasets.fetch_ml_uci"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_ml_uci</span></code></a>(dataset)</p></td>
+<td><p>Get a datasest from ML UCI database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/celer.datasets.fetch_libsvm.html#celer.datasets.fetch_libsvm" title="celer.datasets.fetch_libsvm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_libsvm</span></code></a>(dataset[, replace, normalize, …])</p></td>
+<td><p>This function is deprecated, we now rely on the libsvmdata package.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/celer.datasets.fetch_climate.html#celer.datasets.fetch_climate" title="celer.datasets.fetch_climate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_climate</span></code></a>([replace])</p></td>
+<td><p>Get design matrix and observation for the climate dataset.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
+
+
+    </div>
+      
+  </div>
 </div>
-
-
-</div>
-
-<!-- Github "fork me" ribbon -->
-<a href="https://github.com/mathurinm/celer"><img style="position: absolute; top: 50px; right: 0; border: 0;"
-src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
-alt="Fork me on GitHub"
-data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
 <footer class="footer">
   <div class="container">
     <p class="pull-right">
