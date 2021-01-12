@@ -5,17 +5,16 @@
 import numpy as np
 cimport numpy as np
 cimport cython
+import warnings
 
 from cython cimport floating
 from libc.math cimport fabs, sqrt, exp
+from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
                             sigmoid, ST, LASSO, LOGREG, dnorm_l1,
                             set_prios)
-
-cdef:
-    int inc = 1
 
 
 @cython.boundscheck(False)
@@ -41,15 +40,22 @@ def celer(
     else:
         dtype = np.float32
 
+    cdef int inc = 1
     cdef int verbose_in = max(0, verbose - 1)
     cdef int n_features = w.shape[0]
     cdef int n_samples = y.shape[0]
+
+    # scale stopping criterion: multiply tol by primal value at w = 0
+    if pb == LASSO:
+        # actually for Lasso, omit division by 2 to match sklearn
+        tol = tol * fnrm2(&n_samples, &y[0], &inc) ** 2 / n_samples
+    elif pb == LOGREG:
+        tol *= n_samples * np.log(2)
 
     if p0 > n_features:
         p0 = n_features
 
     cdef int i, j, k, t, idx, startptr, endptr, epoch
-    cdef int inc = 1
     cdef int ws_size = 0
     cdef int nnz = 0
     cdef floating gap, p_obj, d_obj, highest_d_obj, radius, tol_in
@@ -348,6 +354,13 @@ def celer(
         else:
             print("!!! Inner solver did not converge at epoch "
                   "%d, gap: %.2e > %.2e" % (epoch, gap_in, tol_in))
+    else:
+        warnings.warn(
+            'Objective did not converge: duality ' +
+            f'gap: {gap}, tolerance: {tol}. Increasing `tol` may make the' +
+            ' solver faster without affecting the results much. \n' +
+            'Fitting data with very small alpha causes precision issues.',
+            ConvergenceWarning)
 
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
