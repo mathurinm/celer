@@ -31,7 +31,7 @@ def test_celer_path_logreg(solver):
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     alphas = alpha_max * np.geomspace(1, 1e-2, 10)
 
-    tol = 1e-8
+    tol = 1e-11
     coefs, Cs, n_iters = _logistic_regression_path(
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
         solver='liblinear', tol=tol)
@@ -40,7 +40,7 @@ def test_celer_path_logreg(solver):
         X, y, "logreg", alphas=alphas, tol=tol, verbose=1,
         use_PN=(solver == "celer-pn"))
 
-    np.testing.assert_array_less(gaps, tol)
+    np.testing.assert_array_less(gaps, tol * len(y) * np.log(2))
     np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
     np.testing.assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
 
@@ -88,26 +88,29 @@ def test_LogisticRegression(sparse_X):
 def test_celer_path(sparse_X, alphas, pb):
     """Test Lasso path convergence."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    tol = 1e-6
     if pb == "logreg":
         y = np.sign(y)
+        tol_scaled = tol * len(y) * np.log(2)
+    else:
+        tol_scaled = tol * norm(y) ** 2 / len(y)
     n_samples = X.shape[0]
     if alphas is not None:
         alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
         n_alphas = 10
         alphas = alpha_max * np.logspace(0, -2, n_alphas)
 
-    tol = 1e-6
-    alphas, coefs, gaps, thetas, n_iters = celer_path(
+    alphas, _, gaps, _, n_iters = celer_path(
         X, y, pb, alphas=alphas, tol=tol, return_thetas=True,
         verbose=1, return_n_iter=True)
-    np.testing.assert_array_less(gaps, tol)
+    np.testing.assert_array_less(gaps, tol_scaled)
     # hack because array_less wants strict inequality
     np.testing.assert_array_less(0.99, n_iters)
 
 
 def test_convergence_warning():
     X, y = build_dataset(n_samples=10, n_features=10)
-    tol = - 1  # gap canot be negative, a covnergence warning should be raised
+    tol = - 1  # gap canot be negative, a convergence warning should be raised
     alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
     clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
 
@@ -124,7 +127,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     """Test that celer_path matches sklearn lasso_path."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
-    tol = 1e-12
+    tol = 1e-14
     params = dict(eps=1e-3, n_alphas=10, tol=tol)
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", return_thetas=False, verbose=1, prune=prune,
@@ -134,8 +137,8 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
                                     max_iter=10000)
 
     np.testing.assert_allclose(alphas1, alphas2)
-    np.testing.assert_array_less(gaps1, tol)
-    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-5)
+    np.testing.assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
+    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-4)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
@@ -192,13 +195,17 @@ def test_Lasso(sparse_X, fit_intercept, positive):
                          product([True, False], ["lasso", "logreg"]))
 def test_celer_single_alpha(sparse_X, pb):
     X, y = build_dataset(n_samples=20, n_features=100, sparse_X=sparse_X)
+    tol = 1e-6
+
     if pb == "logreg":
         y = np.sign(y)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+        tol_scaled = tol * np.log(2) * len(y)
+    else:
+        tol_scaled = tol * norm(y) ** 2 / len(y)
 
-    tol = 1e-6
-    _, coefs, gaps = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
-    np.testing.assert_array_less(gaps, tol)
+    alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
+    _, _, gaps = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
+    np.testing.assert_array_less(gaps, tol_scaled)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
@@ -214,7 +221,7 @@ def test_zero_column(sparse_X):
     _, coefs, gaps = celer_path(
         X, y, "lasso", alphas=[alpha_max / 10.], tol=tol, p0=50, prune=0)
     w = coefs.T[0]
-    np.testing.assert_array_less(gaps, tol)
+    np.testing.assert_array_less(gaps, tol * norm(y) ** 2 / len(y))
     np.testing.assert_equal(w.shape[0], X.shape[1])
 
 
@@ -246,7 +253,7 @@ def test_weights():
     np.random.seed(0)
     weights = np.abs(np.random.randn(X.shape[1]))
 
-    tol = 1e-12
+    tol = 1e-14
     params = {'n_alphas': 10, 'tol': tol}
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", weights=weights, verbose=1,
@@ -257,9 +264,9 @@ def test_weights():
 
     np.testing.assert_allclose(alphas1, alphas2)
     np.testing.assert_allclose(
-        coefs1, coefs2 / weights[:, None], atol=1e-5, rtol=1e-3)
-    np.testing.assert_array_less(gaps1, tol)
-    np.testing.assert_array_less(gaps2, tol)
+        coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
+    np.testing.assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
+    np.testing.assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
 
 if __name__ == "__main__":
