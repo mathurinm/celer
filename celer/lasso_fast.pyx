@@ -48,7 +48,7 @@ def celer(
     # scale stopping criterion: multiply tol by primal value at w = 0
     if pb == LASSO:
         # actually for Lasso, omit division by 2 to match sklearn
-        tol = tol * fnrm2(&n_samples, &y[0], &inc) ** 2 / n_samples
+        tol *= fnrm2(&n_samples, &y[0], &inc) ** 2 / n_samples
     elif pb == LOGREG:
         tol *= n_samples * np.log(2)
 
@@ -146,7 +146,7 @@ def celer(
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
-        if gap < tol:
+        if gap <= tol:
             if verbose:
                 print("\nEarly exit, gap: %.2e < %.2e" % (gap, tol))
             break

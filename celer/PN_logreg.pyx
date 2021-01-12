@@ -37,6 +37,10 @@ def newton_celer(
         dtype = np.float32
 
     cdef int verbose_in = max(0, verbose - 1)
+    cdef int n_samples = y.shape[0]
+    cdef int n_features = w.shape[0]
+    # scale tol for when problem has large or small p_obj
+    tol *= n_samples * np.log(2)
 
     cdef int i, j, t, k
     cdef floating p_obj, d_obj, gap, norm_Xtheta, norm_Xtheta_acc
@@ -46,8 +50,7 @@ def newton_celer(
     cdef floating eps_inner = 0.1
     cdef floating growth = 2.
 
-    cdef int n_samples = y.shape[0]
-    cdef int n_features = w.shape[0]
+
     cdef floating[:] weights_pen = np.ones(n_features, dtype=dtype)
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
@@ -181,7 +184,7 @@ def newton_celer(
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap))
 
-        if gap < tol:
+        if gap <= tol:
             if verbose:
                 print("Early exit, gap: %.2e < %.2e" % (gap, tol))
             break
@@ -375,7 +378,7 @@ cpdef int PN_logreg(
         gap = p_obj - d_obj
         if verbose_in:
             print("iter %d, p_obj %.10f, d_obj % .10f" % (pn_iter, p_obj, d_obj))
-        if gap < tol_inner:
+        if gap <= tol_inner:
             if verbose_in:
                 print("%.2e < %.2e, exit." % (gap, tol_inner))
             break

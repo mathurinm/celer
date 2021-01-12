@@ -147,7 +147,7 @@ cpdef celer_grp(
         int[::1] grp_ptr, floating[::1] X_data, int[::1] X_indices,
         int[::1] X_indptr, floating[::1] X_mean, floating[:] y, floating alpha,
         floating[:] w, floating[:] R, floating[::1] theta,
-        floating[::1] norms_X_grp, floating eps, int max_iter, int max_epochs,
+        floating[::1] norms_X_grp, floating tol, int max_iter, int max_epochs,
         int gap_freq, floating tol_ratio_inner=0.3, int p0=100, bint prune=1, bint use_accel=1,
         bint verbose=0):
 
@@ -164,8 +164,10 @@ cpdef celer_grp(
     cdef int n_groups = norms_X_grp.shape[0]
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating[::1] lc_groups = np.square(norms_X_grp)
+    # scale tolerance to account for small or large y:
+    tol *= norm_y2 / n_samples
 
+    cdef floating[::1] lc_groups = np.square(norms_X_grp)
     cdef int[:] all_groups = np.arange(n_groups, dtype=np.int32)
     cdef int[:] dummy_C = np.zeros(1, dtype=np.int32)
     cdef int[:] C
@@ -255,9 +257,9 @@ cpdef celer_grp(
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
-        if gap < eps:
+        if gap <= tol:
             if verbose:
-                print("\nEarly exit, gap: %.2e < %.2e" % (gap, eps))
+                print("\nEarly exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
         # if pb == LASSO:
@@ -306,7 +308,7 @@ cpdef celer_grp(
         if prune:
             tol_in = 0.3 * gap
         else:
-            tol_in = eps
+            tol_in = tol
 
         if verbose:
             print(", %d groups in subpb (%d left)" %

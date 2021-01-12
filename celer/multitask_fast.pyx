@@ -145,6 +145,8 @@ def celer_mtl(
     cdef int n_features = W.shape[0]
 
 
+
+
     if p0 > n_features:
         p0 = n_features
 
@@ -162,6 +164,8 @@ def celer_mtl(
     cdef floating[:] Xj_theta = np.empty(n_tasks, dtype=dtype)
 
     cdef floating norm_Y2 = fnrm2(&n_obs, &Y[0, 0], &inc) ** 2
+    # scale tolerance to account for small or large Y:
+    tol *= norm_Y2 / n_samples
 
     cdef floating[::1, :] theta_inner = np.zeros((n_samples, n_tasks),
                                                   dtype=dtype, order='F')
@@ -206,7 +210,7 @@ def celer_mtl(
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
-        if gap < tol:
+        if gap <= tol + 1e-16:
             if verbose:
                 print("\nEarly exit, gap %.2e < %.2e" % (gap, tol))
             break
