@@ -1,9 +1,9 @@
 """
-=======================================================
+==========================================
 Lasso path computation on Leukemia dataset
-=======================================================
+==========================================
 
-The example runs the Celer algorithm on the Leukemia
+The example runs the Celer algorithm for the Lasso on the Leukemia
 dataset which is a dense dataset.
 
 Running time is compared with the scikit-learn implementation.
@@ -36,7 +36,7 @@ alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
 n_alphas = 100
 alphas = alpha_max * np.geomspace(1, 0.01, n_alphas)
 
-tols = [1e-2, 1e-4, 1e-6, 1e-8]
+tols = [1e-2, 1e-3, 1e-4]
 results = np.zeros([2, len(tols)])
 for tol_ix, tol in enumerate(tols):
     t0 = time.time()
@@ -46,11 +46,12 @@ for tol_ix, tol in enumerate(tols):
     print('Celer time: %.2f s' % results[0, tol_ix])
 
     t0 = time.time()
-    _, coefs, dual_gaps = lasso_path(X, y, tol=tol, alphas=alphas)
+    _, coefs, dual_gaps = lasso_path(
+        X, y, tol=tol, alphas=alphas, max_iter=10_000)
     results[1, tol_ix] = time.time() - t0
 
 df = pd.DataFrame(results.T, columns=["Celer", "scikit-learn"])
-df.index = tols
+df.index = [str(tol) for tol in tols]
 df.plot.bar(rot=0)
 plt.xlabel("stopping tolerance")
 plt.ylabel("path computation time (s)")
