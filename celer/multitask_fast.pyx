@@ -3,9 +3,11 @@ cimport cython
 cimport numpy as np
 
 import numpy as np
+import warnings
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
+from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fscal, fcopy, fnrm2, fdot, faxpy
 from .cython_utils cimport LASSO, create_accel_pt
@@ -145,8 +147,6 @@ def celer_mtl(
     cdef int n_features = W.shape[0]
 
 
-
-
     if p0 > n_features:
         p0 = n_features
 
@@ -261,7 +261,13 @@ def celer_mtl(
             theta_inner, norms_X_col, norm_Y2, tol_inner, max_epochs,
             gap_freq, verbose_inner, use_accel, K)
 
-
+    else:
+        warnings.warn(
+            'Objective did not converge: duality ' +
+            f'gap: {gap}, tolerance: {tol}. Increasing `tol` may make the' +
+            ' solver faster without affecting the results much. \n' +
+            'Fitting data with very small alpha causes precision issues.',
+            ConvergenceWarning)
     return (np.asarray(W), np.asarray(theta), gap)
 
 

@@ -5,9 +5,12 @@
 cimport cython
 import numpy as np
 cimport numpy as np
+import warnings
+
 from numpy.math cimport INFINITY
 from cython cimport floating
 from libc.math cimport fabs, sqrt
+from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport (fdot, fasum, faxpy, fnrm2, fcopy, fscal, dual,
                             LASSO, LOGREG, create_accel_pt)
@@ -419,6 +422,13 @@ cpdef celer_grp(
                             faxpy(&n_samples, &tmp, &X[0, j], &inc, &R[0],
                                   &inc)
 
+    else:
+        warnings.warn(
+            'Objective did not converge: duality ' +
+            f'gap: {gap}, tolerance: {tol}. Increasing `tol` may make the' +
+            ' solver faster without affecting the results much. \n' +
+            'Fitting data with very small alpha causes precision issues.',
+            ConvergenceWarning)
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
 

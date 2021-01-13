@@ -2,16 +2,15 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
 
+cimport cython
 import numpy as np
-import time
+cimport numpy as np
+import warnings
 
 from numpy.linalg import norm
-
-cimport numpy as np
-cimport cython
-
 from cython cimport floating
 from libc.math cimport fabs, sqrt, exp
+from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
@@ -224,7 +223,13 @@ def newton_celer(
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
                   aux, is_positive_label, X_mean, weights_pen, center,
                   blitz_sc, verbose_in, max_pn_iter)
-
+    else:
+        warnings.warn(
+            'Objective did not converge: duality ' +
+            f'gap: {gap}, tolerance: {tol}. Increasing `tol` may make the' +
+            ' solver faster without affecting the results much. \n' +
+            'Fitting data with very small alpha causes precision issues.',
+            ConvergenceWarning)
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
 
 
