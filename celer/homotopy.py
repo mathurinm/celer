@@ -3,13 +3,11 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-import warnings
 import numpy as np
 
 from scipy import sparse
 from numpy.linalg import norm
 from sklearn.utils import check_array
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model._base import _preprocess_data
 
 from .lasso_fast import celer
@@ -313,13 +311,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         if return_n_iter:
             n_iters[t] = len(sol[2])
-
-        if dual_gaps[t] > tol:
-            warnings.warn(
-                'Objective did not converge. Increasing `tol` may make the' +
-                ' solver faster without affecting the results much. \n' +
-                'Fitting data with very small alpha causes precision issues.',
-                ConvergenceWarning)
 
     results = alphas, coefs, dual_gaps
     if return_thetas:

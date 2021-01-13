@@ -94,10 +94,10 @@ def test_convert_groups():
 
 def test_mtl_path():
     X, Y = build_dataset(n_targets=3)
-    tol = 1e-10
+    tol = 1e-12
     params = dict(eps=0.01, tol=tol, n_alphas=10)
     alphas, coefs, gaps = mtl_path(X, Y, **params)
-    np.testing.assert_array_less(gaps, tol)
+    np.testing.assert_array_less(gaps, tol * norm(Y) ** 2 / len(Y))
 
     sk_alphas, sk_coefs, sk_gaps = lasso_path(X, Y, **params, max_iter=10000)
     np.testing.assert_array_less(sk_gaps, tol * np.linalg.norm(Y, 'fro')**2)
@@ -109,7 +109,7 @@ def test_MultiTaskLassoCV():
     """Test that our MultitaskLassoCV behaves like sklearn's."""
     X, y = build_dataset(n_samples=30, n_features=50, n_targets=3)
 
-    params = dict(eps=1e-2, n_alphas=10, tol=1e-10, cv=2, n_jobs=1,
+    params = dict(eps=1e-2, n_alphas=10, tol=1e-12, cv=2, n_jobs=1,
                   fit_intercept=False, verbose=2)
 
     clf = MultiTaskLassoCV(**params)
@@ -164,7 +164,7 @@ def test_group_lasso_path(sparse_X):
     alphas, coefs, gaps = celer_path(
         X, y, "grouplasso", groups=5, eps=1e-2, n_alphas=10, tol=1e-8)
     tol = 1e-8
-    np.testing.assert_array_less(gaps, tol)
+    np.testing.assert_array_less(gaps, tol * norm(y) ** 2 / len(y))
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
@@ -176,7 +176,7 @@ def test_GroupLasso(sparse_X):
     tol = 1e-8
     clf = GroupLasso(alpha=0.8, groups=10, tol=tol)
     clf.fit(X, y)
-    np.testing.assert_array_less(clf.dual_gap_, tol)
+    np.testing.assert_array_less(clf.dual_gap_, tol * norm(y) ** 2 / len(y))
 
     clf.tol = 1e-6
     clf.groups = 1  # unsatisfying but sklearn will fit out of 5 features
@@ -192,7 +192,7 @@ def test_GroupLassoCV(sparse_X):
     tol = 1e-8
     clf = GroupLassoCV(groups=10, tol=tol)
     clf.fit(X, y)
-    np.testing.assert_array_less(clf.dual_gap_, tol)
+    np.testing.assert_array_less(clf.dual_gap_, tol * norm(y) ** 2 / len(y))
 
     clf.tol = 1e-6
     clf.groups = 1  # unsatisfying but sklearn will fit with 5 features

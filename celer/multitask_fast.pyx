@@ -3,9 +3,11 @@ cimport cython
 cimport numpy as np
 
 import numpy as np
+import warnings
 from cython cimport floating
 from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
+from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fscal, fcopy, fnrm2, fdot, faxpy
 from .cython_utils cimport LASSO, create_accel_pt
@@ -162,6 +164,8 @@ def celer_mtl(
     cdef floating[:] Xj_theta = np.empty(n_tasks, dtype=dtype)
 
     cdef floating norm_Y2 = fnrm2(&n_obs, &Y[0, 0], &inc) ** 2
+    # scale tolerance to account for small or large Y:
+    tol *= norm_Y2 / n_samples
 
     cdef floating[::1, :] theta_inner = np.zeros((n_samples, n_tasks),
                                                   dtype=dtype, order='F')
@@ -206,7 +210,7 @@ def celer_mtl(
         if verbose:
             print("Iter %d: primal %.10f, gap %.2e" % (t, p_obj, gap), end="")
 
-        if gap < tol:
+        if gap <= tol + 1e-16:
             if verbose:
                 print("\nEarly exit, gap %.2e < %.2e" % (gap, tol))
             break
@@ -257,7 +261,13 @@ def celer_mtl(
             theta_inner, norms_X_col, norm_Y2, tol_inner, max_epochs,
             gap_freq, verbose_inner, use_accel, K)
 
-
+    else:
+        warnings.warn(
+            'Objective did not converge: duality ' +
+            f'gap: {gap}, tolerance: {tol}. Increasing `tol` may make the' +
+            ' solver faster without affecting the results much. \n' +
+            'Fitting data with very small alpha causes precision issues.',
+            ConvergenceWarning)
     return (np.asarray(W), np.asarray(theta), gap)
 
 

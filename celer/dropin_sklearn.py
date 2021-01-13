@@ -48,9 +48,9 @@ class Lasso(Lasso_sklearn):
         Amount of verbosity.
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
 
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
@@ -177,9 +177,9 @@ class LassoCV(RegressorMixin, sklearn_LinearModelCV):
         The maximum number of iterations (subproblem definitions).
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
 
     cv : int, cross-validation generator or an iterable, optional
         Determines the cross-validation splitting strategy.
@@ -305,9 +305,9 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         Amount of verbosity.
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
 
     prune : 0 | 1, optional
         Whether or not to use pruning when growing working sets.
@@ -338,22 +338,10 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
     n_iter_ : int
         Number of subproblems solved by Celer to reach the specified tolerance.
 
-    Examples
-    --------
-    >>> from celer import Lasso
-    >>> clf = Lasso(alpha=0.1)
-    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
-    Lasso(alpha=0.1, max_epochs=50000, max_iter=100,
-    p0=10, prune=0, tol=1e-06, verbose=0)
-    >>> print(clf.coef_)
-    [0.85 0.  ]
-    >>> print(clf.intercept_)
-    0.15
-
     See also
     --------
     celer_path
-    LassoCV
+    MultiTaskLassoCV
 
     References
     ----------
@@ -449,9 +437,9 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
         The maximum number of iterations (subproblem definitions).
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
 
     cv : int, cross-validation generator or an iterable, optional
         Determines the cross-validation splitting strategy.
@@ -507,7 +495,7 @@ class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
     See also
     --------
     celer_path
-    Lasso
+    MultiTaskLasso
     """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
@@ -570,9 +558,9 @@ class LogisticRegression(LogReg_sklearn):
         - celer uses working sets and coordinate descent
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * len(y) * log(2)`` or the
+        maximum number of iteration is reached.
 
     fit_intercept : bool, optional (default=False)
         Whether or not to fit an intercept. Currently True is not supported.
@@ -777,9 +765,9 @@ class GroupLasso(Lasso_sklearn):
         Amount of verbosity.
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
 
     prune : bool, optional (default=True)
         Whether or not to use pruning when growing working sets.
@@ -914,9 +902,9 @@ class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
         The maximum number of iterations (subproblem definitions).
 
     tol : float, optional
-        The tolerance for the optimization: the solver runs until the duality
-        gap is smaller than ``tol`` or the maximum number of iteration is
-        reached.
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
 
     cv : int, cross-validation generator or an iterable, optional
         Determines the cross-validation splitting strategy.
