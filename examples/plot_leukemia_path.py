@@ -51,7 +51,7 @@ for tol_ix, tol in enumerate(tols):
     results[1, tol_ix] = time.time() - t0
 
 df = pd.DataFrame(results.T, columns=["Celer", "scikit-learn"])
-df.index = tols
+df.index = [str(tol) for tol in tols]
 df.plot.bar(rot=0)
 plt.xlabel("stopping tolerance")
 plt.ylabel("path computation time (s)")
