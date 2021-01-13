@@ -119,9 +119,9 @@ a Prox-Newton strategy (detailed in [1], Sec 5.2).</p>
 <li><p>celer uses working sets and coordinate descent</p></li>
 </ul>
 </dd>
-<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
-gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
-reached.</p>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Stopping criterion for the optimization: the solver runs until the
+duality gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span> <span class="pre">*</span> <span class="pre">len(y)</span> <span class="pre">*</span> <span class="pre">log(2)</span></code> or the
+maximum number of iteration is reached.</p>
 </dd>
 <dt><strong>fit_intercept</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>Whether or not to fit an intercept. Currently True is not supported.</p>
 </dd>
@@ -249,7 +249,7 @@ preprint, <a class="reference external" href="https://arxiv.org/abs/1907.05830">
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

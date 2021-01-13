@@ -125,9 +125,9 @@ feature indices of the group number <cite>g</cite>.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier">bool or integer</span></dt><dd><p>Amount of verbosity.</p>
 </dd>
-<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
-gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
-reached.</p>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Stopping criterion for the optimization: the solver runs until the
+duality gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span> <span class="pre">*</span> <span class="pre">norm(y)</span> <span class="pre">**</span> <span class="pre">2</span> <span class="pre">/</span> <span class="pre">len(y)</span></code> or the
+maximum number of iteration is reached.</p>
 </dd>
 <dt><strong>prune</strong><span class="classifier">bool, optional (default=True)</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
 </dd>
@@ -255,7 +255,7 @@ initialization, otherwise, just erase the previous solution.</p>
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

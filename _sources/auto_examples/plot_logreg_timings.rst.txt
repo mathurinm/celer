@@ -37,17 +37,7 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
     ##### Computing alpha 1/1
     #########################
     Iter 0: primal 4158.8830833601, gap 2.21e+03
-    Solving subproblem with 10 constraints
-    Iter 1: primal 3659.3205933345, gap 1.80e+03
-    Solving subproblem with 20 constraints
-    Iter 2: primal 3346.2823037166, gap 4.77e+02
-    Solving subproblem with 40 constraints
-    Iter 3: primal 3187.0017848323, gap 1.11e+02
-    Solving subproblem with 80 constraints
-    Iter 4: primal 3159.5940277834, gap 3.17e+00
-    Solving subproblem with 160 constraints
-    Iter 5: primal 3159.4380437633, gap 4.69e-03
-    Early exit, gap: 4.69e-03 < 1.00e+00
+    Early exit, gap: 2.21e+03 < 4.16e+03
 
 
 
@@ -82,7 +72,7 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.466 seconds)
+   **Total running time of the script:** ( 0 minutes  5.571 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_logreg_timings.py:
