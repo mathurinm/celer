@@ -430,7 +430,7 @@ def mtl_path(
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
             prune=prune, max_iter=max_iter, max_epochs=max_epochs,
-            verbose=verbose, use_accel=use_accel)
+            verbose=verbose, use_accel=True)
 
         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
 
