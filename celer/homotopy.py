@@ -23,7 +23,7 @@ GRPLASSO = 2
 
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
-               coef_init=None, max_iter=20, gap_freq=10, max_epochs=50000,
+               coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
                X_scale=None, return_n_iter=False, positive=False):
@@ -75,15 +75,12 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         List of alphas where to compute the models.
         If ``None`` alphas are set automatically
 
-    coef_init : ndarray, shape (n_features,) | None, optional, (defualt=None)
+    coef_init : ndarray, shape (n_features,) | None, optional, (default=None)
         Initial value of coefficients. If None, np.zeros(n_features) is used.
 
     max_iter : int, optional
-        The maximum number of iterations (subproblem definitions)
-
-    gap_freq : int, optional
-        Number of (block) coordinate descent epochs between each duality gap
-        computations.
+        The maximum number of iterations (definition of working set and
+        resolution of problem restricted to features in working set)
 
     max_epochs : int, optional
         Maximum number of (block) CD epochs on each subproblem.
@@ -293,14 +290,14 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
                 X_indices,
                 X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
-                norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
+                norms_X_grp, tol, max_iter, max_epochs, p0=p0,
                 prune=prune, verbose=verbose)
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
                 alpha, w, Xw, theta, norms_X_col, weights,
-                max_iter=max_iter, gap_freq=gap_freq, max_epochs=max_epochs,
+                max_iter=max_iter, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
                 positive=positive)
         else:  # pb == LOGREG and use_PN
@@ -383,10 +380,9 @@ def _grp_converter(groups, n_features):
 
 
 def mtl_path(
-        X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100, gap_freq=10,
-        max_epochs=50000, p0=10, verbose=0, tol=1e-6,
-        prune=True, use_accel=True, return_thetas=False, K=6,
-        coef_init=None):
+        X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100,
+        max_epochs=50_000, p0=10, verbose=0, tol=1e-6,
+        prune=True, return_thetas=False, coef_init=None):
     X = check_array(X, "csc", dtype=[
         np.float64, np.float32], order="F", copy=False)
     Y = check_array(Y, "csc", dtype=[
@@ -434,8 +430,7 @@ def mtl_path(
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
             prune=prune, max_iter=max_iter, max_epochs=max_epochs,
-            verbose=verbose, use_accel=use_accel, gap_freq=gap_freq,
-            K=K)
+            verbose=verbose, use_accel=use_accel)
 
         coefs[:, :, t], thetas[t], gaps[t] = sol[0], sol[1], sol[2]
 
