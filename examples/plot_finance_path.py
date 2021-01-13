@@ -51,7 +51,7 @@ labels = [r"\sc{Celer}"]
 figsize = (4, 3.5)
 
 df = pd.DataFrame(results.T, columns=["Celer"])
-df.index = tols
+df.index = [str(tol) for tol in tols]
 df.plot.bar(rot=0, figsize=figsize)
 plt.xlabel("stopping tolerance")
 plt.ylabel("path computation time (s)")
