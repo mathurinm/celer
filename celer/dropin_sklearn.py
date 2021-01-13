@@ -4,14 +4,13 @@ import numbers
 
 import numpy as np
 
-from celer.tmp_hack_sklearn import sklearn_LinearModelCV
-from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.utils.validation import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.linear_model import (Lasso as Lasso_sklearn,
                                   LogisticRegression as LogReg_sklearn,
                                   MultiTaskLasso as MultiTaskLasso_sklearn)
+from sklearn.linear_model._coordinate_descent import LinearModelCV
 from sklearn.linear_model._base import _preprocess_data
 from sklearn.preprocessing import LabelEncoder
 from sklearn.multiclass import OneVsRestClassifier
@@ -140,7 +139,7 @@ class Lasso(Lasso_sklearn):
         return results
 
 
-class LassoCV(RegressorMixin, sklearn_LinearModelCV):
+class LassoCV(RegressorMixin, LinearModelCV):
     """
     LassoCV scikit-learn estimator based on Celer solver
 
@@ -400,7 +399,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         return self
 
 
-class MultiTaskLassoCV(RegressorMixin, sklearn_LinearModelCV):
+class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
     """
     MultiTaskLassoCV scikit-learn estimator based on Celer solver
 
@@ -854,7 +853,7 @@ class GroupLasso(Lasso_sklearn):
         return results
 
 
-class GroupLassoCV(LassoCV, sklearn_LinearModelCV):
+class GroupLassoCV(LassoCV, LinearModelCV):
     """
     GroupLassoCV scikit-learn estimator based on Celer solver
 
