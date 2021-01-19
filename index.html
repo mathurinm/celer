@@ -95,17 +95,30 @@
   <div class="section" id="celer">
 <h1>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
 <p>This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
-This algorithm uses an extrapolated dual point which enables a tight control of optimality and quick feature identification.</p>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>First clone the repository available at <a class="reference external" href="https://github.com/mathurinm/celer">https://github.com/mathurinm/celer</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/mathurinm/celer.git
-$ cd celer/
+Currently, the package handles the following problems:</p>
+<ul class="simple">
+<li><p>Lasso</p></li>
+<li><p>weighted Lasso</p></li>
+<li><p>Sparse Logistic regression</p></li>
+<li><p>Group Lasso</p></li>
+<li><p>Multitask Lasso.</p></li>
+</ul>
+<p>The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
+The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.</p>
+<div class="section" id="install-the-released-version">
+<h2>Install the released version<a class="headerlink" href="#install-the-released-version" title="Permalink to this headline">¶</a></h2>
+<p>From a console or terminal install celer with pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">celer</span>
 </pre></div>
 </div>
-<p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.</p>
-<p>From a working environment, you can compile the Cython code and install the package with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
+</div>
+<div class="section" id="install-the-development-version">
+<h2>Install the development version<a class="headerlink" href="#install-the-development-version" title="Permalink to this headline">¶</a></h2>
+<p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.
+First clone the repository available at <a class="reference external" href="https://github.com/mathurinm/celer">https://github.com/mathurinm/celer</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/mathurinm/celer.git
+$ cd celer/
+$ pip install -e .
 </pre></div>
 </div>
 <p>To check if everything worked fine, you can do:</p>
@@ -117,7 +130,6 @@ $ cd celer/
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">celer</span>
 </pre></div>
 </div>
-<p>If you don’t want to use Anaconda, you should still be able to install using <cite>pip</cite>.</p>
 </div>
 <div class="section" id="cite">
 <h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
@@ -131,11 +143,15 @@ $ cd celer/
   <span class="na">volume</span> <span class="p">=</span> <span class="m">80</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="nc">@article</span><span class="p">{</span><span class="nl">massias2019dual</span><span class="p">,</span>
-  <span class="na">title</span> <span class="p">=</span> <span class="s">{Dual Extrapolation for Sparse Generalized Linear Models}</span><span class="p">,</span>
-  <span class="na">author</span> <span class="p">=</span> <span class="s">{Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph}</span><span class="p">,</span>
-  <span class="na">journal</span> <span class="p">=</span> <span class="s">{arXiv preprint arXiv:1907.05830}</span><span class="p">,</span>
-  <span class="na">year</span> <span class="p">=</span> <span class="m">2019</span><span class="p">,</span>
+<span class="nc">@article</span><span class="p">{</span><span class="nl">massias2020dual</span><span class="p">,</span>
+  <span class="na">author</span>  <span class="p">=</span> <span class="s">{Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon}</span><span class="p">,</span>
+  <span class="na">title</span>   <span class="p">=</span> <span class="s">{Dual Extrapolation for Sparse GLMs}</span><span class="p">,</span>
+  <span class="na">journal</span> <span class="p">=</span> <span class="s">{Journal of Machine Learning Research}</span><span class="p">,</span>
+  <span class="na">year</span>    <span class="p">=</span> <span class="s">{2020}</span><span class="p">,</span>
+  <span class="na">volume</span>  <span class="p">=</span> <span class="s">{21}</span><span class="p">,</span>
+  <span class="na">number</span>  <span class="p">=</span> <span class="s">{234}</span><span class="p">,</span>
+  <span class="na">pages</span>   <span class="p">=</span> <span class="s">{1-33}</span><span class="p">,</span>
+  <span class="na">url</span>     <span class="p">=</span> <span class="s">{http://jmlr.org/papers/v21/19-587.html}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
