@@ -66,7 +66,7 @@ If you use this code, please cite:
     volume = 80,
   }
 
-    @article{massias2020dual,
+  @article{massias2020dual,
     author  = {Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon},
     title   = {Dual Extrapolation for Sparse GLMs},
     journal = {Journal of Machine Learning Research},
@@ -75,7 +75,7 @@ If you use this code, please cite:
     number  = {234},
     pages   = {1-33},
     url     = {http://jmlr.org/papers/v21/19-587.html}
-    }
+  }
 
 
 ArXiv links:
