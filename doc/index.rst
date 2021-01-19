@@ -7,20 +7,36 @@ Celer
 ======
 
 This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
-This algorithm uses an extrapolated dual point which enables a tight control of optimality and quick feature identification.
+Currently, the package handles the following problems:
 
-Installation
-------------
+- Lasso
+- weighted Lasso
+- Sparse Logistic regression
+- Group Lasso
+- Multitask Lasso.
+
+The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
+The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
+
+
+Install the released version
+----------------------------
+
+From a console or terminal install celer with pip:
+
+::
+
+    pip install -U celer
+
+
+Install the development version
+-------------------------------
+
+We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_.
 First clone the repository available at https://github.com/mathurinm/celer::
 
     $ git clone https://github.com/mathurinm/celer.git
     $ cd celer/
-
-
-We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_.
-
-From a working environment, you can compile the Cython code and install the package with::
-
     $ pip install -e .
 
 To check if everything worked fine, you can do::
@@ -33,7 +49,6 @@ From a Python shell you can just do::
 
     >>> import celer
 
-If you don't want to use Anaconda, you should still be able to install using `pip`.
 
 Cite
 ----
@@ -51,12 +66,16 @@ If you use this code, please cite:
     volume = 80,
   }
 
-  @article{massias2019dual,
-    title = {Dual Extrapolation for Sparse Generalized Linear Models},
-    author = {Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph},
-    journal = {arXiv preprint arXiv:1907.05830},
-    year = 2019,
-  }
+    @article{massias2020dual,
+    author  = {Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon},
+    title   = {Dual Extrapolation for Sparse GLMs},
+    journal = {Journal of Machine Learning Research},
+    year    = {2020},
+    volume  = {21},
+    number  = {234},
+    pages   = {1-33},
+    url     = {http://jmlr.org/papers/v21/19-587.html}
+    }
 
 
 ArXiv links:
