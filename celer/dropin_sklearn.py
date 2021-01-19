@@ -617,8 +617,8 @@ class LogisticRegression(LogReg_sklearn):
     References
     ----------
     .. [1] M. Massias, S. Vaiter, A. Gramfort, J. Salmon
-       "Dual Extrapolation for Sparse Generalized Linear Models",
-       preprint, https://arxiv.org/abs/1907.05830
+       "Dual Extrapolation for Sparse Generalized Linear Models", JMLR 2020,
+       https://arxiv.org/abs/1907.05830
     """
 
     def __init__(self, C=1., penalty='l1', solver="celer-pn", tol=1e-4,
@@ -821,8 +821,8 @@ class GroupLasso(Lasso_sklearn):
       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
       http://proceedings.mlr.press/v80/massias18a.html
 
-    .. [2] M. Massias, A. Gramfort, J. Salmon
-      "Dual extrapolation for sparse Generalized Linear Models", submitted,
+    .. [2] M. Massias, S. Vaiter, A. Gramfort, J. Salmon
+      "Dual extrapolation for sparse Generalized Linear Models", JMLR 2020,
       https://arxiv.org/abs/1907.05830
     """
 

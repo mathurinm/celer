@@ -11,7 +11,7 @@ Fast algorithm to solve Lasso-like problems with dual extrapolation. Currently, 
 - Group Lasso
 - Multitask Lasso.
 
-The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionnaly feature centering, normalization, and unpenalized intercept fitting.
+The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
 The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
 
 Documentation
@@ -83,11 +83,15 @@ If you use this code, please cite:
       volume = 	 {80},
     }
 
-    @article{massias2019dual,
-    title={Dual Extrapolation for Sparse Generalized Linear Models},
-    author={Massias, Mathurin and Vaiter, Samuel and Gramfort, Alexandre and Salmon, Joseph},
-    journal={arXiv preprint arXiv:1907.05830},
-    year={2019}
+    @article{massias2020dual,
+    author  = {Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon},
+    title   = {Dual Extrapolation for Sparse GLMs},
+    journal = {Journal of Machine Learning Research},
+    year    = {2020},
+    volume  = {21},
+    number  = {234},
+    pages   = {1-33},
+    url     = {http://jmlr.org/papers/v21/19-587.html}
     }
 
 
