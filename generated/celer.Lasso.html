@@ -127,8 +127,8 @@ maximum number of iteration is reached.</p>
 </dd>
 <dt><strong>fit_intercept</strong><span class="classifier">bool, optional (default=True)</span></dt><dd><p>Whether or not to fit an intercept.</p>
 </dd>
-<dt><strong>weights</strong><span class="classifier">array, shape (n_features,), optional (default=None)</span></dt><dd><p>Weights used in the L1 penalty part of the Lasso objective.
-If None, weights equal to 1 are used.</p>
+<dt><strong>weights</strong><span class="classifier">array, shape (n_features,), optional (default=None)</span></dt><dd><p>Strictly positive weights used in the L1 penalty part of the Lasso
+objective. If None, weights equal to 1 are used.</p>
 </dd>
 <dt><strong>normalize</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>This parameter is ignored when <code class="docutils literal notranslate"><span class="pre">fit_intercept</span></code> is set to False.
 If True,  the regressors X will be normalized before regression by

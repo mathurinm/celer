@@ -147,7 +147,8 @@ reached.</p>
 </dd>
 <dt><strong>prune</strong><span class="classifier">0 | 1, optional</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
 </dd>
-<dt><strong>weights</strong><span class="classifier">ndarray, shape (n_features,) or (n_groups,), optional</span></dt><dd><p>Feature/group weights used in the penalty. Default to array of ones.</p>
+<dt><strong>weights</strong><span class="classifier">ndarray, shape (n_features,) or (n_groups,), optional</span></dt><dd><p>Feature/group weights used in the penalty. Default to array of ones.
+Features with weights equal to np.inf are ignored.</p>
 </dd>
 <dt><strong>groups</strong><span class="classifier">int or list of ints or list of list of ints, optional</span></dt><dd><p>Used for the group Lasso only. See the documentation of the
 GroupLasso class.</p>
