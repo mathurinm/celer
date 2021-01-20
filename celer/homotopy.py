@@ -5,11 +5,9 @@
 
 import numpy as np
 
-import warnings
 from scipy import sparse
 from numpy.linalg import norm
 from sklearn.utils import check_array
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model._base import _preprocess_data
 
 from .lasso_fast import celer
