@@ -268,7 +268,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 print("#" * len(to_print))
             if t > 0:
                 w = coefs[:, t - 1].copy()
-                theta = thetas[t - 1].copy()
+                # theta = thetas[t - 1].copy()
                 p0 = max(len(np.where(w != 0)[0]), 1)
             else:
                 if coef_init is not None:
@@ -284,22 +284,23 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     Xw = np.zeros(
                         n_samples, X.dtype) if pb == LOGREG else y.copy()
 
-                # different link eqs and normalization scal for dual point:
-                if pb in (LASSO, LOGREG):
-                    if pb == LASSO:
-                        theta = Xw.copy()
-                    elif pb == LOGREG:
-                        theta = y / (1 + np .exp(y * Xw)) / alpha
-                    scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
-                                    positive)
-                elif pb == GRPLASSO:
-                    theta = Xw.copy()
-                    scal = dnorm_grp(
-                        is_sparse, theta, grp_ptr, grp_indices, X_dense,
-                        X_data, X_indices, X_indptr, X_sparse_scaling,
-                        len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
-                        X_sparse_scaling.any())
-                theta /= scal
+                # # different link eqs and normalization scal for dual point:
+                # if pb in (LASSO, LOGREG):
+                #     if pb == LASSO:
+                #         theta = Xw.copy()
+                #     elif pb == LOGREG:
+                #         theta = y / (1 + np .exp(y * Xw)) / alpha
+                #     scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
+                #                     positive)
+                # elif pb == GRPLASSO:
+                #     theta = Xw.copy()
+                #     scal = dnorm_grp(
+                #         is_sparse, theta, grp_ptr, grp_indices, X_dense,
+                #         X_data, X_indices, X_indptr, X_sparse_scaling,
+                #         len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
+                #         X_sparse_scaling.any())
+                # theta /= scal
+            theta = np.zeros(n_samples, dtype=X.dtype)
 
             # celer modifies w, Xw, and theta in place:
             if pb == GRPLASSO:
@@ -311,14 +312,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     prune=prune, verbose=verbose)
             elif pb == LASSO or (pb == LOGREG and not use_PN):
                 if reweight_iter > 0:
-                    # prev_w = coefs[:, t]  # w at previous reweighting
-                    reweights = np.zeros(n_features)
-                    prev_magnitudes = np.abs(coefs[:, t][coefs[:, t] != 0])
-                    reweights[coefs[:, t] != 0] = 1. / prev_magnitudes
+                    reweights = 1 / np.abs(coefs[:, t])
                     reweights *= weights
                 else:
                     reweights = weights.copy()
-
                 sol = celer(
                     is_sparse, pb, X_dense, X_data, X_indices, X_indptr,
                     X_sparse_scaling, y, alpha, w, Xw, theta, norms_X_col,

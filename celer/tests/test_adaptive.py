@@ -32,8 +32,6 @@ def test_adaptive_lasso():
     for _ in range(n_reweightings):
         lasso.weights = reweights
         lasso.fit(X, y)
-        reweights = np.zeros(X.shape[1])
-        w = lasso.coef_
-        reweights[w != 0] = 1. / np.abs(w[w != 0])
+        reweights = 1. / np.abs(lasso.coef_)
 
     np.testing.assert_allclose(lasso.coef_, adalasso.coef_)
