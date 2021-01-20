@@ -8,7 +8,7 @@ from itertools import product
 
 import numpy as np
 from numpy.linalg import norm
-
+from numpy.testing import assert_allclose, assert_array_less
 import pytest
 
 from sklearn.linear_model._logistic import _logistic_regression_path
@@ -40,9 +40,9 @@ def test_celer_path_logreg(solver):
         X, y, "logreg", alphas=alphas, tol=tol, verbose=1,
         use_PN=(solver == "celer-pn"))
 
-    np.testing.assert_array_less(gaps, tol * len(y) * np.log(2))
-    np.testing.assert_allclose(coefs != 0, coefs_c.T != 0)
-    np.testing.assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
+    assert_array_less(gaps, tol * len(y) * np.log(2))
+    assert_allclose(coefs != 0, coefs_c.T != 0)
+    assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
@@ -61,7 +61,7 @@ def test_LogisticRegression(sparse_X):
     clf2 = sklearn_Logreg(
         C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
     clf2.fit(X, y)
-    np.testing.assert_allclose(clf1.coef_, clf2.coef_, rtol=1e-3, atol=1e-5)
+    assert_allclose(clf1.coef_, clf2.coef_, rtol=1e-3, atol=1e-5)
 
     # this uses float32 so we increase the tol else there are precision issues
     clf1.tol = 1e-4
@@ -76,7 +76,7 @@ def test_LogisticRegression(sparse_X):
     clf4 = sklearn_Logreg(
         C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
     clf4.fit(X, y)
-    np.testing.assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-3)
+    assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-3)
 
     clf3.tol = 1e-3
     check_estimator(clf3)
@@ -103,9 +103,9 @@ def test_celer_path(sparse_X, alphas, pb):
     alphas, _, gaps, _, n_iters = celer_path(
         X, y, pb, alphas=alphas, tol=tol, return_thetas=True,
         verbose=1, return_n_iter=True)
-    np.testing.assert_array_less(gaps, tol_scaled)
+    assert_array_less(gaps, tol_scaled)
     # hack because array_less wants strict inequality
-    np.testing.assert_array_less(0.99, n_iters)
+    assert_array_less(0.99, n_iters)
 
 
 def test_convergence_warning():
@@ -136,9 +136,9 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     alphas2, coefs2, _ = lasso_path(X, y, verbose=False, **params,
                                     max_iter=10000)
 
-    np.testing.assert_allclose(alphas1, alphas2)
-    np.testing.assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
-    np.testing.assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-4)
+    assert_allclose(alphas1, alphas2)
+    assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
+    assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-4)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
@@ -156,10 +156,10 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     clf2 = sklearn_LassoCV(**params, max_iter=10000)
     clf2.fit(X, y)
 
-    np.testing.assert_allclose(
+    assert_allclose(
         clf.mse_path_, clf2.mse_path_, rtol=1e-3, atol=1e-4)
-    np.testing.assert_allclose(clf.alpha_, clf2.alpha_)
-    np.testing.assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
+    assert_allclose(clf.alpha_, clf2.alpha_)
+    assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
 
     # TODO this one is slow (3s * 8 tests). Pass an instance and increase tol
     # check_estimator(LassoCV)
@@ -183,9 +183,9 @@ def test_Lasso(sparse_X, fit_intercept, positive):
 
     clf2 = sklearn_Lasso(**params)
     clf2.fit(X, y)
-    np.testing.assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
+    assert_allclose(clf.coef_, clf2.coef_, rtol=1e-5)
     if fit_intercept:
-        np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
+        assert_allclose(clf.intercept_, clf2.intercept_)
 
     # TODO fix for sklearn 0.24, pass an instance instead (buffer type error)
     # check_estimator(Lasso)
@@ -205,7 +205,7 @@ def test_celer_single_alpha(sparse_X, pb):
 
     alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
     _, _, gaps = celer_path(X, y, pb, alphas=[alpha_max / 10.], tol=tol)
-    np.testing.assert_array_less(gaps, tol_scaled)
+    assert_array_less(gaps, tol_scaled)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
@@ -221,7 +221,7 @@ def test_zero_column(sparse_X):
     _, coefs, gaps = celer_path(
         X, y, "lasso", alphas=[alpha_max / 10.], tol=tol, p0=50, prune=0)
     w = coefs.T[0]
-    np.testing.assert_array_less(gaps, tol * norm(y) ** 2 / len(y))
+    assert_array_less(gaps, tol * norm(y) ** 2 / len(y))
     np.testing.assert_equal(w.shape[0], X.shape[1])
 
 
@@ -243,7 +243,7 @@ def test_warm_start():
         # refitting with warm start should take less than 2 iters:
         reg1.fit(X, y)
         # hack because assert_array_less does strict comparison...
-        np.testing.assert_array_less(reg1.n_iter_, 2.01)
+        assert_array_less(reg1.n_iter_, 2.01)
 
 
 def test_weights():
@@ -262,11 +262,21 @@ def test_weights():
     alphas2, coefs2, gaps2 = celer_path(
         X / weights[None, :], y, "lasso", **params)
 
-    np.testing.assert_allclose(alphas1, alphas2)
-    np.testing.assert_allclose(
+    assert_allclose(alphas1, alphas2)
+    assert_allclose(
         coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
-    np.testing.assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
-    np.testing.assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
+    assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
+    assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
+
+    alpha = 0.001
+    clf1 = Lasso(alpha=alpha, weights=weights, fit_intercept=False).fit(X, y)
+    clf2 = Lasso(alpha=alpha, fit_intercept=False).fit(X / weights, y)
+
+    assert_allclose(clf1.coef_, clf2.coef_ / weights)
+
+    # weights must be > 0
+    clf1.weights[0] = 0.
+    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
 
 
 if __name__ == "__main__":

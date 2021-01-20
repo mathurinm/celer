@@ -58,8 +58,8 @@ class Lasso(Lasso_sklearn):
         Whether or not to fit an intercept.
 
     weights : array, shape (n_features,), optional (default=None)
-        Weights used in the L1 penalty part of the Lasso objective.
-        If None, weights equal to 1 are used.
+        Strictly positive weights used in the L1 penalty part of the Lasso
+        objective. If None, weights equal to 1 are used.
 
     normalize : bool, optional (default=False)
         This parameter is ignored when ``fit_intercept`` is set to False.
