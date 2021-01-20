@@ -101,6 +101,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     weights : ndarray, shape (n_features,) or (n_groups,), optional
         Feature/group weights used in the penalty. Default to array of ones.
+        Features with weights equal to np.inf are ignored.
 
     groups : int or list of ints or list of list of ints, optional
         Used for the group Lasso only. See the documentation of the
@@ -184,6 +185,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     if weights is None:
         weights = np.ones(n_groups) if pb == GRPLASSO else np.ones(n_features)
         weights = weights.astype(X.dtype)
+    elif (weights <= 0).any():
+        raise ValueError("0 or negative weights are not supported.")
 
     if alphas is None:
         if pb == LASSO:

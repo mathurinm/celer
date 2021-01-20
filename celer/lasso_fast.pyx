@@ -8,7 +8,7 @@ cimport cython
 import warnings
 
 from cython cimport floating
-from libc.math cimport fabs, sqrt, exp
+from libc.math cimport fabs, sqrt, exp, INFINITY
 from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
@@ -30,7 +30,7 @@ def celer(
         int use_accel=1, int prune=0, bint positive=0,
         int better_lc=1):
     """R/Xw and w are modified in place and assumed to match.
-    Features with weights equal to 0 are ignored.
+    Weights must be > 0, features with weights equal to np.inf are ignored.
     WARNING for Logreg the datafit is a sum, while for Lasso it is a mean.
     """
     assert pb in (LASSO, LOGREG)
@@ -273,7 +273,7 @@ def celer(
 
             for k in range(ws_size):
                 j = C[k]
-                if norms_X_col[j] == 0. or weights[j] == 0.:
+                if norms_X_col[j] == 0. or weights[j] == INFINITY:
                     continue
                 old_w_j = w[j]
                 if pb == LASSO:

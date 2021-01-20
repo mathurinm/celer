@@ -379,7 +379,7 @@ cpdef floating dnorm_l1(
 
     # max over feature for which skip[j] == False
     for j in range(n_features):
-        if skip[j] or weights[j] == 0:
+        if skip[j] or weights[j] == INFINITY:
             continue
         if is_sparse:
             startptr = X_indptr[j]
