@@ -5,9 +5,11 @@
 
 import numpy as np
 
+import warnings
 from scipy import sparse
 from numpy.linalg import norm
 from sklearn.utils import check_array
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model._base import _preprocess_data
 
 from .lasso_fast import celer
@@ -305,7 +307,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
                     X_indices,
                     X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
-                    norms_X_grp, tol, max_iter, max_epochs, gap_freq, p0=p0,
+                    norms_X_grp, tol, max_iter, max_epochs, p0=p0,
                     prune=prune, verbose=verbose)
             elif pb == LASSO or (pb == LOGREG and not use_PN):
                 if reweight_iter > 0:
