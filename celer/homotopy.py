@@ -331,14 +331,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             if return_n_iter:
                 n_iters[t] = len(sol[2])  # meaningless for reweightings > 0
 
-            if dual_gaps[t] > tol:
-                warnings.warn(
-                    'Objective did not converge. Increasing `tol` may make' +
-                    ' the solver faster without affecting the results much.' +
-                    '\nFitting data with very small alpha causes precision' +
-                    ' issues.',
-                    ConvergenceWarning)
-
     results = alphas, coefs, dual_gaps
     if return_thetas:
         results += (thetas,)
