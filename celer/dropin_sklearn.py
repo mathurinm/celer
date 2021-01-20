@@ -279,7 +279,7 @@ class LassoCV(RegressorMixin, LinearModelCV):
 
 
 class AdaptiveLasso(Lasso):
-    r"""
+    """
     AdaptiveLasso scikit-learn estimator based on Celer solver.
 
     With :math:`n` the number of samples, the optimization objective for Lasso
