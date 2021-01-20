@@ -274,6 +274,10 @@ def test_weights():
 
     assert_allclose(clf1.coef_, clf2.coef_ / weights)
 
+    # weights must be > 0
+    clf1.weights[0] = 0.
+    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+
 
 if __name__ == "__main__":
     pass
