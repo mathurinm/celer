@@ -310,7 +310,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     prune=prune, verbose=verbose)
             elif pb == LASSO or (pb == LOGREG and not use_PN):
                 if reweight_iter > 0:
-                    reweights = 1 / np.abs(coefs[:, t])
+                    # avoid division by 0 warning for 1 / np.abs(coefs[:, t])
+                    reweights = np.full(n_features, np.inf)
+                    supp = coefs[:, t] != 0
+                    reweights[supp] = 1 / np.abs(coefs[:, t][supp])
                     reweights *= weights
                 else:
                     reweights = weights.copy()
