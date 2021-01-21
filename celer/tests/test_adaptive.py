@@ -5,9 +5,11 @@ import numpy as np
 from numpy.linalg import norm
 # from sklearn.utils.estimator_checks import check_estimator
 
-from celer.dropin_sklearn import Lasso, AdaptiveLasso  # AdaptiveLassoCV
+from celer import Lasso, LassoCV, AdaptiveLasso, AdaptiveLassoCV
 from celer.utils.testing import build_dataset
 
+from scipy.linalg import toeplitz
+from sklearn.utils import check_random_state
 
 # def test_adaptive_lasso_class():
 # check_estimator(AdaptiveLasso())
@@ -35,3 +37,41 @@ def test_adaptive_lasso():
         reweights = 1. / np.abs(lasso.coef_)
 
     np.testing.assert_allclose(lasso.coef_, adalasso.coef_)
+
+
+def breaking_test():
+    n_samples, n_features = 20, 30
+    rng = check_random_state(0)
+    X = rng.multivariate_normal(size=n_samples, mean=np.zeros(n_features),
+                                cov=toeplitz(0.7 ** np.arange(n_features)))
+
+    w_true = np.zeros(n_features)
+    size_supp = 20
+    w_true[::n_features // size_supp] = (-1) ** np.arange(size_supp)
+    noise = rng.randn(n_samples)
+    y = X @ w_true
+    y += noise / norm(noise) * 0.5 * norm(y)
+
+    lasso = LassoCV(n_jobs=-1).fit(X, y)
+    alphas = lasso.alphas_
+
+    AdaptiveLassoCV(n_jobs=1, verbose=1).fit(X, y)
+
+
+if __name__ == "__main__":
+    n_samples, n_features = 20, 30
+    rng = check_random_state(0)
+    X = rng.multivariate_normal(size=n_samples, mean=np.zeros(n_features),
+                                cov=toeplitz(0.7 ** np.arange(n_features)))
+
+    w_true = np.zeros(n_features)
+    size_supp = 20
+    w_true[:size_supp] = (-1) ** np.arange(size_supp)
+    noise = rng.randn(n_samples)
+    y = X @ w_true
+    y += noise / norm(noise) * 0.5 * norm(y)
+
+    lasso = LassoCV(n_jobs=-1).fit(X, y)
+    alphas = lasso.alphas_
+
+    AdaptiveLassoCV(n_jobs=1, verbose=1).fit(X, y)
