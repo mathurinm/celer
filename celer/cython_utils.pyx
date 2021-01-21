@@ -435,6 +435,5 @@ cdef void set_prios(
             prios[j] = (weights[j] - fabs(Xj_theta)) / norms_X_col[j]
 
         if prios[j] > radius:
-            pass
-            # screened[j] = True
-            # n_screened[0] += 1
+            screened[j] = True
+            n_screened[0] += 1

@@ -94,6 +94,25 @@ def celer(
             else:
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
+        # deal with INFINITY weights: we set the coef to 0 if not already,
+        # because afterwards this feature will be ignored
+        if w[j] != 0 and weights[j] == INFINITY:
+            # Xw holds y - Xw for Lasso, Xw for Logreg...
+            tmp = w[j] if pb == LASSO else -w[j]
+            w[j] = 0
+            # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
+            if tmp != 0.:
+                if is_sparse:
+                    for i in range(X_indptr[j], X_indptr[j + 1]):
+                        Xw[X_indices[i]] += tmp * X_data[i]
+                    if center:
+                        X_mean_j = X_mean[j]
+                        for i in range(n_samples):
+                            Xw[i] -= X_mean_j * tmp
+                else:
+                    faxpy(&n_samples, &tmp, &X[0, j], &inc,
+                            &Xw[0], &inc)
+
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
     cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)

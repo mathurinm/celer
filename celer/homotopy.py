@@ -329,8 +329,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     w, max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
 
             coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
-            if dual_gaps[t] < -1e-10:
-                1 / 0
             if return_n_iter:
                 n_iters[t] = len(sol[2])  # meaningless for reweightings > 0
 
