@@ -31,3 +31,10 @@ jobs:
         pip install pytest pytest-cov coverage numpydoc codecov
         pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
         codecov
+    - name: codecov
+      uses: codecov/codecov-action@v1
+      with:
+        files: .coveragerc
+        flags: unittests
+        fail_ci_if_error: true
+        verbose: true
