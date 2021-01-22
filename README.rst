@@ -102,5 +102,6 @@ ArXiv links:
 - https://arxiv.org/abs/1907.05830
 
 .. |image0| image:: https://github.com/mathurinm/celer/workflows/build/badge.svg
-   :target: https://github.com/mathurinm/celer/actions?query=workflow%3Abuildbranch/master/graphs/badge.svg?branch=master
+   :target: https://github.com/mathurinm/celer/actions?query=workflow%3Abuild
+.. |image1| image:: https://codecov.io/gh/mathurinm/celer/branch/master/graphs/badge.svg?branch=master
    :target: https://codecov.io/gh/mathurinm/celer
