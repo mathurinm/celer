@@ -5,7 +5,6 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 """
 
 import numpy as np
-from scipy import sparse
 from numpy.linalg import norm
 from sklearn import linear_model
 
