@@ -137,4 +137,4 @@ coverage:
 install:
 	touch $(OUTPUTDIR)/.nojekyll
 	ghp-import -m "Generate Pelican site [ci skip]" -b $(GITHUB_PAGES_BRANCH) $(OUTPUTDIR)
-	git push origin $(GITHUB_PAGES_BRANCH)
+	git push -f origin $(GITHUB_PAGES_BRANCH)
