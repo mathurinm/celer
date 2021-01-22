@@ -22,7 +22,7 @@
 Use LogisticRegression class with Celer and Prox-Newton solvers
 ===============================================================
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-26
+.. GENERATED FROM PYTHON SOURCE LINES 6-25
 
 
 
@@ -50,7 +50,6 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 
 
     import numpy as np
-    from scipy import sparse
     from numpy.linalg import norm
     from sklearn import linear_model
 
@@ -72,7 +71,7 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.119 seconds)
+   **Total running time of the script:** ( 0 minutes  4.205 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_logreg_timings.py:
