@@ -45,9 +45,9 @@ Running time is compared with the scikit-learn implementation.
 
     Loading data...
     Starting path computation...
-    Celer time: 0.03 s
-    Celer time: 0.06 s
-    Celer time: 0.29 s
+    Celer time: 0.07 s
+    Celer time: 0.16 s
+    Celer time: 0.48 s
 
 
 
@@ -111,7 +111,7 @@ Running time is compared with the scikit-learn implementation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.942 seconds)
+   **Total running time of the script:** ( 0 minutes  45.347 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:

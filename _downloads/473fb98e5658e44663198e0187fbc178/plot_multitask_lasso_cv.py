@@ -18,8 +18,8 @@ rng = check_random_state(0)
 
 ###############################################################################
 # Generate some 2D coefficients with sine waves with random frequency and phase
-n_samples, n_features, n_tasks = 100, 500, 20
-n_relevant_features = 20
+n_samples, n_features, n_tasks = 100, 500, 50
+n_relevant_features = 50
 support = rng.choice(n_features, n_relevant_features, replace=False)
 coef = np.zeros((n_tasks, n_features))
 times = np.linspace(0, 2 * np.pi, n_tasks)
@@ -34,7 +34,7 @@ Y /= norm(Y, ord='fro')
 
 ###############################################################################
 # Fit with sklearn and celer, using the same API
-params = dict(tol=1e-6, cv=4, n_jobs=-1)
+params = dict(tol=1e-6, cv=4, n_jobs=1, n_alphas=20)
 t0 = time.perf_counter()
 clf = MultiTaskLassoCV(**params).fit(X, Y)
 t_celer = time.perf_counter() - t0

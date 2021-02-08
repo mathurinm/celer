@@ -54,8 +54,8 @@ Generate some 2D coefficients with sine waves with random frequency and phase
 
 .. code-block:: default
 
-    n_samples, n_features, n_tasks = 100, 500, 20
-    n_relevant_features = 20
+    n_samples, n_features, n_tasks = 100, 500, 50
+    n_relevant_features = 50
     support = rng.choice(n_features, n_relevant_features, replace=False)
     coef = np.zeros((n_tasks, n_features))
     times = np.linspace(0, 2 * np.pi, n_tasks)
@@ -83,7 +83,7 @@ Fit with sklearn and celer, using the same API
 
 .. code-block:: default
 
-    params = dict(tol=1e-6, cv=4, n_jobs=-1)
+    params = dict(tol=1e-6, cv=4, n_jobs=1, n_alphas=20)
     t0 = time.perf_counter()
     clf = MultiTaskLassoCV(**params).fit(X, Y)
     t_celer = time.perf_counter() - t0
@@ -120,8 +120,8 @@ Celer is faster
 
  .. code-block:: none
 
-    Time for celer  : 12.47 s
-    Time for sklearn: 5.60 s
+    Time for celer  : 24.29 s
+    Time for sklearn: 49.51 s
 
 
 
@@ -150,8 +150,8 @@ Both packages find the same solution
 
  .. code-block:: none
 
-    Celer's optimal regularizer  : 0.00299493376164158
-    Sklearn's optimal regularizer: 0.00299493376164158
+    Celer's optimal regularizer  : 0.0013478137654104173
+    Sklearn's optimal regularizer: 0.0013478137654104173
     Relative norm difference between optimal coefs: 0.00 %
 
 
@@ -187,7 +187,7 @@ Both packages find the same solution
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  18.228 seconds)
+   **Total running time of the script:** ( 1 minutes  14.175 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_multitask_lasso_cv.py:
