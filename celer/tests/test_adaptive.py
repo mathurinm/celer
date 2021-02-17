@@ -10,7 +10,6 @@ from celer.utils.testing import build_dataset
 
 from scipy.linalg import toeplitz
 from sklearn.utils import check_random_state
-from celer.homotopy import celer_path
 
 # def test_adaptive_lasso_class():
 # check_estimator(AdaptiveLasso())
