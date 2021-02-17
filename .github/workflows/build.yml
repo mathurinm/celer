@@ -1,0 +1,40 @@
+name: build
+
+on:
+  create:
+    branches:
+      - 'master'
+    tags:
+      - '**'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: install
+      run: |
+        pip install -U pip
+        pip install -e .
+
+    - name: test
+      run: |
+        pip install pytest pytest-cov coverage numpydoc codecov
+        pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
+        codecov
+    - name: codecov
+      uses: codecov/codecov-action@v1
+      with:
+        files: .coveragerc
+        flags: unittests
+        fail_ci_if_error: true
+        verbose: true

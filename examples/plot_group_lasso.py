@@ -9,7 +9,7 @@ The example runs the GroupLasso scikit-learn like estimators.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from celer import GroupLasso, GroupLassoCV, LassoCV
+from celer import GroupLassoCV, LassoCV
 from celer.datasets import make_correlated_data
 from celer.plot_utils import configure_plt
 
