@@ -51,7 +51,7 @@ cvs = []
 
 for model in models:
     cvs.append(
-        GridSearchCV(models[0], param_grid={'alpha': alphas}, scoring=scoring,
+        GridSearchCV(model, param_grid={'alpha': alphas}, scoring=scoring,
                      n_jobs=-1, cv=5, refit=False).fit(X, y))
 
 # Plotting
