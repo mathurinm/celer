@@ -15,7 +15,7 @@ from celer.datasets import make_correlated_data
 from celer.plot_utils import configure_plt
 
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, f1_score
 
 configure_plt()
 
@@ -24,17 +24,8 @@ X, y, w_true = make_correlated_data(
     n_samples, n_features, corr=0.3, snr=3, density=0.05, random_state=0)
 
 
-def f1(w, w_true):
-    TP = np.logical_and(w != 0, w_true != 0).sum()
-    if TP == 0:
-        return 0
-    prec = TP / np.sum(w != 0)
-    recall = TP / np.sum(w_true != 0)
-    return 2 * prec * recall / (prec + recall)
-
-
 def scoring(estimator, X_test, y_test):
-    return {'f1': f1(estimator.coef_, w_true),
+    return {'f1': f1_score(estimator.coef_ != 0, w_true != 0),
             'mse': mean_squared_error(estimator.predict(X_test), y_test)}
 
 
@@ -42,7 +33,8 @@ alpha_max = np.max(np.abs(X.T @ y)) / len(y)
 alphas = np.geomspace(alpha_max, alpha_max / 300, num=100)
 
 
-# Separate computation and plots:
+###############################################################################
+# Separate computation and plots
 models = [Lasso(fit_intercept=False, warm_start=True),
           AdaptiveLasso(fit_intercept=False, warm_start=True)
           ]
@@ -54,7 +46,11 @@ for model in models:
         GridSearchCV(model, param_grid={'alpha': alphas}, scoring=scoring,
                      n_jobs=-1, cv=5, refit=False).fit(X, y))
 
-# Plotting
+###############################################################################
+# Estimation and prediction performances of the two estimators : the Lasso's
+# optimal lambda is not the same for estimation and prediction. For the
+# AdaptiveLasso, they are almost the same.
+
 fig, axes = plt.subplots(2, 2, sharex='col', sharey='row')
 for ix, cv in enumerate(cvs):
     axarr = axes[:, ix]
