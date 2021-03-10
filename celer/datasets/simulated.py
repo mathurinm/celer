@@ -38,8 +38,8 @@ def make_correlated_data(n_samples=100, n_features=50, corr=0.6, snr=3,
         :math:`C_{i, j}` in the correlation matrix will be
         :math:`\rho^{|i-j|}`. This parameter should be selected in
         :math:`[0, 1[`.
-    snr: float
-        Signal-to-noise ratio.
+    snr: float or np.inf
+        Signal-to-noise ratio. In np.inf, no noise is added.
     density: float
         Proportion of non zero elements in w_true if it must be simulated.
     w_true: np.array, shape (n_features,) | None
@@ -87,7 +87,7 @@ def make_correlated_data(n_samples=100, n_features=50, corr=0.6, snr=3,
         w_true[support] = rng.randn(nnz)
 
     y = X @ w_true
-    if snr != 0:
+    if snr != np.inf:
         noise = rng.randn(n_samples)
         y += noise / norm(noise) * norm(y) / snr
     return X, y, w_true
