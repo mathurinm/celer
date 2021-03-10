@@ -120,7 +120,7 @@ structure:</p>
 <span class="math notranslate nohighlight">\(\rho^{|i-j|}\)</span>. This parameter should be selected in
 <span class="math notranslate nohighlight">\([0, 1[\)</span>.</p>
 </dd>
-<dt><strong>snr: float</strong></dt><dd><p>Signal-to-noise ratio.</p>
+<dt><strong>snr: float or np.inf</strong></dt><dd><p>Signal-to-noise ratio. In np.inf, no noise is added.</p>
 </dd>
 <dt><strong>density: float</strong></dt><dd><p>Proportion of non zero elements in w_true if it must be simulated.</p>
 </dd>
@@ -160,7 +160,7 @@ make the randomness deterministic.</p>
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
     </p>
   </div>
 </footer>
