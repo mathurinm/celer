@@ -5,7 +5,7 @@ from celer.datasets import make_correlated_data
 
 
 def test_correlated():
-    X, y, w_true = make_correlated_data(snr=0)
+    X, y, w_true = make_correlated_data(snr=np.inf)
     np.testing.assert_allclose(y, X @ w_true)
 
     snr = 5
