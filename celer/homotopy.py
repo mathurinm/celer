@@ -32,7 +32,7 @@ def _log_weights(w, epsilon=0):
 def _sqrt_weights(w, epsilon=0):
     reweights = np.full(w.shape[0], np.inf)
     supp = (w != 0)
-    reweights[supp] = 1. / (2 * np.sqrt(w[supp]) + epsilon)
+    reweights[supp] = 1. / (2 * np.sqrt(np.abs(w[supp])) + epsilon)
     return reweights
 
 
@@ -341,10 +341,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             elif pb == LASSO or (pb == LOGREG and not use_PN):
                 if reweight_iter > 0:
                     reweights = reweighting(coefs[:, t])
-                    print(reweights)
                     reweights *= weights
-                    print(reweights)
-                    print(w)
                 else:
                     reweights = weights.copy()
                 sol = celer(
