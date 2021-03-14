@@ -72,6 +72,7 @@ if __name__ == "__main__":
     lasso = LassoCV(fit_intercept=False, n_jobs=-1).fit(X, y)
     alphas = lasso.alphas_
 
+    1 / 0
     # res = celer_path(X, y, "lasso", n_reweightings=5, verbose=1)
 
-    AdaptiveLassoCV(n_jobs=1, verbose=1).fit(X, y)
+    AdaptiveLassoCV(n_jobs=1, verbose=0, n_reweightings=2).fit(X, y)

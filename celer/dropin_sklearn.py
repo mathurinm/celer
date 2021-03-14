@@ -306,6 +306,13 @@ w_j| / |w_j^{it - 1}|
     n_reweightings : int, optional (default=5)
         Number of reweightings performed, ie number of Lasso problems solved.
 
+    reweighting : string or callable (default='log')
+        Reweighting scheme if `n_reweightings` > 1.
+        String supported are 'log' and 'sqrt', corresponding to log and sqrt
+        penalties.
+        If a callable is passed, it is given the previous coefficients
+        and must return an array of corresponding new weights.
+
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
 
@@ -371,8 +378,9 @@ w_j| / |w_j^{it - 1}|
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., n_reweightings=5, max_iter=100,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True, fit_intercept=True, weights=None, normalize=False,
+    def __init__(self, alpha=1., n_reweightings=5, reweighting='log',
+                 max_iter=100, max_epochs=50000, p0=10, verbose=0, tol=1e-4,
+                 prune=True, fit_intercept=True, weights=None, normalize=False,
                  warm_start=False, positive=False):
         super(AdaptiveLasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
@@ -380,6 +388,7 @@ w_j| / |w_j^{it - 1}|
             warm_start=warm_start, verbose=verbose, max_epochs=max_epochs,
             p0=p0, prune=prune, positive=positive, weights=weights)
         self.n_reweightings = n_reweightings
+        self.reweighting = reweighting
 
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
@@ -388,8 +397,8 @@ w_j| / |w_j^{it - 1}|
             max_iter=self.max_iter, return_n_iter=return_n_iter,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
             tol=self.tol, prune=self.prune, weights=self.weights,
-            n_reweightings=self.n_reweightings, positive=self.positive,
-            X_scale=kwargs.get('X_scale', None),
+            n_reweightings=self.n_reweightings, reweighting=self.reweighting,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
 
         return results
@@ -410,6 +419,13 @@ class AdaptiveLassoCV(LassoCV):
     n_reweightings : int, optional (default=5)
         Number of reweightings performed for each alpha (ie number of Lasso
         problems solved).
+
+    reweighting : string or callable (default='log')
+        Reweighting scheme if `n_reweightings` > 1.
+        String supported are 'log' and 'sqrt', corresponding to log and sqrt
+        penalties.
+        If a callable is passed, it is given the previous coefficients
+        and must return an array of corresponding new weights.
 
     eps : float, optional
         Length of the path. ``eps=1e-3`` means that
@@ -477,13 +493,13 @@ class AdaptiveLassoCV(LassoCV):
         The amount of penalization chosen by cross validation
 
     coef_ : array, shape (n_features,)
-        parameter vector (w in the cost function formula)
+        Parameter vector (w in the cost function formula)
 
     intercept_ : float
-        independent term in decision function.
+        Independent term in decision function.
 
     mse_path_ : array, shape (n_alphas, n_folds)
-        mean square error for the test set on each fold, varying alpha
+        Mean square error for the test set on each fold, varying alpha
 
     alphas_ : numpy array, shape (n_alphas,)
         The grid of alphas used for fitting
@@ -493,7 +509,7 @@ class AdaptiveLassoCV(LassoCV):
         (``alpha_``).
 
     n_iter_ : int
-        number of iterations run by the coordinate descent solver to reach
+        Number of iterations run by the coordinate descent solver to reach
         the specified tolerance for the optimal alpha.
 
     See also
@@ -502,7 +518,8 @@ class AdaptiveLassoCV(LassoCV):
     Lasso
     """
 
-    def __init__(self, n_reweightings=5, eps=1e-3, n_alphas=100, alphas=None,
+    def __init__(self, n_reweightings=5, reweighting='log', eps=1e-3,
+                 n_alphas=100, alphas=None,
                  fit_intercept=True, normalize=False, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
@@ -512,6 +529,7 @@ class AdaptiveLassoCV(LassoCV):
             verbose=verbose, n_jobs=n_jobs, max_epochs=max_epochs, p0=p0,
             prune=prune, positive=positive)
         self.n_reweightings = n_reweightings
+        self.reweighting = reweighting
 
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute Lasso path with Celer."""
@@ -519,7 +537,8 @@ class AdaptiveLassoCV(LassoCV):
             X, y, "lasso", alphas=alphas, coef_init=coef_init,
             max_iter=self.max_iter, max_epochs=self.max_epochs,
             p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
-            n_reweightings=self.n_reweightings, positive=self.positive,
+            n_reweightings=self.n_reweightings, reweighting=self.reweighting,
+            positive=self.positive,
             X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
         return alphas, coefs, dual_gaps

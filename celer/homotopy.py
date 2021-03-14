@@ -22,11 +22,26 @@ LOGREG = 1
 GRPLASSO = 2
 
 
+def _log_weights(w, epsilon=0):
+    reweights = np.full(w.shape[0], np.inf)
+    supp = (w != 0)
+    reweights[supp] = 1 / (np.abs(w[supp]) + epsilon)
+    return reweights
+
+
+def _sqrt_weights(w, epsilon=0):
+    reweights = np.full(w.shape[0], np.inf)
+    supp = (w != 0)
+    reweights[supp] = 1. / (2 * np.sqrt(w[supp]) + epsilon)
+    return reweights
+
+
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
-               n_reweightings=1, groups=None, return_thetas=False,
-               use_PN=False, X_offset=None, X_scale=None, return_n_iter=False,
+               n_reweightings=1, reweighting='log', groups=None,
+               return_thetas=False, use_PN=False, X_offset=None, X_scale=None,
+               return_n_iter=False,
                positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
@@ -110,6 +125,13 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         weights.
         This procedure amounts to a majorization-minimization approach to
         handle L0.5 regularization, and should reduce the coefficient bias.
+
+    reweighting : string or callable (default='log')
+        Reweighting scheme if `n_reweightings` > 1.
+        String supported are 'log' and 'sqrt', corresponding to log and sqrt
+        penalties.
+        If a callable is passed, it is given the previous coefficients
+        and must return an array of corresponding new weights.
 
     groups : int or list of ints or list of list of ints, optional
         Used for the group Lasso only. See the documentation of the
@@ -195,6 +217,14 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         weights = weights.astype(X.dtype)
     elif (weights <= 0).any():
         raise ValueError("0 or negative weights are not supported.")
+
+    if isinstance(reweighting, str):
+        if reweighting == 'log':
+            reweighting = _log_weights
+        elif reweighting == 'sqrt':
+            reweighting = _sqrt_weights
+        else:
+            raise ValueError("Unsupported reweighting scheme %s" % reweighting)
 
     if alphas is None:
         if pb == LASSO:
@@ -310,11 +340,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     prune=prune, verbose=verbose)
             elif pb == LASSO or (pb == LOGREG and not use_PN):
                 if reweight_iter > 0:
-                    # avoid division by 0 warning for 1 / np.abs(coefs[:, t])
-                    reweights = np.full(n_features, np.inf)
-                    supp = coefs[:, t] != 0
-                    reweights[supp] = 1 / np.abs(coefs[:, t][supp])
+                    reweights = reweighting(coefs[:, t])
+                    print(reweights)
                     reweights *= weights
+                    print(reweights)
+                    print(w)
                 else:
                     reweights = weights.copy()
                 sol = celer(

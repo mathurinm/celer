@@ -1,7 +1,7 @@
 """
-=================================================================
-Plot estimation vs prediction dilemma for Lasso and AdaptiveLasso
-=================================================================
+============================================================
+Estimation vs prediction dilemma for Lasso and AdaptiveLasso
+============================================================
 
 The example highlights the inability of the Lasso to simultaneously estimate
 the support and perform correct prediction. On the contrary, the
@@ -81,4 +81,5 @@ for ix, cv in enumerate(cvs):
     axarr[0].legend()
     axarr[1].legend()
 
+plt.suptitle("5 fold cross validation metrics")
 plt.show(block=False)
