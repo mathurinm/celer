@@ -401,11 +401,9 @@ def mtl_path(
 
     n_alphas = len(alphas)
 
-    if coef_init is None:
-        coefs = np.zeros((n_features, n_tasks, n_alphas), order="F",
-                         dtype=X.dtype)
-    else:
-        coefs = np.swapaxes(coef_init, 0, 1).copy('F')
+    coefs = np.zeros((n_features, n_tasks, n_alphas), order="F",
+                     dtype=X.dtype)
+
     thetas = np.zeros((n_alphas, n_samples, n_tasks), dtype=X.dtype)
     gaps = np.zeros(n_alphas)
 
@@ -427,8 +425,13 @@ def mtl_path(
             W = coefs[:, :, t - 1].copy()
             p_t = max(len(np.where(W[:, 0] != 0)[0]), p0)
         else:
-            W = coefs[:, :, t].copy()
-            p_t = 10
+            if coef_init is not None:
+                W = coef_init.T
+                R = np.asfortranarray(Y - X @ W)
+                p_t = max(len(np.where(W[:, 0] != 0)[0]), p0)
+            else:
+                W = np.zeros((n_features, n_tasks), dtype=X.dtype)
+                p_t = 10
 
         sol = celer_mtl(
             X, Y, alpha, W, R, theta, norms_X_col, p0=p_t, tol=tol,
