@@ -64,14 +64,17 @@ cdef floating dual_scaling_mtl(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_mtl(
-        int n_samples, int n_features, int n_tasks, int * screened,
-        floating[::1, :] X, floating[::1, :] theta, floating * norms_X_col,
-        floating * Xj_theta, floating * prios, floating radius,
+        floating[:, ::1] W, int[:] screened,
+        floating[::1, :] X, floating[::1, :] theta, floating[:] norms_X_col,
+        floating[:] Xj_theta, floating[:] prios, floating radius,
         int * n_screened) nogil:
     cdef int j, k
     cdef int inc = 1
     cdef floating tmp
     cdef floating nrm = 0.
+    cdef int n_samples = X.shape[0]
+    cdef int n_features = X.shape[1]
+    cdef int n_tasks = W.shape[1]
 
     for j in range(n_features):
         if screened[j]:
@@ -83,9 +86,13 @@ cdef void set_prios_mtl(
         nrm = fnrm2(&n_tasks, &Xj_theta[0], &inc)
         prios[j] = (1. - nrm) / norms_X_col[j]
         if prios[j] > radius:
-            pass
-            # screened[j] = True
-            # n_screened[0] += 1
+            # screen only if W[j, :] is zero:
+            for k in range(n_tasks):
+                if W[j, k] != 0:
+                    break
+            else:
+                screened[j] = True
+                n_screened[0] += 1
 
 
 @cython.boundscheck(False)
@@ -219,8 +226,8 @@ def celer_mtl(
         radius = sqrt(2 * gap / n_samples) / alpha
         # TODO prios could be computed along with scaling
         set_prios_mtl(
-            n_samples, n_features, n_tasks, &screened[0], X, theta,
-            &norms_X_col[0], &Xj_theta[0], &prios[0], radius, &n_screened)
+            W, screened, X, theta, norms_X_col, Xj_theta, prios, radius,
+            &n_screened)
 
         if t == 0:
             ws_size = p0
