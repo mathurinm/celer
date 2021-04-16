@@ -83,8 +83,9 @@ cdef void set_prios_mtl(
         nrm = fnrm2(&n_tasks, &Xj_theta[0], &inc)
         prios[j] = (1. - nrm) / norms_X_col[j]
         if prios[j] > radius:
-            screened[j] = True
-            n_screened[0] += 1
+            pass
+            # screened[j] = True
+            # n_screened[0] += 1
 
 
 @cython.boundscheck(False)
