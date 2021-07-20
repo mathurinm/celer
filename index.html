@@ -3,16 +3,17 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Celer &#8212; celer 0.6.1dev documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -91,7 +92,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="celer">
+  <section id="celer">
 <h1>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
 <p>This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
 Currently, the package handles the following problems:</p>
@@ -104,14 +105,14 @@ Currently, the package handles the following problems:</p>
 </ul>
 <p>The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
 The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.</p>
-<div class="section" id="install-the-released-version">
+<section id="install-the-released-version">
 <h2>Install the released version<a class="headerlink" href="#install-the-released-version" title="Permalink to this headline">¶</a></h2>
 <p>From a console or terminal install celer with pip:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">celer</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="install-the-development-version">
+</section>
+<section id="install-the-development-version">
 <h2>Install the development version<a class="headerlink" href="#install-the-development-version" title="Permalink to this headline">¶</a></h2>
 <p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.
 First clone the repository available at <a class="reference external" href="https://github.com/mathurinm/celer">https://github.com/mathurinm/celer</a>:</p>
@@ -129,8 +130,8 @@ $ pip install -e .
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">celer</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="cite">
+</section>
+<section id="cite">
 <h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
 <p>If you use this code, please cite:</p>
 <div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@InProceedings</span><span class="p">{</span><span class="nl">pmlr-v80-massias18a</span><span class="p">,</span>
@@ -159,8 +160,8 @@ $ pip install -e .
 <li><p><a class="reference external" href="https://arxiv.org/abs/1802.07481">https://arxiv.org/abs/1802.07481</a></p></li>
 <li><p><a class="reference external" href="https://arxiv.org/abs/1907.05830">https://arxiv.org/abs/1907.05830</a></p></li>
 </ul>
-</div>
-<div class="section" id="build-the-documentation">
+</section>
+<section id="build-the-documentation">
 <h2>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permalink to this headline">¶</a></h2>
 <p>To build the documentation you will need to run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx_gallery</span> <span class="n">sphinx_bootstrap_theme</span>
@@ -168,16 +169,16 @@ $ pip install -e .
 <span class="n">make</span> <span class="n">html</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="api">
+</section>
+<section id="api">
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -192,7 +193,7 @@ $ pip install -e .
     </p>
     <p>
         &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.1.<br/>
     </p>
   </div>
 </footer>
