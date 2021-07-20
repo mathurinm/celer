@@ -308,7 +308,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
         maximum number of iteration is reached.
 
-    prune : 0 | 1, optional
+    prune : bool, optional (default=True)
         Whether or not to use pruning when growing working sets.
 
     fit_intercept : bool, optional (default=True)
@@ -350,7 +350,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
     """
 
     def __init__(self, alpha=1., max_iter=100,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=0,
+                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
                  fit_intercept=True, normalize=False, warm_start=False):
         super().__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
