@@ -37,7 +37,7 @@ def test_celer_path_logreg(solver):
         solver='liblinear', tol=tol)
 
     _, coefs_c, gaps = celer_path(
-        X, y, "logreg", alphas=alphas, tol=tol, verbose=1,
+        X, y, "logreg", alphas=alphas, tol=tol, verbose=0,
         use_PN=(solver == "celer-pn"))
 
     assert_array_less(gaps, tol * len(y) * np.log(2))
@@ -52,10 +52,10 @@ def test_LogisticRegression(sparse_X):
         n_samples=30, n_features=60, sparse_X=sparse_X)
     y = np.sign(y)
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
-    C = 30. / alpha_max
+    C = 20. / alpha_max
 
     tol = 1e-8
-    clf1 = LogisticRegression(C=C, tol=tol, verbose=2)
+    clf1 = LogisticRegression(C=C, tol=tol, verbose=0)
     clf1.fit(X, y)
 
     clf2 = sklearn_Logreg(
@@ -70,7 +70,7 @@ def test_LogisticRegression(sparse_X):
     # multinomial test, need to have a slightly lower tol
     # for results to be comparable
     y = np.random.choice(4, len(y))
-    clf3 = LogisticRegression(C=C, tol=tol, verbose=2)
+    clf3 = LogisticRegression(C=C, tol=tol, verbose=0)
     clf3.fit(X, y)
 
     clf4 = sklearn_Logreg(
