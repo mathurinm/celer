@@ -183,10 +183,14 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     if weights is None:
-        weights = np.ones(n_groups) if pb == GRPLASSO else np.ones(n_features)
-        weights = weights.astype(X.dtype)
+        weights = np.ones(n_features).astype(X.dtype)
     elif (weights <= 0).any():
         raise ValueError("0 or negative weights are not supported.")
+    elif weights.shape[0] != X.shape[1]:
+        raise ValueError(
+            "As many weights as features must be passed. "
+            f"Expected {X.shape[1]}, got {weights.shape[0]}."
+        )
 
     if alphas is None:
         if pb == LASSO:
