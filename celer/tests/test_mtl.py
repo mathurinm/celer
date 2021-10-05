@@ -127,7 +127,7 @@ def test_MultiTaskLassoCV():
 
     # check_estimator tests float32 so using tol < 1e-7 causes precision
     # issues
-    # we do'nt support sample_weights so far:
+    # we don't support sample_weights for MTL
     # clf.tol = 1e-5
     # check_estimator(clf)
 
@@ -150,7 +150,7 @@ def test_MultiTaskLasso(fit_intercept):
     if fit_intercept:
         np.testing.assert_allclose(clf.intercept_, clf2.intercept_)
 
-    # This fails because we don't support sample_weights:
+    # we don't support sample_weights for MTL
     # clf.tol = 1e-7
     # check_estimator(clf)
 
