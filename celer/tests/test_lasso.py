@@ -20,7 +20,6 @@ from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
-
 @pytest.mark.parametrize("sparse_X, alphas, pb",
                          product([False, True], [None, 1],
                                  ["lasso", "logreg"]))
@@ -57,7 +56,7 @@ def test_convergence_warning():
         # Cause all warnings to always be triggered.
         warnings.simplefilter("always")
         clf.fit(X, y)
-        assert len(w) == 1
+        assert len(w) >= 1
         assert issubclass(w[-1].category, ConvergenceWarning)
 
 
