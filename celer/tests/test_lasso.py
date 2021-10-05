@@ -20,6 +20,10 @@ from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
+def test():
+    assert False
+
+
 @pytest.mark.parametrize("sparse_X, alphas, pb",
                          product([False, True], [None, 1],
                                  ["lasso", "logreg"]))
