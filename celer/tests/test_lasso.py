@@ -22,6 +22,7 @@ from celer.utils.testing import build_dataset
 
 def test():
     assert False
+    assert_array_less(1,2)
 
 
 @pytest.mark.parametrize("sparse_X, alphas, pb",
