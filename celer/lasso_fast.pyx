@@ -217,8 +217,6 @@ def celer(
                 scal = dnorm_l1(
                     is_sparse, theta_in, X, X_data, X_indices, X_indptr,
                     notin_WS, X_mean, weights, center, positive)
-                # print(scal)
-                # print(np.linalg.norm(np.asarray(X)[:, np.asarray(C)].T @ np.asarray(theta_in), ord=np.inf))
 
                 if scal > 1. :
                     tmp = 1. / scal

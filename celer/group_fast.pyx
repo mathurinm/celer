@@ -151,7 +151,8 @@ cpdef celer_grp(
         int[::1] X_indptr, floating[::1] X_mean, floating[:] y, floating alpha,
         floating[:] w, floating[:] R, floating[::1] theta,
         floating[::1] norms_X_grp, floating tol, int max_iter, int max_epochs,
-        int gap_freq=10, floating tol_ratio_inner=0.3, int p0=100, bint prune=1, bint use_accel=1,
+        int gap_freq=10, floating tol_ratio_inner=0.3, int p0=100,
+        bint prune=1, bint use_accel=1,
         bint verbose=0):
 
     pb = LASSO
