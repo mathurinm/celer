@@ -35,7 +35,7 @@ setup(name='celer',
       download_url=DOWNLOAD_URL,
       install_requires=['numpy>=1.12', 'seaborn>=0.7', 'scipy>=0.18.0',
                         'matplotlib>=2.0.0', 'Cython>=0.26', 'libsvmdata',
-                        'scikit-learn>=0.24', 'xarray', 'download', 'tqdm'],
+                        'scikit-learn>=1.0', 'xarray', 'download', 'tqdm'],
       packages=find_packages(),
       cmdclass={'build_ext': build_ext},
       ext_modules=[
