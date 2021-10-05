@@ -24,7 +24,7 @@ jobs:
                 echo "Merging $(cat merge.txt)";
                 git remote add upstream git://github.com/mathurinm/celer.git;
                 git pull --ff-only upstream "refs/pull/$(cat merge.txt)/merge";
-                git fetch upstream master;
+                git fetch upstream main;
               fi
 
         # If both keys are in the same command only one is restored
@@ -87,7 +87,7 @@ jobs:
         - run:
             name: deploy
             command: |
-              if [[ ${CIRCLE_BRANCH} == "master" ]]; then
+              if [[ ${CIRCLE_BRANCH} == "main" ]]; then
                 set -e
                 mkdir -p ~/.ssh
                 echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
