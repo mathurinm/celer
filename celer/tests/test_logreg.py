@@ -46,6 +46,8 @@ def test_LogisticRegression(sparse_X):
     alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
     C = 20. / alpha_max
 
+    clf = LogisticRegression(C=-1)
+    np.testing.assert_raises(ValueError, clf.fit, X, y)
     tol = 1e-8
     clf1 = LogisticRegression(C=C, tol=tol, verbose=0)
     clf1.fit(X, y)

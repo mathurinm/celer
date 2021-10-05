@@ -19,7 +19,7 @@ from .homotopy import celer_path, mtl_path
 
 
 class Lasso(Lasso_sklearn):
-    """
+    r"""
     Lasso scikit-learn estimator based on Celer solver
 
     The optimization objective for Lasso is::
@@ -134,7 +134,7 @@ class Lasso(Lasso_sklearn):
 
 
 class LassoCV(RegressorMixin, LinearModelCV):
-    """
+    r"""
     LassoCV scikit-learn estimator based on Celer solver
 
     The best model is selected by cross-validation.
@@ -265,7 +265,7 @@ class LassoCV(RegressorMixin, LinearModelCV):
 
 
 class MultiTaskLasso(MultiTaskLasso_sklearn):
-    """
+    r"""
     MultiTaskLasso scikit-learn estimator based on Celer solver
 
     The optimization objective for MultiTaskLasso is::
@@ -383,7 +383,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
 
 
 class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
-    """
+    r"""
     MultiTaskLassoCV scikit-learn estimator based on Celer solver
 
     The best model is selected by cross-validation.
@@ -509,7 +509,7 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
 
 
 class LogisticRegression(LogReg_sklearn):
-    """
+    r"""
     Sparse Logistic regression scikit-learn estimator based on Celer solver.
 
     The optimization objective for sparse Logistic regression is::
@@ -827,7 +827,7 @@ class GroupLasso(Lasso_sklearn):
 
 
 class GroupLassoCV(LassoCV, LinearModelCV):
-    """
+    r"""
     GroupLassoCV scikit-learn estimator based on Celer solver
 
     The best model is selected by cross-validation.
