@@ -177,7 +177,7 @@ def test_Lasso(sparse_X, fit_intercept, positive):
 
     alpha = alpha_max / 2.
     params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
-                  normalize=True, positive=positive)
+                  positive=positive)
     clf = Lasso(**params)
     clf.fit(X, y)
 

@@ -61,11 +61,6 @@ class Lasso(Lasso_sklearn):
         Strictly positive weights used in the L1 penalty part of the Lasso
         objective. If None, weights equal to 1 are used.
 
-    normalize : bool, optional (default=False)
-        This parameter is ignored when ``fit_intercept`` is set to False.
-        If True,  the regressors X will be normalized before regression by
-        subtracting the mean and dividing by the l2-norm.
-
     warm_start : bool, optional (default=False)
         When set to True, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
@@ -113,12 +108,11 @@ class Lasso(Lasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100, max_epochs=50000, p0=10,
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
-                 weights=None, normalize=False, warm_start=False,
+                 weights=None, warm_start=False,
                  positive=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, normalize=normalize,
-            warm_start=warm_start)
+            fit_intercept=fit_intercept, warm_start=warm_start)
         self.verbose = verbose
         self.max_epochs = max_epochs
         self.p0 = p0
@@ -166,11 +160,6 @@ class LassoCV(RegressorMixin, LinearModelCV):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
-
-    normalize : bool, optional (default=False)
-        This parameter is ignored when ``fit_intercept`` is set to False.
-        If True,  the regressors X will be normalized before regression by
-        subtracting the mean and dividing by the l2-norm.
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions).
@@ -243,12 +232,12 @@ class LassoCV(RegressorMixin, LinearModelCV):
     """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
-                 fit_intercept=True, normalize=False, max_iter=100,
+                 fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
         super(LassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
-            tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
+            tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.max_epochs = max_epochs
         self.p0 = p0
@@ -314,11 +303,6 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    normalize : bool, optional (default=False)
-        This parameter is ignored when ``fit_intercept`` is set to False.
-        If True,  the regressors X will be normalized before regression by
-        subtracting the mean and dividing by the l2-norm.
-
     warm_start : bool, optional (default=False)
         When set to True, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
@@ -351,11 +335,10 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
 
     def __init__(self, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
-                 fit_intercept=True, normalize=False, warm_start=False):
+                 fit_intercept=True, warm_start=False):
         super().__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, normalize=normalize,
-            warm_start=warm_start)
+            fit_intercept=fit_intercept, warm_start=warm_start)
         self.verbose = verbose
         self.max_epochs = max_epochs
         self.p0 = p0
@@ -382,7 +365,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
                              % (n_samples, y.shape[0]))
 
         X, y, X_offset, y_offset, X_scale = _preprocess_data(
-            X, y, self.fit_intercept, self.normalize, copy=False)
+            X, y, self.fit_intercept, copy=False)
 
         if not self.warm_start or not hasattr(self, "coef_"):
             self.coef_ = None
@@ -426,11 +409,6 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
-
-    normalize : bool, optional (default=False)
-        This parameter is ignored when ``fit_intercept`` is set to False.
-        If True,  the regressors X will be normalized before regression by
-        subtracting the mean and dividing by the l2-norm.
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions).
@@ -498,13 +476,13 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
     """
 
     def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
-                 fit_intercept=True, normalize=False, max_iter=100,
+                 fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0,
                  max_epochs=50000, p0=10, prune=True, precompute='auto',
                  n_jobs=1):
         super().__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
-            tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
+            tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.max_epochs = max_epochs
         self.p0 = p0
@@ -774,11 +752,6 @@ class GroupLasso(Lasso_sklearn):
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    normalize : bool, optional (default=False)
-        This parameter is ignored when ``fit_intercept`` is set to False.
-        If True,  the regressors X will be normalized before regression by
-        subtracting the mean and dividing by the l2-norm.
-
     warm_start : bool, optional (default=False)
         When set to True, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
@@ -803,7 +776,7 @@ class GroupLasso(Lasso_sklearn):
     >>> clf = GroupLasso(alpha=0.5, groups=[[0, 1], [2]])
     >>> clf.fit([[0, 0, 1], [1, -1, 2], [2, 0, -1]], [1, 1, -1])
     GroupLasso(alpha=0.5, fit_intercept=True,
-    groups=[[0, 1], [2]], max_epochs=50000, max_iter=100, normalize=False,
+    groups=[[0, 1], [2]], max_epochs=50000, max_iter=100,
     p0=10, prune=True, tol=0.0001, verbose=0, warm_start=False)
     >>> print(clf.coef_)
     [-0.         -0.          0.39285714]
@@ -828,10 +801,10 @@ class GroupLasso(Lasso_sklearn):
 
     def __init__(self, groups=1, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
-                 fit_intercept=True, normalize=False, warm_start=False):
+                 fit_intercept=True, warm_start=False):
         super(GroupLasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, normalize=normalize,
+            fit_intercept=fit_intercept,
             warm_start=warm_start)
         self.groups = groups
         self.verbose = verbose
@@ -891,11 +864,6 @@ class GroupLassoCV(LassoCV, LinearModelCV):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
-
-    normalize : bool, optional (default=False)
-        This parameter is ignored when ``fit_intercept`` is set to False.
-        If True,  the regressors X will be normalized before regression by
-        subtracting the mean and dividing by the l2-norm.
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions).
@@ -968,12 +936,12 @@ class GroupLassoCV(LassoCV, LinearModelCV):
     """
 
     def __init__(self, groups=None, eps=1e-3, n_alphas=100, alphas=None,
-                 fit_intercept=True, normalize=False, max_iter=100,
+                 fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
         super(GroupLassoCV, self).__init__(
             eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
-            tol=tol, cv=cv, fit_intercept=fit_intercept, normalize=normalize,
+            tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.groups = groups
         self.max_epochs = max_epochs
