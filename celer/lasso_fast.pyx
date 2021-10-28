@@ -100,8 +100,7 @@ def celer(
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
-    d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
-    gaps[0] = d_obj
+    gaps[0] = -1
 
     cdef floating[:] theta_in = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] thetacc = np.zeros(n_samples, dtype=dtype)
@@ -134,6 +133,8 @@ def celer(
 
             d_obj_from_inner = dual(
                 pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+        else:
+            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
