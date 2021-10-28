@@ -68,7 +68,7 @@ implementation as it makes the example too long to run.
 
     *** Warning: this example may take more than 5 minutes to run ***
     Dataset: finance
-    Dataset size: 16087 samples, 1668737 features
+    Dataset size: 16087 samples, 4272227 features
 
 
 
@@ -129,72 +129,74 @@ Run Celer on a grid of regularization parameters, for various tolerances:
     ##########################
     ##### Computing alpha 2/11
     ##########################
-    Iter 0: primal 0.1998879584, gap 8.46e-03, 1 feats in subpb (400 left)
+    Iter 0: primal 0.1998879584, gap 8.46e-03, 1 feats in subpb (6958 left)
     Iter 1: primal 0.1996695929, gap 1.10e-05
     Early exit, gap: 1.10e-05 < 4.00e-03
     ##########################
     ##### Computing alpha 3/11
     ##########################
-    Iter 0: primal 0.1993226851, gap 8.66e-03, 1 feats in subpb (677 left)
-    Iter 1: primal 0.1991849058, gap 1.25e-02, 2 feats in subpb (677 left)
+    Iter 0: primal 0.1993226851, gap 8.66e-03, 1 feats in subpb (7235 left)
+    Iter 1: primal 0.1991849058, gap 1.25e-02, 2 feats in subpb (7235 left)
     Iter 2: primal 0.1988140591, gap 2.51e-03
     Early exit, gap: 2.51e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 4/11
     ##########################
-    Iter 0: primal 0.1974240538, gap 1.60e-02, 2 feats in subpb (1729 left)
-    Iter 1: primal 0.1967819954, gap 1.40e-02, 4 feats in subpb (1561 left)
-    Iter 2: primal 0.1956866003, gap 4.37e-03, 8 feats in subpb (576 left)
-    Iter 3: primal 0.1955621705, gap 1.53e-03
-    Early exit, gap: 1.53e-03 < 4.00e-03
+    Iter 0: primal 0.1974240538, gap 1.60e-02, 2 feats in subpb (8287 left)
+    Iter 1: primal 0.1967819954, gap 1.40e-02, 4 feats in subpb (8119 left)
+    Iter 2: primal 0.1956875558, gap 4.25e-03, 8 feats in subpb (7120 left)
+    Iter 3: primal 0.1955729679, gap 2.08e-03
+    Early exit, gap: 2.08e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 5/11
     ##########################
-    Iter 0: primal 0.1921010081, gap 1.19e-02, 8 feats in subpb (2030 left)
-    Iter 1: primal 0.1911303017, gap 1.49e-02, 16 feats in subpb (2030 left)
-    Iter 2: primal 0.1894625859, gap 4.45e-03, 22 feats in subpb (919 left)
-    Iter 3: primal 0.1892191251, gap 1.11e-03
-    Early exit, gap: 1.11e-03 < 4.00e-03
+    Iter 0: primal 0.1921130066, gap 1.30e-02, 7 feats in subpb (8744 left)
+    Iter 1: primal 0.1911454767, gap 1.60e-02, 14 feats in subpb (8744 left)
+    Iter 2: primal 0.1899680054, gap 8.91e-03, 22 feats in subpb (8155 left)
+    Iter 3: primal 0.1893305596, gap 1.66e-03
+    Early exit, gap: 1.66e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 6/11
     ##########################
-    Iter 0: primal 0.1826192526, gap 9.06e-03, 17 feats in subpb (2410 left)
-    Iter 1: primal 0.1796959793, gap 3.12e-03
-    Early exit, gap: 3.12e-03 < 4.00e-03
+    Iter 0: primal 0.1824875036, gap 9.78e-03, 15 feats in subpb (9114 left)
+    Iter 1: primal 0.1799473516, gap 7.77e-03, 26 feats in subpb (8703 left)
+    Iter 2: primal 0.1796551628, gap 1.91e-03
+    Early exit, gap: 1.91e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 7/11
     ##########################
-    Iter 0: primal 0.1705243076, gap 1.12e-02, 14 feats in subpb (4061 left)
-    Iter 1: primal 0.1681273196, gap 9.86e-03, 26 feats in subpb (3715 left)
-    Iter 2: primal 0.1678406972, gap 1.80e-03
-    Early exit, gap: 1.80e-03 < 4.00e-03
+    Iter 0: primal 0.1702584473, gap 9.24e-03, 17 feats in subpb (10076 left)
+    Iter 1: primal 0.1679647590, gap 3.80e-03
+    Early exit, gap: 3.80e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 8/11
     ##########################
-    Iter 0: primal 0.1574632890, gap 8.63e-03, 20 feats in subpb (4812 left)
-    Iter 1: primal 0.1556128718, gap 6.22e-03, 36 feats in subpb (3818 left)
-    Iter 2: primal 0.1553370834, gap 1.57e-03
-    Early exit, gap: 1.57e-03 < 4.00e-03
+    Iter 0: primal 0.1578431041, gap 1.13e-02, 15 feats in subpb (12375 left)
+    Iter 1: primal 0.1559409606, gap 1.19e-02, 28 feats in subpb (12370 left)
+    Iter 2: primal 0.1554690765, gap 4.51e-03, 48 feats in subpb (9557 left)
+    Iter 3: primal 0.1552945554, gap 1.59e-03
+    Early exit, gap: 1.59e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 9/11
     ##########################
-    Iter 0: primal 0.1443973630, gap 6.71e-03, 27 feats in subpb (5669 left)
-    Iter 1: primal 0.1433480061, gap 1.94e-03
-    Early exit, gap: 1.94e-03 < 4.00e-03
+    Iter 0: primal 0.1444814441, gap 7.00e-03, 27 feats in subpb (12393 left)
+    Iter 1: primal 0.1433953652, gap 4.09e-03, 50 feats in subpb (10579 left)
+    Iter 2: primal 0.1432862619, gap 9.43e-04
+    Early exit, gap: 9.43e-04 < 4.00e-03
     ###########################
     ##### Computing alpha 10/11
     ###########################
-    Iter 0: primal 0.1332521170, gap 7.31e-03, 26 feats in subpb (8541 left)
-    Iter 1: primal 0.1323958846, gap 7.72e-03, 48 feats in subpb (8541 left)
-    Iter 2: primal 0.1322564257, gap 2.17e-03
-    Early exit, gap: 2.17e-03 < 4.00e-03
+    Iter 0: primal 0.1330512676, gap 5.52e-03, 27 feats in subpb (13599 left)
+    Iter 1: primal 0.1322840728, gap 6.95e-03, 50 feats in subpb (13599 left)
+    Iter 2: primal 0.1322135168, gap 1.61e-03
+    Early exit, gap: 1.61e-03 < 4.00e-03
     ###########################
     ##### Computing alpha 11/11
     ###########################
-    Iter 0: primal 0.1229681542, gap 7.26e-03, 33 feats in subpb (12083 left)
-    Iter 1: primal 0.1222889686, gap 6.82e-03, 64 feats in subpb (11584 left)
-    Iter 2: primal 0.1221840202, gap 1.98e-03
-    Early exit, gap: 1.98e-03 < 4.00e-03
+    Iter 0: primal 0.1227863821, gap 5.71e-03, 34 feats in subpb (16753 left)
+    Iter 1: primal 0.1222932946, gap 5.24e-03, 68 feats in subpb (16147 left)
+    Iter 2: primal 0.1222004777, gap 1.52e-03
+    Early exit, gap: 1.52e-03 < 4.00e-03
     ##########################
     ##### Computing alpha 1/11
     ##########################
@@ -203,93 +205,95 @@ Run Celer on a grid of regularization parameters, for various tolerances:
     ##########################
     ##### Computing alpha 2/11
     ##########################
-    Iter 0: primal 0.1998879584, gap 8.46e-03, 1 feats in subpb (400 left)
+    Iter 0: primal 0.1998879584, gap 8.46e-03, 1 feats in subpb (6958 left)
     Iter 1: primal 0.1996695929, gap 1.10e-05
     Early exit, gap: 1.10e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 3/11
     ##########################
-    Iter 0: primal 0.1993226851, gap 8.66e-03, 1 feats in subpb (677 left)
-    Iter 1: primal 0.1991849058, gap 1.25e-02, 2 feats in subpb (677 left)
-    Iter 2: primal 0.1988140591, gap 2.51e-03, 4 feats in subpb (180 left)
-    Iter 3: primal 0.1986284824, gap 1.04e-04, 8 feats in subpb (14 left)
-    Iter 4: primal 0.1986107746, gap 2.94e-05
-    Early exit, gap: 2.94e-05 < 4.00e-05
+    Iter 0: primal 0.1993226851, gap 8.66e-03, 1 feats in subpb (7235 left)
+    Iter 1: primal 0.1991849058, gap 1.25e-02, 2 feats in subpb (7235 left)
+    Iter 2: primal 0.1988140591, gap 2.51e-03, 4 feats in subpb (6738 left)
+    Iter 3: primal 0.1986319559, gap 8.96e-05, 8 feats in subpb (6572 left)
+    Iter 4: primal 0.1985975194, gap 5.60e-06
+    Early exit, gap: 5.60e-06 < 4.00e-05
     ##########################
     ##### Computing alpha 4/11
     ##########################
-    Iter 0: primal 0.1966638340, gap 8.12e-03, 5 feats in subpb (1019 left)
-    Iter 1: primal 0.1956546189, gap 3.76e-03, 10 feats in subpb (503 left)
-    Iter 2: primal 0.1954863652, gap 1.53e-03, 20 feats in subpb (203 left)
-    Iter 3: primal 0.1953795672, gap 1.40e-04, 22 feats in subpb (45 left)
-    Iter 4: primal 0.1953641576, gap 3.44e-05
-    Early exit, gap: 3.44e-05 < 4.00e-05
+    Iter 0: primal 0.1966411542, gap 8.02e-03, 4 feats in subpb (7571 left)
+    Iter 1: primal 0.1956396632, gap 4.42e-03, 8 feats in subpb (7139 left)
+    Iter 2: primal 0.1955088303, gap 1.32e-03, 14 feats in subpb (6737 left)
+    Iter 3: primal 0.1953583493, gap 3.59e-04, 22 feats in subpb (6622 left)
+    Iter 4: primal 0.1953550691, gap 8.50e-05, 22 feats in subpb (6592 left)
+    Iter 5: primal 0.1953542215, gap 1.76e-05
+    Early exit, gap: 1.76e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 5/11
     ##########################
-    Iter 0: primal 0.1911699828, gap 7.48e-03, 11 feats in subpb (1458 left)
-    Iter 1: primal 0.1892961682, gap 1.96e-03, 22 feats in subpb (443 left)
-    Iter 2: primal 0.1891952428, gap 3.95e-04, 30 feats in subpb (118 left)
-    Iter 3: primal 0.1891773503, gap 5.09e-05, 30 feats in subpb (43 left)
-    Iter 4: primal 0.1891751720, gap 1.25e-05
-    Early exit, gap: 1.25e-05 < 4.00e-05
+    Iter 0: primal 0.1911486634, gap 7.47e-03, 10 feats in subpb (8016 left)
+    Iter 1: primal 0.1892308803, gap 1.83e-03, 18 feats in subpb (6978 left)
+    Iter 2: primal 0.1891865754, gap 4.08e-04, 26 feats in subpb (6677 left)
+    Iter 3: primal 0.1891781142, gap 8.21e-05, 30 feats in subpb (6611 left)
+    Iter 4: primal 0.1891760672, gap 1.51e-05
+    Early exit, gap: 1.51e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 6/11
     ##########################
-    Iter 0: primal 0.1822931274, gap 6.62e-03, 14 feats in subpb (1885 left)
-    Iter 1: primal 0.1797431460, gap 4.01e-03, 28 feats in subpb (1340 left)
-    Iter 2: primal 0.1795561178, gap 3.96e-04, 38 feats in subpb (169 left)
-    Iter 3: primal 0.1794942646, gap 1.64e-04, 36 feats in subpb (86 left)
-    Iter 4: primal 0.1794865169, gap 4.22e-05, 34 feats in subpb (52 left)
-    Iter 5: primal 0.1794860805, gap 1.08e-05
-    Early exit, gap: 1.08e-05 < 4.00e-05
+    Iter 0: primal 0.1823058700, gap 6.59e-03, 15 feats in subpb (8436 left)
+    Iter 1: primal 0.1796740896, gap 3.24e-03, 28 feats in subpb (7671 left)
+    Iter 2: primal 0.1795190552, gap 9.22e-04, 36 feats in subpb (6911 left)
+    Iter 3: primal 0.1795008613, gap 1.79e-04, 34 feats in subpb (6650 left)
+    Iter 4: primal 0.1794978457, gap 2.64e-05
+    Early exit, gap: 2.64e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 7/11
     ##########################
-    Iter 0: primal 0.1695372426, gap 5.57e-03, 18 feats in subpb (2445 left)
-    Iter 1: primal 0.1677835384, gap 3.24e-03, 36 feats in subpb (1632 left)
-    Iter 2: primal 0.1676814426, gap 7.35e-04, 44 feats in subpb (500 left)
-    Iter 3: primal 0.1676487194, gap 1.26e-04, 46 feats in subpb (106 left)
-    Iter 4: primal 0.1676449935, gap 1.92e-05
-    Early exit, gap: 1.92e-05 < 4.00e-05
+    Iter 0: primal 0.1695199681, gap 5.56e-03, 17 feats in subpb (9000 left)
+    Iter 1: primal 0.1678527940, gap 3.80e-03, 32 feats in subpb (8434 left)
+    Iter 2: primal 0.1677070264, gap 9.60e-04, 44 feats in subpb (7177 left)
+    Iter 3: primal 0.1676670113, gap 2.60e-04, 46 feats in subpb (6744 left)
+    Iter 4: primal 0.1676578698, gap 4.31e-05, 44 feats in subpb (6615 left)
+    Iter 5: primal 0.1676538570, gap 1.17e-05
+    Early exit, gap: 1.17e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 8/11
     ##########################
-    Iter 0: primal 0.1566598725, gap 4.87e-03, 22 feats in subpb (3187 left)
-    Iter 1: primal 0.1553658906, gap 5.13e-03, 42 feats in subpb (3173 left)
-    Iter 2: primal 0.1553079824, gap 1.43e-03, 54 feats in subpb (1345 left)
-    Iter 3: primal 0.1552687634, gap 4.04e-04, 52 feats in subpb (498 left)
-    Iter 4: primal 0.1552435186, gap 3.34e-05
-    Early exit, gap: 3.34e-05 < 4.00e-05
+    Iter 0: primal 0.1566656320, gap 4.85e-03, 22 feats in subpb (9735 left)
+    Iter 1: primal 0.1553682933, gap 4.19e-03, 40 feats in subpb (9409 left)
+    Iter 2: primal 0.1552842045, gap 1.23e-03, 52 feats in subpb (7787 left)
+    Iter 3: primal 0.1552501166, gap 2.41e-04, 50 feats in subpb (6878 left)
+    Iter 4: primal 0.1552418801, gap 6.12e-05, 50 feats in subpb (6657 left)
+    Iter 5: primal 0.1552385519, gap 1.24e-05
+    Early exit, gap: 1.24e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 9/11
     ##########################
-    Iter 0: primal 0.1442177143, gap 4.34e-03, 25 feats in subpb (4194 left)
-    Iter 1: primal 0.1433492173, gap 1.49e-03, 46 feats in subpb (2036 left)
-    Iter 2: primal 0.1432762240, gap 4.04e-04, 54 feats in subpb (858 left)
-    Iter 3: primal 0.1432734131, gap 1.44e-04, 54 feats in subpb (382 left)
-    Iter 4: primal 0.1432711820, gap 2.97e-05
-    Early exit, gap: 2.97e-05 < 4.00e-05
+    Iter 0: primal 0.1442155552, gap 4.32e-03, 25 feats in subpb (10738 left)
+    Iter 1: primal 0.1433134332, gap 1.93e-03, 46 feats in subpb (8983 left)
+    Iter 2: primal 0.1432812633, gap 4.33e-04, 54 feats in subpb (7459 left)
+    Iter 3: primal 0.1432733612, gap 1.09e-04, 52 feats in subpb (6843 left)
+    Iter 4: primal 0.1432697466, gap 3.08e-05
+    Early exit, gap: 3.08e-05 < 4.00e-05
     ###########################
     ##### Computing alpha 10/11
     ###########################
-    Iter 0: primal 0.1329549998, gap 3.96e-03, 27 feats in subpb (5539 left)
-    Iter 1: primal 0.1323172231, gap 6.39e-03, 54 feats in subpb (5539 left)
-    Iter 2: primal 0.1322306096, gap 1.41e-03, 70 feats in subpb (2766 left)
-    Iter 3: primal 0.1321930623, gap 4.00e-04, 70 feats in subpb (1254 left)
-    Iter 4: primal 0.1321910569, gap 1.17e-04, 70 feats in subpb (537 left)
-    Iter 5: primal 0.1321900133, gap 9.93e-06
-    Early exit, gap: 9.93e-06 < 4.00e-05
+    Iter 0: primal 0.1330093991, gap 4.02e-03, 26 feats in subpb (12154 left)
+    Iter 1: primal 0.1323068596, gap 6.61e-03, 50 feats in subpb (12154 left)
+    Iter 2: primal 0.1322128415, gap 1.96e-03, 64 feats in subpb (10009 left)
+    Iter 3: primal 0.1322051762, gap 4.37e-04, 68 feats in subpb (7895 left)
+    Iter 4: primal 0.1321923780, gap 1.31e-04, 72 feats in subpb (7148 left)
+    Iter 5: primal 0.1321896168, gap 3.91e-05
+    Early exit, gap: 3.91e-05 < 4.00e-05
     ###########################
     ##### Computing alpha 11/11
     ###########################
-    Iter 0: primal 0.1227343087, gap 3.66e-03, 34 feats in subpb (7428 left)
-    Iter 1: primal 0.1222272835, gap 5.23e-03, 66 feats in subpb (7428 left)
-    Iter 2: primal 0.1221518019, gap 1.17e-03, 98 feats in subpb (3414 left)
-    Iter 3: primal 0.1221513299, gap 3.06e-04, 100 feats in subpb (1503 left)
-    Iter 4: primal 0.1221492415, gap 8.79e-05, 100 feats in subpb (711 left)
-    Iter 5: primal 0.1221484299, gap 2.44e-05
-    Early exit, gap: 2.44e-05 < 4.00e-05
+    Iter 0: primal 0.1227410900, gap 3.71e-03, 35 feats in subpb (14053 left)
+    Iter 1: primal 0.1222229848, gap 5.14e-03, 68 feats in subpb (14053 left)
+    Iter 2: primal 0.1221676889, gap 1.36e-03, 100 feats in subpb (10320 left)
+    Iter 3: primal 0.1221517203, gap 4.06e-04, 100 feats in subpb (8327 left)
+    Iter 4: primal 0.1221497324, gap 1.22e-04, 100 feats in subpb (7408 left)
+    Iter 5: primal 0.1221487533, gap 2.69e-05
+    Early exit, gap: 2.69e-05 < 4.00e-05
     ##########################
     ##### Computing alpha 1/11
     ##########################
@@ -298,123 +302,133 @@ Run Celer on a grid of regularization parameters, for various tolerances:
     ##########################
     ##### Computing alpha 2/11
     ##########################
-    Iter 0: primal 0.1998879584, gap 8.46e-03, 1 feats in subpb (400 left)
-    Iter 1: primal 0.1996695929, gap 1.10e-05, 2 feats in subpb (2 left)
-    Iter 2: primal 0.1996653872, gap 2.41e-06, 2 feats in subpb (2 left)
-    Iter 3: primal 0.1996638191, gap 6.88e-07, 2 feats in subpb (2 left)
+    Iter 0: primal 0.1998879584, gap 8.46e-03, 1 feats in subpb (6958 left)
+    Iter 1: primal 0.1996695929, gap 1.10e-05, 2 feats in subpb (6560 left)
+    Iter 2: primal 0.1996653872, gap 2.41e-06, 4 feats in subpb (6560 left)
+    Iter 3: primal 0.1996638191, gap 6.88e-07, 4 feats in subpb (6560 left)
     Iter 4: primal 0.1996631483, gap 2.78e-17
     Early exit, gap: 2.78e-17 < 4.00e-07
     ##########################
     ##### Computing alpha 3/11
     ##########################
-    Iter 0: primal 0.1993025719, gap 8.37e-03, 1 feats in subpb (655 left)
-    Iter 1: primal 0.1991579884, gap 1.29e-02, 2 feats in subpb (655 left)
-    Iter 2: primal 0.1987790779, gap 2.48e-03, 4 feats in subpb (179 left)
-    Iter 3: primal 0.1985977701, gap 9.97e-06, 8 feats in subpb (9 left)
-    Iter 4: primal 0.1985972553, gap 2.62e-06, 7 feats in subpb (7 left)
-    Iter 5: primal 0.1985972481, gap 6.27e-07, 6 feats in subpb (6 left)
-    Iter 6: primal 0.1985972479, gap 1.56e-07
-    Early exit, gap: 1.56e-07 < 4.00e-07
+    Iter 0: primal 0.1993025719, gap 8.37e-03, 1 feats in subpb (7213 left)
+    Iter 1: primal 0.1991579884, gap 1.29e-02, 2 feats in subpb (7213 left)
+    Iter 2: primal 0.1987790779, gap 2.48e-03, 4 feats in subpb (6737 left)
+    Iter 3: primal 0.1986004339, gap 1.86e-05, 8 feats in subpb (6567 left)
+    Iter 4: primal 0.1985978375, gap 3.78e-06, 8 feats in subpb (6565 left)
+    Iter 5: primal 0.1985972494, gap 1.09e-06, 8 feats in subpb (6565 left)
+    Iter 6: primal 0.1985972479, gap 2.13e-07
+    Early exit, gap: 2.13e-07 < 4.00e-07
     ##########################
     ##### Computing alpha 4/11
     ##########################
-    Iter 0: primal 0.1966468043, gap 8.00e-03, 4 feats in subpb (1013 left)
-    Iter 1: primal 0.1956274459, gap 4.39e-03, 8 feats in subpb (578 left)
-    Iter 2: primal 0.1955092862, gap 2.01e-03, 10 feats in subpb (268 left)
-    Iter 3: primal 0.1953564661, gap 1.92e-04, 16 feats in subpb (47 left)
-    Iter 4: primal 0.1953543090, gap 3.06e-05, 20 feats in subpb (23 left)
-    Iter 5: primal 0.1953540815, gap 7.33e-06, 15 feats in subpb (15 left)
-    Iter 6: primal 0.1953540745, gap 1.36e-06, 13 feats in subpb (13 left)
-    Iter 7: primal 0.1953540729, gap 2.57e-07
-    Early exit, gap: 2.57e-07 < 4.00e-07
+    Iter 0: primal 0.1966470055, gap 8.00e-03, 4 feats in subpb (7571 left)
+    Iter 1: primal 0.1956436189, gap 4.62e-03, 8 feats in subpb (7167 left)
+    Iter 2: primal 0.1955280873, gap 2.07e-03, 14 feats in subpb (6839 left)
+    Iter 3: primal 0.1953637831, gap 2.68e-04, 20 feats in subpb (6617 left)
+    Iter 4: primal 0.1953540802, gap 1.70e-05, 20 feats in subpb (6577 left)
+    Iter 5: primal 0.1953540747, gap 1.83e-06, 20 feats in subpb (6572 left)
+    Iter 6: primal 0.1953540729, gap 3.57e-07
+    Early exit, gap: 3.57e-07 < 4.00e-07
     ##########################
     ##### Computing alpha 5/11
     ##########################
-    Iter 0: primal 0.1911517315, gap 7.40e-03, 10 feats in subpb (1446 left)
-    Iter 1: primal 0.1892288560, gap 1.85e-03, 18 feats in subpb (424 left)
-    Iter 2: primal 0.1891982893, gap 4.30e-04, 32 feats in subpb (125 left)
-    Iter 3: primal 0.1891809272, gap 8.82e-05, 30 feats in subpb (56 left)
-    Iter 4: primal 0.1891782094, gap 2.51e-05, 30 feats in subpb (39 left)
-    Iter 5: primal 0.1891751683, gap 4.27e-06, 27 feats in subpb (27 left)
-    Iter 6: primal 0.1891751674, gap 6.94e-08
-    Early exit, gap: 6.94e-08 < 4.00e-07
+    Iter 0: primal 0.1911517820, gap 7.40e-03, 10 feats in subpb (8004 left)
+    Iter 1: primal 0.1892324878, gap 3.22e-03, 18 feats in subpb (7249 left)
+    Iter 2: primal 0.1892149478, gap 1.13e-03, 28 feats in subpb (6811 left)
+    Iter 3: primal 0.1891914163, gap 2.83e-04, 34 feats in subpb (6651 left)
+    Iter 4: primal 0.1891758161, gap 7.22e-06, 28 feats in subpb (6587 left)
+    Iter 5: primal 0.1891752419, gap 1.34e-06, 28 feats in subpb (6581 left)
+    Iter 6: primal 0.1891751732, gap 8.81e-08
+    Early exit, gap: 8.81e-08 < 4.00e-07
     ##########################
     ##### Computing alpha 6/11
     ##########################
-    Iter 0: primal 0.1822904942, gap 6.59e-03, 14 feats in subpb (1879 left)
-    Iter 1: primal 0.1796907509, gap 3.36e-03, 26 feats in subpb (1143 left)
-    Iter 2: primal 0.1795018665, gap 2.69e-04, 36 feats in subpb (120 left)
-    Iter 3: primal 0.1794880534, gap 8.05e-05, 34 feats in subpb (65 left)
-    Iter 4: primal 0.1794870919, gap 2.35e-05, 36 feats in subpb (48 left)
-    Iter 5: primal 0.1794851088, gap 6.74e-06, 31 feats in subpb (31 left)
-    Iter 6: primal 0.1794850955, gap 3.74e-07
-    Early exit, gap: 3.74e-07 < 4.00e-07
+    Iter 0: primal 0.1822945753, gap 6.59e-03, 14 feats in subpb (8438 left)
+    Iter 1: primal 0.1797111078, gap 3.17e-03, 26 feats in subpb (7657 left)
+    Iter 2: primal 0.1795420907, gap 9.10e-04, 38 feats in subpb (6906 left)
+    Iter 3: primal 0.1794902290, gap 8.60e-05, 36 feats in subpb (6623 left)
+    Iter 4: primal 0.1794862946, gap 2.02e-05, 36 feats in subpb (6602 left)
+    Iter 5: primal 0.1794854476, gap 4.93e-06, 36 feats in subpb (6586 left)
+    Iter 6: primal 0.1794851579, gap 6.01e-07, 36 feats in subpb (6580 left)
+    Iter 7: primal 0.1794851119, gap 1.40e-07
+    Early exit, gap: 1.40e-07 < 4.00e-07
     ##########################
     ##### Computing alpha 7/11
     ##########################
-    Iter 0: primal 0.1695288875, gap 5.55e-03, 18 feats in subpb (2437 left)
-    Iter 1: primal 0.1677649492, gap 2.68e-03, 36 feats in subpb (1443 left)
-    Iter 2: primal 0.1676554807, gap 7.30e-04, 46 feats in subpb (496 left)
-    Iter 3: primal 0.1676490150, gap 1.86e-04, 46 feats in subpb (142 left)
-    Iter 4: primal 0.1676467952, gap 4.73e-05, 44 feats in subpb (58 left)
-    Iter 5: primal 0.1676454327, gap 4.44e-06, 40 feats in subpb (40 left)
-    Iter 6: primal 0.1676445752, gap 1.13e-06, 33 feats in subpb (33 left)
-    Iter 7: primal 0.1676443497, gap 1.93e-07
-    Early exit, gap: 1.93e-07 < 4.00e-07
+    Iter 0: primal 0.1695265463, gap 5.54e-03, 18 feats in subpb (8995 left)
+    Iter 1: primal 0.1678317895, gap 3.20e-03, 36 feats in subpb (8198 left)
+    Iter 2: primal 0.1676902413, gap 9.40e-04, 50 feats in subpb (7172 left)
+    Iter 3: primal 0.1676606692, gap 2.05e-04, 46 feats in subpb (6713 left)
+    Iter 4: primal 0.1676559011, gap 2.68e-05, 46 feats in subpb (6612 left)
+    Iter 5: primal 0.1676522778, gap 4.21e-04, 44 feats in subpb (6612 left)
+    Iter 6: primal 0.1676514039, gap 3.63e-05, 46 feats in subpb (6612 left)
+    Iter 7: primal 0.1676509863, gap 6.85e-06, 46 feats in subpb (6600 left)
+    Iter 8: primal 0.1676463422, gap 1.97e-04, 44 feats in subpb (6600 left)
+    Iter 9: primal 0.1676459695, gap 4.12e-05, 44 feats in subpb (6600 left)
+    Iter 10: primal 0.1676458728, gap 2.36e-06, 44 feats in subpb (6592 left)
+    Iter 11: primal 0.1676450222, gap 1.10e-04, 44 feats in subpb (6592 left)
+    Iter 12: primal 0.1676448330, gap 3.04e-05, 44 feats in subpb (6592 left)
+    Iter 13: primal 0.1676447767, gap 6.23e-07, 44 feats in subpb (6586 left)
+    Iter 14: primal 0.1676445079, gap 7.82e-05, 44 feats in subpb (6586 left)
+    Iter 15: primal 0.1676444832, gap 1.93e-05, 44 feats in subpb (6586 left)
+    Iter 16: primal 0.1676444700, gap 1.50e-07
+    Early exit, gap: 1.50e-07 < 4.00e-07
     ##########################
     ##### Computing alpha 8/11
     ##########################
-    Iter 0: primal 0.1566517508, gap 4.83e-03, 22 feats in subpb (3170 left)
-    Iter 1: primal 0.1553627811, gap 4.10e-03, 42 feats in subpb (2794 left)
-    Iter 2: primal 0.1552669232, gap 4.66e-04, 54 feats in subpb (562 left)
-    Iter 3: primal 0.1552425208, gap 9.39e-05, 52 feats in subpb (139 left)
-    Iter 4: primal 0.1552380913, gap 2.78e-05, 50 feats in subpb (64 left)
-    Iter 5: primal 0.1552367320, gap 4.99e-06, 44 feats in subpb (44 left)
-    Iter 6: primal 0.1552357747, gap 1.50e-06, 36 feats in subpb (36 left)
-    Iter 7: primal 0.1552347368, gap 6.25e-05, 36 feats in subpb (36 left)
-    Iter 8: primal 0.1552346715, gap 1.36e-05, 36 feats in subpb (36 left)
-    Iter 9: primal 0.1552346485, gap 7.81e-07, 32 feats in subpb (32 left)
-    Iter 10: primal 0.1552345058, gap 3.33e-07
-    Early exit, gap: 3.33e-07 < 4.00e-07
+    Iter 0: primal 0.1566505214, gap 4.83e-03, 22 feats in subpb (9728 left)
+    Iter 1: primal 0.1553466812, gap 6.14e-03, 44 feats in subpb (9728 left)
+    Iter 2: primal 0.1552833333, gap 1.27e-03, 56 feats in subpb (7813 left)
+    Iter 3: primal 0.1552481037, gap 3.41e-04, 52 feats in subpb (7000 left)
+    Iter 4: primal 0.1552429235, gap 6.92e-05, 52 feats in subpb (6672 left)
+    Iter 5: primal 0.1552388916, gap 1.95e-05, 50 feats in subpb (6614 left)
+    Iter 6: primal 0.1552373577, gap 5.18e-06, 50 feats in subpb (6602 left)
+    Iter 7: primal 0.1552357739, gap 1.49e-06, 50 feats in subpb (6594 left)
+    Iter 8: primal 0.1552347371, gap 1.87e-05, 50 feats in subpb (6594 left)
+    Iter 9: primal 0.1552346513, gap 4.47e-06, 50 feats in subpb (6594 left)
+    Iter 10: primal 0.1552346119, gap 1.17e-06, 50 feats in subpb (6591 left)
+    Iter 11: primal 0.1552345809, gap 3.23e-07
+    Early exit, gap: 3.23e-07 < 4.00e-07
     ##########################
     ##### Computing alpha 9/11
     ##########################
-    Iter 0: primal 0.1442078094, gap 4.30e-03, 25 feats in subpb (4168 left)
-    Iter 1: primal 0.1433194443, gap 1.38e-03, 46 feats in subpb (1951 left)
-    Iter 2: primal 0.1432794418, gap 4.08e-04, 52 feats in subpb (861 left)
-    Iter 3: primal 0.1432697218, gap 8.07e-05, 52 feats in subpb (214 left)
-    Iter 4: primal 0.1432680386, gap 2.15e-05, 52 feats in subpb (92 left)
-    Iter 5: primal 0.1432672824, gap 6.22e-06, 52 feats in subpb (55 left)
-    Iter 6: primal 0.1432667348, gap 1.65e-06, 46 feats in subpb (46 left)
-    Iter 7: primal 0.1432666129, gap 3.48e-07
-    Early exit, gap: 3.48e-07 < 4.00e-07
+    Iter 0: primal 0.1442119537, gap 4.30e-03, 25 feats in subpb (10731 left)
+    Iter 1: primal 0.1433087503, gap 2.04e-03, 46 feats in subpb (9077 left)
+    Iter 2: primal 0.1432803919, gap 5.45e-04, 52 feats in subpb (7606 left)
+    Iter 3: primal 0.1432701905, gap 1.55e-04, 52 feats in subpb (6964 left)
+    Iter 4: primal 0.1432685813, gap 4.48e-05, 52 feats in subpb (6700 left)
+    Iter 5: primal 0.1432676545, gap 1.11e-05, 52 feats in subpb (6629 left)
+    Iter 6: primal 0.1432668305, gap 2.89e-06, 52 feats in subpb (6607 left)
+    Iter 7: primal 0.1432665385, gap 8.59e-07, 52 feats in subpb (6598 left)
+    Iter 8: primal 0.1432664788, gap 9.36e-08
+    Early exit, gap: 9.36e-08 < 4.00e-07
     ###########################
     ##### Computing alpha 10/11
     ###########################
-    Iter 0: primal 0.1329686451, gap 3.94e-03, 25 feats in subpb (5525 left)
-    Iter 1: primal 0.1322605836, gap 5.86e-03, 50 feats in subpb (5525 left)
-    Iter 2: primal 0.1321948371, gap 1.73e-03, 66 feats in subpb (3144 left)
-    Iter 3: primal 0.1321933711, gap 4.56e-04, 70 feats in subpb (1366 left)
-    Iter 4: primal 0.1321905789, gap 9.56e-05, 70 feats in subpb (473 left)
-    Iter 5: primal 0.1321898465, gap 2.80e-05, 72 feats in subpb (170 left)
-    Iter 6: primal 0.1321894332, gap 8.39e-06, 68 feats in subpb (104 left)
-    Iter 7: primal 0.1321893784, gap 2.45e-06, 68 feats in subpb (69 left)
-    Iter 8: primal 0.1321893633, gap 7.18e-07, 51 feats in subpb (51 left)
-    Iter 9: primal 0.1321893622, gap 2.12e-07
+    Iter 0: primal 0.1329696272, gap 3.94e-03, 25 feats in subpb (12084 left)
+    Iter 1: primal 0.1323010491, gap 6.41e-03, 50 feats in subpb (12084 left)
+    Iter 2: primal 0.1322422103, gap 1.34e-03, 72 feats in subpb (9223 left)
+    Iter 3: primal 0.1321946098, gap 3.72e-04, 70 feats in subpb (7756 left)
+    Iter 4: primal 0.1321913544, gap 1.11e-04, 70 feats in subpb (7080 left)
+    Iter 5: primal 0.1321898798, gap 3.10e-05, 70 feats in subpb (6740 left)
+    Iter 6: primal 0.1321897192, gap 8.31e-06, 70 feats in subpb (6660 left)
+    Iter 7: primal 0.1321894709, gap 2.42e-06, 70 feats in subpb (6627 left)
+    Iter 8: primal 0.1321893820, gap 7.17e-07, 70 feats in subpb (6609 left)
+    Iter 9: primal 0.1321893643, gap 2.12e-07
     Early exit, gap: 2.12e-07 < 4.00e-07
     ###########################
     ##### Computing alpha 11/11
     ###########################
-    Iter 0: primal 0.1227389914, gap 3.65e-03, 35 feats in subpb (7421 left)
-    Iter 1: primal 0.1222212689, gap 4.95e-03, 66 feats in subpb (7421 left)
-    Iter 2: primal 0.1221629691, gap 1.44e-03, 98 feats in subpb (3902 left)
-    Iter 3: primal 0.1221542130, gap 3.85e-04, 98 feats in subpb (1714 left)
-    Iter 4: primal 0.1221498355, gap 5.79e-05, 98 feats in subpb (514 left)
-    Iter 5: primal 0.1221484079, gap 1.71e-05, 100 feats in subpb (216 left)
-    Iter 6: primal 0.1221482204, gap 5.07e-06, 100 feats in subpb (119 left)
-    Iter 7: primal 0.1221481962, gap 9.43e-07, 80 feats in subpb (80 left)
-    Iter 8: primal 0.1221481847, gap 2.51e-07
-    Early exit, gap: 2.51e-07 < 4.00e-07
+    Iter 0: primal 0.1227388363, gap 3.65e-03, 35 feats in subpb (13977 left)
+    Iter 1: primal 0.1222219890, gap 3.43e-03, 68 feats in subpb (13646 left)
+    Iter 2: primal 0.1221542314, gap 5.53e-04, 96 feats in subpb (8677 left)
+    Iter 3: primal 0.1221500510, gap 1.46e-04, 100 feats in subpb (7523 left)
+    Iter 4: primal 0.1221485867, gap 4.33e-05, 98 feats in subpb (6974 left)
+    Iter 5: primal 0.1221482547, gap 5.23e-06, 100 feats in subpb (6678 left)
+    Iter 6: primal 0.1221481963, gap 1.03e-06, 100 feats in subpb (6638 left)
+    Iter 7: primal 0.1221481789, gap 3.08e-07
+    Early exit, gap: 3.08e-07 < 4.00e-07
 
 
 
@@ -484,7 +498,7 @@ Check convergence guarantees: gap is inferior to tolerance
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 7 minutes  7.068 seconds)
+   **Total running time of the script:** ( 8 minutes  58.366 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_finance_path.py:
