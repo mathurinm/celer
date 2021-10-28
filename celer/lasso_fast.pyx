@@ -55,10 +55,12 @@ def celer(
     if p0 > n_features:
         p0 = n_features
 
-    cdef int i, j, k, t, idx, startptr, endptr, epoch
+    cdef int t = 0
+    cdef int i, j, k, idx, startptr, endptr, epoch
     cdef int ws_size = 0
     cdef int nnz = 0
-    cdef floating gap, p_obj, d_obj, highest_d_obj, radius, tol_in
+    cdef floating gap = -1
+    cdef floating p_obj, d_obj, highest_d_obj, radius, tol_in
     cdef floating gap_in, p_obj_in, d_obj_in, d_obj_accel, highest_d_obj_in
     cdef floating tmp, R_sum, tmp_exp, scal
     cdef int n_screened = 0
@@ -96,7 +98,10 @@ def celer(
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
-    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    # max_iter + 1 is to deal with max_iter=0
+    cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
+    d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+    gaps[0] = d_obj
 
     cdef floating[:] theta_in = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] thetacc = np.zeros(n_samples, dtype=dtype)
@@ -129,8 +134,6 @@ def celer(
 
             d_obj_from_inner = dual(
                 pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
-        else:
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
