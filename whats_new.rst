@@ -1,3 +1,11 @@
+Version 0.6.1
+-----------
+
+Changelog
+~~~~~~~~~
+- Rely on the libsvmdata package to donwload datasets from LIBSVM.
+
+
 Version 0.6
 -----------
 
