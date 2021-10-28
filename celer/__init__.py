@@ -5,4 +5,4 @@ from .dropin_sklearn import (Lasso, LassoCV, LogisticRegression, GroupLasso,
                              GroupLassoCV, MultiTaskLasso, MultiTaskLassoCV)
 
 
-__version__ = '0.6.1'
+__version__ = '0.7dev'
