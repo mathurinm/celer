@@ -16,7 +16,7 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path
-from celer.dropin_sklearn import Lasso, LassoCV
+from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
 
 
@@ -215,6 +215,13 @@ def test_weights():
     # weights must be > 0
     clf1.weights[0] = 0.
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+
+
+def test_zero_iter():
+    X, y = build_dataset(n_samples=30, n_features=50)
+    clf = Lasso(max_iter=0).fit(X, y)
+    clf = LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y)
+    clf = LogisticRegression(max_iter=0, solver="celer").fit(X, y)
 
 
 if __name__ == "__main__":
