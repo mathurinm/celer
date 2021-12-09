@@ -41,9 +41,10 @@ def newton_celer(
     # scale tol for when problem has large or small p_obj
     tol *= n_samples * np.log(2)
 
-    cdef int i, j, t, k
-    cdef floating p_obj, d_obj, gap, norm_Xtheta, norm_Xtheta_acc
-    cdef floating tmp
+    cdef int t = 0
+    cdef int i, j, k
+    cdef floating p_obj, d_obj, norm_Xtheta, norm_Xtheta_acc, tmp
+    cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef int info_dposv
     cdef int ws_size
     cdef floating eps_inner = 0.1
@@ -54,7 +55,8 @@ def newton_celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] WS
-    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    cdef floating[:] gaps = np.zeros(max(1, max_iter), dtype=dtype)
+    gaps[0] = gap  # support max_iter = 0
     cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
     cdef bint center = False
     # TODO support centering

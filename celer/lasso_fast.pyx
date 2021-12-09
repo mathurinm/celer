@@ -59,7 +59,7 @@ def celer(
     cdef int i, j, k, idx, startptr, endptr, epoch
     cdef int ws_size = 0
     cdef int nnz = 0
-    cdef floating gap = -1
+    cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef floating p_obj, d_obj, highest_d_obj, radius, tol_in
     cdef floating gap_in, p_obj_in, d_obj_in, d_obj_accel, highest_d_obj_in
     cdef floating tmp, R_sum, tmp_exp, scal
