@@ -219,9 +219,9 @@ def test_weights():
 
 def test_zero_iter():
     X, y = build_dataset(n_samples=30, n_features=50)
-    clf = Lasso(max_iter=0).fit(X, y)
-    clf = LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y)
-    clf = LogisticRegression(max_iter=0, solver="celer").fit(X, y)
+    Lasso(max_iter=0).fit(X, y)
+    LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y)
+    LogisticRegression(max_iter=0, solver="celer").fit(X, y)
 
 
 if __name__ == "__main__":
