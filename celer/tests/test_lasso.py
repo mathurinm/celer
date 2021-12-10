@@ -219,10 +219,14 @@ def test_weights():
 
 def test_zero_iter():
     X, y = build_dataset(n_samples=30, n_features=50)
-    Lasso(max_iter=0).fit(X, y)
+    assert_allclose(Lasso(max_iter=0).fit(X, y).coef_, 0)
     y = 2 * (y > 0) - 1
-    LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y)
-    LogisticRegression(max_iter=0, solver="celer").fit(X, y)
+    assert_allclose(
+        LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y).coef_,
+        0)
+    assert_allclose(
+        LogisticRegression(max_iter=0, solver="celer").fit(X, y).coef_,
+        0)
 
 
 if __name__ == "__main__":
