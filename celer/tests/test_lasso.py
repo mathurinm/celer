@@ -198,7 +198,7 @@ def test_weights():
         **params)
 
     alphas2, coefs2, gaps2 = celer_path(
-        X / weights[None, :], y, "lasso", **params)
+        X.multiply(1 / weights[None, :]), y, "lasso", **params)
 
     assert_allclose(alphas1, alphas2)
     assert_allclose(
@@ -208,7 +208,8 @@ def test_weights():
 
     alpha = 0.001
     clf1 = Lasso(alpha=alpha, weights=weights, fit_intercept=False).fit(X, y)
-    clf2 = Lasso(alpha=alpha, fit_intercept=False).fit(X / weights, y)
+    clf2 = Lasso(alpha=alpha, fit_intercept=False).fit(
+        X.multiply(1. / weights), y)
 
     assert_allclose(clf1.coef_, clf2.coef_ / weights)
 
