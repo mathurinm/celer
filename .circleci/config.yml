@@ -48,7 +48,7 @@ jobs:
               python -m pip install --user --upgrade --progress-bar off pip
               python -m pip install --user --upgrade --progress-bar off -r requirements.txt
               python -m pip install --user --upgrade --progress-bar off -r doc/doc-requirements.txt
-              python -m pip install --user -e .
+              python -m pip install --user .
 
         - save_cache:
             key: pip-cache
