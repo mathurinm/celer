@@ -13,6 +13,7 @@ build/*
 
 # wheel
 *.whl
+.egg/* 
 
 # cache
 .pytest_cache/*

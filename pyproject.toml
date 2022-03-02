@@ -1,3 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel", "numpy>=1.19.0", "Cython>=0.29.21"]
+requires = ["setuptools", "wheel", "Cython>=0.29.21" , "numpy>=1.12",
+            "seaborn>=0.7", "scipy>=0.18.0", "matplotlib>=2.0.0",
+            "Cython>=0.26", "libsvmdata>=0.3", "scikit-learn>=1.0",
+            "xarray", "download", "tqdm"]
 build-backend = "setuptools.build_meta"
