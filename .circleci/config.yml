@@ -49,10 +49,6 @@ jobs:
               python -m pip install --user --upgrade --progress-bar off -r doc/doc-requirements.txt
               python -m pip install --user .
 
-        - run:
-            name: Python version
-            command: python -m pip --version
-
         - save_cache:
             key: pip-cache
             paths:
@@ -62,10 +58,7 @@ jobs:
         - run:
             name: Check installation
             command: |
-              which python
-              which pip
-              pip --version
-              python -m pip --version
+              cd
               python -c "import celer"
 
         # Build docs
@@ -73,7 +66,7 @@ jobs:
             name: make html
             no_output_timeout: 100m
             command: |
-              cd doc;
+              cd project/doc;
               make clean;
               make SPHINXOPTS=-v html;
               cd ..;
