@@ -4,6 +4,7 @@ include *.in
 include LICENSE
 include celer/__init__.py
 include requirements.txt
+include pyproject.toml
 
 recursive-include examples *.py
 recursive-include examples *.txt

@@ -6,10 +6,13 @@
 *.html
 celer.egg-info/*
 .eggs/*
+build/*
 
 # Python precompilation
 *pyc
 
+# wheel
+*.whl
 
 # cache
 .pytest_cache/*
