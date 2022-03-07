@@ -752,10 +752,6 @@ class GroupLasso(Lasso_sklearn):
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    weights : array, shape (n_features,), optional (default=None)
-        Strictly positive weights used in the L1 penalty part of the Lasso
-        objective. If None, weights equal to 1 are used.
-
     warm_start : bool, optional (default=False)
         When set to True, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
@@ -805,7 +801,7 @@ class GroupLasso(Lasso_sklearn):
 
     def __init__(self, groups=1, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
-                 fit_intercept=True, weights=None, warm_start=False):
+                 fit_intercept=True, warm_start=False):
         super(GroupLasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept,
@@ -815,7 +811,6 @@ class GroupLasso(Lasso_sklearn):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.weights = weights
 
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True,
              **kwargs):
@@ -825,7 +820,7 @@ class GroupLasso(Lasso_sklearn):
             coef_init=coef_init, max_iter=self.max_iter,
             return_n_iter=return_n_iter, max_epochs=self.max_epochs,
             p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
-            weights=self.weights, X_scale=kwargs.get('X_scale', None),
+            X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
 
         return results

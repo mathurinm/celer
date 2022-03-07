@@ -9,7 +9,7 @@ Fast algorithm to solve Lasso-like problems with dual extrapolation. Currently, 
 - weighted Lasso
 - Sparse Logistic regression
 - Group Lasso
-- Multitask Lasso.
+- Multitask Lasso
 
 The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
 The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
