@@ -9,10 +9,15 @@ celer.egg-info/*
 
 # Python precompilation
 *pyc
+*pyd
+
+# build
+build
 
 
 # cache
-.pytest_cache/*
+.pytest_cache
+__pycache__
 
 doc/*
 coverage/*
