@@ -204,7 +204,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                                  positive) / 2
         elif pb == GRPLASSO:
             # TODO compute it with dscal to handle centering sparse
-            # consider weights when computing alpha_max
+            # TODO consider weights when computing alpha_max
             alpha_max = 0
             for g in range(n_groups):
                 X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
@@ -287,24 +287,23 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
                                 positive)
             elif pb == GRPLASSO:
-                # TODO add weights to dnrom_grp
+                # TODO add weights to dnrom_grp (done)
                 theta = Xw.copy()
                 scal = dnorm_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
-                    len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
+                    weights, len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
                     X_sparse_scaling.any())
             theta /= scal
 
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:
             # TODO this if else scheme is complicated
-            # TODO add weights to celer_grp
+            # TODO add weights to celer_grp (done)
             sol = celer_grp(
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
-                X_indices,
-                X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
-                norms_X_grp, tol, max_iter, max_epochs, p0=p0,
+                X_indices, X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
+                norms_X_grp, tol, weights, max_iter, max_epochs, p0=p0,
                 prune=prune, verbose=verbose)
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
