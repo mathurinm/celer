@@ -144,6 +144,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         (Is returned only when ``return_thetas`` is set to True).
     """
 
+    # type of the problem
     if pb.lower() not in ("lasso", "logreg", "grouplasso"):
         raise ValueError("Unsupported problem %s" % pb)
     if pb.lower() == "lasso":
@@ -182,6 +183,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
+    # set weights
     if weights is None:
         weights = np.ones(n_features).astype(X.dtype)
     elif (weights <= 0).any():
@@ -192,6 +194,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             f"Expected {X.shape[1]}, got {weights.shape[0]}."
         )
 
+    # set alphas of the path
     if alphas is None:
         if pb == LASSO:
             alpha_max = dnorm_l1(X, y, weights, X_sparse_scaling,
@@ -201,6 +204,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                                  positive) / 2
         elif pb == GRPLASSO:
             # TODO compute it with dscal to handle centering sparse
+            # consider weights when computing alpha_max
             alpha_max = 0
             for g in range(n_groups):
                 X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
@@ -283,6 +287,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
                                 positive)
             elif pb == GRPLASSO:
+                # TODO add weights to dnrom_grp
                 theta = Xw.copy()
                 scal = dnorm_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
@@ -292,7 +297,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             theta /= scal
 
         # celer modifies w, Xw, and theta in place:
-        if pb == GRPLASSO:  # TODO this if else scheme is complicated
+        if pb == GRPLASSO:
+            # TODO this if else scheme is complicated
+            # TODO add weights to celer_grp
             sol = celer_grp(
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
                 X_indices,

@@ -43,6 +43,7 @@ cpdef floating primal_grplasso(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
+# TODO add weights
 cpdef floating dnorm_grp(
         bint is_sparse, floating[::1] theta, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data,
@@ -145,6 +146,7 @@ cdef void set_prios_grp(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
+# TODO add weights
 cpdef celer_grp(
         bint is_sparse, int pb, floating[::1, :] X, int[::1] grp_indices,
         int[::1] grp_ptr, floating[::1] X_data, int[::1] X_indices,
