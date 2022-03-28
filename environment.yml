@@ -14,6 +14,3 @@ dependencies:
   - pip:
     - download
     - libsvmdata
-  # dev dependencies
-  - pytest
-  - flake8
