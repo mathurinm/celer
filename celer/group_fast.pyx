@@ -66,7 +66,6 @@ cpdef floating dnorm_grp(
 
     if ws_size == n_groups:  # max over all groups
         for g in range(n_groups):
-            # skip infinite weights
             if weights[g] == INFINITY:
                 continue
             
@@ -90,7 +89,6 @@ cpdef floating dnorm_grp(
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
-            # skip infinite weights
             if weights[g] == INFINITY:
                 continue
 
@@ -121,9 +119,9 @@ cpdef floating dnorm_grp(
 cdef void set_prios_grp(
         bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
-        floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
-        floating[::1] prios, int[::1] screened, floating radius,
-        int * n_screened):
+        floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr, 
+        int[::1] grp_indices, floating[::1] prios, int[::1] screened,
+        floating radius, int * n_screened):
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -145,7 +143,7 @@ cdef void set_prios_grp(
             else:
                 Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
             nrm_Xgtheta += Xj_theta ** 2
-        nrm_Xgtheta = sqrt(nrm_Xgtheta)
+        nrm_Xgtheta = sqrt(nrm_Xgtheta) / weights[g]
 
         prios[g] = (1. - nrm_Xgtheta) / norms_X_grp[g]
 
@@ -281,10 +279,10 @@ cpdef celer_grp(
         # elif pb == LOGREG:
             # radius = sqrt(gap / 2.) / alpha
 
-        # TODO potontially add weights
         set_prios_grp(
-            is_sparse, pb, theta, X, X_data, X_indices, X_indptr, lc_groups,
-            grp_ptr, grp_indices, prios, screened, radius, &n_screened)
+            is_sparse, pb, theta, X, X_data, X_indices, X_indptr,
+            weights, lc_groups, grp_ptr, grp_indices, prios, screened,
+            radius, &n_screened)
 
         if prune:
             nnz = 0
