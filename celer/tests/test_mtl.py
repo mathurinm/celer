@@ -1,7 +1,11 @@
+from pyexpat import features
+from tokenize import group
+from xml.sax.handler import feature_external_ges
 import pytest
 import itertools
 import numpy as np
 from numpy.linalg import norm
+from numpy.testing import assert_allclose, assert_array_less
 
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
@@ -199,6 +203,53 @@ def test_GroupLassoCV(sparse_X):
     clf.tol = 1e-6
     clf.groups = 1  # unsatisfying but sklearn will fit with 5 features
     check_estimator(clf)
+
+
+def test_weights_group_lasso():
+    # generate data
+    sparse_X = 1
+    n_samples, n_features = 30, 50
+    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+
+    # generate weihgts
+    groups = 5
+    n_groups = n_features // groups
+    np.random.seed(0)
+    weights = np.abs(np.random.randn(n_groups))
+
+    tol = 1e-8
+    params = {'n_alphas': 10, 'tol': tol, 'verbose': 1}
+    augmented_weights = (weights[:, None] *
+                         np.ones((n_groups, groups))).reshape((-1, ))
+
+    # method 1
+    alphas1, coefs1, gaps1 = celer_path(
+        X, y, "grouplasso", groups=groups, weights=weights,
+        eps=1e-2, **params)
+    # method 2
+    alphas2, coefs2, gaps2 = celer_path(
+        X.multiply(1 / augmented_weights[None, :]), y, "grouplasso",
+        groups=groups, eps=1e-2, **params)
+
+    assert_allclose(alphas1, alphas2)
+    assert_allclose(
+        coefs1, coefs2 / augmented_weights[:, None], atol=1e-4, rtol=1e-3)
+    assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
+    assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
+
+    # fit
+    alpha = 0.001
+    clf1 = GroupLasso(groups, alpha=alpha, weights=weights,
+                      fit_intercept=False).fit(X, y)
+    clf2 = GroupLasso(groups, alpha=alpha, fit_intercept=False).fit(
+        X.multiply(1. / augmented_weights), y)
+
+    assert_allclose(clf1.coef_, clf2.coef_ / augmented_weights)
+
+    # weights must be > 0
+    clf1.weights[0] = 0.
+    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+    return
 
 
 if __name__ == "__main__":

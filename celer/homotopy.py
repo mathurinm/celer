@@ -189,10 +189,15 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         weights = np.ones(n_groups).astype(X.dtype)
     elif (weights <= 0).any():
         raise ValueError("0 or negative weights are not supported.")
-    elif weights.shape[0] != X.shape[1]:
+    elif pb in (LASSO, LOGREG) and weights.shape[0] != X.shape[1]:
         raise ValueError(
             "As many weights as features must be passed. "
             f"Expected {X.shape[1]}, got {weights.shape[0]}."
+        )
+    elif pb == GRPLASSO and weights.shape[0] != n_groups:
+        raise ValueError(
+            "As many weights as groups must be passed. "
+            f"Expected {n_groups}, got {weights.shape[0]}."
         )
 
     if alphas is None:
