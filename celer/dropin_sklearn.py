@@ -752,9 +752,9 @@ class GroupLasso(Lasso_sklearn):
     fit_intercept : bool, optional (default=True)
         Whether or not to fit an intercept.
 
-    weights : array, shape (n_features,), optional (default=None)
-        Strictly positive weights used in the L1 penalty part of the Lasso
-        objective. If None, weights equal to 1 are used.
+    weights : array, shape (n_groups,), optional (default=None)
+        Strictly positive weights used in the L2 penalty part of the 
+        GroupLasso objective. If None, weights equal to 1 are used.
 
     warm_start : bool, optional (default=False)
         When set to True, reuse the solution of the previous call to fit as

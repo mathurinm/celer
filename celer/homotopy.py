@@ -183,7 +183,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
-    # set weights
     if weights is None:
         weights = np.ones(n_features).astype(X.dtype)
     elif (weights <= 0).any():
@@ -194,7 +193,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             f"Expected {X.shape[1]}, got {weights.shape[0]}."
         )
 
-    # set alphas of the path
     if alphas is None:
         if pb == LASSO:
             alpha_max = dnorm_l1(X, y, weights, X_sparse_scaling,
@@ -204,11 +202,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                                  positive) / 2
         elif pb == GRPLASSO:
             # TODO compute it with dscal to handle centering sparse
-            # TODO consider weights when computing alpha_max
             alpha_max = 0
             for g in range(n_groups):
                 X_g = X[:, grp_indices[grp_ptr[g]:grp_ptr[g + 1]]]
-                alpha_max = max(alpha_max, norm(X_g.T @ y, ord=2))
+                alpha_max = max(alpha_max, norm(X_g.T @ y / weights[g], ord=2))
             alpha_max /= n_samples
 
         alphas = alpha_max * np.geomspace(1, eps, n_alphas,
