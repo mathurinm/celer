@@ -57,10 +57,11 @@ def test_GroupLasso_MultitaskLasso_equivalence():
     X_data = np.empty([1], dtype=X.dtype)
     X_indices = np.empty([1], dtype=np.int32)
     X_indptr = np.empty([1], dtype=np.int32)
-    # TODO add weights
+    weights = np.ones(len(grp_ptr))
+
     other = dnorm_grp(
         False, y, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
+        X_indices, X_indptr, X_data, weights, len(grp_ptr) - 1,
         np.zeros(1, dtype=np.int32), False)
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
