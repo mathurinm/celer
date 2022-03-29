@@ -815,7 +815,7 @@ class GroupLasso(Lasso_sklearn):
         self.max_epochs = max_epochs
         self.p0 = p0
         self.prune = prune
-        self.weigths = weights
+        self.weights = weights
 
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True,
              **kwargs):
@@ -825,7 +825,7 @@ class GroupLasso(Lasso_sklearn):
             coef_init=coef_init, max_iter=self.max_iter,
             return_n_iter=return_n_iter, max_epochs=self.max_epochs,
             p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
-            weights=self.weigths, X_scale=kwargs.get('X_scale', None),
+            weights=self.weights, X_scale=kwargs.get('X_scale', None),
             X_offset=kwargs.get('X_offset', None))
 
         return results
