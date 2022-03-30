@@ -66,7 +66,6 @@ _tab_ignores = []
 
 def check_parameters_match(func, doc=None):
     """Check docstring, return list of incorrect results."""
-    # from numpydoc import docscrape
     incorrect = []
     name_ = get_name(func)
     if not name_.startswith('celer.'):
@@ -109,8 +108,6 @@ def check_parameters_match(func, doc=None):
 # @requires_numpydoc
 def test_docstring_parameters():
     """Test module docstring formatting."""
-    # from numpydoc import docscrape
-
     public_modules_ = public_modules[:]
 
     incorrect = []

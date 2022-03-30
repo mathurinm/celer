@@ -21,12 +21,6 @@ LASSO = 0
 LOGREG = 1
 GRPLASSO = 2
 
-DICT_PB = {
-    'lasso': LASSO,
-    'logreg': LOGREG,
-    'grouplasso': GRPLASSO
-}
-
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, max_epochs=50000,
@@ -150,8 +144,27 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         (Is returned only when ``return_thetas`` is set to True).
     """
 
-    # type of prob
-    pb, grp_ptr, grp_indices, n_groups = _check_pb(pb, X, y, groups)
+    pb = pb.lower()
+    if pb not in ("lasso", "logreg", "grouplasso"):
+        raise ValueError("Unsupported problem %s" % pb)
+    # prevent referenced before assigned error
+    grp_ptr, grp_indices, n_groups = None, None, None
+    if pb == "lasso":
+        pb = LASSO
+    elif pb == "logreg":
+        pb = LOGREG
+        if set(y) - set([-1.0, 1.0]):
+            raise ValueError(
+                "y must contain only -1. or 1 values. Got %s " % (set(y)))
+    elif pb == "grouplasso":
+        pb = GRPLASSO
+        if groups is None:
+            raise ValueError(
+                "Groups must be specified for the group lasso problem.")
+        grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
+        n_groups = len(grp_ptr) - 1
+    else:
+        raise ValueError("Unsupported problem: %s" % pb)
 
     is_sparse = sparse.issparse(X)
 
@@ -278,7 +291,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:
             # TODO this if else scheme is complicated
-            # TODO add weights to celer_grp (done)
             sol = celer_grp(
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
                 X_indices, X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
@@ -310,52 +322,21 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     return results
 
 
-def _check_pb(pb, X, y, groups):
-    """Handle pb cases."""
-    # vars
-    pb = pb.lower()
-    grp_ptr, grp_indices, n_groups = None, None, None
-
-    # type of the problem
-    if pb not in ("lasso", "logreg", "grouplasso"):
-        raise ValueError("Unsupported problem %s" % pb)
-    if pb == "lasso":
-        pb = LASSO
-    elif pb == "logreg":
-        pb = LOGREG
-        if set(y) - set([-1.0, 1.0]):
-            raise ValueError(
-                "y must contain only -1. or 1 values. Got %s " % (set(y))
-            )
-    elif pb == "grouplasso":
-        pb = GRPLASSO
-        if groups is None:
-            raise ValueError(
-                "Groups must be specified for the group lasso problem."
-            )
-        grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
-        n_groups = len(grp_ptr) - 1
-    else:
-        raise ValueError("Unsupported problem: %s" % pb)
-
-    return pb, grp_ptr, grp_indices, n_groups
-
-
 def _check_weights(weights, pb, X, n_groups):
     """Handle weights cases."""
     if weights is None:
         n_weights = n_groups if pb == GRPLASSO else X.shape[1]
 
-        weights = np.ones(n_weights).astype(X.dtype)
-    # weights are provided
+        weights = np.ones(n_weights, dtype=X.dtype)
     elif (weights <= 0).any():
         raise ValueError("0 or negative weights are not supported.")
     else:
         expected_n_weights = n_groups if pb == GRPLASSO else X.shape[1]
+        feat_or_grp = "groups" if pb == GRPLASSO else "features"
 
         if weights.shape[0] != expected_n_weights:
             raise ValueError(
-                "As many weights as groups must be passed. "
+                f"As many weights as {feat_or_grp} must be passed. "
                 f"Expected {expected_n_weights}, got {weights.shape[0]}."
             )
 
