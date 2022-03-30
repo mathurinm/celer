@@ -21,6 +21,12 @@ LASSO = 0
 LOGREG = 1
 GRPLASSO = 2
 
+DICT_PB = {
+    'lasso': LASSO,
+    'logreg': LOGREG,
+    'grouplasso': GRPLASSO
+}
+
 
 def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                coef_init=None, max_iter=20, max_epochs=50000,
@@ -144,25 +150,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         (Is returned only when ``return_thetas`` is set to True).
     """
 
-    # type of the problem
-    if pb.lower() not in ("lasso", "logreg", "grouplasso"):
-        raise ValueError("Unsupported problem %s" % pb)
-    if pb.lower() == "lasso":
-        pb = LASSO
-    elif pb.lower() == "logreg":
-        pb = LOGREG
-        if set(y) - set([-1.0, 1.0]):
-            raise ValueError(
-                "y must contain only -1. or 1 values. Got %s " % (set(y)))
-    elif pb.lower() == "grouplasso":
-        pb = GRPLASSO
-        if groups is None:
-            raise ValueError(
-                "Groups must be specified for the group lasso problem.")
-        grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
-        n_groups = len(grp_ptr) - 1
-    else:
-        raise ValueError("Unsupported problem: %s" % pb)
+    # type of prob
+    pb, grp_ptr, grp_indices, n_groups = _check_pb(pb, X, y, groups)
 
     is_sparse = sparse.issparse(X)
 
@@ -183,22 +172,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
-    if weights is None and pb in (LASSO, LOGREG):
-        weights = np.ones(n_features).astype(X.dtype)
-    elif weights is None and pb == GRPLASSO:
-        weights = np.ones(n_groups).astype(X.dtype)
-    elif (weights <= 0).any():
-        raise ValueError("0 or negative weights are not supported.")
-    elif pb in (LASSO, LOGREG) and weights.shape[0] != X.shape[1]:
-        raise ValueError(
-            "As many weights as features must be passed. "
-            f"Expected {X.shape[1]}, got {weights.shape[0]}."
-        )
-    elif pb == GRPLASSO and weights.shape[0] != n_groups:
-        raise ValueError(
-            "As many weights as groups must be passed. "
-            f"Expected {n_groups}, got {weights.shape[0]}."
-        )
+    # handle weight cases
+    weights = _check_weights(weights, pb, X, n_groups)
 
     if alphas is None:
         if pb == LASSO:
@@ -333,6 +308,58 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         results += (n_iters,)
 
     return results
+
+
+def _check_pb(pb, X, y, groups):
+    """Handle pb cases."""
+    # vars
+    pb = pb.lower()
+    grp_ptr, grp_indices, n_groups = None, None, None
+
+    # type of the problem
+    if pb not in ("lasso", "logreg", "grouplasso"):
+        raise ValueError("Unsupported problem %s" % pb)
+    if pb == "lasso":
+        pb = LASSO
+    elif pb == "logreg":
+        pb = LOGREG
+        if set(y) - set([-1.0, 1.0]):
+            raise ValueError(
+                "y must contain only -1. or 1 values. Got %s " % (set(y))
+            )
+    elif pb == "grouplasso":
+        pb = GRPLASSO
+        if groups is None:
+            raise ValueError(
+                "Groups must be specified for the group lasso problem."
+            )
+        grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
+        n_groups = len(grp_ptr) - 1
+    else:
+        raise ValueError("Unsupported problem: %s" % pb)
+
+    return pb, grp_ptr, grp_indices, n_groups
+
+
+def _check_weights(weights, pb, X, n_groups):
+    """Handle weights cases."""
+    if weights is None:
+        n_weights = n_groups if pb == GRPLASSO else X.shape[1]
+
+        weights = np.ones(n_weights).astype(X.dtype)
+    # weights are provided
+    elif (weights <= 0).any():
+        raise ValueError("0 or negative weights are not supported.")
+    else:
+        expected_n_weights = n_groups if pb == GRPLASSO else X.shape[1]
+
+        if weights.shape[0] != expected_n_weights:
+            raise ValueError(
+                "As many weights as groups must be passed. "
+                f"Expected {expected_n_weights}, got {weights.shape[0]}."
+            )
+
+    return weights
 
 
 def _sparse_and_dense(X):
