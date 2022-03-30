@@ -805,7 +805,7 @@ class GroupLasso(Lasso_sklearn):
 
     def __init__(self, groups=1, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
-                 weights=None, fit_intercept=True, warm_start=False):
+                 fit_intercept=True, weights=None, warm_start=False):
         super(GroupLasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept,
