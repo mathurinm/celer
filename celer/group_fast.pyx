@@ -68,7 +68,7 @@ cpdef floating dnorm_grp(
         for g in range(n_groups):
             if weights[g] == INFINITY:
                 continue
-            
+
             tmp = 0
             for k in range(grp_ptr[g], grp_ptr[g + 1]):
                 j = grp_indices[k]
@@ -119,7 +119,7 @@ cpdef floating dnorm_grp(
 cdef void set_prios_grp(
         bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
-        floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr, 
+        floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1] prios, int[::1] screened,
         floating radius, int * n_screened):
     cdef int i, j, k, g, startptr, endptr
@@ -159,7 +159,7 @@ cpdef celer_grp(
         int[::1] grp_ptr, floating[::1] X_data, int[::1] X_indices,
         int[::1] X_indptr, floating[::1] X_mean, floating[:] y, floating alpha,
         floating[:] w, floating[:] R, floating[::1] theta,
-        floating[::1] norms_X_grp, floating tol, floating[:] weights, int max_iter, 
+        floating[::1] norms_X_grp, floating tol, floating[:] weights, int max_iter,
         int max_epochs, int gap_freq=10, floating tol_ratio_inner=0.3, int p0=100,
         bint prune=1, bint use_accel=1,
         bint verbose=0):
@@ -357,7 +357,7 @@ cpdef celer_grp(
                     if epoch // gap_freq >= K:
                         scal = dnorm_grp(
                             is_sparse, thetacc, grp_ptr, grp_indices, X,
-                            X_data, X_indices, X_indptr, X_mean, weights, 
+                            X_data, X_indices, X_indptr, X_mean, weights,
                             ws_size, C, center)
 
                         if scal > 1.:
@@ -412,7 +412,7 @@ cpdef celer_grp(
                     norm_wg += w[j] ** 2
                 norm_wg = sqrt(norm_wg)
                 bst_scal = max(0.,
-                               1. - alpha / lc_groups[g] * n_samples / norm_wg)
+                               1. - alpha * weights[g] / lc_groups[g] * n_samples / norm_wg)
 
                 for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                     j = grp_indices[grp_ptr[g] + k]

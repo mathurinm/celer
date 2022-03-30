@@ -202,22 +202,20 @@ def test_GroupLassoCV(sparse_X):
     check_estimator(clf)
 
 
-def test_weights_group_lasso():
-    # generate data
-    sparse_X = 1
+@pytest.mark.parametrize("sparse_X", [False, True])
+def test_weights_group_lasso(sparse_X):
+    sparse_X = True
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
 
-    # generate weihgts
     groups = 5
     n_groups = n_features // groups
     np.random.seed(0)
     weights = np.abs(np.random.randn(n_groups))
 
-    tol = 1e-8
+    tol = 1e-14
     params = {'n_alphas': 10, 'tol': tol, 'verbose': 1}
-    augmented_weights = (weights[:, None] *
-                         np.ones((n_groups, groups))).reshape((-1, ))
+    augmented_weights = np.repeat(weights, groups)
 
     # method 1
     alphas1, coefs1, gaps1 = celer_path(
@@ -230,23 +228,17 @@ def test_weights_group_lasso():
 
     assert_allclose(alphas1, alphas2)
     assert_allclose(
-        coefs1, coefs2 / augmented_weights[:, None], atol=1e-4, rtol=1e-3)
+        coefs1, coefs2 / augmented_weights[:, None], rtol=1e-3)
     assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
     assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
-    # fit
-    alpha = 0.001
-    clf1 = GroupLasso(groups, alpha=alpha, weights=weights,
-                      fit_intercept=False).fit(X, y)
-    clf2 = GroupLasso(groups, alpha=alpha, fit_intercept=False).fit(
-        X.multiply(1. / augmented_weights), y)
 
-    assert_allclose(clf1.coef_, clf2.coef_ / augmented_weights)
-
-    # weights must be > 0
-    clf1.weights[0] = 0.
-    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
-    return
+def test_check_weights():
+    X, y = build_dataset(30, 42)
+    weights = np.ones(X.shape[1])
+    weights[0] = 0
+    clf = GroupLasso(weights=weights)
+    np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
 
 
 if __name__ == "__main__":
