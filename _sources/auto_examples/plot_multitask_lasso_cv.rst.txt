@@ -120,8 +120,8 @@ Celer is faster
 
  .. code-block:: none
 
-    Time for celer  : 12.50 s
-    Time for sklearn: 23.70 s
+    Time for celer  : 10.48 s
+    Time for sklearn: 21.67 s
 
 
 
@@ -188,7 +188,7 @@ Both packages find the same solution
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  36.434 seconds)
+   **Total running time of the script:** ( 0 minutes  32.356 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_multitask_lasso_cv.py:
