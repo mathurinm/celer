@@ -320,9 +320,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
 
 def _check_weights(weights, pb, X, n_groups):
+    """Handle weights cases."""
     if weights is None:
         n_weights = n_groups if pb == GRPLASSO else X.shape[1]
-
         weights = np.ones(n_weights, dtype=X.dtype)
     elif (weights <= 0).any():
         raise ValueError("0 or negative weights are not supported.")
