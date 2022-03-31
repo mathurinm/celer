@@ -144,19 +144,18 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
         (Is returned only when ``return_thetas`` is set to True).
     """
 
-    pb = pb.lower()
-    if pb not in ("lasso", "logreg", "grouplasso"):
+    if pb.lower() not in ("lasso", "logreg", "grouplasso"):
         raise ValueError("Unsupported problem %s" % pb)
     # prevent referenced before assigned error
     grp_ptr, grp_indices, n_groups = None, None, None
-    if pb == "lasso":
+    if pb.lower() == "lasso":
         pb = LASSO
-    elif pb == "logreg":
+    elif pb.lower() == "logreg":
         pb = LOGREG
         if set(y) - set([-1.0, 1.0]):
             raise ValueError(
                 "y must contain only -1. or 1 values. Got %s " % (set(y)))
-    elif pb == "grouplasso":
+    elif pb.lower() == "grouplasso":
         pb = GRPLASSO
         if groups is None:
             raise ValueError(
@@ -185,7 +184,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
-    # handle weight cases
     weights = _check_weights(weights, pb, X, n_groups)
 
     if alphas is None:
@@ -279,7 +277,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
                                 positive)
             elif pb == GRPLASSO:
-                # TODO add weights to dnrom_grp (done)
                 theta = Xw.copy()
                 scal = dnorm_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
