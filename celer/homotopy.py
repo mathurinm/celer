@@ -147,7 +147,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     if pb.lower() not in ("lasso", "logreg", "grouplasso"):
         raise ValueError("Unsupported problem %s" % pb)
     # prevent referenced before assigned error
-    grp_ptr, grp_indices, n_groups = None, None, None
+    n_groups = None
     if pb.lower() == "lasso":
         pb = LASSO
     elif pb.lower() == "logreg":
