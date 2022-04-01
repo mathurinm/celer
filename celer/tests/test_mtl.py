@@ -202,11 +202,9 @@ def test_GroupLassoCV(sparse_X):
     check_estimator(clf)
 
 
-@pytest.mark.parametrize("sparse_X", [False, True])
-def test_weights_group_lasso(sparse_X):
-    sparse_X = True
+def test_weights_group_lasso():
     n_samples, n_features = 30, 50
-    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples, n_features, sparse_X=True)
 
     groups = 5
     n_groups = n_features // groups
@@ -217,11 +215,9 @@ def test_weights_group_lasso(sparse_X):
     params = {'n_alphas': 10, 'tol': tol, 'verbose': 1}
     augmented_weights = np.repeat(weights, groups)
 
-    # method 1
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "grouplasso", groups=groups, weights=weights,
         eps=1e-2, **params)
-    # method 2
     alphas2, coefs2, gaps2 = celer_path(
         X.multiply(1 / augmented_weights[None, :]), y, "grouplasso",
         groups=groups, eps=1e-2, **params)
@@ -235,9 +231,13 @@ def test_weights_group_lasso(sparse_X):
 
 def test_check_weights():
     X, y = build_dataset(30, 42)
-    weights = np.ones(X.shape[1])
+    weights = np.ones(X.shape[1] // 7)
     weights[0] = 0
-    clf = GroupLasso(weights=weights)
+    clf = GroupLasso(weights=weights, groups=7)  # groups of size 7
+    # weights must be > 0
+    np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
+    # len(weights) must be equal to number of groups (6 here)
+    clf.weights = np.ones(8)
     np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
 
 
