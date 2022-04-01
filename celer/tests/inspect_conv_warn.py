@@ -11,26 +11,19 @@ from numpy.linalg import norm
 from celer.dropin_sklearn import LogisticRegression
 
 
-def check_hypothesis():
-    # params
-    C_fac = 1e4
-    tol = 1e-4
+# params
+C_fac = 1e4
+tol = 1e-4
 
-    n_samples, n_features = np.random.randint(low=1, high=100, size=2)
-    min_bound, max_bound = 0, 2
+n_samples, n_features = np.random.randint(low=1, high=100, size=2)
+min_bound, max_bound = 0, 2
 
-    np.random.seed(0)
-    X = np.random.random(size=(n_samples, n_features))
-    y = np.random.randint(low=min_bound, high=max_bound, size=n_samples)
+np.random.seed(0)
+X = np.random.random(size=(n_samples, n_features))
+y = np.random.randint(low=min_bound, high=max_bound, size=n_samples)
 
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
-    C = C_fac / alpha_max
+alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
+C = C_fac / alpha_max
 
-    clf = LogisticRegression(C=C, tol=tol, verbose=0)
-    clf.fit(X, y)
-
-    return X, y
-
-
-if __name__ == "__main__":
-    X, y = check_hypothesis()
+clf = LogisticRegression(C=C, tol=tol, verbose=0)
+clf.fit(X, y)

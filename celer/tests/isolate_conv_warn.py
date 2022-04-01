@@ -15,23 +15,16 @@ import numpy as np
 from celer.dropin_sklearn import LogisticRegression
 
 
-def reproduce_convergence_warning():
-    # params
-    n_samples, n_features = 100, 2
-    mu, std = 100, 1
-    min_bound, max_bound = 0, 2
-    tol = 1e-4
-    C = 1.
+# params
+n_samples, n_features = 100, 2
+mu, std = 100, 1
+min_bound, max_bound = 0, 2
+tol = 1e-4
+C = 1.
 
-    np.random.seed(0)
-    X = np.random.normal(loc=mu, scale=std, size=(n_samples, n_features))
-    y = np.random.randint(low=min_bound, high=max_bound, size=n_samples)
+np.random.seed(0)
+X = np.random.normal(loc=mu, scale=std, size=(n_samples, n_features))
+y = np.random.randint(low=min_bound, high=max_bound, size=n_samples)
 
-    clf = LogisticRegression(C=C, tol=tol, verbose=0)
-    clf.fit(X, y)
-
-    return X, y
-
-
-if __name__ == "__main__":
-    X, y = reproduce_convergence_warning()
+clf = LogisticRegression(C=C, tol=tol, verbose=0)
+clf.fit(X, y)
