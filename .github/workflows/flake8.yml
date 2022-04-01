@@ -20,5 +20,5 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install flake8
-          flake8 celer/
-          flake8 examples/
+          flake8 --max-line-length=88 celer/
+          flake8 --max-line-length=88 examples/
