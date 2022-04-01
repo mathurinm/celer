@@ -4,15 +4,20 @@
 *.o
 *.c
 *.html
-celer.egg-info/*
-.eggs/*
+celer.egg-info
+.eggs
 
 # Python precompilation
 *pyc
+*pyd
+
+# build
+build
 
 
 # cache
-.pytest_cache/*
+.pytest_cache
+__pycache__
 
 doc/*
 coverage/*
