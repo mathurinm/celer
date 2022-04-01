@@ -1,45 +1,34 @@
-from sklearn.exceptions import ConvergenceWarning
+"""ConvergenceWarning in celer/tests/test_logreg.py.
+
+ConvergenceWarning is due to ``sklearn.utils.estimator_checks.check_estimator``.
+The followings functions in ``check_estimator`` sources code: 
+https://github.com/scikit-learn/scikit-learn/blob/582fa30a3/sklearn/utils/estimator_checks.py#L514
+raises the warning:
+    - ``check_fit_idempotent``
+    - ``check_fit_check_is_fitted``
+    - ``check_n_features_in``
+
+Code inspired by the latter functions implementation.
+"""
+
 import numpy as np
 from numpy.linalg import norm
-from sklearn.utils.estimator_checks import check_estimator
-
 from celer.dropin_sklearn import LogisticRegression
-from celer.utils.testing import build_dataset
-
-import warnings
-warnings.filterwarnings("error")
 
 
-def isolate_logreg_warning(sparse_X):
-    np.random.seed(1409)
-    X, y = build_dataset(
-        n_samples=30, n_features=60, sparse_X=sparse_X)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
-    C = 20. / alpha_max
-
+def reproduce_convergence_warning():
+    # params
+    n_samples, n_features = 100, 2
+    mu, std = 100, 1
+    min_bound, max_bound = 0, 2
     tol = 1e-4
-    clf1 = LogisticRegression(C=C, tol=tol, verbose=0)
+    C = 1.
 
-    generator = check_estimator(clf1, generate_only=True)
+    np.random.seed(0)
+    X = np.random.normal(loc=mu, scale=std, size=(n_samples, n_features))
+    y = np.random.randint(low=min_bound, high=max_bound, size=n_samples)
 
-    dict_func_with_warn = {}
-    for i, (es, check_func) in enumerate(generator):
-        try:
-            check_func(es)
-        except ConvergenceWarning:
-            dict_func_with_warn[i] = check_func
-        except:
-            pass
+    clf = LogisticRegression(C=C, tol=tol, verbose=0)
+    clf.fit(X, y)
 
-    print(10 * "*")
-    print(
-        f"{len(dict_func_with_warn)} out of {i+1} "
-        "checks raise convergence warning"
-    )
-    print(10 * "*")
-
-    print(dict_func_with_warn)
-
-
-if __name__ == "__main__":
-    isolate_logreg_warning(True)
+    return X, y
