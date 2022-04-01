@@ -711,9 +711,9 @@ class GroupLasso(Lasso_sklearn):
 
     The optimization objective for the Group Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g ||w_g||_2
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_g weights_g ||w_g||_2
 
-    where `w_g` is the weight vector of group number `g`.
+    where `w_g` are the regression coefficients of group number `g`.
 
     Parameters
     ----------
@@ -753,7 +753,7 @@ class GroupLasso(Lasso_sklearn):
         Whether or not to fit an intercept.
 
     weights : array, shape (n_groups,), optional (default=None)
-        Strictly positive weights used in the L2 penalty part of the 
+        Strictly positive weights used in the L2 penalty part of the
         GroupLasso objective. If None, weights equal to 1 are used.
 
     warm_start : bool, optional (default=False)
