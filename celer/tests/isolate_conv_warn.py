@@ -12,7 +12,6 @@ Code inspired by the latter functions implementation.
 """
 
 import numpy as np
-from numpy.linalg import norm
 from celer.dropin_sklearn import LogisticRegression
 
 
@@ -32,3 +31,7 @@ def reproduce_convergence_warning():
     clf.fit(X, y)
 
     return X, y
+
+
+if __name__ == "__main__":
+    X, y = reproduce_convergence_warning()
