@@ -1,0 +1,239 @@
+Iter 0: primal 69.3147180560, gap 6.92e+01
+Solving subproblem with 2 constraints
+Iter 1: primal 67.8364288759, gap 6.43e+01
+Solving subproblem with 2 constraints
+Iter 2: primal 67.3824200435, gap 6.36e+01
+Solving subproblem with 2 constraints
+Iter 3: primal 66.9969735509, gap 6.30e+01
+Solving subproblem with 2 constraints
+Iter 4: primal 66.6694480515, gap 6.24e+01
+Solving subproblem with 2 constraints
+Iter 5: primal 66.3909024887, gap 6.18e+01
+Solving subproblem with 2 constraints
+Iter 6: primal 66.1538178079, gap 6.13e+01
+Solving subproblem with 2 constraints
+Iter 7: primal 65.9518644722, gap 6.08e+01
+Solving subproblem with 2 constraints
+Iter 8: primal 65.7797085553, gap 6.03e+01
+Solving subproblem with 2 constraints
+Iter 9: primal 65.6328501319, gap 5.98e+01
+Solving subproblem with 2 constraints
+Iter 10: primal 65.5074886023, gap 5.93e+01
+Solving subproblem with 2 constraints
+Iter 11: primal 65.4004104226, gap 5.88e+01
+Solving subproblem with 2 constraints
+Iter 12: primal 65.3088954475, gap 5.78e+01
+Solving subproblem with 2 constraints
+Iter 13: primal 65.2306387260, gap 5.77e+01
+Solving subproblem with 2 constraints
+Iter 14: primal 65.1636851264, gap 5.72e+01
+Solving subproblem with 2 constraints
+Iter 15: primal 65.1063746179, gap 5.67e+01
+Solving subproblem with 2 constraints
+Iter 16: primal 65.0572964133, gap 5.61e+01
+Solving subproblem with 2 constraints
+Iter 17: primal 65.0152504833, gap 5.55e+01
+Solving subproblem with 2 constraints
+Iter 18: primal 64.9792152170, gap 5.49e+01
+Solving subproblem with 2 constraints
+Iter 19: primal 64.9483202069, gap 5.43e+01
+Solving subproblem with 2 constraints
+Iter 20: primal 64.9218233194, gap 5.36e+01
+Solving subproblem with 2 constraints
+Iter 21: primal 64.8990913487, gap 5.30e+01
+Solving subproblem with 2 constraints
+Iter 22: primal 64.8795836749, gap 5.23e+01
+Solving subproblem with 2 constraints
+Iter 23: primal 64.8628384436, gap 5.15e+01
+Solving subproblem with 2 constraints
+Iter 24: primal 64.8484608638, gap 5.08e+01
+Solving subproblem with 2 constraints
+Iter 25: primal 64.8361132892, gap 5.00e+01
+Solving subproblem with 2 constraints
+Iter 26: primal 64.8255068018, gap 4.92e+01
+Solving subproblem with 2 constraints
+Iter 27: primal 64.8163940646, gap 4.83e+01
+Solving subproblem with 2 constraints
+Iter 28: primal 64.8085632450, gap 4.74e+01
+Solving subproblem with 2 constraints
+Iter 29: primal 64.8018328444, gap 4.65e+01
+Solving subproblem with 2 constraints
+Iter 30: primal 64.7960472958, gap 4.56e+01
+Solving subproblem with 2 constraints
+Iter 31: primal 64.7910732118, gap 4.46e+01
+Solving subproblem with 2 constraints
+Iter 32: primal 64.7867961852, gap 4.36e+01
+Solving subproblem with 2 constraints
+Iter 33: primal 64.7831180580, gap 4.25e+01
+Solving subproblem with 2 constraints
+Iter 34: primal 64.7799545896, gap 4.15e+01
+Solving subproblem with 2 constraints
+Iter 35: primal 64.7772334648, gap 4.04e+01
+Solving subproblem with 2 constraints
+Iter 36: primal 64.7748925899, gap 3.92e+01
+Solving subproblem with 2 constraints
+Iter 37: primal 64.7728786363, gap 3.81e+01
+Solving subproblem with 2 constraints
+Iter 38: primal 64.7711457929, gap 3.69e+01
+Solving subproblem with 2 constraints
+Iter 39: primal 64.7696546992, gap 3.57e+01
+Solving subproblem with 2 constraints
+Iter 40: primal 64.7683715303, gap 3.45e+01
+Solving subproblem with 2 constraints
+Iter 41: primal 64.7672672140, gap 3.32e+01
+Solving subproblem with 2 constraints
+Iter 42: primal 64.7663167584, gap 3.20e+01
+Solving subproblem with 2 constraints
+Iter 43: primal 64.7654986767, gap 3.07e+01
+Solving subproblem with 2 constraints
+Iter 44: primal 64.7647944925, gap 2.95e+01
+Solving subproblem with 2 constraints
+Iter 45: primal 64.7641883166, gap 2.82e+01
+Solving subproblem with 2 constraints
+Iter 46: primal 64.7636664827, gap 2.69e+01
+Solving subproblem with 2 constraints
+Iter 47: primal 64.7632172352, gap 2.56e+01
+Solving subproblem with 2 constraints
+Iter 48: primal 64.7628304611, gap 2.43e+01
+Solving subproblem with 2 constraints
+Iter 49: primal 64.7624974597, gap 2.31e+01
+Solving subproblem with 2 constraints
+Iter 50: primal 64.7622107448, gap 2.18e+01
+Solving subproblem with 2 constraints
+Iter 51: primal 64.7619638741, gap 2.06e+01
+Solving subproblem with 2 constraints
+Iter 52: primal 64.7617513041, gap 1.94e+01
+Solving subproblem with 2 constraints
+Iter 53: primal 64.7615682636, gap 1.82e+01
+Solving subproblem with 2 constraints
+Iter 54: primal 64.7614106462, gap 1.71e+01
+Solving subproblem with 2 constraints
+Iter 55: primal 64.7612749174, gap 1.60e+01
+Solving subproblem with 2 constraints
+Iter 56: primal 64.7611580348, gap 1.49e+01
+Solving subproblem with 2 constraints
+Iter 57: primal 64.7610573795, gap 1.38e+01
+Solving subproblem with 2 constraints
+Iter 58: primal 64.7609706967, gap 1.28e+01
+Solving subproblem with 2 constraints
+Iter 59: primal 64.7608960455, gap 1.19e+01
+Solving subproblem with 2 constraints
+Iter 60: primal 64.7608317549, gap 1.10e+01
+Solving subproblem with 2 constraints
+Iter 61: primal 64.7607763859, gap 1.01e+01
+Solving subproblem with 2 constraints
+Iter 62: primal 64.7607286999, gap 9.26e+00
+Solving subproblem with 2 constraints
+Iter 63: primal 64.7606876301, gap 8.48e+00
+Solving subproblem with 2 constraints
+Iter 64: primal 64.7606522583, gap 7.74e-03
+Solving subproblem with 2 constraints
+Iter 65: primal 64.7606217934, gap 7.06e+00
+Solving subproblem with 2 constraints
+Iter 66: primal 64.7605955545, gap 6.42e+00
+Solving subproblem with 2 constraints
+Iter 67: primal 64.7605729551, gap 5.82e+00
+Solving subproblem with 2 constraints
+Iter 68: primal 64.7605534903, gap 5.27e+00
+Solving subproblem with 2 constraints
+Iter 69: primal 64.7605367250, gap 4.76e+00
+Solving subproblem with 2 constraints
+Iter 70: primal 64.7605222849, gap 4.29e+00
+Solving subproblem with 2 constraints
+Iter 71: primal 64.7605098473, gap 3.85e+00
+Solving subproblem with 2 constraints
+Iter 72: primal 64.7604991344, gap 3.46e+00
+Solving subproblem with 2 constraints
+Iter 73: primal 64.7604899070, gap 3.09e+00
+Solving subproblem with 2 constraints
+Iter 74: primal 64.7604819592, gap 2.76e+00
+Solving subproblem with 2 constraints
+Iter 75: primal 64.7604751133, gap 2.46e+00
+Solving subproblem with 2 constraints
+Iter 76: primal 64.7604692167, gap 2.19e+00
+Solving subproblem with 2 constraints
+Iter 77: primal 64.7604641376, gap 1.95e+00
+Solving subproblem with 2 constraints
+Iter 78: primal 64.7604597627, gap 1.73e+00
+Solving subproblem with 2 constraints
+Iter 79: primal 64.7604559943, gap 1.53e+00
+Solving subproblem with 2 constraints
+Iter 80: primal 64.7604527484, gap 1.35e+00
+Solving subproblem with 2 constraints
+Iter 81: primal 64.7604499524, gap 1.20e+00
+Solving subproblem with 2 constraints
+Iter 82: primal 64.7604475441, gap 1.05e+00
+Solving subproblem with 2 constraints
+Iter 83: primal 64.7604454696, gap 9.29e-01
+Solving subproblem with 2 constraints
+Iter 84: primal 64.7604436827, gap 8.17e-01
+Solving subproblem with 2 constraints
+Iter 85: primal 64.7604421435, gap 7.18e-01
+Solving subproblem with 2 constraints
+Iter 86: primal 64.7604408177, gap 6.30e-01
+Solving subproblem with 2 constraints
+Iter 87: primal 64.7604396757, gap 5.52e-01
+Solving subproblem with 2 constraints
+Iter 88: primal 64.7604386919, gap 4.84e-01
+Solving subproblem with 2 constraints
+Iter 89: primal 64.7604378446, gap 4.23e-01
+Solving subproblem with 2 constraints
+Iter 90: primal 64.7604371146, gap 3.70e-01
+Solving subproblem with 2 constraints
+Iter 91: primal 64.7604364859, gap 3.23e-01
+Solving subproblem with 2 constraints
+Iter 92: primal 64.7604359443, gap 2.82e-01
+Solving subproblem with 2 constraints
+Iter 93: primal 64.7604354778, gap 2.46e-01
+Solving subproblem with 2 constraints
+Iter 94: primal 64.7604350759, gap 2.15e-01
+Solving subproblem with 2 constraints
+Iter 95: primal 64.7604347298, gap 1.87e-01
+Solving subproblem with 2 constraints
+Iter 96: primal 64.7604344316, gap 1.63e-01
+Solving subproblem with 2 constraints
+Iter 97: primal 64.7604341748, gap 1.42e-01
+Solving subproblem with 2 constraints
+Iter 98: primal 64.7604339535, gap 1.23e-01
+Solving subproblem with 2 constraints
+Iter 99: primal 64.7604337629, gap 1.07e-01
+Solving subproblem with 2 constraints
+Iter 100: primal 64.7604335988, gap 9.34e-02
+Solving subproblem with 2 constraints
+Iter 101: primal 64.7604334574, gap 8.12e-02
+Solving subproblem with 2 constraints
+Iter 102: primal 64.7604333356, gap 7.06e-02
+Solving subproblem with 2 constraints
+Iter 103: primal 64.7604332306, gap 6.13e-02
+Solving subproblem with 2 constraints
+Iter 104: primal 64.7604331402, gap 5.33e-02
+Solving subproblem with 2 constraints
+Iter 105: primal 64.7604330624, gap 4.63e-02
+Solving subproblem with 2 constraints
+Iter 106: primal 64.7604329953, gap 4.02e-02
+Solving subproblem with 2 constraints
+Iter 107: primal 64.7604329376, gap 3.49e-02
+Solving subproblem with 2 constraints
+Iter 108: primal 64.7604328878, gap 3.03e-02
+Solving subproblem with 2 constraints
+Iter 109: primal 64.7604328449, gap 2.64e-02
+Solving subproblem with 2 constraints
+Iter 110: primal 64.7604328080, gap 2.29e-02
+Solving subproblem with 2 constraints
+Iter 111: primal 64.7604327762, gap 1.99e-02
+Solving subproblem with 2 constraints
+Iter 112: primal 64.7604327488, gap 1.73e-02
+Solving subproblem with 2 constraints
+Iter 113: primal 64.7604327252, gap 1.50e-02
+Solving subproblem with 2 constraints
+Iter 114: primal 64.7604327049, gap 1.31e-02
+Solving subproblem with 2 constraints
+Iter 115: primal 64.7604326873, gap 1.14e-02
+Solving subproblem with 2 constraints
+Iter 116: primal 64.7604326723, gap 9.89e-03
+Solving subproblem with 2 constraints
+Iter 117: primal 64.7604326593, gap 8.61e-03
+Solving subproblem with 2 constraints
+Iter 118: primal 64.7604326481, gap 7.50e-03
+Solving subproblem with 2 constraints
+Iter 119: primal 64.7604326384, gap 6.53e-03
