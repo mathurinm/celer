@@ -16,7 +16,7 @@ for check_props in DICT_DATA.values():
     # print(f"ratio current_alpha/alpha_max: {current_alpha / alpha_max}")
 
     # init with alpha_max instead of current_alpha
-    clf = LogisticRegression(C=1/alpha_max, tol=tol, verbose=0)
+    clf = LogisticRegression(C=C, tol=tol, verbose=0, max_iter=50)
     clf.fit(X, y)
 
 
