@@ -16,8 +16,7 @@ alpha_max = norm(X.T @ y, ord=np.inf)
 current_alpha = 1. / C
 # print(f"ratio current_alpha/alpha_max: {current_alpha / alpha_max}")
 
-# init with alpha_max instead of current_alpha
-clf = LogisticRegression(C=C, tol=tol, verbose=1, max_iter=200)
+clf = LogisticRegression(C=C, tol=tol, verbose=1, solver='celer')
 clf.fit(X, y)
 
 

@@ -8,10 +8,13 @@ def parse_logs(filename: str) -> np.ndarray:
         logs = f.readlines()
 
     li_primal_gap = []
-    for i in range(0, len(logs), 2):  # loop over even lines
+    # loop over even lines
+    for i in range(0, len(logs), 2):
+        # clean line
         pattern = r"Iter|:|primal|gap|\n|,"
         log = re.sub(pattern, "", logs[i])
 
+        # parse logs
         _, primal, gap = log.split()
         primal, gap = float(primal), float(gap)
 
@@ -21,22 +24,24 @@ def parse_logs(filename: str) -> np.ndarray:
     return arr
 
 
-def visualize_logs(arr_primal_gap: np.ndarray, title: str):
-    # process logs
+def visualize_logs(arr_primal_gap: np.ndarray, title: str = "") -> None:
     title_vis = f"LogReg primal-gap {title}"
+    primal = arr_primal_gap[:, 0]
+    gap = arr_primal_gap[:, 1]
 
     # plot
+    primal_residuals = primal - primal.min()
     fig, ax1 = plt.subplots()
-    ax1.semilogy(arr_primal_gap[:, 0], label="primal", color='red')
-    ax1.set(xlabel='iteration', ylabel='primal')
+    ax1.semilogy(primal_residuals, label="primal residual", color='red')
+    ax1.set(xlabel='iteration', ylabel='primal residual')
 
     ax2 = ax1.twinx()
-    ax2.semilogy(arr_primal_gap[:, 1], label="gap", color='blue')
+    ax2.semilogy(gap, label="gap", color='blue')
     ax2.set(ylabel='gap')
 
     # set layout
     ax1.set_title(title_vis)
-    fig.legend(loc='upper right')
+    fig.legend()
     fig.tight_layout()
 
     plt.show()
