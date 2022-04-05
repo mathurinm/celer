@@ -3,7 +3,6 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-from unittest import result
 import numpy as np
 
 from scipy import sparse
