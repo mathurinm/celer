@@ -14,6 +14,8 @@ celer.egg-info
 # build
 build
 
+# virtual environment
+venv
 
 # cache
 .pytest_cache

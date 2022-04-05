@@ -3,6 +3,7 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
+from unittest import result
 import numpy as np
 
 from scipy import sparse
@@ -311,6 +312,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             n_iters[t] = len(sol[2])
 
     results = alphas, coefs, dual_gaps
+    # results = alphas, coefs, sol[2]  # for isolate_conv_warn
     if return_thetas:
         results += (thetas,)
     if return_n_iter:

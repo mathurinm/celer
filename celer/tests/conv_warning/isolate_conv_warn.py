@@ -1,36 +1,66 @@
 import numpy as np
 from numpy.linalg import norm
+from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
 
 from celer.dropin_sklearn import LogisticRegression
-from celer.tests.conv_warning.dumped_data import DICT_DATA
+from celer.tests.conv_warning.logs.dumped_data import DICT_DATA
+
+import pickle
 
 
-check_props = DICT_DATA['check_fit_check_is_fitted']
+# to be excuted only once
+# before, uncomment results in homotopy.py
+def simulate_LogReg_mul_alphas():
+    check_props = DICT_DATA['check_fit_check_is_fitted']
+    enc = LabelEncoder()
 
-X = check_props['X']
-y = check_props['y']
-C = check_props['C']
-tol = check_props['tol']
+    X = check_props['X']
+    y = check_props['y']
+    y_ind = enc.fit_transform(y)
 
-alpha_max = norm(X.T @ y, ord=np.inf)
-current_alpha = 1. / C
-# print(f"ratio current_alpha/alpha_max: {current_alpha / alpha_max}")
+    C = check_props['C']
+    alpha_max = norm(X.T.dot(y_ind), ord=np.inf)
+    C_max = 1 / alpha_max
+    tol = 1e-14
 
-clf = LogisticRegression(C=C, tol=tol, verbose=1, solver='celer')
-clf.fit(X, y)
+    arr_C = np.linspace(C_max, C, num=5)[1:]  # skip first value
+
+    dict_gaps = {}
+    for current_C in arr_C:
+        clf = LogisticRegression(C=C, tol=tol, max_iter=100, verbose=0)
+        _, gaps = clf.path(
+            X, 2 * y_ind - 1, np.array([current_C]), solver="celer-pn")
+
+        current_alpha = 1 / current_C
+        plot_name = f'{current_alpha/alpha_max:.2e}'
+        dict_gaps[plot_name] = gaps
+    # save logs
+    filename = 'celer/tests/conv_warning/logs/gaps_for_mul_alphas.pkl'
+    with open(filename, 'wb') as f:
+        pickle.dump(dict_gaps, f)
 
 
-# with a standard normal
-n_samples = 100
-C = 6.
-tol = 1e-4
+# # simulate
+# simulate_LogReg_mul_alphas()
 
-alpha_max = norm(X.T @ y, ord=np.inf)
-current_alpha = 1. / C
-# print(f"ratio current_alpha/alpha_max: {current_alpha / alpha_max}")
+# load
+filename = 'celer/tests/conv_warning/logs/gaps_for_mul_alphas.pkl'
+with open(filename, 'rb') as f:
+    dict_gaps = pickle.load(f)
 
-X = np.random.randn(100, 2)
-y = np.random.randint(0, 2, size=100)
+# plot
+fig, ax = plt.subplots()
 
-clf2 = LogisticRegression(C=C, tol=tol, verbose=0)
-clf2.fit(X, y)
+for plot_name, gaps in dict_gaps.items():
+    ax.semilogy(gaps, label=plot_name, marker='.')
+
+# set layout
+plt.title("LogReg for different alpha")
+ax.set_xlabel("iterations")
+ax.set_ylabel("dual gap")
+
+plt.grid()
+plt.legend(title="Fraction of alpha_max")
+
+plt.show()
