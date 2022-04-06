@@ -74,15 +74,9 @@ def test_multinomial(sparse_X):
     assert_allclose(clf.coef_, clf_sk.coef_, rtol=1e-3, atol=1e-3)
 
 
-# @pytest.mark.parametrize("solver", ["celer", "celer-pn"])
 @pytest.mark.parametrize("solver", ["celer-pn"])
 def test_check_estimator(solver):
     # sklearn fits on unnormalized data for which there are convergence issues
     # fix with increased tolerance:
     clf = LogisticRegression(C=1, solver=solver, tol=0.1)
-    check_estimator(clf)
-
-
-if __name__ == "__main__":
-    clf = LogisticRegression(C=1, solver="celer-pn", tol=0.1)
     check_estimator(clf)
