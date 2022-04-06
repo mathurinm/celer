@@ -184,9 +184,8 @@ def test_warm_start():
         assert_array_less(reg1.n_iter_, 2.01)
 
 
-def test_weights():
-    sparse_X = 1
-    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+def test_weights_lasso():
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=True)
 
     np.random.seed(0)
     weights = np.abs(np.random.randn(X.shape[1]))
@@ -194,15 +193,13 @@ def test_weights():
     tol = 1e-14
     params = {'n_alphas': 10, 'tol': tol}
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", weights=weights, verbose=1,
-        **params)
+        X, y, "lasso", weights=weights, verbose=1, **params)
 
     alphas2, coefs2, gaps2 = celer_path(
         X.multiply(1 / weights[None, :]), y, "lasso", **params)
 
     assert_allclose(alphas1, alphas2)
-    assert_allclose(
-        coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
+    assert_allclose(coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
     assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
     assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
@@ -215,6 +212,9 @@ def test_weights():
 
     # weights must be > 0
     clf1.weights[0] = 0.
+    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+    # weights must be equal to X.shape[1]
+    clf1.weights = np.ones(X.shape[1] + 1)
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
 
 
