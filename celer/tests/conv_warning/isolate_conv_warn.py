@@ -9,13 +9,18 @@ from celer.tests.conv_warning.logs.dumped_data import DICT_DATA
 import pickle
 
 
+filename = './logs/gaps_for_mul_alphas.pkl'
+
 # to be excuted only once
 # before, uncomment results in homotopy.py
+
+
 def simulate_LogReg_mul_alphas():
     check_props = DICT_DATA['check_fit_check_is_fitted']
     enc = LabelEncoder()
 
     X = check_props['X']
+
     y = check_props['y']
     y_ind = enc.fit_transform(y)
 
@@ -36,18 +41,18 @@ def simulate_LogReg_mul_alphas():
         plot_name = f'{current_alpha/alpha_max:.2e}'
         dict_gaps[plot_name] = gaps
     # save logs
-    filename = 'celer/tests/conv_warning/logs/gaps_for_mul_alphas.pkl'
     with open(filename, 'wb') as f:
         pickle.dump(dict_gaps, f)
 
+    return dict_gaps()
 
-# # simulate
-# simulate_LogReg_mul_alphas()
 
 # load
-filename = 'celer/tests/conv_warning/logs/gaps_for_mul_alphas.pkl'
-with open(filename, 'rb') as f:
-    dict_gaps = pickle.load(f)
+try:
+    with open(filename, 'rb') as f:
+        dict_gaps = pickle.load(f)
+except FileNotFoundError:
+    dict_gaps = simulate_LogReg_mul_alphas()
 
 # plot
 fig, ax = plt.subplots()
