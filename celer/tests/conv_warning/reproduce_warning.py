@@ -1,17 +1,27 @@
+"""Note:
+
+Use 'celer/tests/conv_warning/logs/dumped_data_.pkl'
+as dumped_data path to run script from terminal.
+"""
+
+import pickle
 import numpy as np
-from sympy import lowergamma
+from numpy.linalg import norm
 from celer import LogisticRegression
 from sklearn.linear_model import LogisticRegression as sk_LR
 
-from celer.tests.conv_warning.logs.dumped_data import DICT_DATA
+
+# load data
+dumped_data_path = './logs/dumped_data_.pkl'
+with open(dumped_data_path, 'rb') as f:
+    DICT_DATA = pickle.load(f)
 
 data = DICT_DATA['check_fit_idempotent']
 X = data["X"]  # data centered around 100
 y = data["y"]
 C = data["C"]
 
-y = 2 * y - 1
-C_min = 2 / np.max(np.abs(X.T @ y))
+C_min = 2 / norm(X.T @ y, ord=np.inf)
 
 # C is very high (higher is more difficult):
 print(f"C / Cmin {C / C_min:.2e}")
@@ -33,7 +43,6 @@ clf_sk = sk_LR(C=C, fit_intercept=False, penalty="l1",
 # finally, centering the columns yields convergence in very few iterations
 X_c = X - X.mean(axis=0)
 
-y = 2 * y - 1
 C_min = 2 / np.max(np.abs(X_c.T @ y))
 clf = LogisticRegression(C=C, verbose=2,
                          solver="celer-pn", tol=1e-10).fit(X_c, y)
