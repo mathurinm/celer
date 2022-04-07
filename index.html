@@ -94,17 +94,18 @@
       
   <section id="celer">
 <h1>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
-<p>This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
-Currently, the package handles the following problems:</p>
+<p>Celer is a library exposing many scikit-learn like sparse models missing from scikit-learn.
+It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
+The solvers used allow for solving large scale problems with millions of features, <strong>up to 100 times faster than scikit-learn</strong>.</p>
+<p>Currently, the package handles the following problems:</p>
 <ul class="simple">
 <li><p>Lasso</p></li>
 <li><p>weighted Lasso</p></li>
-<li><p>Sparse Logistic regression</p></li>
-<li><p>Group Lasso</p></li>
+<li><p>sparse Logistic regression</p></li>
+<li><p>weighted Group Lasso</p></li>
 <li><p>Multitask Lasso.</p></li>
 </ul>
-<p>The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
-The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.</p>
+<p>The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.</p>
 <section id="install-the-released-version">
 <h2>Install the released version<a class="headerlink" href="#install-the-released-version" title="Permalink to this headline">¶</a></h2>
 <p>From a console or terminal install celer with pip:</p>

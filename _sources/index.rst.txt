@@ -6,17 +6,19 @@
 Celer
 ======
 
-This is a library to run the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
+Celer is a library exposing many scikit-learn like sparse models missing from scikit-learn.
+It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
+The solvers used allow for solving large scale problems with millions of features, **up to 100 times faster than scikit-learn**.
+
 Currently, the package handles the following problems:
 
 - Lasso
 - weighted Lasso
-- Sparse Logistic regression
-- Group Lasso
+- sparse Logistic regression
+- weighted Group Lasso
 - Multitask Lasso.
 
 The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
-The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
 
 
 Install the released version

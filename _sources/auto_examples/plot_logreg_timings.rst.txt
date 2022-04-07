@@ -18,13 +18,18 @@
 .. _sphx_glr_auto_examples_plot_logreg_timings.py:
 
 
-===============================================================
-Use LogisticRegression class with Celer and Prox-Newton solvers
-===============================================================
+==================================================================
+Compare LogisticRegression solver with sklearn's liblinear backend
+==================================================================
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-25
+.. GENERATED FROM PYTHON SOURCE LINES 6-68
 
 
+
+.. image-sg:: /auto_examples/images/sphx_glr_plot_logreg_timings_001.png
+   :alt: plot logreg timings
+   :srcset: /auto_examples/images/sphx_glr_plot_logreg_timings_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -33,11 +38,13 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 
  .. code-block:: none
 
-    #########################
-    ##### Computing alpha 1/1
-    #########################
-    Iter 0: primal 4158.8830833601, gap 2.21e+03
-    Early exit, gap: 2.21e+03 < 4.16e+03
+    Dataset: news20.binary
+    Downloading data from https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/news20.binary.bz2 (25.5 MB)
+
+    file_sizes:   0%|                                   | 0.00/26.8M [00:00<?, ?B/s]    file_sizes:   0%|                           | 24.6k/26.8M [00:00<03:40, 121kB/s]    file_sizes:   0%|                           | 49.2k/26.8M [00:00<03:40, 121kB/s]    file_sizes:   0%|1                           | 106k/26.8M [00:00<02:16, 195kB/s]    file_sizes:   1%|2                           | 221k/26.8M [00:00<01:17, 341kB/s]    file_sizes:   2%|4                           | 451k/26.8M [00:01<00:42, 625kB/s]    file_sizes:   3%|9                          | 909k/26.8M [00:01<00:21, 1.18MB/s]    file_sizes:   7%|#7                        | 1.83M/26.8M [00:01<00:10, 2.27MB/s]    file_sizes:  14%|###5                      | 3.66M/26.8M [00:01<00:05, 4.40MB/s]    file_sizes:  20%|#####                     | 5.23M/26.8M [00:01<00:03, 5.44MB/s]    file_sizes:  25%|######6                   | 6.81M/26.8M [00:02<00:03, 6.14MB/s]    file_sizes:  31%|########1                 | 8.38M/26.8M [00:02<00:02, 6.63MB/s]    file_sizes:  37%|#########6                | 9.95M/26.8M [00:02<00:02, 6.97MB/s]    file_sizes:  43%|###########1              | 11.5M/26.8M [00:02<00:02, 7.20MB/s]    file_sizes:  51%|#############2            | 13.6M/26.8M [00:02<00:01, 8.05MB/s]    file_sizes:  57%|##############7           | 15.2M/26.8M [00:03<00:01, 7.95MB/s]    file_sizes:  63%|################2         | 16.8M/26.8M [00:03<00:01, 7.88MB/s]    file_sizes:  68%|#################8        | 18.3M/26.8M [00:03<00:01, 7.84MB/s]    file_sizes:  74%|###################3      | 19.9M/26.8M [00:03<00:00, 7.81MB/s]    file_sizes:  80%|####################8     | 21.5M/26.8M [00:03<00:00, 7.79MB/s]    file_sizes:  86%|######################3   | 23.1M/26.8M [00:04<00:00, 7.77MB/s]    file_sizes:  92%|#######################9  | 24.6M/26.8M [00:04<00:00, 7.76MB/s]    file_sizes:  98%|#########################4| 26.2M/26.8M [00:04<00:00, 7.75MB/s]    file_sizes: 100%|##########################| 26.8M/26.8M [00:04<00:00, 5.97MB/s]
+    Successfully downloaded file to /home/circleci/celer_data/libsvm/binary/news20.binary.bz2
+    Decompressing...
+    Loading svmlight file...
 
 
 
@@ -49,29 +56,72 @@ Use LogisticRegression class with Celer and Prox-Newton solvers
 .. code-block:: default
 
 
+    import time
+    import warnings
     import numpy as np
     from numpy.linalg import norm
+    import matplotlib.pyplot as plt
     from sklearn import linear_model
+    from libsvmdata import fetch_libsvm
 
     from celer import LogisticRegression
-    from celer.datasets import fetch_ml_uci
 
-    dataset = "gisette_train"
-    X, y = fetch_ml_uci(dataset)
+    warnings.filterwarnings("ignore", message="Objective did not converge")
+    warnings.filterwarnings("ignore", message="Liblinear failed to converge")
+
+    X, y = fetch_libsvm("news20.binary")
 
     C_min = 2 / norm(X.T @ y, ord=np.inf)
-    C = 5 * C_min
-    clf = LogisticRegression(C=C, verbose=1, solver="celer-pn", tol=1e0).fit(X, y)
-    w_celer = clf.coef_.ravel()
+    C = 20 * C_min
 
-    clf = linear_model.LogisticRegression(
-        C=C, solver="liblinear", penalty='l1', fit_intercept=False).fit(X, y)
-    w_lib = clf.coef_.ravel()
+
+    def pobj_logreg(w):
+        return np.sum(np.log(1 + np.exp(-y * (X @ w)))) + 1. / C * norm(w, ord=1)
+
+
+    pobj_celer = []
+    t_celer = []
+
+    for n_iter in range(10):
+        t0 = time.time()
+        clf = LogisticRegression(
+            C=C, solver="celer-pn", max_iter=n_iter, tol=0).fit(X, y)
+        t_celer.append(time.time() - t0)
+        w_celer = clf.coef_.ravel()
+        pobj_celer.append(pobj_logreg(w_celer))
+
+    pobj_celer = np.array(pobj_celer)
+
+
+    pobj_libl = []
+    t_libl = []
+
+    for n_iter in np.arange(0, 50, 10):
+        t0 = time.time()
+        clf = linear_model.LogisticRegression(
+            C=C, solver="liblinear", penalty='l1', fit_intercept=False,
+            max_iter=n_iter, random_state=0, tol=1e-10).fit(X, y)
+        t_libl.append(time.time() - t0)
+        w_libl = clf.coef_.ravel()
+        pobj_libl.append(pobj_logreg(w_libl))
+
+    pobj_libl = np.array(pobj_libl)
+
+    p_star = min(pobj_celer.min(), pobj_libl.min())
+
+    plt.close("all")
+    fig = plt.figure(figsize=(4, 2), constrained_layout=True)
+    plt.semilogy(t_celer, pobj_celer - p_star, label="Celer-PN")
+    plt.semilogy(t_libl, pobj_libl - p_star, label="liblinear")
+    plt.legend()
+    plt.xlabel("Time (s)")
+    plt.ylabel("objective suboptimality")
+    plt.show(block=False)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.798 seconds)
+   **Total running time of the script:** ( 1 minutes  31.135 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_logreg_timings.py:
