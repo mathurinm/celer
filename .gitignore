@@ -14,12 +14,16 @@ celer.egg-info
 # build
 build
 
+# generated doc
+doc/_build/
+doc/auto_examples/
+doc/generated
 
 # cache
 .pytest_cache
 __pycache__
 
-doc/*
+
 coverage/*
 .coverage
 
