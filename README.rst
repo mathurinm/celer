@@ -3,16 +3,17 @@ celer
 
 |image0| |image1|
 
-Fast algorithm to solve Lasso-like problems with dual extrapolation. Currently, the package handles the following problems:
+Fast algorithm to solve Lasso-like problems with dual extrapolation, under a scikit-learn API.
+The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
+Currently, the package handles the following problems:
 
 - Lasso
 - weighted Lasso
 - Sparse Logistic regression
-- Group Lasso
+- weighted Group Lasso
 - Multitask Lasso
 
 The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
-The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
 
 Documentation
 =============

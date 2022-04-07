@@ -1,7 +1,7 @@
 """
-===============================================================
-Use LogisticRegression class with Celer and Prox-Newton solvers
-===============================================================
+==================================================================
+Compare LogisticRegression solver with sklearn's liblinear backend
+==================================================================
 """
 
 import time
@@ -32,8 +32,8 @@ t_celer = []
 
 for n_iter in range(10):
     t0 = time.time()
-    clf = LogisticRegression(C=C, verbose=1, solver="celer-pn",
-                             max_iter=n_iter, tol=0).fit(X, y)
+    clf = LogisticRegression(
+        C=C, solver="celer-pn", max_iter=n_iter, tol=0).fit(X, y)
     t_celer.append(time.time() - t0)
     w_celer = clf.coef_.ravel()
     pobj_celer.append(pobj_logreg(w_celer))
