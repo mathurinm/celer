@@ -151,6 +151,7 @@ cdef floating primal_lasso(
     return p_obj
 
 
+# TODO handle case enet
 cdef floating primal(
     int pb, floating alpha, floating[:] R, floating[:] y,
     floating[:] w, floating[:] weights) nogil:
@@ -188,6 +189,7 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
     return d_obj
 
 
+# handle case enet
 cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
                    floating * theta, floating * y) nogil:
     if pb == LASSO:
@@ -196,6 +198,7 @@ cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
         return dual_logreg(n_samples, alpha, &theta[0], &y[0])
 
 
+# TODO handle case enet
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)

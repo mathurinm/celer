@@ -294,6 +294,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 X_indices, X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, weights, max_iter, max_epochs, p0=p0,
                 prune=prune, verbose=verbose)
+        # TODO handle case of enet
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,

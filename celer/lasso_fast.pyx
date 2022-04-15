@@ -17,6 +17,7 @@ from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
                             set_prios)
 
 
+# TODO add argument l1_ratio
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
@@ -111,6 +112,7 @@ def celer(
 
     for t in range(max_iter):
         if t != 0:
+            # TODO handle case enet
             create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
 
             scal = dnorm_l1(
@@ -121,6 +123,7 @@ def celer(
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
+            # TODO handle case enet
             d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
@@ -131,9 +134,11 @@ def celer(
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
+            # hanldle case enet
             d_obj_from_inner = dual(
                 pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
         else:
+            # handle case enet
             d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
@@ -144,6 +149,7 @@ def celer(
         # would add yet another variable, best_theta. I'm not sure it brings
         # anything.
 
+        # TODO casd enet
         p_obj = primal(pb, alpha, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
@@ -155,6 +161,7 @@ def celer(
                 print("\nEarly exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
+        # handle case enet
         if pb == LASSO:
             radius = sqrt(2 * gap / n_samples) / alpha
         else:
@@ -215,6 +222,7 @@ def celer(
         highest_d_obj_in = 0
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
+                # TODO handle case enet
                 create_dual_pt(
                     pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
 
@@ -226,6 +234,7 @@ def celer(
                     tmp = 1. / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
+                # TODO handle case enet
                 d_obj_in = dual(
                     pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
 
@@ -248,6 +257,7 @@ def celer(
                             tmp = 1. / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
+                        # handle case enet
                         d_obj_accel = dual(
                             pb, n_samples, alpha, norm_y2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
@@ -261,6 +271,7 @@ def celer(
                 # CAUTION: code does not yet include a best_theta.
                 # Can be an issue in screening: dgap and theta might disagree.
 
+                # TODO handle case enet
                 p_obj_in = primal(pb, alpha, Xw, y, w, weights)
                 gap_in = p_obj_in - highest_d_obj_in
 
@@ -278,6 +289,7 @@ def celer(
                 if norms_X_col[j] == 0. or weights[j] == INFINITY:
                     continue
                 old_w_j = w[j]
+                # TODO handle case enet (ST)
                 if pb == LASSO:
                     if is_sparse:
                         X_mean_j = X_mean[j]
