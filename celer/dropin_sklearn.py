@@ -30,7 +30,7 @@ class Lasso(Lasso_sklearn):
     Parameters
     ----------
     alpha : float, optional
-        Constant that multiplies the penality term. Defaults to 1.0.
+        Constant that multiplies the penalty term. Defaults to 1.0.
         ``alpha = 0`` is equivalent to an ordinary least square.
         For numerical reasons, using ``alpha = 0`` with the
         ``Lasso`` object is not advised.
@@ -112,7 +112,7 @@ class Lasso(Lasso_sklearn):
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., l1_ratio=0., max_iter=100, max_epochs=50000, p0=10,
+    def __init__(self, alpha=1., l1_ratio=1., max_iter=100, max_epochs=50000, p0=10,
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
                  weights=None, warm_start=False,
                  positive=False):
