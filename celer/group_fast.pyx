@@ -33,12 +33,12 @@ cpdef floating primal_grplasso(
     cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / (2 * n_samples)
 
     for g in range(n_groups):
-        nrm = 0.
-
-        for k in range(grp_ptr[g], grp_ptr[g + 1]):
-            j = grp_indices[k]
-            nrm += w[j] ** 2
-        p_obj += alpha * sqrt(nrm) * weights[g]
+        if weights[g] != INFINITY:
+            nrm = 0.
+            for k in range(grp_ptr[g], grp_ptr[g + 1]):
+                j = grp_indices[k]
+                nrm += w[j] ** 2
+                p_obj += alpha * sqrt(nrm) * weights[g]
 
     return p_obj
 
