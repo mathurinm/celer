@@ -38,7 +38,7 @@ cpdef floating primal_grplasso(
             for k in range(grp_ptr[g], grp_ptr[g + 1]):
                 j = grp_indices[k]
                 nrm += w[j] ** 2
-                p_obj += alpha * sqrt(nrm) * weights[g]
+            p_obj += alpha * sqrt(nrm) * weights[g]
 
     return p_obj
 
