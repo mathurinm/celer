@@ -149,7 +149,7 @@ def celer(
         # would add yet another variable, best_theta. I'm not sure it brings
         # anything.
 
-        # TODO casd enet
+        # TODO case enet
         p_obj = primal(pb, alpha, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap

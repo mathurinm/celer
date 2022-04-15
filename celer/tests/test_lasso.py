@@ -48,7 +48,7 @@ def test_celer_path(sparse_X, alphas, pb):
 
 def test_convergence_warning():
     X, y = build_dataset(n_samples=10, n_features=10)
-    tol = - 1  # gap canot be negative, a convergence warning should be raised
+    tol = - 1  # gap cannot be negative, a convergence warning should be raised
     alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
     clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
 
