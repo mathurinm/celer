@@ -5,6 +5,7 @@
 
 import warnings
 from itertools import product
+from matplotlib.pyplot import clf
 
 import numpy as np
 from numpy.linalg import norm
@@ -210,7 +211,16 @@ def test_weights_lasso():
 
     assert_allclose(clf1.coef_, clf2.coef_ / weights)
 
+    # support inf weights
+    weights = np.ones(X.shape[1])
+    weights[0] = np.inf
+    alpha_max = norm(X.T.dot(y) / weights, ord=np.inf) / X.shape[0]
+
+    clf1 = Lasso(alpha=alpha_max, weights=weights,
+                 max_iter=1, max_epochs=20).fit(X, y)
+
     # weights must be > 0
+    weights = np.abs(np.random.randn(X.shape[1]))
     clf1.weights[0] = 0.
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
     # weights must be equal to X.shape[1]
