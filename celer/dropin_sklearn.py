@@ -24,15 +24,21 @@ class Lasso(Lasso_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_j weights_j |w_j|
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (l1_ratio * \sum_j weights_j |w_j|
+    + (1 - l1_ratio) * \sum_j weights_j |w_j|^2),
 
     Parameters
     ----------
     alpha : float, optional
-        Constant that multiplies the L1 term. Defaults to 1.0.
+        Constant that multiplies the penality term. Defaults to 1.0.
         ``alpha = 0`` is equivalent to an ordinary least square.
         For numerical reasons, using ``alpha = 0`` with the
         ``Lasso`` object is not advised.
+
+    l1_ratio : float, optional
+        The ElasticNet mixing parameter, with ``0 <= l1_ratio <= 1``.
+        For ``l1_ratio = 1`` the penalty is an L1 penalty (Lasso). For
+        ``l1_ratio = 0`` it is an L2 penalty (Ridge). Defaults to 1.0.
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
@@ -106,13 +112,14 @@ class Lasso(Lasso_sklearn):
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., max_iter=100, max_epochs=50000, p0=10,
+    def __init__(self, alpha=1., l1_ratio=0., max_iter=100, max_epochs=50000, p0=10,
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
                  weights=None, warm_start=False,
                  positive=False):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, warm_start=warm_start)
+        self.l1_ratio = l1_ratio
         self.verbose = verbose
         self.max_epochs = max_epochs
         self.p0 = p0
