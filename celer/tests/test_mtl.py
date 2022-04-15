@@ -228,6 +228,14 @@ def test_weights_group_lasso():
     assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
     assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
+    # support inf weights
+    weights[0] = np.inf
+    augmented_weights = np.repeat(weights, groups)
+    alpha_max = norm(X.T @ y / augmented_weights, ord=np.inf) / X.shape[0]
+
+    GroupLasso(alpha=alpha_max / 10., groups=groups, weights=weights,
+               max_iter=1, max_epochs=20).fit(X, y)
+
 
 def test_check_weights():
     X, y = build_dataset(30, 42)

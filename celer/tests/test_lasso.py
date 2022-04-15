@@ -5,7 +5,6 @@
 
 import warnings
 from itertools import product
-from matplotlib.pyplot import clf
 
 import numpy as np
 from numpy.linalg import norm
