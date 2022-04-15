@@ -119,6 +119,11 @@ class Lasso(Lasso_sklearn):
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, warm_start=warm_start)
+        if l1_ratio > 1 or l1_ratio < 0:
+            raise ValueError(
+                "l1_ratio must be between 0 and 1; "
+                "got %r" % l1_ratio)
+
         self.l1_ratio = l1_ratio
         self.verbose = verbose
         self.max_epochs = max_epochs

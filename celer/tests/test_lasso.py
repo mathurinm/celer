@@ -129,6 +129,13 @@ def test_Lasso(sparse_X, fit_intercept, positive):
     # check_estimator(Lasso)
 
 
+def test_enet():
+    """Test that our Lasso class behaves as sklearn's ElasticNet."""
+    with np.testing.assert_raises(ValueError):
+        Lasso(l1_ratio=5.)
+    return
+
+
 @pytest.mark.parametrize("sparse_X, pb",
                          product([True, False], ["lasso", "logreg"]))
 def test_celer_single_alpha(sparse_X, pb):
