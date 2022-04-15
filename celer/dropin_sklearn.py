@@ -25,7 +25,7 @@ class Lasso(Lasso_sklearn):
     The optimization objective for Lasso is::
 
     (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (l1_ratio * \sum_j weights_j |w_j|
-    + (1 - l1_ratio) * \sum_j weights_j |w_j|^2),
+    + (1 - l1_ratio) * 1 / 2 * \sum_j weights_j |w_j|^2),
 
     Parameters
     ----------
@@ -116,14 +116,14 @@ class Lasso(Lasso_sklearn):
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
                  weights=None, warm_start=False,
                  positive=False):
-        super(Lasso, self).__init__(
-            alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, warm_start=warm_start)
         if l1_ratio > 1 or l1_ratio < 0:
             raise ValueError(
                 "l1_ratio must be between 0 and 1; "
                 "got %r" % l1_ratio)
 
+        super(Lasso, self).__init__(
+            alpha=alpha, tol=tol, max_iter=max_iter,
+            fit_intercept=fit_intercept, warm_start=warm_start)
         self.l1_ratio = l1_ratio
         self.verbose = verbose
         self.max_epochs = max_epochs

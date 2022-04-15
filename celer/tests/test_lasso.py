@@ -106,7 +106,7 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
                          product([False, True], [False, True], [False, True]))
 def test_Lasso(sparse_X, fit_intercept, positive):
-    """Test that our Lasso class behaves as sklearn's Lasso."""
+    """Test that our Lasso class behaves also as sklearn's Lasso."""
     X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
     if not positive:
         alpha_max = norm(X.T.dot(y), ord=np.inf) / X.shape[0]
