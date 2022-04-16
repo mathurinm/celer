@@ -210,21 +210,32 @@ def test_weights_lasso():
 
     assert_allclose(clf1.coef_, clf2.coef_ / weights)
 
-    # support inf weights
-    weights = np.ones(X.shape[1])
-    weights[0] = np.inf
-    alpha_max = norm(X.T.dot(y) / weights, ord=np.inf) / X.shape[0]
-
-    clf1 = Lasso(alpha=alpha_max, weights=weights,
-                 max_iter=1, max_epochs=20).fit(X, y)
-
     # weights must be > 0
-    weights = np.abs(np.random.randn(X.shape[1]))
     clf1.weights[0] = 0.
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
     # weights must be equal to X.shape[1]
     clf1.weights = np.ones(X.shape[1] + 1)
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+
+
+def test_infinite_weights():
+    n_samples, n_features = 50, 100
+    X = np.random.randn(n_samples, n_features)
+    y = np.random.randn(n_samples)
+
+    weights = np.ones(n_features)
+    weights[0] = np.inf
+    alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
+
+    # assert convergence
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error',
+                                category=ConvergenceWarning)
+        reg = Lasso(alpha=alpha_max / 10., weights=weights)
+        reg.fit(X, y)
+
+    # coef with inf weight are set to 0
+    assert_allclose(reg.coef_[0], 0)
 
 
 def test_zero_iter():
