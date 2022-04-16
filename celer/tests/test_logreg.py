@@ -1,6 +1,6 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
-
+import warnings
 import pytest
 import numpy as np
 from numpy.linalg import norm
@@ -9,6 +9,7 @@ from numpy.testing import assert_allclose, assert_array_less
 from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import LogisticRegression as sklearn_Logreg
+from sklearn.exceptions import ConvergenceWarning
 
 from celer import celer_path
 from celer.dropin_sklearn import LogisticRegression
@@ -35,6 +36,28 @@ def test_celer_path_logreg(solver):
     assert_array_less(gaps, tol * len(y) * np.log(2))
     assert_allclose(coefs != 0, coefs_c.T != 0)
     assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
+
+
+def test_infinite_weights():
+    np.random.seed(1)
+    n_samples, n_features = 50, 100
+    X = np.random.randn(n_samples, n_features)
+    y = np.random.randn(n_samples)
+    y = np.sign(y)
+
+    weights = np.ones(n_features)
+    weights[0] = np.inf
+    alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
+
+    # assert convergence
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error',
+                                category=ConvergenceWarning)
+        _, coefs, _ = celer_path(X, y, pb="logreg",
+                                 alphas=[alpha_max / 10.], weights=weights)
+
+    # coef with inf weight should be set to 0
+    assert_allclose(coefs[0], 0)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])

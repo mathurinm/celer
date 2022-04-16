@@ -265,7 +265,7 @@ def test_infinite_weights():
         reg = GroupLasso(alpha=alpha_max / 10., weights=weights, groups=groups)
         reg.fit(X, y)
 
-    # coef with inf weight are set to 0
+    # coef with inf weight should be set to 0
     assert_allclose(reg.coef_[0], 0)
 
 
