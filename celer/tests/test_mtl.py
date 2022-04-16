@@ -245,6 +245,7 @@ def test_check_weights():
 
 
 def test_infinite_weights():
+    np.random.seed(1)
     n_samples, n_features = 50, 100
     X = np.random.randn(n_samples, n_features)
     y = np.random.randn(n_samples)
