@@ -1,9 +1,12 @@
 import pytest
+import warnings
 import itertools
+
 import numpy as np
 from numpy.linalg import norm
 from numpy.testing import assert_allclose, assert_array_less
 
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
 from sklearn.linear_model import MultiTaskLasso as sklearn_MultiTaskLasso
@@ -228,14 +231,6 @@ def test_weights_group_lasso():
     assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
     assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
-    # support inf weights
-    weights[0] = np.inf
-    augmented_weights = np.repeat(weights, groups)
-    alpha_max = norm(X.T @ y / augmented_weights, ord=np.inf) / X.shape[0]
-
-    GroupLasso(alpha=alpha_max / 10., groups=groups, weights=weights,
-               max_iter=1, max_epochs=20).fit(X, y)
-
 
 def test_check_weights():
     X, y = build_dataset(30, 42)
@@ -247,6 +242,30 @@ def test_check_weights():
     # len(weights) must be equal to number of groups (6 here)
     clf.weights = np.ones(8)
     np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
+
+
+def test_infinite_weights():
+    n_samples, n_features = 50, 100
+    X = np.random.randn(n_samples, n_features)
+    y = np.random.randn(n_samples)
+    groups = 5
+
+    n_groups = n_features // groups
+    weights = np.ones(n_groups)
+    weights[0] = np.inf
+    augmented_weights = np.repeat(weights, groups)
+    alpha_max = norm(X.T @ y / augmented_weights, ord=np.inf) / n_samples
+
+    # assert convergence
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error',
+                                category=ConvergenceWarning)
+
+        reg = GroupLasso(alpha=alpha_max / 10., weights=weights, groups=groups)
+        reg.fit(X, y)
+
+    # coef with inf weight are set to 0
+    assert_allclose(reg.coef_[0], 0)
 
 
 if __name__ == "__main__":
