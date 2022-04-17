@@ -8,7 +8,7 @@ from itertools import product
 
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 import pytest
 
 from sklearn.exceptions import ConvergenceWarning
@@ -221,22 +221,20 @@ def test_weights_lasso():
 def test_infinite_weights():
     np.random.seed(1)
     n_samples, n_features = 50, 100
-    X = np.random.randn(n_samples, n_features)
-    y = np.random.randn(n_samples)
+    X, y = build_dataset(n_samples, n_features)
 
     weights = np.ones(n_features)
-    weights[0] = np.inf
+    nb_inf_index = n_features // 10
+    li_inf_index = np.random.randint(0, n_features+1, size=nb_inf_index)
+    weights[li_inf_index] = np.inf
+
     alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
 
-    # assert convergence
-    with warnings.catch_warnings():
-        warnings.filterwarnings('error',
-                                category=ConvergenceWarning)
-        reg = Lasso(alpha=alpha_max / 10., weights=weights)
-        reg.fit(X, y)
+    reg = Lasso(alpha=alpha_max / 100., weights=weights)
+    reg.fit(X, y)
 
     # coef with inf weight should be set to 0
-    assert_allclose(reg.coef_[0], 0)
+    assert_array_equal(reg.coef_[li_inf_index], 0)
 
 
 def test_zero_iter():
