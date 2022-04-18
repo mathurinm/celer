@@ -252,8 +252,8 @@ def test_infinite_weights():
     n_groups = n_features // groups
     weights = np.ones(n_groups)
 
-    nb_inf_index = n_groups // 5
-    li_inf_index = np.random.randint(0, n_groups+1, size=nb_inf_index)
+    n_inf_index = n_groups // 5
+    li_inf_index = np.random.randint(0, n_groups+1, size=n_inf_index)
     weights[li_inf_index] = np.inf
 
     augmented_weights = np.repeat(weights, groups)

@@ -224,8 +224,8 @@ def test_infinite_weights():
     X, y = build_dataset(n_samples, n_features)
 
     weights = np.ones(n_features)
-    nb_inf_index = n_features // 10
-    li_inf_index = np.random.randint(0, n_features+1, size=nb_inf_index)
+    n_inf_index = n_features // 10
+    li_inf_index = np.random.randint(0, n_features+1, size=n_inf_index)
     weights[li_inf_index] = np.inf
 
     alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
