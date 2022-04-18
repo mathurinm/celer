@@ -233,6 +233,10 @@ def test_infinite_weights():
     reg = Lasso(alpha=alpha_max / 100., weights=weights)
     reg.fit(X, y)
 
+    # assert convergence
+    atol = reg.tol * 0.5 * norm(y) ** 2
+    assert(reg.dual_gap_ <= atol)
+
     # coef with inf weight should be set to 0
     assert_array_equal(reg.coef_[li_inf_index], 0)
 

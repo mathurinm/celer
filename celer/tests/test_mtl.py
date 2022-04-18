@@ -262,6 +262,10 @@ def test_infinite_weights():
     reg = GroupLasso(alpha=alpha_max / 100., weights=weights, groups=groups)
     reg.fit(X, y)
 
+    # assert convergence
+    atol = reg.tol * 0.5 * norm(y) ** 2
+    assert(reg.dual_gap_ <= atol)
+
     # coef with inf weight should be set to 0
     coef_per_group = reg.coef_.reshape(-1, groups)
     assert_array_equal(coef_per_group[li_inf_index, :], 0)

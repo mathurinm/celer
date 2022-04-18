@@ -49,8 +49,13 @@ def test_infinite_weights():
 
     alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
 
-    _, coefs, _ = celer_path(X, y, pb="logreg",
-                             alphas=[alpha_max / 100.], weights=weights)
+    tol = 1e-5
+    _, coefs, dual_gaps = celer_path(X, y, pb="logreg",
+                                     alphas=[alpha_max / 100.], weights=weights, tol=tol)
+
+    # assert convergence
+    atol = tol * 0.5 * norm(y) ** 2
+    assert(dual_gaps[0] <= atol)
 
     # coef with inf weight should be set to 0
     assert_array_equal(coefs[li_inf_index], 0)
