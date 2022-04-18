@@ -359,7 +359,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
     def fit(self, X, y):
         """Fit MultiTaskLasso model with Celer"""
         # Need to validate separately here.
-        # We can't pass multi_output=True because that would allow y to be csr.
+        # We can't pass multi_ouput=True because that would allow y to be csr.
         check_X_params = dict(dtype=[np.float64, np.float32], order='F',
                               copy=self.copy_X and self.fit_intercept)
         check_y_params = dict(ensure_2d=False, order='F')
