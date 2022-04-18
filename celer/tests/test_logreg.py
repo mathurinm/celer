@@ -44,8 +44,8 @@ def test_infinite_weights():
 
     weights = np.ones(n_features)
     n_inf_index = n_features // 10
-    li_inf_index = np.random.randint(0, n_features+1, size=n_inf_index)
-    weights[li_inf_index] = np.inf
+    arr_inf_index = np.random.randint(0, n_features+1, size=n_inf_index)
+    weights[arr_inf_index] = np.inf
 
     alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
 
@@ -58,7 +58,7 @@ def test_infinite_weights():
     assert(dual_gaps[0] <= atol)
 
     # coef with inf weight should be set to 0
-    assert_array_equal(coefs[li_inf_index], 0)
+    assert_array_equal(coefs[arr_inf_index], 0)
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])

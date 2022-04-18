@@ -253,8 +253,8 @@ def test_infinite_weights():
     weights = np.ones(n_groups)
 
     n_inf_index = n_groups // 5
-    li_inf_index = np.random.randint(0, n_groups+1, size=n_inf_index)
-    weights[li_inf_index] = np.inf
+    arr_inf_index = np.random.randint(0, n_groups+1, size=n_inf_index)
+    weights[arr_inf_index] = np.inf
 
     augmented_weights = np.repeat(weights, groups)
     alpha_max = norm(X.T @ y / augmented_weights, ord=np.inf) / n_samples
@@ -268,7 +268,7 @@ def test_infinite_weights():
 
     # coef with inf weight should be set to 0
     coef_per_group = reg.coef_.reshape(-1, groups)
-    assert_array_equal(coef_per_group[li_inf_index, :], 0)
+    assert_array_equal(coef_per_group[arr_inf_index, :], 0)
 
 
 if __name__ == "__main__":
