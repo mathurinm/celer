@@ -36,31 +36,6 @@ def test_celer_path_logreg(solver):
     assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
 
 
-def test_infinite_weights():
-    np.random.seed(1)
-    n_samples, n_features = 50, 100
-    X, y = build_dataset(n_samples, n_features)
-    y = np.sign(y)
-
-    weights = np.ones(n_features)
-    n_inf_index = n_features // 10
-    arr_inf_index = np.random.randint(0, n_features+1, size=n_inf_index)
-    weights[arr_inf_index] = np.inf
-
-    alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
-
-    tol = 1e-5
-    _, coefs, dual_gaps = celer_path(X, y, pb="logreg",
-                                     alphas=[alpha_max / 100.], weights=weights, tol=tol)
-
-    # assert convergence
-    atol = tol * 0.5 * norm(y) ** 2
-    assert(dual_gaps[0] <= atol)
-
-    # coef with inf weight should be set to 0
-    assert_array_equal(coefs[arr_inf_index], 0)
-
-
 @pytest.mark.parametrize("sparse_X", [True, False])
 def test_binary(sparse_X):
     np.random.seed(1409)

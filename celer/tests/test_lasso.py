@@ -218,27 +218,31 @@ def test_weights_lasso():
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
 
 
-def test_infinite_weights():
-    np.random.seed(1)
+@pytest.mark.parametrize("pb", ["lasso", "logreg"])
+def test_infinite_weights(pb):
     n_samples, n_features = 50, 100
     X, y = build_dataset(n_samples, n_features)
+    if pb == "logreg":
+        y = np.sign(y)
 
-    weights = np.ones(n_features)
-    n_inf_index = n_features // 10
-    arr_inf_index = np.random.randint(0, n_features+1, size=n_inf_index)
-    weights[arr_inf_index] = np.inf
+    np.random.seed(1)
+    weights = np.abs(np.random.randn(n_features))
+    n_inf = n_features // 10
+    inf_indices = np.random.choice(n_features, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
 
-    alpha_max = norm(X.T @ y / weights, ord=np.inf) / n_samples
+    alpha = norm(X.T @ y / weights, ord=np.inf) / n_samples / 100
 
-    reg = Lasso(alpha=alpha_max / 100., weights=weights)
-    reg.fit(X, y)
+    tol = 1e-8
+    _, coefs, dual_gaps = celer_path(
+        X, y, pb=pb, alphas=[alpha], weights=weights, tol=tol)
 
-    # assert convergence
-    atol = reg.tol * 0.5 * norm(y) ** 2
-    assert(reg.dual_gap_ <= atol)
+    if pb == "logreg":
+        assert_array_less(dual_gaps[0], tol * n_samples * np.log(2))
+    else:
+        assert_array_less(dual_gaps[0], tol * norm(y) ** 2 / 2.)
 
-    # coef with inf weight should be set to 0
-    assert_array_equal(reg.coef_[arr_inf_index], 0)
+    assert_array_equal(coefs[inf_indices], 0)
 
 
 def test_zero_iter():

@@ -243,32 +243,28 @@ def test_check_weights():
     np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
 
 
-def test_infinite_weights():
-    np.random.seed(1)
+def test_infinite_weights_group():
     n_samples, n_features = 50, 100
     X, y = build_dataset(n_samples, n_features)
-    groups = 5
 
-    n_groups = n_features // groups
-    weights = np.ones(n_groups)
+    np.random.seed(1)
+    group_size = 5
+    weights = np.abs(np.random.randn(n_features // group_size))
+    n_inf = 3
+    inf_indices = np.random.choice(
+        n_features // group_size, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+    alpha_max = np.max(
+        norm((X.T @ y).reshape(-1, group_size), 2, axis=1)
+    ) / n_samples
 
-    n_inf_index = n_groups // 5
-    arr_inf_index = np.random.randint(0, n_groups+1, size=n_inf_index)
-    weights[arr_inf_index] = np.inf
+    clf = GroupLasso(
+        alpha=alpha_max / 100., weights=weights, groups=group_size, tol=1e-8
+    ).fit(X, y)
 
-    augmented_weights = np.repeat(weights, groups)
-    alpha_max = norm(X.T @ y / augmented_weights, ord=np.inf) / n_samples
-
-    reg = GroupLasso(alpha=alpha_max / 100., weights=weights, groups=groups)
-    reg.fit(X, y)
-
-    # assert convergence
-    atol = reg.tol * 0.5 * norm(y) ** 2
-    assert(reg.dual_gap_ <= atol)
-
-    # coef with inf weight should be set to 0
-    coef_per_group = reg.coef_.reshape(-1, groups)
-    assert_array_equal(coef_per_group[arr_inf_index, :], 0)
+    assert_array_less(clf.dual_gap_, clf.tol * norm(y) ** 2 / 2)
+    assert_array_equal(
+        norm(clf.coef_.reshape(-1, group_size), axis=1)[inf_indices], 0)
 
 
 if __name__ == "__main__":
