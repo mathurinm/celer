@@ -255,7 +255,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
-        # for enet use convention: lambda = alpha * l1_ratio and mu = 2 * alpha * (1 - l1_ratio)
+        # for enet use convention: lambda = alpha * l1_ratio
+        # and mu = 2 * alpha * (1 - l1_ratio)
         alpha = alphas[t] * l1_ratio
         mu = 2 * alphas[t] * (1 - l1_ratio)
 
