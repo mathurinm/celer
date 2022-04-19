@@ -24,7 +24,7 @@ from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
 def celer(
         bint is_sparse, int pb, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-        floating[:] y, floating alpha, floating[:] w, floating[:] Xw,
+        floating[:] y, floating alpha, floating mu, floating[:] w, floating[:] Xw,
         floating[:] theta, floating[:] norms_X_col, floating[:] weights,
         int max_iter, int max_epochs, int gap_freq=10,
         float tol=1e-6, int p0=100, int verbose=0,

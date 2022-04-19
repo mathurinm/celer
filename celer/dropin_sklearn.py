@@ -1,7 +1,5 @@
 # flake8: noqa F401
-import inspect
 import numbers
-
 import numpy as np
 
 from sklearn.base import RegressorMixin, MultiOutputMixin
@@ -37,8 +35,8 @@ class Lasso(Lasso_sklearn):
 
     l1_ratio : float, optional
         The ElasticNet mixing parameter, with ``0 <= l1_ratio <= 1``.
-        For ``l1_ratio = 1`` the penalty is an L1 penalty (Lasso). For
-        ``l1_ratio = 0`` it is an L2 penalty (Ridge). Defaults to 1.0.
+        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
+        For ``l1_ratio = 0`` it is an L2 penalty (Ridge). 
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
@@ -135,7 +133,7 @@ class Lasso(Lasso_sklearn):
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
         results = celer_path(
-            X, y, "lasso", alphas=alphas, coef_init=coef_init,
+            X, y, "lasso", alphas=alphas, l1_ratio=self.l1_ratio, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
             tol=self.tol, prune=self.prune, weights=self.weights,

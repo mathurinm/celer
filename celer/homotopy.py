@@ -23,7 +23,7 @@ GRPLASSO = 2
 
 
 # TODO add argument l1_ratio
-def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
+def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
@@ -75,6 +75,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     alphas : ndarray, optional
         List of alphas where to compute the models.
         If ``None`` alphas are set automatically
+
+    l1_ratio : float, optional
+        The Elastic-Net mixing parameter, with ``0 <= l1_ratio <= 1``.
+        For ``l1_ratio = 0`` the penalty is an L2 penalty. ``For 
 
     coef_init : ndarray, shape (n_features,) | None, optional, (default=None)
         Initial value of coefficients. If None, np.zeros(n_features) is used.
@@ -147,6 +151,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     if pb.lower() not in ("lasso", "logreg", "grouplasso"):
         raise ValueError("Unsupported problem %s" % pb)
+
+    if pb.lower() != "lasso" and l1_ratio != 1.0:
+        raise NotImplementedError(
+            "Mix of l1 and l2 penalty not supported for %s" % pb
+        )
 
     n_groups = None  # set n_groups to None for lasso and logreg
     if pb.lower() == "lasso":
@@ -246,7 +255,10 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
-        alpha = alphas[t]
+        # for enet use convention: lambda = alpha * l1_ratio and mu = 2 * alpha * (1 - l1_ratio)
+        alpha = alphas[t] * l1_ratio
+        mu = 2 * alphas[t] * (1 - l1_ratio)
+
         if verbose:
             to_print = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
             print("#" * len(to_print))
@@ -299,7 +311,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
-                alpha, w, Xw, theta, norms_X_col, weights,
+                alpha, mu, w, Xw, theta, norms_X_col, weights,
                 max_iter=max_iter, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
                 positive=positive)
