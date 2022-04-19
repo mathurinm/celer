@@ -8,7 +8,7 @@ from itertools import product
 
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 import pytest
 
 from sklearn.exceptions import ConvergenceWarning
@@ -216,6 +216,33 @@ def test_weights_lasso():
     # weights must be equal to X.shape[1]
     clf1.weights = np.ones(X.shape[1] + 1)
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+
+
+@pytest.mark.parametrize("pb", ["lasso", "logreg"])
+def test_infinite_weights(pb):
+    n_samples, n_features = 50, 100
+    X, y = build_dataset(n_samples, n_features)
+    if pb == "logreg":
+        y = np.sign(y)
+
+    np.random.seed(1)
+    weights = np.abs(np.random.randn(n_features))
+    n_inf = n_features // 10
+    inf_indices = np.random.choice(n_features, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+
+    alpha = norm(X.T @ y / weights, ord=np.inf) / n_samples / 100
+
+    tol = 1e-8
+    _, coefs, dual_gaps = celer_path(
+        X, y, pb=pb, alphas=[alpha], weights=weights, tol=tol)
+
+    if pb == "logreg":
+        assert_array_less(dual_gaps[0], tol * n_samples * np.log(2))
+    else:
+        assert_array_less(dual_gaps[0], tol * norm(y) ** 2 / 2.)
+
+    assert_array_equal(coefs[inf_indices], 0)
 
 
 def test_zero_iter():

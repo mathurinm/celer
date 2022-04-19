@@ -1,11 +1,10 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
-
 import pytest
 import numpy as np
 from numpy.linalg import norm
 
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import LogisticRegression as sklearn_Logreg
