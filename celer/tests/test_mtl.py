@@ -1,8 +1,9 @@
 import pytest
 import itertools
+
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
@@ -239,6 +240,30 @@ def test_check_weights():
     # len(weights) must be equal to number of groups (6 here)
     clf.weights = np.ones(8)
     np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
+
+
+def test_infinite_weights_group():
+    n_samples, n_features = 50, 100
+    X, y = build_dataset(n_samples, n_features)
+
+    np.random.seed(1)
+    group_size = 5
+    weights = np.abs(np.random.randn(n_features // group_size))
+    n_inf = 3
+    inf_indices = np.random.choice(
+        n_features // group_size, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+    alpha_max = np.max(
+        norm((X.T @ y).reshape(-1, group_size), 2, axis=1)
+    ) / n_samples
+
+    clf = GroupLasso(
+        alpha=alpha_max / 100., weights=weights, groups=group_size, tol=1e-8
+    ).fit(X, y)
+
+    assert_array_less(clf.dual_gap_, clf.tol * norm(y) ** 2 / 2)
+    assert_array_equal(
+        norm(clf.coef_.reshape(-1, group_size), axis=1)[inf_indices], 0)
 
 
 if __name__ == "__main__":

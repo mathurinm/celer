@@ -1,6 +1,5 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
-
 import pytest
 import numpy as np
 from numpy.linalg import norm
