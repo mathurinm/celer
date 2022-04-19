@@ -77,8 +77,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
         If ``None`` alphas are set automatically
 
     l1_ratio : float, optional
-        The Elastic-Net mixing parameter, with ``0 <= l1_ratio <= 1``.
-        For ``l1_ratio = 0`` the penalty is an L2 penalty. ``For 
+        The ElasticNet mixing parameter, with ``0 <= l1_ratio <= 1``.
+        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
+        For ``l1_ratio = 0`` it is an L2 penalty (Ridge).
 
     coef_init : ndarray, shape (n_features,) | None, optional, (default=None)
         Initial value of coefficients. If None, np.zeros(n_features) is used.

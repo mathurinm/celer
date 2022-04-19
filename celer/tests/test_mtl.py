@@ -3,7 +3,8 @@ import itertools
 
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
+from numpy.testing import (assert_allclose, assert_array_less,
+                           assert_array_equal)
 
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
