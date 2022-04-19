@@ -256,10 +256,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
-        # for enet use convention: lambda = alpha * l1_ratio
-        # and mu = 2 * alpha * (1 - l1_ratio)
-        alpha = alphas[t] * l1_ratio
-        mu = 2 * alphas[t] * (1 - l1_ratio)
+        alpha = alphas[t]
 
         if verbose:
             to_print = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
@@ -313,7 +310,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
-                alpha, mu, w, Xw, theta, norms_X_col, weights,
+                alpha, l1_ratio, w, Xw, theta, norms_X_col, weights,
                 max_iter=max_iter, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
                 positive=positive)
