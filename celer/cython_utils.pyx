@@ -140,7 +140,7 @@ cdef floating primal_logreg(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating primal_lasso(
-        floating alpha, floating[:] R, floating[:] w,
+        floating alpha, floating l1_ratio, floating[:] R, floating[:] w,
         floating[:] weights) nogil:
     cdef int n_samples = R.shape[0]
     cdef int n_features = w.shape[0]
@@ -151,7 +151,9 @@ cdef floating primal_lasso(
     for j in range(n_features):
         # avoid nan when weights[j] is INFINITY
         if w[j]:
-            p_obj += alpha * weights[j] * fabs(w[j])
+            p_obj += alpha * weights[j] * ( \
+                     l1_ratio * fabs(w[j]) + \
+                     (1. - l1_ratio) * w[j] ** 2)
     return p_obj
 
 
@@ -160,7 +162,7 @@ cdef floating primal(
     int pb, floating alpha, floating l1_ratio, floating[:] R, floating[:] y,
     floating[:] w, floating[:] weights) nogil:
     if pb == LASSO:
-        return primal_lasso(alpha, R, w, weights)
+        return primal_lasso(alpha, l1_ratio, R, w, weights)
     else:
         return primal_logreg(alpha, R, y, w, weights)
 
@@ -168,8 +170,8 @@ cdef floating primal(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
-                         floating * theta, floating * y) nogil:
+cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio, 
+                         floating norm_y2, floating * theta, floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
@@ -197,7 +199,7 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
 cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio, 
                    floating norm_y2, floating * theta, floating * y) nogil:
     if pb == LASSO:
-        return dual_lasso(n_samples, alpha, norm_y2, &theta[0], &y[0])
+        return dual_lasso(n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
     else:
         return dual_logreg(n_samples, alpha, &theta[0], &y[0])
 
@@ -362,14 +364,15 @@ cpdef void compute_Xw(
             R[i] = y[i] - R[i]
 
 
+# TODO add enet support
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef floating dnorm_l1(
-        bint is_sparse, floating[:] theta, floating[::1, :] X,
+cpdef floating dnorm_l1_enet(
+        bint is_sparse, floating[:] theta, floating[:] w, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
         floating[:] X_mean, floating[:] weights, bint center,
-        bint positive) nogil:
+        bint positive, floating alpha, floating l1_ratio) nogil:
     """compute norm(X[:, ~skip].T.dot(theta), ord=inf)"""
     cdef int n_samples = theta.shape[0]
     cdef int n_features = skip.shape[0]
@@ -399,10 +402,26 @@ cpdef floating dnorm_l1(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
+        # enet term
+        if l1_ratio != 1:
+            Xj_theta +=  2 * n_samples * alpha * (1 - l1_ratio) * w[j]
+
         if not positive:
             Xj_theta = fabs(Xj_theta)
         scal = max(scal, Xj_theta / weights[j])
     return scal
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef floating dnorm_l1(
+        bint is_sparse, floating[:] theta, floating[::1, :] X,
+        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
+        floating[:] X_mean, floating[:] weights, bint center,
+        bint positive) nogil:
+    # pass arbitrary w, alpha 
+    return dnorm_l1_enet(is_sparse, theta, weights, X, X_data, X_indices, X_indptr,
+                         skip, X_mean, weights, center, positive, 1., 1.)
 
 
 @cython.boundscheck(False)

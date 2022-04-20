@@ -13,7 +13,7 @@ from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                            sigmoid, ST, LASSO, LOGREG, dnorm_l1,
+                            sigmoid, ST, LASSO, LOGREG, dnorm_l1_enet,
                             set_prios)
 
 
@@ -119,9 +119,9 @@ def celer(
             # TODO handle case enet
             create_dual_pt(pb, n_samples, alpha, l1_ratio, &theta[0], &Xw[0], &y[0])
 
-            scal = dnorm_l1(
-                is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
-                X_mean, weights, center, positive)
+            scal = dnorm_l1_enet(
+                is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
+                X_mean, weights, center, positive, alpha, l1_ratio)
 
             if scal > 1. :
                 tmp = 1. / scal
@@ -131,14 +131,14 @@ def celer(
             d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
-            scal = dnorm_l1(
-                is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                screened, X_mean, weights, center, positive)
+            scal = dnorm_l1_enet(
+                is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
+                screened, X_mean, weights, center, positive, alpha, l1_ratio)
             if scal > 1.:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
-            # hanldle case enet
+            # handle case enet
             d_obj_from_inner = dual(
                 pb, n_samples, alpha, l1_ratio, norm_y2, &theta_in[0], &y[0])
         else:
@@ -230,9 +230,9 @@ def celer(
                 create_dual_pt(
                     pb, n_samples, alpha, l1_ratio, &theta_in[0], &Xw[0], &y[0])
 
-                scal = dnorm_l1(
-                    is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                    notin_ws, X_mean, weights, center, positive)
+                scal = dnorm_l1_enet(
+                    is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
+                    notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
                 if scal > 1. :
                     tmp = 1. / scal
@@ -252,10 +252,10 @@ def celer(
                         # print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        scal = dnorm_l1(
-                            is_sparse, thetacc, X, X_data, X_indices,
+                        scal = dnorm_l1_enet(
+                            is_sparse, thetacc, w, X, X_data, X_indices,
                             X_indptr, notin_ws, X_mean, weights, center,
-                            positive)
+                            positive, alpha, l1_ratio)
 
                         if scal > 1. :
                             tmp = 1. / scal

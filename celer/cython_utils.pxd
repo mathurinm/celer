@@ -44,6 +44,10 @@ cpdef void compute_norms_X_col(
     floating[:], int[:], int[:], floating[:])
 
 
+cpdef floating dnorm_l1_enet(
+        bint, floating[:], floating[:], floating[::1, :], floating[:],
+        int[:], int[:], int[:], floating[:], floating[:], bint, bint, floating, floating) nogil
+
 cpdef floating dnorm_l1(
         bint, floating[:], floating[::1, :], floating[:],
         int[:], int[:], int[:], floating[:], floating[:], bint, bint) nogil
