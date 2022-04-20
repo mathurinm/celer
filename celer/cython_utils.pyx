@@ -157,7 +157,7 @@ cdef floating primal_lasso(
 
 # TODO handle case enet
 cdef floating primal(
-    int pb, floating alpha, floating[:] R, floating[:] y,
+    int pb, floating alpha, floating l1_ratio, floating[:] R, floating[:] y,
     floating[:] w, floating[:] weights) nogil:
     if pb == LASSO:
         return primal_lasso(alpha, R, w, weights)
@@ -194,8 +194,8 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
 
 
 # handle case enet
-cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
-                   floating * theta, floating * y) nogil:
+cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio, 
+                   floating norm_y2, floating * theta, floating * y) nogil:
     if pb == LASSO:
         return dual_lasso(n_samples, alpha, norm_y2, &theta[0], &y[0])
     else:
@@ -207,7 +207,7 @@ cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void create_dual_pt(
-        int pb, int n_samples, floating alpha, floating * out,
+        int pb, int n_samples, floating alpha, floating l1_ratio, floating * out,
         floating * R, floating * y) nogil:
     """It is scaled by alpha for both Lasso and Logreg"""
     cdef floating tmp = 1. / alpha

@@ -102,10 +102,10 @@ def newton_celer(
     cdef bint positive = 0
 
     for t in range(max_iter):
-        p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)
+        p_obj = primal(LOGREG, alpha, 1.0, Xw, y, w, weights_pen)
 
         # theta = y * sigmoid(-y * Xw) / alpha
-        create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
+        create_dual_pt(LOGREG, n_samples, alpha, 1.0, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = dnorm_l1(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
             screened, X_mean, weights_pen, center, positive)
@@ -114,7 +114,7 @@ def newton_celer(
             tmp = 1. / norm_Xtheta
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 0., &theta[0], &y[0])
+        d_obj = dual(LOGREG, n_samples, alpha, 1.0, 0., &theta[0], &y[0])
         gap = p_obj - d_obj
 
         if t != 0 and use_accel:
@@ -176,7 +176,7 @@ def newton_celer(
                 tmp = 1. / norm_Xtheta_acc
                 fscal(&n_samples, &tmp, &theta_acc[0], &inc)
 
-            d_obj_acc = dual(LOGREG, n_samples, alpha, 0., &theta_acc[0], &y[0])
+            d_obj_acc = dual(LOGREG, n_samples, alpha, 1.0, 0., &theta_acc[0], &y[0])
             if d_obj_acc > d_obj:
                 fcopy(&n_samples, &theta_acc[0], &inc, &theta[0], &inc)
                 gap = p_obj - d_obj_acc
@@ -347,7 +347,7 @@ cpdef int PN_logreg(
                        X_indices, X_indptr, MAX_BACKTRACK_ITR, y,
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
-        create_dual_pt(LOGREG, n_samples, alpha, &aux[0], &Xw[0], &y[0])
+        create_dual_pt(LOGREG, n_samples, alpha, 1.0, &aux[0], &Xw[0], &y[0])
 
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
@@ -379,8 +379,8 @@ cpdef int PN_logreg(
         for i in range(n_samples):
             aux[i] /= max(1, norm_Xaux)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 0, &aux[0], &y[0])
-        p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)
+        d_obj = dual(LOGREG, n_samples, alpha, 1.0, 0, &aux[0], &y[0])
+        p_obj = primal(LOGREG, alpha, 1.0, Xw, y, w, weights_pen)
 
         gap = p_obj - d_obj
         if verbose_in:

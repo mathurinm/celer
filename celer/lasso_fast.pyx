@@ -36,6 +36,10 @@ def celer(
     """
     assert pb in (LASSO, LOGREG)
 
+    # enet conv: lambda = alpha * l1_ratio | mu = 2 * alpha * (1 - l1_ratio)
+    # lbd = alpha * l1_ratio
+    # mu = 2 * alpha * (1 - l1_ratio)
+
     if floating is double:
         dtype = np.float64
     else:
@@ -113,7 +117,7 @@ def celer(
     for t in range(max_iter):
         if t != 0:
             # TODO handle case enet
-            create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
+            create_dual_pt(pb, n_samples, alpha, l1_ratio, &theta[0], &Xw[0], &y[0])
 
             scal = dnorm_l1(
                 is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
@@ -124,7 +128,7 @@ def celer(
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             # TODO handle case enet
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_l1(
@@ -136,10 +140,10 @@ def celer(
 
             # hanldle case enet
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, &theta_in[0], &y[0])
         else:
             # handle case enet
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -150,7 +154,7 @@ def celer(
         # anything.
 
         # TODO case enet
-        p_obj = primal(pb, alpha, Xw, y, w, weights)
+        p_obj = primal(pb, alpha, l1_ratio, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
         if verbose:
@@ -224,7 +228,7 @@ def celer(
             if epoch != 0 and epoch % gap_freq == 0:
                 # TODO handle case enet
                 create_dual_pt(
-                    pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, &theta_in[0], &Xw[0], &y[0])
 
                 scal = dnorm_l1(
                     is_sparse, theta_in, X, X_data, X_indices, X_indptr,
@@ -236,7 +240,7 @@ def celer(
 
                 # TODO handle case enet
                 d_obj_in = dual(
-                    pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -259,7 +263,7 @@ def celer(
 
                         # handle case enet
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, norm_y2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
@@ -272,7 +276,7 @@ def celer(
                 # Can be an issue in screening: dgap and theta might disagree.
 
                 # TODO handle case enet
-                p_obj_in = primal(pb, alpha, Xw, y, w, weights)
+                p_obj_in = primal(pb, alpha, l1_ratio, Xw, y, w, weights)
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
