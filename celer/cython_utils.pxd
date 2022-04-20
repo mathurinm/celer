@@ -9,7 +9,7 @@ cdef int LOGREG
 cdef floating ST(floating, floating) nogil
 
 cdef floating dual(
-    int, int, floating, floating, floating, floating *, floating *) nogil
+    int, int, floating, floating, floating, floating, floating *, floating *) nogil
 cdef floating primal(int, floating, floating, floating[:], floating [:],
                      floating [:], floating[:]) nogil
 cdef void create_dual_pt(

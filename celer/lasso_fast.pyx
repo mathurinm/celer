@@ -102,6 +102,7 @@ def celer(
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
+    cdef floating norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
@@ -128,7 +129,8 @@ def celer(
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             # TODO handle case enet
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
+            norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2/scal, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_l1_enet(
@@ -140,10 +142,10 @@ def celer(
 
             # handle case enet
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, l1_ratio, norm_y2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2/scal, &theta_in[0], &y[0])
         else:
             # handle case enet
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2/scal, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -240,7 +242,7 @@ def celer(
 
                 # TODO handle case enet
                 d_obj_in = dual(
-                    pb, n_samples, alpha, l1_ratio, norm_y2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2/scal, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -263,7 +265,7 @@ def celer(
 
                         # handle case enet
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, l1_ratio, norm_y2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2/scal, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,

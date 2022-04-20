@@ -171,7 +171,8 @@ cdef floating primal(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio, 
-                         floating norm_y2, floating * theta, floating * y) nogil:
+                         floating norm_y2, floating norm_w2, floating * theta, 
+                         floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
@@ -179,6 +180,8 @@ cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio,
         d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
     d_obj *= 0.5 * alpha ** 2 * n_samples
     d_obj += norm_y2 / (2. * n_samples)
+    if l1_ratio != 1.0:
+        d_obj -= alpha * (1 - l1_ratio) * norm_w2
     return d_obj
 
 
@@ -197,9 +200,9 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
 
 # handle case enet
 cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio, 
-                   floating norm_y2, floating * theta, floating * y) nogil:
+                   floating norm_y2, floating norm_w2, floating * theta, floating * y) nogil:
     if pb == LASSO:
-        return dual_lasso(n_samples, alpha, l1_ratio, norm_y2, &theta[0], &y[0])
+        return dual_lasso(n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
     else:
         return dual_logreg(n_samples, alpha, &theta[0], &y[0])
 
