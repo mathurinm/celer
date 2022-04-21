@@ -170,8 +170,8 @@ cdef floating primal(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio, 
-                         floating norm_y2, floating norm_w2, floating * theta, 
+cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio,
+                         floating norm_y2, floating norm_w2, floating * theta,
                          floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
@@ -199,7 +199,7 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
 
 
 # handle case enet
-cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio, 
+cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio,
                    floating norm_y2, floating norm_w2, floating * theta, floating * y) nogil:
     if pb == LASSO:
         return dual_lasso(n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
@@ -367,11 +367,10 @@ cpdef void compute_Xw(
             R[i] = y[i] - R[i]
 
 
-# TODO add enet support
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef floating dnorm_l1_enet(
+cpdef floating dnorm_enet(
         bint is_sparse, floating[:] theta, floating[:] w, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
         floating[:] X_mean, floating[:] weights, bint center,
@@ -414,17 +413,17 @@ cpdef floating dnorm_l1_enet(
         scal = max(scal, Xj_theta / weights[j])
     return scal
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cpdef floating dnorm_l1(
-        bint is_sparse, floating[:] theta, floating[::1, :] X,
-        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
-        floating[:] X_mean, floating[:] weights, bint center,
-        bint positive) nogil:
-    # pass arbitrary w, alpha 
-    return dnorm_l1_enet(is_sparse, theta, weights, X, X_data, X_indices, X_indptr,
-                         skip, X_mean, weights, center, positive, 1., 1.)
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# @cython.cdivision(True)
+# cpdef floating dnorm_l1(
+#         bint is_sparse, floating[:] theta, floating[::1, :] X,
+#         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
+#         floating[:] X_mean, floating[:] weights, bint center,
+#         bint positive) nogil:
+#     # pass arbitrary w, alpha
+#     return dnorm_l1_enet(is_sparse, theta, weights, X, X_data, X_indices, X_indptr,
+#                          skip, X_mean, weights, center, positive, 1., 1.)
 
 
 @cython.boundscheck(False)

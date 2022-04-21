@@ -14,7 +14,7 @@ from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                            sigmoid, ST, LOGREG, dnorm_l1,
+                            sigmoid, ST, LOGREG, dnorm_enet,
                             compute_Xw, compute_norms_X_col, set_prios)
 
 cdef:
@@ -106,9 +106,9 @@ def newton_celer(
 
         # theta = y * sigmoid(-y * Xw) / alpha
         create_dual_pt(LOGREG, n_samples, alpha, 1.0, &theta[0], &Xw[0], &y[0])
-        norm_Xtheta = dnorm_l1(
+        norm_Xtheta = dnorm_enet(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
-            screened, X_mean, weights_pen, center, positive)
+            screened, X_mean, weights_pen, center, positive, 1., 1.)
 
         if norm_Xtheta > 1.:
             tmp = 1. / norm_Xtheta
@@ -168,9 +168,9 @@ def newton_celer(
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
 
-            norm_Xtheta_acc = dnorm_l1(
+            norm_Xtheta_acc = dnorm_enet(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
-                screened, X_mean, weights_pen, center, positive)
+                screened, X_mean, weights_pen, center, positive, 1., 1.)
 
             if norm_Xtheta_acc > 1.:
                 tmp = 1. / norm_Xtheta_acc
@@ -372,9 +372,9 @@ cpdef int PN_logreg(
 
         else:
             # rescale aux to create dual point
-            norm_Xaux = dnorm_l1(
+            norm_Xaux = dnorm_enet(
                 is_sparse, aux, X, X_data, X_indices, X_indptr,
-                notin_WS, X_mean, weights_pen, center, 0)
+                notin_WS, X_mean, weights_pen, center, 0, 1., 1.)
 
         for i in range(n_samples):
             aux[i] /= max(1, norm_Xaux)
