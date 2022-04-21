@@ -419,7 +419,7 @@ cpdef floating dnorm_l1(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios(
-    bint is_sparse, floating[:] theta,
+    bint is_sparse, floating[:] theta, floating alpha,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating[:] norms_X_col, floating[:] weights, floating[:] prios,
     int[:] screened, floating radius, int * n_screened, bint positive) nogil:

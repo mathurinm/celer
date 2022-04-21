@@ -65,7 +65,7 @@ cdef floating dual_scaling_mtl(
 @cython.cdivision(True)
 cdef void set_prios_mtl(
         floating[:, ::1] W, int[:] screened,
-        floating[::1, :] X, floating[::1, :] theta, floating[:] norms_X_col,
+        floating[::1, :] X, floating[::1, :] theta, floating alpha, floating[:] norms_X_col,
         floating[:] Xj_theta, floating[:] prios, floating radius,
         int * n_screened) nogil:
     # TODO pass alpha to this function
@@ -232,7 +232,7 @@ def celer_mtl(
         radius = sqrt(2 * gap / n_samples)
         # TODO prios could be computed along with scaling
         set_prios_mtl(
-            W, screened, X, theta, norms_X_col, Xj_theta, prios, radius,
+            W, screened, X, theta, alpha, norms_X_col, Xj_theta, prios, radius,
             &n_screened)
 
         if t == 0:

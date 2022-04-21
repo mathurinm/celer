@@ -117,7 +117,7 @@ cpdef floating dnorm_grp(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_grp(
-        bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
+        bint is_sparse, int pb, floating[::1] theta, floating alpha, floating[::1, :] X,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
         floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1] prios, int[::1] screened,
@@ -288,7 +288,7 @@ cpdef celer_grp(
             # radius = sqrt(gap / 2.)
 
         set_prios_grp(
-            is_sparse, pb, theta, X, X_data, X_indices, X_indptr,
+            is_sparse, pb, theta, alpha, X, X_data, X_indices, X_indptr,
             weights, lc_groups, grp_ptr, grp_indices, prios, screened,
             radius, &n_screened)
 
