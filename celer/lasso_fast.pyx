@@ -158,9 +158,9 @@ def celer(
             break
 
         if pb == LASSO:
-            radius = sqrt(2 * gap / n_samples) / alpha
+            radius = sqrt(2 * gap / n_samples)
         else:
-            radius = sqrt(gap / 2.) / alpha
+            radius = sqrt(gap / 2.)
         set_prios(
             is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
             weights, prios, screened, radius, &n_screened, positive)

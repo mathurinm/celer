@@ -423,6 +423,7 @@ cdef void set_prios(
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating[:] norms_X_col, floating[:] weights, floating[:] prios,
     int[:] screened, floating radius, int * n_screened, bint positive) nogil:
+    # TODO pass alpha to this function
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
     cdef int n_samples = theta.shape[0]
@@ -445,9 +446,9 @@ cdef void set_prios(
 
 
         if positive:
-            prios[j] = fabs(Xj_theta - weights[j]) / norms_X_col[j]
+            prios[j] = fabs(Xj_theta - alpha * weights[j]) / norms_X_col[j]
         else:
-            prios[j] = (weights[j] - fabs(Xj_theta)) / norms_X_col[j]
+            prios[j] = (alpha * weights[j] - fabs(Xj_theta)) / norms_X_col[j]
 
         if prios[j] > radius:
             screened[j] = True
