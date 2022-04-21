@@ -229,7 +229,9 @@ cpdef celer_grp(
     for t in range(max_iter):
         # if t != 0: TODO potential speedup at iteration 0
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / (alpha * n_samples)
+
+        # remove scale
+        tmp = 1. / n_samples  # (alpha * n_samples)
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = dnorm_grp(
@@ -334,7 +336,9 @@ cpdef celer_grp(
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 fcopy(&n_samples, &R[0], &inc, &theta_inner[0], &inc)
-                tmp = 1. / (alpha * n_samples)
+
+                # remove scale
+                tmp = 1. / n_samples  # (alpha * n_samples)
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 scal = dnorm_grp(
