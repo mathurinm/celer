@@ -254,7 +254,6 @@ cdef int create_accel_pt(
 
     cdef int i, j, k
     # warning: this is wrong (n_samples) for MTL, it is handled outside
-    alpha = 1.
     cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
 
     if epoch // gap_freq < K:
