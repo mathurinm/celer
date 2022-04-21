@@ -3,6 +3,8 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
+# for init commit
+
 cimport cython
 cimport numpy as np
 
