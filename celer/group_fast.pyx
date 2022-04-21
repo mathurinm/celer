@@ -122,6 +122,7 @@ cdef void set_prios_grp(
         floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1] prios, int[::1] screened,
         floating radius, int * n_screened):
+    # TODO pass alpha to this function
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -145,11 +146,13 @@ cdef void set_prios_grp(
             nrm_Xgtheta += Xj_theta ** 2
         nrm_Xgtheta = sqrt(nrm_Xgtheta) / weights[g]
 
-        prios[g] = (1. - nrm_Xgtheta) / norms_X_grp[g]
+        prios[g] = (alpha - nrm_Xgtheta) / norms_X_grp[g]
 
         if prios[g] > radius:
-            screened[g] = True
-            n_screened[0] += 1
+            pass
+            # TODO check
+            # screened[g] = True
+            # n_screened[0] += 1
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -280,9 +283,9 @@ cpdef celer_grp(
             break
 
         # if pb == LASSO:
-        radius = sqrt(2 * gap / n_samples) / alpha
+        radius = sqrt(2 * gap / n_samples)
         # elif pb == LOGREG:
-            # radius = sqrt(gap / 2.) / alpha
+            # radius = sqrt(gap / 2.)
 
         set_prios_grp(
             is_sparse, pb, theta, X, X_data, X_indices, X_indptr,
@@ -367,7 +370,7 @@ cpdef celer_grp(
                             is_sparse, thetacc, grp_ptr, grp_indices, X,
                             X_data, X_indices, X_indptr, X_mean, weights,
                             ws_size, C, center)
-                        
+
                         # alpha instead of 1
                         if scal > alpha:
                             tmp = 1. / (scal / alpha)

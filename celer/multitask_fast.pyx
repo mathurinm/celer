@@ -68,6 +68,7 @@ cdef void set_prios_mtl(
         floating[::1, :] X, floating[::1, :] theta, floating[:] norms_X_col,
         floating[:] Xj_theta, floating[:] prios, floating radius,
         int * n_screened) nogil:
+    # TODO pass alpha to this function
     cdef int j, k
     cdef int inc = 1
     cdef floating tmp
@@ -84,7 +85,7 @@ cdef void set_prios_mtl(
             Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
 
         nrm = fnrm2(&n_tasks, &Xj_theta[0], &inc)
-        prios[j] = (1. - nrm) / norms_X_col[j]
+        prios[j] = (alpha - nrm) / norms_X_col[j]
         if prios[j] > radius:
             # screen only if W[j, :] is zero:
             for k in range(n_tasks):
@@ -209,7 +210,7 @@ def celer_mtl(
             scal = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta_inner, X,
                 n_features, &dummy_C[0], &screened[0], &Xj_theta[0])
-            
+
             # alpha instead of 1
             if scal > alpha:
                 tmp = 1. / (scal / alpha)
@@ -228,7 +229,7 @@ def celer_mtl(
                 print("\nEarly exit, gap %.2e < %.2e" % (gap, tol))
             break
 
-        radius = sqrt(2 * gap / n_samples) / alpha
+        radius = sqrt(2 * gap / n_samples)
         # TODO prios could be computed along with scaling
         set_prios_mtl(
             W, screened, X, theta, norms_X_col, Xj_theta, prios, radius,
