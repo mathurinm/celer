@@ -335,7 +335,7 @@ cpdef void inner_solver(
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
             # remove scale
-            tmp = 1.  # / (alpha * n_samples)
+            tmp = 1. / n_samples  # / (alpha * n_samples)
             # tmp = 1. / alpha
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
