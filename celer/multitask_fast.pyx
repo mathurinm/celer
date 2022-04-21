@@ -198,7 +198,7 @@ def celer_mtl(
             &dummy_C[0], &screened[0], &Xj_theta[0])
 
         # alpha instead of 1
-        if scal > 1.:
+        if scal > alpha:
             tmp = 1. / scal
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
         d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
@@ -209,7 +209,7 @@ def celer_mtl(
                 n_features, &dummy_C[0], &screened[0], &Xj_theta[0])
             
             # alpha instead of 1
-            if scal > 1.:
+            if scal > alpha:
                 tmp = 1. / scal
                 fscal(&n_obs, &tmp, &theta_inner[0, 0], &inc)
             d_obj_from_inner = dual_mtl(
@@ -340,7 +340,7 @@ cpdef void inner_solver(
                 &C[0], &dummy_screened[0], &Xj_theta[0])
 
             # alpha instead of 1
-            if scal > 1.:
+            if scal > alpha:
                 tmp = 1. / scal
                 fscal(&n_obs, &tmp, &theta[0, 0], &inc)
             d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
@@ -359,7 +359,7 @@ cpdef void inner_solver(
                         &C[0], &dummy_screened[0], &Xj_theta[0])
 
                     # alpha instead of 1
-                    if scal > 1.:
+                    if scal > alpha:
                         tmp = 1. / scal
                         fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
                     d_obj_acc = dual_mtl(

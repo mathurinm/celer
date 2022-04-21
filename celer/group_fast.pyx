@@ -236,7 +236,8 @@ cpdef celer_grp(
             is_sparse, theta, grp_ptr, grp_indices, X, X_data, X_indices,
             X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
-        if scal > 1. :
+        # alpha instead of 1
+        if scal > alpha:
             tmp = 1. / scal
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
@@ -247,7 +248,9 @@ cpdef celer_grp(
             scal = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, weights, n_groups, dummy_C, center)
-            if scal > 1.:
+
+            # alpha instead of 1
+            if scal > alpha:
                 tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
@@ -339,7 +342,7 @@ cpdef celer_grp(
                     X_indices, X_indptr, X_mean, weights, ws_size, C, center)
 
                 # alpha instead of 1
-                if scal > 1. :
+                if scal > alpha:
                     tmp = 1. / scal
                     fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
@@ -362,7 +365,7 @@ cpdef celer_grp(
                             ws_size, C, center)
                         
                         # alpha instead of 1
-                        if scal > 1.:
+                        if scal > alpha:
                             tmp = 1. / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 

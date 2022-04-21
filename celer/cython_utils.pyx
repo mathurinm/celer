@@ -175,6 +175,8 @@ cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
+    alpha = 1.
+
     for i in range(n_samples):
         d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
     d_obj *= 0.5 * alpha ** 2 * n_samples
@@ -191,12 +193,13 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
     """Compute dual objective value at theta, which must be feasible."""
     cdef int i
     cdef floating d_obj = 0.
+    alpha = 1.
+
     for i in range(n_samples):
         d_obj -= Nh(alpha * y[i] * theta[i])
     return d_obj
 
 # remove alpha
-# [before] should work with alpha = 1
 cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
                    floating * theta, floating * y) nogil:
     if pb == LASSO:
@@ -214,6 +217,7 @@ cdef void create_dual_pt(
         int pb, int n_samples, floating alpha, floating * out,
         floating * R, floating * y) nogil:
     """It is scaled by alpha for both Lasso and Logreg"""
+    alpha = 1.
     cdef floating tmp = 1. / alpha
     if pb == LASSO:  # out = R / (alpha * n_samples)
         tmp /= n_samples
@@ -250,6 +254,7 @@ cdef int create_accel_pt(
 
     cdef int i, j, k
     # warning: this is wrong (n_samples) for MTL, it is handled outside
+    alpha = 1.
     cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
 
     if epoch // gap_freq < K:
