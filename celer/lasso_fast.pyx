@@ -119,7 +119,7 @@ def celer(
 
             # alpha instead of 1
             if scal > alpha:
-                tmp = 1. / scal
+                tmp = 1. / (scal / alpha)
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
@@ -130,7 +130,7 @@ def celer(
                 screened, X_mean, weights, center, positive)
             # alpha instead of 1
             if scal > alpha:
-                tmp = 1. / scal
+                tmp = 1. / (scal / alpha)
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             d_obj_from_inner = dual(
@@ -226,7 +226,7 @@ def celer(
 
                 # alpha instead of 1
                 if scal > alpha:
-                    tmp = 1. / scal
+                    tmp = 1. / (scal / alpha)
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
                 d_obj_in = dual(
@@ -249,7 +249,7 @@ def celer(
 
                         # alpha instead of 1
                         if scal > alpha:
-                            tmp = 1. / scal
+                            tmp = 1. / (scal / alpha)
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(

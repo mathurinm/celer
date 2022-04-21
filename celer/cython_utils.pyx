@@ -3,7 +3,6 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
-# for init commit
 
 cimport cython
 cimport numpy as np
@@ -200,8 +199,11 @@ cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
     return d_obj
 
 # remove alpha
+# [before] should work with alpha = 1
 cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
                    floating * theta, floating * y) nogil:
+
+    alpha = 1.
     if pb == LASSO:
         return dual_lasso(n_samples, alpha, norm_y2, &theta[0], &y[0])
     else:
@@ -229,8 +231,6 @@ cdef void create_dual_pt(
     fscal(&n_samples, &tmp, &out[0], &inc)
 
 
-# remove alpha
-# [before] should work with alpha = 1
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)

@@ -190,7 +190,9 @@ def celer_mtl(
         p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
         # theta = R / alpha:
         fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
-        tmp = 1. / alpha
+
+        # remove scale
+        tmp = 1.  # 1. / alpha
         fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
         scal = dual_scaling_mtl(
@@ -199,7 +201,7 @@ def celer_mtl(
 
         # alpha instead of 1
         if scal > alpha:
-            tmp = 1. / scal
+            tmp = 1. / (scal / alpha)
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
         d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
 
@@ -210,7 +212,7 @@ def celer_mtl(
             
             # alpha instead of 1
             if scal > alpha:
-                tmp = 1. / scal
+                tmp = 1. / (scal / alpha)
                 fscal(&n_obs, &tmp, &theta_inner[0, 0], &inc)
             d_obj_from_inner = dual_mtl(
                 n_samples, n_tasks, theta_inner, Y, norm_Y2, alpha)
@@ -331,7 +333,8 @@ cpdef void inner_solver(
             p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-            tmp = 1. / (alpha * n_samples)
+            # remove scale
+            tmp = 1.  # / (alpha * n_samples)
             # tmp = 1. / alpha
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
@@ -341,7 +344,7 @@ cpdef void inner_solver(
 
             # alpha instead of 1
             if scal > alpha:
-                tmp = 1. / scal
+                tmp = 1. / (scal / alpha)
                 fscal(&n_obs, &tmp, &theta[0, 0], &inc)
             d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
 
@@ -360,7 +363,7 @@ cpdef void inner_solver(
 
                     # alpha instead of 1
                     if scal > alpha:
-                        tmp = 1. / scal
+                        tmp = 1. / (scal / alpha)
                         fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
                     d_obj_acc = dual_mtl(
                         n_samples, n_tasks, theta_acc, Y, norm_Y2, alpha)

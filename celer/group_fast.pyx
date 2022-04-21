@@ -229,7 +229,9 @@ cpdef celer_grp(
     for t in range(max_iter):
         # if t != 0: TODO potential speedup at iteration 0
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / (alpha * n_samples)
+
+        # remove scale
+        tmp = 1. / n_samples  # (alpha * n_samples)
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = dnorm_grp(
@@ -238,7 +240,7 @@ cpdef celer_grp(
 
         # alpha instead of 1
         if scal > alpha:
-            tmp = 1. / scal
+            tmp = 1. / (scal / alpha)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
@@ -251,7 +253,7 @@ cpdef celer_grp(
 
             # alpha instead of 1
             if scal > alpha:
-                tmp = 1. / scal
+                tmp = 1. / (scal / alpha)
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
@@ -334,7 +336,9 @@ cpdef celer_grp(
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 fcopy(&n_samples, &R[0], &inc, &theta_inner[0], &inc)
-                tmp = 1. / (alpha * n_samples)
+
+                # remove scale
+                tmp = 1. / n_samples  # (alpha * n_samples)
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 scal = dnorm_grp(
@@ -343,7 +347,7 @@ cpdef celer_grp(
 
                 # alpha instead of 1
                 if scal > alpha:
-                    tmp = 1. / scal
+                    tmp = 1. / (scal / alpha)
                     fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
@@ -366,7 +370,7 @@ cpdef celer_grp(
                         
                         # alpha instead of 1
                         if scal > alpha:
-                            tmp = 1. / scal
+                            tmp = 1. / (scal / alpha)
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(pb, n_samples, alpha, norm_y2,
