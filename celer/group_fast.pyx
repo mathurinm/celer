@@ -336,7 +336,7 @@ cpdef celer_grp(
             if epoch != 0 and epoch % gap_freq == 0:
                 fcopy(&n_samples, &R[0], &inc, &theta_inner[0], &inc)
 
-                tmp = 1. / n_samples  # (alpha * n_samples)
+                tmp = 1. / n_samples
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 scal = dnorm_grp(

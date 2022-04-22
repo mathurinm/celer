@@ -104,7 +104,7 @@ def newton_celer(
     for t in range(max_iter):
         p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)
 
-        # theta = y * sigmoid(-y * Xw) / alpha
+        # theta = y * sigmoid(-y * Xw)
         create_dual_pt(LOGREG, n_samples, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = dnorm_l1(
             is_sparse, theta, X, X_data, X_indices, X_indptr,

@@ -215,7 +215,7 @@ cdef void create_dual_pt(
     if pb == LASSO:  # out = R / n_samples
         tmp /= n_samples
         fcopy(&n_samples, &R[0], &inc, &out[0], &inc)
-    else:  # out = y * sigmoid(-y * Xw) / alpha
+    else:  # out = y * sigmoid(-y * Xw)
         for i in range(n_samples):
             out[i] = y[i] * sigmoid(-y[i] * R[i])
 
@@ -300,7 +300,7 @@ cdef int create_accel_pt(
         fscal(&n_samples, &tmp, &out[0], &inc)
         # out now holds the extrapolated dual point:
         # LASSO: (y - Xw) / n_samples
-        # LOGREG:  y * sigmoid(-y * Xw) / alpha
+        # LOGREG:  y * sigmoid(-y * Xw)
 
     return info_dposv
 
