@@ -189,11 +189,10 @@ def celer_mtl(
     for t in range(max_iter):
         # if t != 0: TODO
         p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
-        # theta = R / alpha:
+        # theta = R :
         fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-        tmp = 1.  # 1. / alpha
-        # fscal(&n_obs, &tmp, &theta[0, 0], &inc)
+        tmp = 1.
 
         scal = dual_scaling_mtl(
             n_features, n_samples, n_tasks, theta, X, n_features,
@@ -331,7 +330,7 @@ cpdef void inner_solver(
             p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-            tmp = 1. / n_samples  # / (alpha * n_samples)
+            tmp = 1. / n_samples
             # tmp = 1. / alpha
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 

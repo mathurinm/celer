@@ -212,7 +212,7 @@ cdef void create_dual_pt(
         floating * R, floating * y) nogil:
     """It is scaled by alpha for both Lasso and Logreg"""
     cdef floating tmp = 1.
-    if pb == LASSO:  # out = R / (alpha * n_samples)
+    if pb == LASSO:  # out = R / n_samples
         tmp /= n_samples
         fcopy(&n_samples, &R[0], &inc, &out[0], &inc)
     else:  # out = y * sigmoid(-y * Xw) / alpha
@@ -299,7 +299,7 @@ cdef int create_accel_pt(
 
         fscal(&n_samples, &tmp, &out[0], &inc)
         # out now holds the extrapolated dual point:
-        # LASSO: (y - Xw) / (alpha * n_samples)
+        # LASSO: (y - Xw) / n_samples
         # LOGREG:  y * sigmoid(-y * Xw) / alpha
 
     return info_dposv
@@ -414,7 +414,6 @@ cdef void set_prios(
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating[:] norms_X_col, floating[:] weights, floating[:] prios,
     int[:] screened, floating radius, int * n_screened, bint positive) nogil:
-    # TODO pass alpha to this function
     cdef int i, j, startptr, endptr
     cdef floating Xj_theta
     cdef int n_samples = theta.shape[0]

@@ -122,7 +122,6 @@ cdef void set_prios_grp(
         floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1] prios, int[::1] screened,
         floating radius, int * n_screened):
-    # TODO pass alpha to this function
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
