@@ -378,7 +378,7 @@ cpdef int PN_logreg(
                 notin_WS, X_mean, weights_pen, center, 0)
 
         for i in range(n_samples):
-            aux[i] /= max(1, norm_Xaux)
+            aux[i] /= max(1, norm_Xaux / alpha)
 
         d_obj = dual(LOGREG, n_samples, 0, &aux[0], &y[0])
         p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)

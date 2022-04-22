@@ -105,6 +105,7 @@ cdef floating dual_mtl(
     cdef int i, k
     cdef floating d_obj = 0.
 
+    alpha = 1
     for k in range(n_tasks):
         for i in range(n_samples):
             d_obj -= (Y[i, k] / (alpha * n_samples) - theta[i, k]) ** 2
