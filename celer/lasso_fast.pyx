@@ -117,7 +117,6 @@ def celer(
                 is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
                 X_mean, weights, center, positive)
 
-            # alpha instead of 1
             if scal > alpha:
                 tmp = 1. / (scal / alpha)
                 fscal(&n_samples, &tmp, &theta[0], &inc)
@@ -128,7 +127,7 @@ def celer(
             scal = dnorm_l1(
                 is_sparse, theta_in, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights, center, positive)
-            # alpha instead of 1
+
             if scal > alpha:
                 tmp = 1. / (scal / alpha)
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
@@ -224,7 +223,6 @@ def celer(
                     is_sparse, theta_in, X, X_data, X_indices, X_indptr,
                     notin_ws, X_mean, weights, center, positive)
 
-                # alpha instead of 1
                 if scal > alpha:
                     tmp = 1. / (scal / alpha)
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
@@ -247,7 +245,6 @@ def celer(
                             X_indptr, notin_ws, X_mean, weights, center,
                             positive)
 
-                        # alpha instead of 1
                         if scal > alpha:
                             tmp = 1. / (scal / alpha)
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)

@@ -68,7 +68,6 @@ cdef void set_prios_mtl(
         floating[::1, :] X, floating[::1, :] theta, floating alpha, floating[:] norms_X_col,
         floating[:] Xj_theta, floating[:] prios, floating radius,
         int * n_screened) nogil:
-    # TODO pass alpha to this function
     cdef int j, k
     cdef int inc = 1
     cdef floating tmp
@@ -192,15 +191,13 @@ def celer_mtl(
         # theta = R / alpha:
         fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-        # remove scale
         tmp = 1.  # 1. / alpha
-        fscal(&n_obs, &tmp, &theta[0, 0], &inc)
+        # fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
         scal = dual_scaling_mtl(
             n_features, n_samples, n_tasks, theta, X, n_features,
             &dummy_C[0], &screened[0], &Xj_theta[0])
 
-        # alpha instead of 1
         if scal > alpha:
             tmp = 1. / (scal / alpha)
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
@@ -211,7 +208,6 @@ def celer_mtl(
                 n_features, n_samples, n_tasks, theta_inner, X,
                 n_features, &dummy_C[0], &screened[0], &Xj_theta[0])
 
-            # alpha instead of 1
             if scal > alpha:
                 tmp = 1. / (scal / alpha)
                 fscal(&n_obs, &tmp, &theta_inner[0, 0], &inc)
@@ -334,7 +330,6 @@ cpdef void inner_solver(
             p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-            # remove scale
             tmp = 1. / n_samples  # / (alpha * n_samples)
             # tmp = 1. / alpha
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
@@ -343,7 +338,6 @@ cpdef void inner_solver(
                 n_features, n_samples, n_tasks, theta, X, ws_size,
                 &C[0], &dummy_screened[0], &Xj_theta[0])
 
-            # alpha instead of 1
             if scal > alpha:
                 tmp = 1. / (scal / alpha)
                 fscal(&n_obs, &tmp, &theta[0, 0], &inc)
@@ -362,7 +356,6 @@ cpdef void inner_solver(
                         n_features, n_samples, n_tasks, theta_acc, X, ws_size,
                         &C[0], &dummy_screened[0], &Xj_theta[0])
 
-                    # alpha instead of 1
                     if scal > alpha:
                         tmp = 1. / (scal / alpha)
                         fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)

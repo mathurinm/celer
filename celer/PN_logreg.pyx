@@ -162,9 +162,8 @@ def newton_celer(
             for i in range(n_samples):
                 theta_acc[i] = y[i] * sigmoid(- y[i] * theta_acc[i])
 
-            # remove scale
             tmp = 1.  #  1. / alpha
-            fscal(&n_samples, &tmp, &theta_acc[0], &inc)
+            # fscal(&n_samples, &tmp, &theta_acc[0], &inc)
 
             # do not forget to update exp_Xw
             for i in range(n_samples):
@@ -174,7 +173,6 @@ def newton_celer(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights_pen, center, positive)
 
-            # alpha instead of 1
             if norm_Xtheta_acc > alpha:
                 tmp = 1. / (norm_Xtheta_acc / alpha)
                 fscal(&n_samples, &tmp, &theta_acc[0], &inc)
