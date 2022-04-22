@@ -210,7 +210,6 @@ cdef floating dual(int pb, int n_samples, floating norm_y2,
 cdef void create_dual_pt(
         int pb, int n_samples, floating * out,
         floating * R, floating * y) nogil:
-    """It is scaled by alpha for both Lasso and Logreg"""
     cdef floating tmp = 1.
     if pb == LASSO:  # out = R / n_samples
         tmp /= n_samples
