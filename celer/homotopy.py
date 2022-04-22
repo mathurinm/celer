@@ -253,7 +253,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
             print("#" * len(to_print))
         if t > 0:
             w = coefs[:, t - 1].copy()
-            theta = thetas[t - 1].copy()
+            # theta was feasible for alphas[t-1], make it feasible for alphas[t]
+            theta = thetas[t - 1] * (alphas[t] / alphas[t-1])
             p0 = max(len(np.where(w != 0)[0]), 1)
         else:
             if coef_init is not None:
