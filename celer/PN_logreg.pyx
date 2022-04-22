@@ -111,7 +111,7 @@ def newton_celer(
             screened, X_mean, weights_pen, center, positive)
 
         if norm_Xtheta > alpha:
-            tmp = 1. / (norm_Xtheta / alpha)
+            tmp = alpha / norm_Xtheta
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual(LOGREG, n_samples, 0., &theta[0], &y[0])
@@ -172,7 +172,7 @@ def newton_celer(
                 screened, X_mean, weights_pen, center, positive)
 
             if norm_Xtheta_acc > alpha:
-                tmp = 1. / (norm_Xtheta_acc / alpha)
+                tmp = alpha / norm_Xtheta_acc
                 fscal(&n_samples, &tmp, &theta_acc[0], &inc)
 
             d_obj_acc = dual(LOGREG, n_samples, 0., &theta_acc[0], &y[0])

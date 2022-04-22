@@ -240,7 +240,7 @@ cpdef celer_grp(
             X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
         if scal > alpha:
-            tmp = 1. / (scal / alpha)
+            tmp = alpha / scal
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
@@ -252,7 +252,7 @@ cpdef celer_grp(
                     X_indices, X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
             if scal > alpha:
-                tmp = 1. / (scal / alpha)
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
@@ -344,7 +344,7 @@ cpdef celer_grp(
                     X_indices, X_indptr, X_mean, weights, ws_size, C, center)
 
                 if scal > alpha:
-                    tmp = 1. / (scal / alpha)
+                    tmp = alpha / scal
                     fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
@@ -366,7 +366,7 @@ cpdef celer_grp(
                             ws_size, C, center)
 
                         if scal > alpha:
-                            tmp = 1. / (scal / alpha)
+                            tmp = alpha / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(pb, n_samples, norm_y2,
