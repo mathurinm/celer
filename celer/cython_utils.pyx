@@ -164,63 +164,54 @@ cdef floating primal(
     else:
         return primal_logreg(alpha, R, y, w, weights)
 
-# remove alpha
-# [before] should work with alpha = 1
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_lasso(int n_samples, floating alpha, floating norm_y2,
+cdef floating dual_lasso(int n_samples, floating norm_y2,
                          floating * theta, floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
-    alpha = 1.
 
     for i in range(n_samples):
-        d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
-    d_obj *= 0.5 * alpha ** 2 * n_samples
+        d_obj -= (y[i] / n_samples - theta[i]) ** 2
+    d_obj *= 0.5 * n_samples
     d_obj += norm_y2 / (2. * n_samples)
     return d_obj
 
-# remove alpha
-# [before] should work with alpha = 1
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
+cdef floating dual_logreg(int n_samples, floating * theta,
                           floating * y) nogil:
     """Compute dual objective value at theta, which must be feasible."""
     cdef int i
     cdef floating d_obj = 0.
-    alpha = 1.
 
     for i in range(n_samples):
-        d_obj -= Nh(alpha * y[i] * theta[i])
+        d_obj -= Nh(y[i] * theta[i])
     return d_obj
 
-# remove alpha
-# [before] should work with alpha = 1
-cdef floating dual(int pb, int n_samples, floating alpha, floating norm_y2,
+
+cdef floating dual(int pb, int n_samples, floating norm_y2,
                    floating * theta, floating * y) nogil:
 
-    alpha = 1.
     if pb == LASSO:
-        return dual_lasso(n_samples, alpha, norm_y2, &theta[0], &y[0])
+        return dual_lasso(n_samples, norm_y2, &theta[0], &y[0])
     else:
-        return dual_logreg(n_samples, alpha, &theta[0], &y[0])
+        return dual_logreg(n_samples, &theta[0], &y[0])
 
 
-# remove alpha
-# [before] should work with alpha = 1
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void create_dual_pt(
-        int pb, int n_samples, floating alpha, floating * out,
+        int pb, int n_samples, floating * out,
         floating * R, floating * y) nogil:
     """It is scaled by alpha for both Lasso and Logreg"""
-    alpha = 1.
-    cdef floating tmp = 1. / alpha
+    cdef floating tmp = 1.
     if pb == LASSO:  # out = R / (alpha * n_samples)
         tmp /= n_samples
         fcopy(&n_samples, &R[0], &inc, &out[0], &inc)

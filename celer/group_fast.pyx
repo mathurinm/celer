@@ -244,7 +244,7 @@ cpdef celer_grp(
             tmp = 1. / (scal / alpha)
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+        d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
 
         if t > 0:
             # also test dual point returned by inner solver after 1st iter:
@@ -257,7 +257,7 @@ cpdef celer_grp(
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
+                pb, n_samples, norm_y2, &theta_inner[0], &y[0])
 
             if d_obj_from_inner > d_obj:
                 d_obj = d_obj_from_inner
@@ -350,7 +350,7 @@ cpdef celer_grp(
 
                 # dual value is the same as for the Lasso
                 d_obj_in = dual(
-                    pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
+                    pb, n_samples, norm_y2, &theta_inner[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -370,7 +370,7 @@ cpdef celer_grp(
                             tmp = 1. / (scal / alpha)
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
-                        d_obj_accel = dual(pb, n_samples, alpha, norm_y2,
+                        d_obj_accel = dual(pb, n_samples, norm_y2,
                                            &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
