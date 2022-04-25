@@ -432,7 +432,7 @@ cpdef floating dnorm_l1(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios(
-    bint is_sparse, floating[:] theta, floating alpha,
+    bint is_sparse, floating[:] theta, floating alpha, floating l1_ratio,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating[:] norms_X_col, floating[:] weights, floating[:] prios,
     int[:] screened, floating radius, int * n_screened, bint positive) nogil:
@@ -458,9 +458,9 @@ cdef void set_prios(
 
 
         if positive:
-            prios[j] = fabs(Xj_theta - alpha * weights[j]) / norms_X_col[j]
+            prios[j] = fabs(Xj_theta - alpha * l1_ratio * weights[j]) / norms_X_col[j]
         else:
-            prios[j] = (alpha * weights[j] - fabs(Xj_theta)) / norms_X_col[j]
+            prios[j] = (alpha * l1_ratio * weights[j] - fabs(Xj_theta)) / norms_X_col[j]
 
         if prios[j] > radius:
             screened[j] = True
