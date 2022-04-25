@@ -3,16 +3,17 @@ celer
 
 |image0| |image1|
 
-Fast algorithm to solve Lasso-like problems with dual extrapolation. Currently, the package handles the following problems:
+Fast algorithm to solve Lasso-like problems with dual extrapolation, under a scikit-learn API.
+The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
+Currently, the package handles the following problems:
 
 - Lasso
 - weighted Lasso
 - Sparse Logistic regression
-- Group Lasso
-- Multitask Lasso.
+- weighted Group Lasso
+- Multitask Lasso
 
 The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
-The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
 
 Documentation
 =============
@@ -103,5 +104,5 @@ ArXiv links:
 
 .. |image0| image:: https://github.com/mathurinm/celer/workflows/build/badge.svg
    :target: https://github.com/mathurinm/celer/actions?query=workflow%3Abuild
-.. |image1| image:: https://codecov.io/gh/mathurinm/celer/branch/master/graphs/badge.svg?branch=master
+.. |image1| image:: https://codecov.io/gh/mathurinm/celer/branch/main/graphs/badge.svg?branch=main
    :target: https://codecov.io/gh/mathurinm/celer

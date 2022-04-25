@@ -8,78 +8,16 @@ from itertools import product
 
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 import pytest
 
-from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
-                                  Lasso as sklearn_Lasso, lasso_path,
-                                  LogisticRegression as sklearn_Logreg)
+                                  Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path
 from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
 from celer.utils.testing import build_dataset
-
-
-@pytest.mark.parametrize("solver", ["celer", "celer-pn"])
-def test_celer_path_logreg(solver):
-    X, y = build_dataset(
-        n_samples=60, n_features=100, sparse_X=True)
-    y = np.sign(y)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
-    alphas = alpha_max * np.geomspace(1, 1e-2, 10)
-
-    tol = 1e-11
-    coefs, Cs, n_iters = _logistic_regression_path(
-        X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
-        solver='liblinear', tol=tol)
-
-    _, coefs_c, gaps = celer_path(
-        X, y, "logreg", alphas=alphas, tol=tol, verbose=1,
-        use_PN=(solver == "celer-pn"))
-
-    assert_array_less(gaps, tol * len(y) * np.log(2))
-    assert_allclose(coefs != 0, coefs_c.T != 0)
-    assert_allclose(coefs, coefs_c.T, atol=1e-5, rtol=1e-3)
-
-
-@pytest.mark.parametrize("sparse_X", [True, False])
-def test_LogisticRegression(sparse_X):
-    np.random.seed(1409)
-    X, y = build_dataset(
-        n_samples=30, n_features=60, sparse_X=sparse_X)
-    y = np.sign(y)
-    alpha_max = norm(X.T.dot(y), ord=np.inf) / 2
-    C = 30. / alpha_max
-
-    tol = 1e-8
-    clf1 = LogisticRegression(C=C, tol=tol, verbose=2)
-    clf1.fit(X, y)
-
-    clf2 = sklearn_Logreg(
-        C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
-    clf2.fit(X, y)
-    assert_allclose(clf1.coef_, clf2.coef_, rtol=1e-3, atol=1e-5)
-
-    # this uses float32 so we increase the tol else there are precision issues
-    clf1.tol = 1e-4
-    check_estimator(clf1)
-
-    # multinomial test, need to have a slightly lower tol
-    # for results to be comparable
-    y = np.random.choice(4, len(y))
-    clf3 = LogisticRegression(C=C, tol=tol, verbose=2)
-    clf3.fit(X, y)
-
-    clf4 = sklearn_Logreg(
-        C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
-    clf4.fit(X, y)
-    assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-3)
-
-    clf3.tol = 1e-3
-    check_estimator(clf3)
 
 
 @pytest.mark.parametrize("sparse_X, alphas, pb",
@@ -118,7 +56,7 @@ def test_convergence_warning():
         # Cause all warnings to always be triggered.
         warnings.simplefilter("always")
         clf.fit(X, y)
-        assert len(w) == 1
+        assert len(w) >= 1
         assert issubclass(w[-1].category, ConvergenceWarning)
 
 
@@ -177,7 +115,7 @@ def test_Lasso(sparse_X, fit_intercept, positive):
 
     alpha = alpha_max / 2.
     params = dict(alpha=alpha, fit_intercept=fit_intercept, tol=1e-10,
-                  normalize=True, positive=positive)
+                  positive=positive)
     clf = Lasso(**params)
     clf.fit(X, y)
 
@@ -246,9 +184,8 @@ def test_warm_start():
         assert_array_less(reg1.n_iter_, 2.01)
 
 
-def test_weights():
-    sparse_X = 1
-    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+def test_weights_lasso():
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=True)
 
     np.random.seed(0)
     weights = np.abs(np.random.randn(X.shape[1]))
@@ -256,27 +193,71 @@ def test_weights():
     tol = 1e-14
     params = {'n_alphas': 10, 'tol': tol}
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", weights=weights, verbose=1,
-        **params)
+        X, y, "lasso", weights=weights, verbose=1, **params)
 
     alphas2, coefs2, gaps2 = celer_path(
-        X / weights[None, :], y, "lasso", **params)
+        X.multiply(1 / weights[None, :]), y, "lasso", **params)
 
     assert_allclose(alphas1, alphas2)
-    assert_allclose(
-        coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
+    assert_allclose(coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
     assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
     assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
     alpha = 0.001
     clf1 = Lasso(alpha=alpha, weights=weights, fit_intercept=False).fit(X, y)
-    clf2 = Lasso(alpha=alpha, fit_intercept=False).fit(X / weights, y)
+    clf2 = Lasso(alpha=alpha, fit_intercept=False).fit(
+        X.multiply(1. / weights), y)
 
     assert_allclose(clf1.coef_, clf2.coef_ / weights)
 
     # weights must be > 0
     clf1.weights[0] = 0.
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+    # weights must be equal to X.shape[1]
+    clf1.weights = np.ones(X.shape[1] + 1)
+    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+
+
+@pytest.mark.parametrize("pb", ["lasso", "logreg"])
+def test_infinite_weights(pb):
+    n_samples, n_features = 50, 100
+    X, y = build_dataset(n_samples, n_features)
+    if pb == "logreg":
+        y = np.sign(y)
+
+    np.random.seed(1)
+    weights = np.abs(np.random.randn(n_features))
+    n_inf = n_features // 10
+    inf_indices = np.random.choice(n_features, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+
+    alpha = norm(X.T @ y / weights, ord=np.inf) / n_samples / 100
+
+    tol = 1e-8
+    _, coefs, dual_gaps = celer_path(
+        X, y, pb=pb, alphas=[alpha], weights=weights, tol=tol)
+
+    if pb == "logreg":
+        assert_array_less(dual_gaps[0], tol * n_samples * np.log(2))
+    else:
+        assert_array_less(dual_gaps[0], tol * norm(y) ** 2 / 2.)
+
+    assert_array_equal(coefs[inf_indices], 0)
+
+
+def test_zero_iter():
+    X, y = build_dataset(n_samples=30, n_features=50)
+
+    # convergence warning is raised bc we return -1 as gap
+    with warnings.catch_warnings(record=True):
+        assert_allclose(Lasso(max_iter=0).fit(X, y).coef_, 0)
+        y = 2 * (y > 0) - 1
+        assert_allclose(
+            LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y).coef_,
+            0)
+        assert_allclose(
+            LogisticRegression(max_iter=0, solver="celer").fit(X, y).coef_,
+            0)
 
 
 if __name__ == "__main__":

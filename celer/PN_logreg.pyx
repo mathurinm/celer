@@ -41,9 +41,10 @@ def newton_celer(
     # scale tol for when problem has large or small p_obj
     tol *= n_samples * np.log(2)
 
-    cdef int i, j, t, k
-    cdef floating p_obj, d_obj, gap, norm_Xtheta, norm_Xtheta_acc
-    cdef floating tmp
+    cdef int t = 0
+    cdef int i, j, k
+    cdef floating p_obj, d_obj, norm_Xtheta, norm_Xtheta_acc, tmp
+    cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef int info_dposv
     cdef int ws_size
     cdef floating eps_inner = 0.1
@@ -54,7 +55,8 @@ def newton_celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] WS
-    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    cdef floating[:] gaps = np.zeros(max(1, max_iter), dtype=dtype)
+    gaps[0] = gap  # support max_iter = 0
     cdef floating[:] X_mean = np.zeros(n_features, dtype=dtype)
     cdef bint center = False
     # TODO support centering
@@ -102,17 +104,17 @@ def newton_celer(
     for t in range(max_iter):
         p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)
 
-        # theta = y * sigmoid(-y * Xw) / alpha
-        create_dual_pt(LOGREG, n_samples, alpha, &theta[0], &Xw[0], &y[0])
+        # theta = y * sigmoid(-y * Xw)
+        create_dual_pt(LOGREG, n_samples, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = dnorm_l1(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
             screened, X_mean, weights_pen, center, positive)
 
-        if norm_Xtheta > 1.:
-            tmp = 1. / norm_Xtheta
+        if norm_Xtheta > alpha:
+            tmp = alpha / norm_Xtheta
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 0., &theta[0], &y[0])
+        d_obj = dual(LOGREG, n_samples, 0., &theta[0], &y[0])
         gap = p_obj - d_obj
 
         if t != 0 and use_accel:
@@ -159,9 +161,6 @@ def newton_celer(
             for i in range(n_samples):
                 theta_acc[i] = y[i] * sigmoid(- y[i] * theta_acc[i])
 
-            tmp = 1. / alpha
-            fscal(&n_samples, &tmp, &theta_acc[0], &inc)
-
             # do not forget to update exp_Xw
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
@@ -170,11 +169,11 @@ def newton_celer(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights_pen, center, positive)
 
-            if norm_Xtheta_acc > 1.:
-                tmp = 1. / norm_Xtheta_acc
+            if norm_Xtheta_acc > alpha:
+                tmp = alpha / norm_Xtheta_acc
                 fscal(&n_samples, &tmp, &theta_acc[0], &inc)
 
-            d_obj_acc = dual(LOGREG, n_samples, alpha, 0., &theta_acc[0], &y[0])
+            d_obj_acc = dual(LOGREG, n_samples, 0., &theta_acc[0], &y[0])
             if d_obj_acc > d_obj:
                 fcopy(&n_samples, &theta_acc[0], &inc, &theta[0], &inc)
                 gap = p_obj - d_obj_acc
@@ -189,7 +188,7 @@ def newton_celer(
             break
 
 
-        set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
+        set_prios(is_sparse, theta, alpha, X, X_data, X_indices, X_indptr,
                   norms_X_col, weights_pen, prios, screened, radius,
                   &n_screened, 0)
 
@@ -345,7 +344,7 @@ cpdef int PN_logreg(
                        X_indices, X_indptr, MAX_BACKTRACK_ITR, y,
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
-        create_dual_pt(LOGREG, n_samples, alpha, &aux[0], &Xw[0], &y[0])
+        create_dual_pt(LOGREG, n_samples, &aux[0], &Xw[0], &y[0])
 
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
@@ -375,9 +374,9 @@ cpdef int PN_logreg(
                 notin_WS, X_mean, weights_pen, center, 0)
 
         for i in range(n_samples):
-            aux[i] /= max(1, norm_Xaux)
+            aux[i] /= max(1, norm_Xaux / alpha)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 0, &aux[0], &y[0])
+        d_obj = dual(LOGREG, n_samples, 0, &aux[0], &y[0])
         p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)
 
         gap = p_obj - d_obj

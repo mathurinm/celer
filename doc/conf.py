@@ -192,17 +192,24 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+
+intersphinx_mapping = {
+    # 'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    # 'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'sklearn': ('http://scikit-learn.org/stable', None),
+}
+
 sphinx_gallery_conf = {
-    'doc_module': ('celer',),
+    'doc_module': ('celer', 'sklearn'),
     'reference_url': dict(celer=None),
     'examples_dirs': '../examples',
     'gallery_dirs': 'auto_examples',
     'reference_url': {
-        'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
-        'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference',
+        'celer': None,
     }
 }
 
 
 def setup(app):
-    app.add_stylesheet('style.css')
+    app.add_css_file('style.css')

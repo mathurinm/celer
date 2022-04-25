@@ -55,18 +55,20 @@ def celer(
     if p0 > n_features:
         p0 = n_features
 
-    cdef int i, j, k, t, idx, startptr, endptr, epoch
+    cdef int t = 0
+    cdef int i, j, k, idx, startptr, endptr, epoch
     cdef int ws_size = 0
     cdef int nnz = 0
-    cdef floating gap, p_obj, d_obj, highest_d_obj, radius, tol_in
+    cdef floating gap = -1  # initialized for the warning if max_iter=0
+    cdef floating p_obj, d_obj, highest_d_obj, radius, tol_in
     cdef floating gap_in, p_obj_in, d_obj_in, d_obj_accel, highest_d_obj_in
     cdef floating tmp, R_sum, tmp_exp, scal
     cdef int n_screened = 0
     cdef bint center = False
-    cdef floating old_w_j, X_mean_j, w_Cj
+    cdef floating old_w_j, X_mean_j
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
-    cdef int[:] notin_WS = np.zeros(n_features, dtype=np.int32)
+    cdef int[:] notin_ws = np.zeros(n_features, dtype=np.int32)
 
 
     # acceleration variables:
@@ -96,41 +98,44 @@ def celer(
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
 
-    cdef floating[:] gaps = np.zeros(max_iter, dtype=dtype)
+    # max_iter + 1 is to deal with max_iter=0
+    cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
+    gaps[0] = -1
 
     cdef floating[:] theta_in = np.zeros(n_samples, dtype=dtype)
     cdef floating[:] thetacc = np.zeros(n_samples, dtype=dtype)
     cdef floating d_obj_from_inner = 0.
 
-    cdef int[:] C
+    cdef int[:] ws
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
         if t != 0:
-            create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
+            create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
             scal = dnorm_l1(
                 is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
                 X_mean, weights, center, positive)
 
-            if scal > 1. :
-                tmp = 1. / scal
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_l1(
                 is_sparse, theta_in, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights, center, positive)
-            if scal > 1.:
-                tmp = 1. / scal
+
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                pb, n_samples, norm_y2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -152,11 +157,11 @@ def celer(
             break
 
         if pb == LASSO:
-            radius = sqrt(2 * gap / n_samples) / alpha
+            radius = sqrt(2 * gap / n_samples)
         else:
-            radius = sqrt(gap / 2.) / alpha
+            radius = sqrt(gap / 2.)
         set_prios(
-            is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
+            is_sparse, theta, alpha, X, X_data, X_indices, X_indptr, norms_X_col,
             weights, prios, screened, radius, &n_screened, positive)
 
         if prune:
@@ -179,9 +184,9 @@ def celer(
                 ws_size = p0
             else:
                 for j in range(ws_size):
-                    if not screened[C[j]]:
+                    if not screened[ws[j]]:
                         # include previous features, if not screened
-                        prios[C[j]] = -1
+                        prios[ws[j]] = -1
                 ws_size = 2 * ws_size
         if ws_size > n_features - n_screened:
             ws_size = n_features - n_screened
@@ -189,14 +194,14 @@ def celer(
 
         # if ws_size === n_features then argpartition will break:
         if ws_size == n_features:
-            C = all_features
+            ws = all_features
         else:
-            C = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
+            ws = np.argpartition(np.asarray(prios), ws_size)[:ws_size].astype(np.int32)
 
         for j in range(n_features):
-            notin_WS[j] = 1
+            notin_ws[j] = 1
         for idx in range(ws_size):
-            notin_WS[C[idx]] = 0
+            notin_ws[ws[idx]] = 0
 
         if prune:
             tol_in = 0.3 * gap
@@ -205,27 +210,25 @@ def celer(
 
         if verbose:
             print(", %d feats in subpb (%d left)" %
-                  (len(C), n_features - n_screened))
+                  (len(ws), n_features - n_screened))
 
         # calling inner solver which will modify w and R inplace
         highest_d_obj_in = 0
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 create_dual_pt(
-                    pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
+                    pb, n_samples, &theta_in[0], &Xw[0], &y[0])
 
                 scal = dnorm_l1(
                     is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                    notin_WS, X_mean, weights, center, positive)
-                # print(scal)
-                # print(np.linalg.norm(np.asarray(X)[:, np.asarray(C)].T @ np.asarray(theta_in), ord=np.inf))
+                    notin_ws, X_mean, weights, center, positive)
 
-                if scal > 1. :
-                    tmp = 1. / scal
+                if scal > alpha:
+                    tmp = alpha / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
                 d_obj_in = dual(
-                    pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                    pb, n_samples, norm_y2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -239,15 +242,15 @@ def celer(
                     if epoch // gap_freq >= K:
                         scal = dnorm_l1(
                             is_sparse, thetacc, X, X_data, X_indices,
-                            X_indptr, notin_WS, X_mean, weights, center,
+                            X_indptr, notin_ws, X_mean, weights, center,
                             positive)
 
-                        if scal > 1. :
-                            tmp = 1. / scal
+                        if scal > alpha:
+                            tmp = alpha / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, norm_y2, &thetacc[0], &y[0])
+                            pb, n_samples, norm_y2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
@@ -256,7 +259,7 @@ def celer(
                 if d_obj_in > highest_d_obj_in:
                     highest_d_obj_in = d_obj_in
 
-                # CAUTION: code does not yet  include a best_theta.
+                # CAUTION: code does not yet include a best_theta.
                 # Can be an issue in screening: dgap and theta might disagree.
 
                 p_obj_in = primal(pb, alpha, Xw, y, w, weights)
@@ -272,7 +275,7 @@ def celer(
                     break
 
             for k in range(ws_size):
-                j = C[k]
+                j = ws[k]
                 if norms_X_col[j] == 0. or weights[j] == INFINITY:
                     continue
                 old_w_j = w[j]
