@@ -119,7 +119,7 @@ def celer(
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
-            scal = dnorm_l1_enet(
+            scal = dnorm_enet(
                 is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
                 X_mean, weights, center, positive, alpha, l1_ratio)
 
@@ -130,12 +130,11 @@ def celer(
             d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
-            scal = dnorm_l1(
-                is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                screened, X_mean, weights, center, positive)
-
-            if scal > alpha:
-                tmp = alpha / scal
+            scal = dnorm_enet(
+                is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
+                screened, X_mean, weights, center, positive, alpha, l1_ratio)
+            if scal > 1.:
+                tmp = 1. / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             # handle case enet
@@ -229,7 +228,7 @@ def celer(
                 create_dual_pt(
                     pb, n_samples, &theta_in[0], &Xw[0], &y[0])
 
-                scal = dnorm_l1_enet(
+                scal = dnorm_enet(
                     is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
                     notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
@@ -251,7 +250,7 @@ def celer(
                         # print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        scal = dnorm_l1_enet(
+                        scal = dnorm_enet(
                             is_sparse, thetacc, w, X, X_data, X_indices,
                             X_indptr, notin_ws, X_mean, weights, center,
                             positive, alpha, l1_ratio)

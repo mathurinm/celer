@@ -13,7 +13,7 @@ from sklearn.linear_model._base import _preprocess_data
 from .lasso_fast import celer
 from .group_fast import celer_grp, dnorm_grp
 from .cython_utils import compute_norms_X_col, compute_Xw
-from .cython_utils import dnorm_l1 as dnorm_l1_cython
+from .cython_utils import dnorm_enet as dnorm_enet_cython
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
 
@@ -371,9 +371,8 @@ def dnorm_l1(X, theta, weights, X_sparse_scaling, positive):
     """Theta should be centered."""
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
     skip = np.zeros(X.shape[1], dtype=np.int32)
-    scal = dnorm_l1_cython(
-        sparse.issparse(X), theta, X_dense, X_data, X_indices, X_indptr,
-        skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive)
+    scal = dnorm_enet_cython(
+        sparse.issparse(X), theta, X_dense, X_data, X_indices, X_indptr, skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive, 1., 1.)
     return scal
 
 
