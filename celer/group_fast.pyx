@@ -232,7 +232,7 @@ cpdef celer_grp(
         # if t != 0: TODO potential speedup at iteration 0
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
 
-        tmp = 1. / n_samples  # (alpha * n_samples)
+        tmp = 1. / n_samples
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = dnorm_grp(

@@ -175,8 +175,8 @@ cdef floating dual_lasso(int n_samples, floating norm_y2,
     cdef floating d_obj = 0.
 
     for i in range(n_samples):
-        d_obj -= (y[i] / n_samples - theta[i]) ** 2
-    d_obj *= 0.5 * n_samples
+        d_obj -= (y[i] - n_samples * theta[i]) ** 2
+    d_obj *= 0.5 / n_samples
     d_obj += norm_y2 / (2. * n_samples)
     return d_obj
 
@@ -212,7 +212,7 @@ cdef void create_dual_pt(
         floating * R, floating * y) nogil:
     cdef floating tmp = 1.
     if pb == LASSO:  # out = R / n_samples
-        tmp /= n_samples
+        tmp = 1. / n_samples
         fcopy(&n_samples, &R[0], &inc, &out[0], &inc)
     else:  # out = y * sigmoid(-y * Xw)
         for i in range(n_samples):
