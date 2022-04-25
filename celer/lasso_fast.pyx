@@ -352,8 +352,10 @@ def celer(
                             faxpy(&n_samples, &tmp, &X[0, j], &inc,
                                   &Xw[0], &inc)
         else:
-            print("!!! Inner solver did not converge at epoch "
-                  "%d, gap: %.2e > %.2e" % (epoch, gap_in, tol_in))
+            warnings.warn(
+                'Inner solver did not converge at ' +
+                f'epoch: {epoch}, gap: {gap_in:.2e} > {tol_in:.2e}',
+                ConvergenceWarning)
     else:
         warnings.warn(
             'Objective did not converge: duality ' +
