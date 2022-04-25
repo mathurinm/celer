@@ -161,8 +161,6 @@ def newton_celer(
             for i in range(n_samples):
                 theta_acc[i] = y[i] * sigmoid(- y[i] * theta_acc[i])
 
-            tmp = 1.
-
             # do not forget to update exp_Xw
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
