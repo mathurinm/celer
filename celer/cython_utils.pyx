@@ -3,6 +3,7 @@
 #         Joseph Salmon <joseph.salmon@telecom-paristech.fr>
 # License: BSD 3 clause
 
+
 cimport cython
 cimport numpy as np
 
@@ -170,15 +171,15 @@ cdef floating primal(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio, 
-                         floating norm_y2, floating norm_w2, floating * theta, 
-                         floating * y) nogil:
+cdef floating dual_lasso(int n_samples, floating norm_y2,
+                         floating * theta, floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
+
     for i in range(n_samples):
-        d_obj -= (y[i] / (alpha * n_samples) - theta[i]) ** 2
-    d_obj *= 0.5 * alpha ** 2 * n_samples
+        d_obj -= (y[i] - n_samples * theta[i]) ** 2
+    d_obj *= 0.5 / n_samples
     d_obj += norm_y2 / (2. * n_samples)
     if l1_ratio != 1.0:
         d_obj -= alpha * (1 - l1_ratio) * norm_w2
@@ -188,23 +189,24 @@ cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio,
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_logreg(int n_samples, floating alpha, floating * theta,
+cdef floating dual_logreg(int n_samples, floating * theta,
                           floating * y) nogil:
     """Compute dual objective value at theta, which must be feasible."""
     cdef int i
     cdef floating d_obj = 0.
+
     for i in range(n_samples):
-        d_obj -= Nh(alpha * y[i] * theta[i])
+        d_obj -= Nh(y[i] * theta[i])
     return d_obj
 
 
-# handle case enet
-cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio, 
-                   floating norm_y2, floating norm_w2, floating * theta, floating * y) nogil:
+cdef floating dual(int pb, int n_samples, floating norm_y2,
+                   floating * theta, floating * y) nogil:
+
     if pb == LASSO:
-        return dual_lasso(n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
+        return dual_lasso(n_samples, norm_y2, &theta[0], &y[0])
     else:
-        return dual_logreg(n_samples, alpha, &theta[0], &y[0])
+        return dual_logreg(n_samples, &theta[0], &y[0])
 
 
 # TODO handle case enet
@@ -212,14 +214,13 @@ cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio,
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void create_dual_pt(
-        int pb, int n_samples, floating alpha, floating l1_ratio, floating * out,
+        int pb, int n_samples, floating * out,
         floating * R, floating * y) nogil:
-    """It is scaled by alpha for both Lasso and Logreg"""
-    cdef floating tmp = 1. / alpha
-    if pb == LASSO:  # out = R / (alpha * n_samples)
-        tmp /= n_samples
+    cdef floating tmp = 1.
+    if pb == LASSO:  # out = R / n_samples
+        tmp = 1. / n_samples
         fcopy(&n_samples, &R[0], &inc, &out[0], &inc)
-    else:  # out = y * sigmoid(-y * Xw) / alpha
+    else:  # out = y * sigmoid(-y * Xw)
         for i in range(n_samples):
             out[i] = y[i] * sigmoid(-y[i] * R[i])
 
@@ -249,7 +250,7 @@ cdef int create_accel_pt(
 
     cdef int i, j, k
     # warning: this is wrong (n_samples) for MTL, it is handled outside
-    cdef floating tmp = 1. / alpha if pb == LOGREG else 1. / (n_samples * alpha)
+    cdef floating tmp = 1. if pb == LOGREG else 1. / n_samples
 
     if epoch // gap_freq < K:
         # last_K_R[it // f_gap] = R:
@@ -303,8 +304,8 @@ cdef int create_accel_pt(
 
         fscal(&n_samples, &tmp, &out[0], &inc)
         # out now holds the extrapolated dual point:
-        # LASSO: (y - Xw) / (alpha * n_samples)
-        # LOGREG:  y * sigmoid(-y * Xw) / alpha
+        # LASSO: (y - Xw) / n_samples
+        # LOGREG:  y * sigmoid(-y * Xw)
 
     return info_dposv
 
@@ -431,7 +432,7 @@ cpdef floating dnorm_l1(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios(
-    bint is_sparse, floating[:] theta,
+    bint is_sparse, floating[:] theta, floating alpha,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating[:] norms_X_col, floating[:] weights, floating[:] prios,
     int[:] screened, floating radius, int * n_screened, bint positive) nogil:
@@ -457,9 +458,9 @@ cdef void set_prios(
 
 
         if positive:
-            prios[j] = fabs(Xj_theta - weights[j]) / norms_X_col[j]
+            prios[j] = fabs(Xj_theta - alpha * weights[j]) / norms_X_col[j]
         else:
-            prios[j] = (weights[j] - fabs(Xj_theta)) / norms_X_col[j]
+            prios[j] = (alpha * weights[j] - fabs(Xj_theta)) / norms_X_col[j]
 
         if prios[j] > radius:
             screened[j] = True

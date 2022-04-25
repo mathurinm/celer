@@ -104,17 +104,17 @@ def newton_celer(
     for t in range(max_iter):
         p_obj = primal(LOGREG, alpha, 1.0, Xw, y, w, weights_pen)
 
-        # theta = y * sigmoid(-y * Xw) / alpha
-        create_dual_pt(LOGREG, n_samples, alpha, 1.0, &theta[0], &Xw[0], &y[0])
+        # theta = y * sigmoid(-y * Xw)
+        create_dual_pt(LOGREG, n_samples, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = dnorm_l1(
             is_sparse, theta, X, X_data, X_indices, X_indptr,
             screened, X_mean, weights_pen, center, positive)
 
-        if norm_Xtheta > 1.:
-            tmp = 1. / norm_Xtheta
+        if norm_Xtheta > alpha:
+            tmp = alpha / norm_Xtheta
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 1.0, 0., 0., &theta[0], &y[0])
+        d_obj = dual(LOGREG, n_samples, 0., &theta[0], &y[0])
         gap = p_obj - d_obj
 
         if t != 0 and use_accel:
@@ -161,9 +161,6 @@ def newton_celer(
             for i in range(n_samples):
                 theta_acc[i] = y[i] * sigmoid(- y[i] * theta_acc[i])
 
-            tmp = 1. / alpha
-            fscal(&n_samples, &tmp, &theta_acc[0], &inc)
-
             # do not forget to update exp_Xw
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
@@ -172,11 +169,11 @@ def newton_celer(
                 is_sparse, theta_acc, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights_pen, center, positive)
 
-            if norm_Xtheta_acc > 1.:
-                tmp = 1. / norm_Xtheta_acc
+            if norm_Xtheta_acc > alpha:
+                tmp = alpha / norm_Xtheta_acc
                 fscal(&n_samples, &tmp, &theta_acc[0], &inc)
 
-            d_obj_acc = dual(LOGREG, n_samples, alpha, 1.0, 0., 0., &theta_acc[0], &y[0])
+            d_obj_acc = dual(LOGREG, n_samples, 0., &theta_acc[0], &y[0])
             if d_obj_acc > d_obj:
                 fcopy(&n_samples, &theta_acc[0], &inc, &theta[0], &inc)
                 gap = p_obj - d_obj_acc
@@ -191,7 +188,7 @@ def newton_celer(
             break
 
 
-        set_prios(is_sparse, theta, X, X_data, X_indices, X_indptr,
+        set_prios(is_sparse, theta, alpha, X, X_data, X_indices, X_indptr,
                   norms_X_col, weights_pen, prios, screened, radius,
                   &n_screened, 0)
 
@@ -347,7 +344,7 @@ cpdef int PN_logreg(
                        X_indices, X_indptr, MAX_BACKTRACK_ITR, y,
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
-        create_dual_pt(LOGREG, n_samples, alpha, 1.0, &aux[0], &Xw[0], &y[0])
+        create_dual_pt(LOGREG, n_samples, &aux[0], &Xw[0], &y[0])
 
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
@@ -377,10 +374,10 @@ cpdef int PN_logreg(
                 notin_WS, X_mean, weights_pen, center, 0)
 
         for i in range(n_samples):
-            aux[i] /= max(1, norm_Xaux)
+            aux[i] /= max(1, norm_Xaux / alpha)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 1.0, 0, 0., &aux[0], &y[0])
-        p_obj = primal(LOGREG, alpha, 1.0, Xw, y, w, weights_pen)
+        d_obj = dual(LOGREG, n_samples, 0, &aux[0], &y[0])
+        p_obj = primal(LOGREG, alpha, Xw, y, w, weights_pen)
 
         gap = p_obj - d_obj
         if verbose_in:
