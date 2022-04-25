@@ -411,18 +411,6 @@ cpdef floating dnorm_enet(
         scal = max(scal, Xj_theta / weights[j])
     return scal
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-cpdef floating dnorm_l1(
-        bint is_sparse, floating[:] theta, floating[::1, :] X,
-        floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
-        floating[:] X_mean, floating[:] weights, bint center,
-        bint positive) nogil:
-    # pass arbitrary w, alpha
-    return dnorm_enet(is_sparse, theta, weights, X, X_data, X_indices, X_indptr,
-                         skip, X_mean, weights, center, positive, 1., 1.)
-
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
