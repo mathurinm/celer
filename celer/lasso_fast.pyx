@@ -149,7 +149,6 @@ def celer(
         # would add yet another variable, best_theta. I'm not sure it brings
         # anything.
 
-        # TODO case enet
         p_obj = primal(pb, alpha, l1_ratio, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
@@ -161,7 +160,6 @@ def celer(
                 print("\nEarly exit, gap: %.2e < %.2e" % (gap, tol))
             break
 
-        # handle case enet
         if pb == LASSO:
             radius = sqrt(2 * gap / n_samples)
         else:
@@ -240,7 +238,7 @@ def celer(
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
-                        pb, n_samples, epoch, gap_freq, alpha, &Xw[0],
+                        pb, n_samples, epoch, gap_freq, &Xw[0],
                         &thetacc[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
                     if info_dposv != 0 and verbose_in:

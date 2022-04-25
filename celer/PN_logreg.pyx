@@ -13,7 +13,7 @@ from libc.math cimport fabs, sqrt, exp
 from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
-from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
+from .cython_utils cimport (primal, dual, create_dual_pt,
                             sigmoid, ST, LOGREG, dnorm_l1,
                             compute_Xw, compute_norms_X_col, set_prios)
 

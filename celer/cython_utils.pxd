@@ -27,7 +27,7 @@ cdef void fposv(char *, int *, int *, floating *,
                 int *, floating *, int *, int *) nogil
 
 cdef int create_accel_pt(
-    int, int, int, int, floating, floating *, floating *,
+    int, int, int, int, floating *, floating *,
     floating *, floating[:, :], floating[:, :], floating[:], floating[:])
 
 

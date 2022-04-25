@@ -353,7 +353,7 @@ cpdef celer_grp(
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
-                        LASSO, n_samples, epoch, gap_freq, alpha, &R[0],
+                        LASSO, n_samples, epoch, gap_freq, &R[0],
                         &thetacc[0], &last_K_R[0, 0], U, UtU, onesK, y)
 
                     # if info_dposv != 0 and verbose:

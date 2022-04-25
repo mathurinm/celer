@@ -233,7 +233,6 @@ cdef void create_dual_pt(
 @cython.cdivision(True)
 cdef int create_accel_pt(
     int pb, int n_samples, int epoch, int gap_freq,
-    floating alpha,
     floating * R, floating * out, floating * last_K_R, floating[:, :] U,
     floating[:, :] UtU, floating[:] onesK, floating[:] y):
 
