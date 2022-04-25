@@ -111,30 +111,31 @@ def celer(
 
     for t in range(max_iter):
         if t != 0:
-            create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
+            create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
             scal = dnorm_l1(
                 is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
                 X_mean, weights, center, positive)
 
-            if scal > 1. :
-                tmp = 1. / scal
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_l1(
                 is_sparse, theta_in, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights, center, positive)
-            if scal > 1.:
-                tmp = 1. / scal
+
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                pb, n_samples, norm_y2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -156,11 +157,11 @@ def celer(
             break
 
         if pb == LASSO:
-            radius = sqrt(2 * gap / n_samples) / alpha
+            radius = sqrt(2 * gap / n_samples)
         else:
-            radius = sqrt(gap / 2.) / alpha
+            radius = sqrt(gap / 2.)
         set_prios(
-            is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
+            is_sparse, theta, alpha, X, X_data, X_indices, X_indptr, norms_X_col,
             weights, prios, screened, radius, &n_screened, positive)
 
         if prune:
@@ -216,18 +217,18 @@ def celer(
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 create_dual_pt(
-                    pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
+                    pb, n_samples, &theta_in[0], &Xw[0], &y[0])
 
                 scal = dnorm_l1(
                     is_sparse, theta_in, X, X_data, X_indices, X_indptr,
                     notin_ws, X_mean, weights, center, positive)
 
-                if scal > 1. :
-                    tmp = 1. / scal
+                if scal > alpha:
+                    tmp = alpha / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
                 d_obj_in = dual(
-                    pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                    pb, n_samples, norm_y2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -244,12 +245,12 @@ def celer(
                             X_indptr, notin_ws, X_mean, weights, center,
                             positive)
 
-                        if scal > 1. :
-                            tmp = 1. / scal
+                        if scal > alpha:
+                            tmp = alpha / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, norm_y2, &thetacc[0], &y[0])
+                            pb, n_samples, norm_y2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
