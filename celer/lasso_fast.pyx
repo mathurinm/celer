@@ -121,7 +121,7 @@ def celer(
                 X_mean, weights, center, positive, alpha, l1_ratio)
 
             if scal > alpha * l1_ratio:
-                tmp = alpha / scal
+                tmp = (alpha * l1_ratio) / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
@@ -132,7 +132,7 @@ def celer(
                 screened, X_mean, weights, center, positive, alpha, l1_ratio)
 
             if scal > alpha * l1_ratio:
-                tmp = alpha / scal
+                tmp = (alpha * l1_ratio) / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             # handle case enet
@@ -230,8 +230,8 @@ def celer(
                     is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
                     notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
-                if scal > alpha:
-                    tmp = alpha / scal
+                if scal > alpha * l1_ratio:
+                    tmp = (alpha * l1_ratio) / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
                 # TODO handle case enet
@@ -253,8 +253,8 @@ def celer(
                             X_indptr, notin_ws, X_mean, weights, center,
                             positive, alpha, l1_ratio)
 
-                        if scal > alpha:
-                            tmp = alpha / scal
+                        if scal > alpha * l1_ratio:
+                            tmp = (alpha * l1_ratio) / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         # handle case enet
