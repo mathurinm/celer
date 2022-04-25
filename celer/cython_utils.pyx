@@ -152,8 +152,8 @@ cdef floating primal_lasso(
     for j in range(n_features):
         # avoid nan when weights[j] is INFINITY
         if w[j]:
-            p_obj += alpha * weights[j] * ( \
-                     l1_ratio * fabs(w[j]) + \
+            p_obj += alpha * weights[j] * (
+                     l1_ratio * fabs(w[j]) +
                      (1. - l1_ratio) * w[j] ** 2)
     return p_obj
 
@@ -205,7 +205,7 @@ cdef floating dual_logreg(int n_samples, floating * theta,
 cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio,
                    floating norm_y2, floating norm_w2, floating * theta, floating * y) nogil:
     if pb == LASSO:
-        return dual_lasso(n_samples, norm_y2, &theta[0], &y[0])
+        return dual_lasso(n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
     else:
         return dual_logreg(n_samples, &theta[0], &y[0])
 
@@ -424,7 +424,7 @@ cpdef floating dnorm_l1(
         floating[:] X_mean, floating[:] weights, bint center,
         bint positive) nogil:
     # pass arbitrary w, alpha
-    return dnorm_l1_enet(is_sparse, theta, weights, X, X_data, X_indices, X_indptr,
+    return dnorm_enet(is_sparse, theta, weights, X, X_data, X_indices, X_indptr,
                          skip, X_mean, weights, center, positive, 1., 1.)
 
 

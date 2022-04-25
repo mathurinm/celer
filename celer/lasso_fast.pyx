@@ -13,7 +13,7 @@ from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                            sigmoid, ST, LASSO, LOGREG, dnorm_l1_enet,
+                            sigmoid, ST, LASSO, LOGREG, dnorm_enet,
                             set_prios)
 
 
@@ -35,10 +35,6 @@ def celer(
     WARNING for Logreg the datafit is a sum, while for Lasso it is a mean.
     """
     assert pb in (LASSO, LOGREG)
-
-    # enet conv: lambda = alpha * l1_ratio | mu = 2 * alpha * (1 - l1_ratio)
-    # lbd = alpha * l1_ratio
-    # mu = 2 * alpha * (1 - l1_ratio)
 
     if floating is double:
         dtype = np.float64
@@ -116,6 +112,7 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
+        norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
@@ -123,25 +120,26 @@ def celer(
                 is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
                 X_mean, weights, center, positive, alpha, l1_ratio)
 
-            if scal > alpha:
+            if scal > alpha * l1_ratio:
                 tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
-            d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_enet(
                 is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights, center, positive, alpha, l1_ratio)
-            if scal > 1.:
-                tmp = 1. / scal
+
+            if scal > alpha * l1_ratio:
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             # handle case enet
             d_obj_from_inner = dual(
-                pb, n_samples, norm_y2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -238,7 +236,7 @@ def celer(
 
                 # TODO handle case enet
                 d_obj_in = dual(
-                    pb, n_samples, norm_y2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -261,7 +259,7 @@ def celer(
 
                         # handle case enet
                         d_obj_accel = dual(
-                            pb, n_samples, norm_y2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
