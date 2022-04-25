@@ -100,16 +100,15 @@ cdef void set_prios_mtl(
 @cython.cdivision(True)
 cdef floating dual_mtl(
         int n_samples, int n_tasks, floating[::1, :] theta, floating[::1, :] Y,
-        floating norm_Y2, floating alpha) nogil:
+        floating norm_Y2) nogil:
     cdef int inc = 1
     cdef int i, k
     cdef floating d_obj = 0.
 
-    alpha = 1
     for k in range(n_tasks):
         for i in range(n_samples):
-            d_obj -= (Y[i, k] / (alpha * n_samples) - theta[i, k]) ** 2
-    d_obj *= 0.5 * alpha ** 2 * n_samples
+            d_obj -= (Y[i, k] / n_samples - theta[i, k]) ** 2
+    d_obj *= 0.5 * n_samples
     d_obj += norm_Y2 / (2. * n_samples)
     return d_obj
 
@@ -201,7 +200,7 @@ def celer_mtl(
         if scal > alpha:
             tmp = alpha / scal
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
-        d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
+        d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2)
 
         if t > 0:
             scal = dual_scaling_mtl(
@@ -212,7 +211,7 @@ def celer_mtl(
                 tmp = alpha / scal
                 fscal(&n_obs, &tmp, &theta_inner[0, 0], &inc)
             d_obj_from_inner = dual_mtl(
-                n_samples, n_tasks, theta_inner, Y, norm_Y2, alpha)
+                n_samples, n_tasks, theta_inner, Y, norm_Y2)
             if d_obj_from_inner > d_obj:
                 d_obj = d_obj_from_inner
 
@@ -331,7 +330,6 @@ cpdef void inner_solver(
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
             tmp = 1. / n_samples
-            # tmp = 1. / alpha
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
             scal = dual_scaling_mtl(
@@ -341,7 +339,7 @@ cpdef void inner_solver(
             if scal > alpha:
                 tmp = alpha / scal
                 fscal(&n_obs, &tmp, &theta[0, 0], &inc)
-            d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
+            d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2)
 
             if use_accel:
                 create_accel_pt(
@@ -360,7 +358,7 @@ cpdef void inner_solver(
                         tmp = alpha / scal
                         fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
                     d_obj_acc = dual_mtl(
-                        n_samples, n_tasks, theta_acc, Y, norm_Y2, alpha)
+                        n_samples, n_tasks, theta_acc, Y, norm_Y2)
                     if d_obj_acc > d_obj:
                         d_obj = d_obj_acc
                         fcopy(&n_obs, &theta_acc[0, 0], &inc, &theta[0, 0],
