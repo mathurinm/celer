@@ -374,7 +374,8 @@ def dnorm_enet(X, theta, w, weights, X_sparse_scaling, positive, alpha, l1_ratio
     skip = np.zeros(X.shape[1], dtype=np.int32)
     scal = dnorm_enet_cython(
         sparse.issparse(X), theta, w, X_dense, X_data, X_indices, X_indptr,
-        skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive, alpha, l1_ratio)
+        skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive,
+        alpha, l1_ratio)
     return scal
 
 
