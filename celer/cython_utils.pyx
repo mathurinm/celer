@@ -182,7 +182,7 @@ cdef floating dual_lasso(int n_samples, floating alpha, floating l1_ratio,
     d_obj *= 0.5 / n_samples
     d_obj += norm_y2 / (2. * n_samples)
     if l1_ratio != 1.0:
-        d_obj -= alpha * (1 - l1_ratio) * norm_w2
+        d_obj -= 0.5 * alpha * (1 - l1_ratio) * norm_w2
     return d_obj
 
 
@@ -402,9 +402,8 @@ cpdef floating dnorm_enet(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
-        # enet term
         if l1_ratio != 1:
-            Xj_theta +=  2 * n_samples * alpha * (1 - l1_ratio) * w[j]
+            Xj_theta +=  n_samples * alpha * (1 - l1_ratio) * w[j]
 
         if not positive:
             Xj_theta = fabs(Xj_theta)
