@@ -114,7 +114,7 @@ def celer(
     for t in range(max_iter):
         # avoid computing norm of w in usual Lasso
         if l1_ratio != 1:
-            norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
+            norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
 
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
