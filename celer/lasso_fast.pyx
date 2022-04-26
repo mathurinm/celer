@@ -97,7 +97,7 @@ def celer(
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating norm_w2 = 0
+    cdef floating norm_w2 = 0.
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
