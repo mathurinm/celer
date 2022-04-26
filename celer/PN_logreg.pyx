@@ -35,6 +35,8 @@ def newton_celer(
     else:
         dtype = np.float32
 
+    cdef floating l1_ratio = 1.0
+
     cdef int verbose_in = max(0, verbose - 1)
     cdef int n_samples = y.shape[0]
     cdef int n_features = w.shape[0]
@@ -102,19 +104,19 @@ def newton_celer(
     cdef bint positive = 0
 
     for t in range(max_iter):
-        p_obj = primal(LOGREG, alpha, 1.0, Xw, y, w, weights_pen)
+        p_obj = primal(LOGREG, alpha, l1_ratio, Xw, y, w, weights_pen)
 
         # theta = y * sigmoid(-y * Xw)
         create_dual_pt(LOGREG, n_samples, &theta[0], &Xw[0], &y[0])
         norm_Xtheta = dnorm_enet(
             is_sparse, theta, w, X, X_data, X_indices, X_indptr,
-            screened, X_mean, weights_pen, center, positive, alpha, 1.0)
+            screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
         if norm_Xtheta > alpha:
             tmp = alpha / norm_Xtheta
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 1.0, 0., 0., &theta[0], &y[0])
+        d_obj = dual(LOGREG, n_samples, alpha, l1_ratio, 0., 0., &theta[0], &y[0])
         gap = p_obj - d_obj
 
         if t != 0 and use_accel:
@@ -167,13 +169,13 @@ def newton_celer(
 
             norm_Xtheta_acc = dnorm_enet(
                 is_sparse, theta_acc, w, X, X_data, X_indices, X_indptr,
-                screened, X_mean, weights_pen, center, positive, alpha, 1.0)
+                screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
             if norm_Xtheta_acc > alpha:
                 tmp = alpha / norm_Xtheta_acc
                 fscal(&n_samples, &tmp, &theta_acc[0], &inc)
 
-            d_obj_acc = dual(LOGREG, n_samples, alpha, 1.0, 0., 0., &theta_acc[0], &y[0])
+            d_obj_acc = dual(LOGREG, n_samples, alpha, l1_ratio, 0., 0., &theta_acc[0], &y[0])
             if d_obj_acc > d_obj:
                 fcopy(&n_samples, &theta_acc[0], &inc, &theta[0], &inc)
                 gap = p_obj - d_obj_acc
@@ -248,6 +250,7 @@ cpdef int PN_logreg(
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]
     cdef int n_features = w.shape[0]
+    cdef floating l1_ratio = 1.0
 
     if floating is double:
         dtype = np.float64
@@ -371,13 +374,13 @@ cpdef int PN_logreg(
             # rescale aux to create dual point
             norm_Xaux = dnorm_enet(
                 is_sparse, aux, w, X, X_data, X_indices, X_indptr,
-                notin_WS, X_mean, weights_pen, center, 0, alpha, 1.0)
+                notin_WS, X_mean, weights_pen, center, 0, alpha, l1_ratio)
 
         for i in range(n_samples):
             aux[i] /= max(1, norm_Xaux / alpha)
 
-        d_obj = dual(LOGREG, n_samples, alpha, 1.0, 0., 0., &aux[0], &y[0])
-        p_obj = primal(LOGREG, alpha, 1.0, Xw, y, w, weights_pen)
+        d_obj = dual(LOGREG, n_samples, alpha, l1_ratio, 0., 0., &aux[0], &y[0])
+        p_obj = primal(LOGREG, alpha, l1_ratio, Xw, y, w, weights_pen)
 
         gap = p_obj - d_obj
         if verbose_in:

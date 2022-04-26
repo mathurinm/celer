@@ -129,17 +129,6 @@ def test_Lasso(sparse_X, fit_intercept, positive):
     # check_estimator(Lasso)
 
 
-def test_enet():
-    with np.testing.assert_raises(ValueError):
-        Lasso(l1_ratio=5.)
-
-    with np.testing.assert_raises(NotImplementedError):
-        X, y = build_dataset(n_samples=30, n_features=50)
-        y = np.sign(y)
-        celer_path(X, y, 'logreg', l1_ratio=0.5)
-    return
-
-
 @pytest.mark.parametrize("sparse_X, pb",
                          product([True, False], ["lasso", "logreg"]))
 def test_celer_single_alpha(sparse_X, pb):
