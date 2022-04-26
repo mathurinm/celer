@@ -22,8 +22,7 @@ class Lasso(Lasso_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (l1_ratio * \sum_j weights_j |w_j|
-    + (1 - l1_ratio) * 1 / 2 * \sum_j weights_j |w_j|^2),
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * \sum_j weights_j |w_j|
 
     Parameters
     ----------
@@ -32,11 +31,6 @@ class Lasso(Lasso_sklearn):
         ``alpha = 0`` is equivalent to an ordinary least square.
         For numerical reasons, using ``alpha = 0`` with the
         ``Lasso`` object is not advised.
-
-    l1_ratio : float, optional
-        The ElasticNet mixing parameter, with ``0 <= l1_ratio <= 1``.
-        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
-        For ``l1_ratio = 0`` it is an L2 penalty (Ridge). 
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
@@ -110,19 +104,14 @@ class Lasso(Lasso_sklearn):
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., l1_ratio=1., max_iter=100, max_epochs=50000, p0=10,
+    def __init__(self, alpha=1., max_iter=100, max_epochs=50000, p0=10,
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
                  weights=None, warm_start=False,
                  positive=False):
-        if l1_ratio > 1 or l1_ratio < 0:
-            raise ValueError(
-                "l1_ratio must be between 0 and 1; "
-                "got %r" % l1_ratio)
 
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, warm_start=warm_start)
-        self.l1_ratio = l1_ratio
         self.verbose = verbose
         self.max_epochs = max_epochs
         self.p0 = p0
@@ -133,7 +122,7 @@ class Lasso(Lasso_sklearn):
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
         results = celer_path(
-            X, y, "lasso", alphas=alphas, l1_ratio=self.l1_ratio, coef_init=coef_init,
+            X, y, "lasso", alphas=alphas, l1_ratio=1.0, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
             tol=self.tol, prune=self.prune, weights=self.weights,
@@ -272,6 +261,133 @@ class LassoCV(RegressorMixin, LinearModelCV):
 
     def _more_tags(self):
         return {'multioutput': False}
+
+
+class ElasticNet(Lasso_sklearn):
+    r"""
+    Lasso scikit-learn estimator based on Celer solver
+
+    The optimization objective for Lasso is::
+
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (l1_ratio * \sum_j weights_j |w_j|
+    + (1 - l1_ratio) * 0.5 * \sum_j weights_j |w_j|^2),
+
+    Parameters
+    ----------
+    alpha : float, optional
+        Constant that multiplies the penalty term. Defaults to 1.0.
+        ``alpha = 0`` is equivalent to an ordinary least square.
+        For numerical reasons, using ``alpha = 0`` with the
+        ``Lasso`` object is not advised.
+
+    l1_ratio : float, optional
+        The ElasticNet mixing parameter, with ``0 <= l1_ratio <= 1``.
+        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
+        For ``l1_ratio = 0`` it is an L2 penalty (Ridge). 
+
+    max_iter : int, optional
+        The maximum number of iterations (subproblem definitions)
+
+    max_epochs : int
+        Maximum number of CD epochs on each subproblem.
+
+    p0 : int
+        First working set size.
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    tol : float, optional
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
+
+    prune : 0 | 1, optional
+        Whether or not to use pruning when growing working sets.
+
+    fit_intercept : bool, optional (default=True)
+        Whether or not to fit an intercept.
+
+    weights : array, shape (n_features,), optional (default=None)
+        Strictly positive weights used in the L1 penalty part of the Lasso
+        objective. If None, weights equal to 1 are used.
+
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+
+    positive : bool, optional (default=False)
+        When set to True, forces the coefficients to be positive.
+
+    Attributes
+    ----------
+    coef_ : array, shape (n_features,)
+        parameter vector (w in the cost function formula)
+
+    sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
+        ``sparse_coef_`` is a readonly property derived from ``coef_``
+
+    intercept_ : float
+        constant term in decision function.
+
+    n_iter_ : int
+        Number of subproblems solved by Celer to reach the specified tolerance.
+
+    Examples
+    --------
+    >>> from celer import Lasso
+    >>> clf = Lasso(alpha=0.1)
+    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
+    Lasso(alpha=0.1, max_epochs=50000, max_iter=100,
+    p0=10, prune=0, tol=1e-06, verbose=0)
+    >>> print(clf.coef_)
+    [0.85 0.  ]
+    >>> print(clf.intercept_)
+    0.15
+
+    See also
+    --------
+    celer_path
+    LassoCV
+
+    References
+    ----------
+    .. [1] M. Massias, A. Gramfort, J. Salmon
+      "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      http://proceedings.mlr.press/v80/massias18a.html
+    """
+
+    def __init__(self, alpha=1., l1_ratio=1., max_iter=100, max_epochs=50000, p0=10,
+                 verbose=0, tol=1e-4, prune=True, fit_intercept=True,
+                 weights=None, warm_start=False,
+                 positive=False):
+        if l1_ratio > 1 or l1_ratio < 0:
+            raise ValueError(
+                "l1_ratio must be between 0 and 1; "
+                "got %r" % l1_ratio)
+
+        super(Lasso, self).__init__(
+            alpha=alpha, tol=tol, max_iter=max_iter,
+            fit_intercept=fit_intercept, warm_start=warm_start)
+        self.l1_ratio = l1_ratio
+        self.verbose = verbose
+        self.max_epochs = max_epochs
+        self.p0 = p0
+        self.prune = prune
+        self.positive = positive
+        self.weights = weights
+
+    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
+        """Compute Lasso path with Celer."""
+        results = celer_path(
+            X, y, "lasso", alphas=alphas, l1_ratio=self.l1_ratio, coef_init=coef_init,
+            max_iter=self.max_iter, return_n_iter=return_n_iter,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, prune=self.prune, weights=self.weights,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+
+        return results
 
 
 class MultiTaskLasso(MultiTaskLasso_sklearn):
