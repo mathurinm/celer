@@ -312,9 +312,9 @@ def celer(
                     if positive and w[j] <= 0.:
                         w[j] = 0.
                     else:
-                        w[j] = ST(w[j], 
+                        w[j] = ST(w[j],
                             alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j]) / \
-                            (1 + alpha * (1 - l1_ratio) /  norms_X_col[j])
+                            (1 + alpha * (1 - l1_ratio) /  norms_X_col[j] ** 2 * n_samples)
 
                     # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
                     tmp = old_w_j - w[j]
