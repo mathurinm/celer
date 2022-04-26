@@ -125,8 +125,10 @@ def celer(
             if scal > alpha * l1_ratio:
                 tmp = alpha * l1_ratio / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
+            else:
+                tmp = 1.
 
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_enet(
@@ -136,11 +138,13 @@ def celer(
             if scal > alpha * l1_ratio:
                 tmp = alpha * l1_ratio / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
+            else:
+                tmp = 1.
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -231,9 +235,11 @@ def celer(
                 if scal > alpha * l1_ratio:
                     tmp = alpha * l1_ratio / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
+                else:
+                    tmp = 1.
 
                 d_obj_in = dual(
-                    pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -253,9 +259,11 @@ def celer(
                         if scal > alpha * l1_ratio:
                             tmp = alpha * l1_ratio / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
+                        else:
+                            tmp = 1.
 
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
@@ -320,6 +328,7 @@ def celer(
                         else:
                             faxpy(&n_samples, &tmp, &X[0, j], &inc,
                                   &Xw[0], &inc)
+                # updates in Logreg
                 else:
                     if is_sparse:
                         startptr = X_indptr[j]

@@ -154,7 +154,7 @@ cdef floating primal_lasso(
         if w[j]:
             p_obj += alpha * weights[j] * (
                      l1_ratio * fabs(w[j]) +
-                     (1. - l1_ratio) * w[j] ** 2)
+                     0.5 * (1. - l1_ratio) * w[j] ** 2)
     return p_obj
 
 
