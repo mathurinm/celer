@@ -86,6 +86,7 @@ def celer(
                 center = True
                 break
 
+    # TODO this is used only for logreg, L97 is misleading and deserves a comment/refactoring
     cdef floating[:] inv_lc = np.zeros(n_features)
 
     for j in range(n_features):
