@@ -16,6 +16,7 @@ Estimators
    GroupLassoCV
    Lasso
    LassoCV
+   ElasticNet
    LogisticRegression
    MultiTaskLasso
    MultiTaskLassoCV

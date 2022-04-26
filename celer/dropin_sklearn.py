@@ -269,8 +269,9 @@ class ElasticNet(Lasso_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (l1_ratio * \sum_j weights_j |w_j|
-    + (1 - l1_ratio) * 0.5 * \sum_j weights_j |w_j|^2),
+    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (
+    l1_ratio * \sum_j weights_j |w_j|
+    + 0.5 * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
 
     Parameters
     ----------
@@ -366,7 +367,7 @@ class ElasticNet(Lasso_sklearn):
                 "l1_ratio must be between 0 and 1; "
                 "got %r" % l1_ratio)
 
-        super(Lasso, self).__init__(
+        super(ElasticNet, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, warm_start=warm_start)
         self.l1_ratio = l1_ratio
