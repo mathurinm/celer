@@ -12,11 +12,11 @@ Estimators
 .. autosummary::
    :toctree: generated/
 
+   ElasticNet
    GroupLasso
    GroupLassoCV
    Lasso
    LassoCV
-   ElasticNet
    LogisticRegression
    MultiTaskLasso
    MultiTaskLassoCV

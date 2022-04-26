@@ -5,7 +5,8 @@ import numpy as np
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.utils.validation import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.linear_model import (Lasso as Lasso_sklearn,
+from sklearn.linear_model import (ElasticNet as ElasticNet_sklearn,
+                                  Lasso as Lasso_sklearn,
                                   LogisticRegression as LogReg_sklearn,
                                   MultiTaskLasso as MultiTaskLasso_sklearn)
 from sklearn.linear_model._coordinate_descent import LinearModelCV
@@ -263,9 +264,9 @@ class LassoCV(RegressorMixin, LinearModelCV):
         return {'multioutput': False}
 
 
-class ElasticNet(Lasso_sklearn):
+class ElasticNet(ElasticNet_sklearn):
     r"""
-    Lasso scikit-learn estimator based on Celer solver
+    ElasticNet scikit-learn estimator based on Celer solver
 
     The optimization objective for Lasso is::
 
@@ -379,7 +380,7 @@ class ElasticNet(Lasso_sklearn):
         self.weights = weights
 
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
-        """Compute Lasso path with Celer."""
+        """Compute ElasticNet path with Celer."""
         results = celer_path(
             X, y, "lasso", alphas=alphas, l1_ratio=self.l1_ratio, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,

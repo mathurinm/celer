@@ -118,6 +118,9 @@ def celer(
 
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
+            if l1_ratio != 1:
+                tmp = 1. / n_samples
+                fscal(&n_features, &tmp, &w[0], &inc)
 
             scal = dnorm_enet(
                 is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
@@ -228,6 +231,9 @@ def celer(
             if epoch != 0 and epoch % gap_freq == 0:
                 create_dual_pt(
                     pb, n_samples, &theta_in[0], &Xw[0], &y[0])
+                if l1_ratio != 1:
+                    tmp = 1. / n_samples
+                    fscal(&n_features, &tmp, &w[0], &inc)
 
                 scal = dnorm_enet(
                     is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,

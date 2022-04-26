@@ -11,7 +11,7 @@ X, y = build_dataset(n_samples, n_features)
 
 
 # params = {'X': X, 'y': y, 'n_alphas': 2, 'l1_ratio': 0.5}
-l1_ratio = 0.999999
+l1_ratio = 0.1
 alpha_max = norm(X.T @ y, ord=np.inf) / (n_samples * l1_ratio)
 alpha = alpha_max / 10.
 
