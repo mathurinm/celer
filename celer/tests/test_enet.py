@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose
-from sklearn.linear_model import enet_path, ElasticNet as sklearn_ElasticNet
+from sklearn.linear_model import enet_path, ElasticNet as sk_ElasticNet
 
 from celer import Lasso, ElasticNet, celer_path
 from celer.utils.testing import build_dataset
@@ -22,10 +22,20 @@ def test_enet_lasso_equivalence(sparse_X):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
 
-    reg_1 = Lasso()
-    reg_1.fit(X, y)
+    coef_lasso = Lasso().fit(X, y).coef_
+    coef_enet = ElasticNet(l1_ratio=1.0).fit(X, y).coef_
 
-    reg_2 = ElasticNet(l1_ratio=1.0)
-    reg_2.fit(X, y)
+    assert_allclose(coef_lasso, coef_enet)
 
-    assert_allclose(reg_1.coef_, reg_2.coef_)
+
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_celer_enet_sk_enet_equivalence(sparse_X):
+    n_samples, n_features = 30, 50
+    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+
+    params = {'X': X, 'y': y, 'n_alphas': 10, 'l1_ratio': 0.5}
+    # alphas_sk, coefs_sk, dual_gaps_sk = enet_path(**params)
+
+    # alphas_celer, coefs_celer, dual_gaps_celer = celer_path(pb='lasso', **params)
+
+    # assert_allclose(alphas_sk, alphas_celer)
