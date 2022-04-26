@@ -97,7 +97,7 @@ def celer(
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
+    cdef floating norm_w2 = 0
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
@@ -111,7 +111,10 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
+        # avoid computing norms of w in usual Lasso
+        if l1_ratio != 1:
+            norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
+
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
