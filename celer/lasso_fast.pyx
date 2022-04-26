@@ -280,7 +280,7 @@ def celer(
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
-                    print("Epoch %d, primal %.10f, gap: %.2e" %
+                    print("Epoch %d, primal %.10f, gap: %.10e" %
                           (epoch, p_obj_in, gap_in))
                 if gap_in < tol_in:
                     if verbose_in:
@@ -329,7 +329,6 @@ def celer(
                         else:
                             faxpy(&n_samples, &tmp, &X[0, j], &inc,
                                   &Xw[0], &inc)
-                # updates in Logreg
                 else:
                     if is_sparse:
                         startptr = X_indptr[j]
