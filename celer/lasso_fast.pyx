@@ -111,7 +111,7 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        # avoid computing norms of w in usual Lasso
+        # avoid computing norm of w in usual Lasso
         if l1_ratio != 1:
             norm_w2 = fnrm2(&n_samples, &w[0], &inc) ** 2
 
@@ -123,7 +123,7 @@ def celer(
                 X_mean, weights, center, positive, alpha, l1_ratio)
 
             if scal > alpha * l1_ratio:
-                tmp = (alpha * l1_ratio) / scal
+                tmp = alpha * l1_ratio / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
 
             d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
@@ -134,7 +134,7 @@ def celer(
                 screened, X_mean, weights, center, positive, alpha, l1_ratio)
 
             if scal > alpha * l1_ratio:
-                tmp = (alpha * l1_ratio) / scal
+                tmp = alpha * l1_ratio / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
             d_obj_from_inner = dual(
@@ -229,7 +229,7 @@ def celer(
                     notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
                 if scal > alpha * l1_ratio:
-                    tmp = (alpha * l1_ratio) / scal
+                    tmp = alpha * l1_ratio / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
 
                 d_obj_in = dual(
@@ -251,7 +251,7 @@ def celer(
                             positive, alpha, l1_ratio)
 
                         if scal > alpha * l1_ratio:
-                            tmp = (alpha * l1_ratio) / scal
+                            tmp = alpha * l1_ratio / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(
