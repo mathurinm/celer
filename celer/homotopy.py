@@ -215,6 +215,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
         alphas = alpha_max * np.geomspace(1, eps, n_alphas,
                                           dtype=X.dtype)
+        alphas /= l1_ratio
     else:
         alphas = np.sort(alphas)[::-1]
 
