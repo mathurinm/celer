@@ -38,8 +38,9 @@ def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
 
     tol = 1e-14
     l1_ratio = 0.7
+    n_alphas = 6
     alpha_max = norm(X.T @ y, ord=np.inf) / (n_samples * l1_ratio)
-    params = dict(eps=1e-3, n_alphas=5, tol=tol, l1_ratio=l1_ratio)
+    params = dict(eps=1e-3, n_alphas=n_alphas, tol=tol, l1_ratio=l1_ratio)
 
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", return_thetas=False, verbose=0, prune=prune,
@@ -50,7 +51,8 @@ def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
 
     assert_allclose(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
-    assert_allclose(coefs1, coefs2, rtol=1e-03, atol=1e-4)
+    assert_allclose(coefs1[:, :n_alphas-1],
+                    coefs2[:, :n_alphas-1], rtol=1e-03, atol=1e-4)
 
 
 if __name__ == '__main__':
