@@ -403,7 +403,7 @@ cpdef floating dnorm_enet(
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
         if l1_ratio != 1:
-            Xj_theta += alpha * (1 - l1_ratio) * w[j]
+            Xj_theta -= alpha * (1 - l1_ratio) * w[j]
 
         if not positive:
             Xj_theta = fabs(Xj_theta)

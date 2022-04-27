@@ -112,15 +112,8 @@ def celer(
     cdef int[:] all_features = np.arange(n_features, dtype=np.int32)
 
     for t in range(max_iter):
-        # avoid computing norm of w in usual Lasso
-        if l1_ratio != 1:
-            norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
-
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
-            # if l1_ratio != 1:
-            #     tmp = 1. / n_samples
-            #     fscal(&n_features, &tmp, &w[0], &inc)
 
             scal = dnorm_enet(
                 is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
@@ -131,6 +124,10 @@ def celer(
                 fscal(&n_samples, &tmp, &theta[0], &inc)
             else:
                 tmp = 1.
+
+            # avoid computing ||w||^2 for usual Lasso
+            if l1_ratio != 1:
+                norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
 
             d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
 
@@ -231,9 +228,6 @@ def celer(
             if epoch != 0 and epoch % gap_freq == 0:
                 create_dual_pt(
                     pb, n_samples, &theta_in[0], &Xw[0], &y[0])
-                # if l1_ratio != 1:
-                #     tmp = 1. / n_samples
-                #     fscal(&n_features, &tmp, &w[0], &inc)
 
                 scal = dnorm_enet(
                     is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
@@ -245,6 +239,8 @@ def celer(
                 else:
                     tmp = 1.
 
+                # update norm_w2 in inner loop
+                norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
                 d_obj_in = dual(
                     pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
 
