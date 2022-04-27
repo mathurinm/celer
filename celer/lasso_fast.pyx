@@ -132,7 +132,7 @@ def celer(
             else:
                 tmp = 1.
 
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2 / n_samples ** 2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_enet(
@@ -146,9 +146,9 @@ def celer(
                 tmp = 1.
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2 / n_samples ** 2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2 / n_samples ** 2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -246,7 +246,7 @@ def celer(
                     tmp = 1.
 
                 d_obj_in = dual(
-                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2 / n_samples ** 2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -270,7 +270,7 @@ def celer(
                             tmp = 1.
 
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2 / n_samples ** 2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
