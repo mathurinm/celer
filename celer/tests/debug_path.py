@@ -31,7 +31,7 @@ alphas2, coefs2, _ = enet_path(X, y, verbose=0, **params,
 # all coef are equal except for the last alpha
 print(np.allclose(coefs1, coefs2, rtol=1e-03, atol=1e-4))
 # they are equal except the last alpha
-print(np.allclose(coefs1[:, :-1], coefs2[:, :-1], rtol=1e-03, atol=1e-4))
+print(np.allclose(coefs1[:, :], coefs2[:, :], rtol=1e-03, atol=1e-4))
 
 
 # run the same code above on the last alpha
