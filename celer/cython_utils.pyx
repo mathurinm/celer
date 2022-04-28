@@ -424,6 +424,7 @@ cdef void set_prios(
     cdef floating Xj_theta
     cdef int n_samples = theta.shape[0]
     cdef int n_features = prios.shape[0]
+    cdef floating norms_X_col_j = 0.
 
     # TODO we do not substract theta_sum, which seems to indicate that theta
     # is always centered...
@@ -440,11 +441,15 @@ cdef void set_prios(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
+        norms_X_col_j = norms_X_col[j]
+        if l1_ratio != 1:
+            Xj_theta += sqrt(n_samples * alpha * (1 - l1_ratio)) * w[j]
+            norms_X_col_j += sqrt(n_samples * alpha * (1 - l1_ratio))
 
         if positive:
-            prios[j] = fabs(Xj_theta - alpha * l1_ratio * weights[j]) / norms_X_col[j]
+            prios[j] = fabs(Xj_theta - alpha * l1_ratio * weights[j]) / norms_X_col_j
         else:
-            prios[j] = (alpha * l1_ratio * weights[j] - fabs(Xj_theta)) / norms_X_col[j]
+            prios[j] = (alpha * l1_ratio * weights[j] - fabs(Xj_theta)) / norms_X_col_j
 
         if prios[j] > radius:
             screened[j] = True
