@@ -444,7 +444,9 @@ cdef void set_prios(
         norms_X_col_j = norms_X_col[j]
         if l1_ratio != 1:
             Xj_theta += sqrt(n_samples * alpha * (1 - l1_ratio)) * w[j]
-            norms_X_col_j += sqrt(n_samples * alpha * (1 - l1_ratio))
+
+            norms_X_col_j = norms_X_col_j ** 2 
+            norms_X_col_j += sqrt(norms_X_col_j + n_samples * alpha * (1 - l1_ratio))
 
         if positive:
             prios[j] = fabs(Xj_theta - alpha * l1_ratio * weights[j]) / norms_X_col_j
