@@ -48,5 +48,5 @@ cpdef floating dnorm_enet(
 
 
 cdef void set_prios(
-    bint, floating[:], floating, floating, floating[::1, :], floating[:], int[:],
+    bint, floating[:], floating[:], floating, floating, floating[::1, :], floating[:], int[:],
     int[:], floating[:], floating[:], floating[:], int[:], floating, int *, bint) nogil
