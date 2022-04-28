@@ -35,6 +35,7 @@ def newton_celer(
     else:
         dtype = np.float32
 
+    # Enet not supported for Logreg
     cdef floating l1_ratio = 1.0
     cdef floating norm_w2 = 0.
 
@@ -191,7 +192,7 @@ def newton_celer(
             break
 
 
-        set_prios(is_sparse, theta, alpha, 1.0, X, X_data, X_indices, X_indptr,
+        set_prios(is_sparse, theta, alpha, l1_ratio, X, X_data, X_indices, X_indptr,
                   norms_X_col, weights_pen, prios, screened, radius,
                   &n_screened, 0)
 
@@ -252,6 +253,7 @@ cpdef int PN_logreg(
     cdef int ws_size = WS.shape[0]
     cdef int n_features = w.shape[0]
 
+    # Enet not supported for Logreg
     cdef floating l1_ratio = 1.0
     cdef floating norm_w2 = 0.
 

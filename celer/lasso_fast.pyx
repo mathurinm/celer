@@ -125,7 +125,7 @@ def celer(
             else:
                 tmp = 1.
 
-            # avoid computing ||w||^2 for usual Lasso
+            #  compute ||w||^2 only for Enet
             if l1_ratio != 1:
                 norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
 
@@ -282,7 +282,7 @@ def celer(
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
-                    print("Epoch %d, primal %.10f, gap: %.10e" %
+                    print("Epoch %d, primal %.10f, gap: %.2e" %
                           (epoch, p_obj_in, gap_in))
                 if gap_in < tol_in:
                     if verbose_in:
@@ -315,9 +315,13 @@ def celer(
                     if positive and w[j] <= 0.:
                         w[j] = 0.
                     else:
-                        w[j] = ST(w[j],
-                            alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j]) / \
-                            (1 + alpha * (1 - l1_ratio) /  norms_X_col[j] ** 2 * n_samples)
+                        if l1_ratio != 1.:
+                            w[j] = ST(w[j],
+                                alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j]) / \
+                                (1 + alpha * (1 - l1_ratio) /  norms_X_col[j] ** 2 * n_samples)
+                        else:
+                            w[j] = ST(w[j],
+                                alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j])
 
                     # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
                     tmp = old_w_j - w[j]

@@ -402,6 +402,7 @@ cpdef floating dnorm_enet(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
+        # minus sign to consider the choice theta = y - Xw and not theta = Xw -y
         if l1_ratio != 1:
             Xj_theta -= alpha * (1 - l1_ratio) * w[j]
 
