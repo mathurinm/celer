@@ -54,4 +54,4 @@ def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
 
 
 if __name__ == '__main__':
-    test_celer_enet_sk_enet_equivalence(False, 0)
+    pass
