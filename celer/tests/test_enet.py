@@ -3,7 +3,7 @@ import pytest
 
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import (assert_allclose, assert_array_less, assert_equal)
 
 from sklearn.linear_model import enet_path, ElasticNet as sk_ElasticNet
 
@@ -51,7 +51,7 @@ def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
     alphas2, coefs2, _ = enet_path(X, y, verbose=0, **params,
                                    max_iter=10000)
 
-    assert_allclose(alphas1, alphas2)
+    assert_equal(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
     assert_allclose(coefs1, coefs2, rtol=1e-3, atol=1e-4)
 

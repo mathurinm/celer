@@ -100,6 +100,7 @@ def celer(
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
     # consider weigths
     cdef floating norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
+    tmp = 1.0
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
