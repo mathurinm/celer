@@ -85,7 +85,7 @@ def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
                          product([False], [False, True], [False, False]))
-def test_ElasticNet_sk_ElasticNet_equivalence(sparse_X, fit_intercept, positive):
+def test_celer_ElasticNet_vs_sk_ElasticNet(sparse_X, fit_intercept, positive):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
 

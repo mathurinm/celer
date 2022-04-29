@@ -404,6 +404,7 @@ cpdef floating dnorm_enet(
 
         # minus sign to consider the choice theta = y - Xw and not theta = Xw -y
         if l1_ratio != 1:
+            # consider weights
             Xj_theta -= alpha * (1 - l1_ratio) * w[j]
 
         if not positive:
@@ -443,9 +444,11 @@ cdef void set_prios(
 
         norms_X_col_j = norms_X_col[j]
         if l1_ratio != 1:
+            # consider weights
             Xj_theta += sqrt(n_samples * alpha * (1 - l1_ratio)) * w[j]
 
             norms_X_col_j = norms_X_col_j ** 2 
+            # consider weights
             norms_X_col_j += sqrt(norms_X_col_j + n_samples * alpha * (1 - l1_ratio))
 
         if positive:
