@@ -1,8 +1,11 @@
+from itertools import product
 import pytest
+
 import numpy as np
 from numpy.linalg import norm
 from numpy.testing import assert_allclose, assert_array_less
-from sklearn.linear_model import enet_path
+
+from sklearn.linear_model import enet_path, ElasticNet as sk_ElasticNet
 
 from celer import Lasso, ElasticNet, celer_path
 from celer.utils.testing import build_dataset
@@ -31,7 +34,7 @@ def test_enet_lasso_equivalence(sparse_X):
 
 @pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
 def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
-    """Test that celer_path matches sklearn lasso_path."""
+    """Test that celer_path matches sklearn enet_path."""
 
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
@@ -53,9 +56,9 @@ def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
     assert_allclose(coefs1, coefs2, rtol=1e-3, atol=1e-4)
 
 
-@pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
+@pytest.mark.parametrize("sparse_X, prune", product([False], [0, 1]))
 def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
-    """Test that celer_path matches sklearn lasso_path."""
+    """Test that celer_path matches sklearn enet_path."""
 
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
@@ -75,8 +78,26 @@ def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
     assert_allclose(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
 
+    # to sport where assertion breaks down
     for i in range(n_alphas):
         assert_allclose(coefs1[:, i], coefs2[:, i], rtol=1e-3, atol=1e-4)
+
+
+@pytest.mark.parametrize("sparse_X, fit_intercept, positive",
+                         product([False], [False, True], [False, False]))
+def test_ElasticNet_sk_ElasticNet_equivalence(sparse_X, fit_intercept, positive):
+    n_samples, n_features = 30, 50
+    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+
+    params = {'l1_ratio': 0.5, 'tol': 1e-14,
+              'fit_intercept': fit_intercept, 'positive': positive}
+
+    reg_celer = ElasticNet(**params).fit(X, y)
+    reg_sk = sk_ElasticNet(**params).fit(X, y)
+
+    assert_allclose(reg_celer.coef_, reg_sk.coef_, rtol=1e-3, atol=1e-3)
+    if fit_intercept:
+        assert_allclose(reg_celer.intercept_, reg_sk.intercept_)
 
 
 if __name__ == '__main__':
