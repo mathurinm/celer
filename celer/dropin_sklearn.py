@@ -366,7 +366,7 @@ class ElasticNet(ElasticNet_sklearn):
         if l1_ratio > 1 or l1_ratio < 0:
             raise ValueError(
                 "l1_ratio must be between 0 and 1; "
-                "got %r" % l1_ratio)
+                f"got {l1_ratio:.2e}")
 
         super(ElasticNet, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
