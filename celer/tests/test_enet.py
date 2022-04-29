@@ -65,7 +65,7 @@ def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
 
     tol = 1e-14
     l1_ratio = 0.7
-    n_alphas = 5
+    n_alphas = 20
     params = dict(eps=1e-3, n_alphas=n_alphas, tol=tol, l1_ratio=l1_ratio)
 
     alphas1, coefs1, gaps1 = celer_path(
