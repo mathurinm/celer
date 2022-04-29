@@ -74,7 +74,9 @@ def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
 
     assert_allclose(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
-    assert_allclose(coefs1, coefs2, rtol=1e-3, atol=1e-4)
+
+    for i in range(n_alphas):
+        assert_allclose(coefs1[:, i], coefs2[:, i], rtol=1e-3, atol=1e-4)
 
 
 if __name__ == '__main__':
