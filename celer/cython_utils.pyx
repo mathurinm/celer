@@ -109,6 +109,16 @@ cdef inline floating Nh(floating x) nogil:
         return INFINITY  # not - INFINITY
 
 
+cdef floating fweighted_norm_w2(int n_features, 
+                        floating[:] w, floating[:] weights) nogil: 
+    cdef floating weighted_norm = 0.
+    cdef int j
+
+    for j in range(n_features):
+        weighted_norm += weights[j] * w[j] ** 2
+    return weighted_norm
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
@@ -167,6 +177,7 @@ cdef floating primal(
         return primal_logreg(alpha, R, y, w, weights)
 
 
+# should pass in w to add support of weights
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
@@ -404,8 +415,7 @@ cpdef floating dnorm_enet(
 
         # minus sign to consider the choice theta = y - Xw and not theta = Xw -y
         if l1_ratio != 1:
-            # consider weights
-            Xj_theta -= alpha * (1 - l1_ratio) * w[j]
+            Xj_theta -= alpha * (1 - l1_ratio) * weights[j] * w[j]
 
         if not positive:
             Xj_theta = fabs(Xj_theta)
@@ -444,12 +454,10 @@ cdef void set_prios(
 
         norms_X_col_j = norms_X_col[j]
         if l1_ratio != 1:
-            # consider weights
-            Xj_theta += sqrt(n_samples * alpha * (1 - l1_ratio)) * w[j]
+            Xj_theta -= alpha * (1 - l1_ratio) * weights[j] * w[j] 
 
             norms_X_col_j = norms_X_col_j ** 2 
-            # consider weights
-            norms_X_col_j += sqrt(norms_X_col_j + n_samples * alpha * (1 - l1_ratio))
+            norms_X_col_j += sqrt(norms_X_col_j + alpha * (1 - l1_ratio) * weights[j])
 
         if positive:
             prios[j] = fabs(Xj_theta - alpha * l1_ratio * weights[j]) / norms_X_col_j

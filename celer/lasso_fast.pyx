@@ -14,7 +14,7 @@ from sklearn.exceptions import ConvergenceWarning
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
                             sigmoid, ST, LASSO, LOGREG, dnorm_enet,
-                            set_prios)
+                            set_prios, fweighted_norm_w2)
 
 
 @cython.boundscheck(False)
@@ -99,7 +99,7 @@ def celer(
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
     # consider weigths
-    cdef floating norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
+    cdef floating weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
     tmp = 1.0
 
     # max_iter + 1 is to deal with max_iter=0
@@ -129,10 +129,9 @@ def celer(
 
             #  compute ||w||^2 only for Enet
             if l1_ratio != 1:
-                # consider weihghts
-                norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
+                weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
 
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_enet(
@@ -146,9 +145,9 @@ def celer(
                 tmp = 1.
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -242,11 +241,11 @@ def celer(
                 else:
                     tmp = 1.
 
-                # update norm_w2 in inner loop
-                # consider weights
-                norm_w2 = fnrm2(&n_features, &w[0], &inc) ** 2
+                # update norm_w2 in inner loop for Enet only
+                if l1_ratio != 1:
+                    weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
                 d_obj_in = dual(
-                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -270,7 +269,7 @@ def celer(
                             tmp = 1.
 
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*norm_w2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
@@ -319,11 +318,10 @@ def celer(
                     if positive and w[j] <= 0.:
                         w[j] = 0.
                     else:
-                        # consider weights [probably not well implemented]
                         if l1_ratio != 1.:
                             w[j] = ST(w[j],
                                 alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j]) / \
-                                (1 + alpha * (1 - l1_ratio) /  norms_X_col[j] ** 2 * n_samples)
+                                (1 + alpha * (1 - l1_ratio) * weights[j] /  norms_X_col[j] ** 2 * n_samples)
                         else:
                             w[j] = ST(w[j],
                                 alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j])
