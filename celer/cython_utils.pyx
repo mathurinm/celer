@@ -109,12 +109,16 @@ cdef inline floating Nh(floating x) nogil:
         return INFINITY  # not - INFINITY
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef floating fweighted_norm_w2(int n_features, 
                         floating[:] w, floating[:] weights) nogil: 
     cdef floating weighted_norm = 0.
     cdef int j
 
     for j in range(n_features):
+        if weights[j] == INFINITY:
+            continue
         weighted_norm += weights[j] * w[j] ** 2
     return weighted_norm
 

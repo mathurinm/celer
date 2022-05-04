@@ -77,10 +77,7 @@ def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
 
     assert_allclose(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
-
-    # to sport where assertion breaks down
-    for i in range(n_alphas-1):
-        assert_allclose(coefs1[:, i], coefs2[:, i], rtol=1e-3, atol=1e-4)
+    assert_allclose(coefs1, coefs2, rtol=1e-3, atol=1e-4)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
@@ -98,6 +95,25 @@ def test_celer_ElasticNet_vs_sk_ElasticNet(sparse_X, fit_intercept, positive):
     assert_allclose(reg_celer.coef_, reg_sk.coef_, rtol=1e-3, atol=1e-3)
     if fit_intercept:
         assert_allclose(reg_celer.intercept_, reg_sk.intercept_)
+
+
+@pytest.mark.parametrize("sparse_X, fit_intercept",
+                         product([False], [False, True]))
+def test_infinit_weights(sparse_X, fit_intercept):
+    n_samples, n_features = 30, 100
+    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+
+    np.random.seed(0)
+    weights = abs(np.random.rand(n_features))
+    n_inf = n_features // 5
+    inf_indices = np.random.choice(n_features, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+
+    reg = ElasticNet(l1_ratio=0.5, tol=1e-8,
+                     fit_intercept=fit_intercept, weights=weights)
+    reg.fit(X, y)
+
+    assert_equal(reg.coef_[inf_indices], 0)
 
 
 if __name__ == '__main__':
