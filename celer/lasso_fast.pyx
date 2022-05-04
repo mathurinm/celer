@@ -98,7 +98,6 @@ def celer(
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    # consider weigths
     cdef floating weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
     tmp = 1.0
 
