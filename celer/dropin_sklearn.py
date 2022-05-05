@@ -285,7 +285,7 @@ class ElasticNet(ElasticNet_sklearn):
     l1_ratio : float, optional
         The ElasticNet mixing parameter, with ``0 <= l1_ratio <= 1``.
         Defaults to 1.0 which corresponds to L1 penalty (Lasso).
-        For ``l1_ratio = 0`` it is an L2 penalty (Ridge). 
+        For ``l1_ratio = 0`` it is an L2 penalty (Ridge).
 
     max_iter : int, optional
         The maximum number of iterations (subproblem definitions)
@@ -368,26 +368,31 @@ class ElasticNet(ElasticNet_sklearn):
                 "l1_ratio must be between 0 and 1; "
                 f"got {l1_ratio:.2e}")
 
-        super(ElasticNet, self).__init__(
-            alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, warm_start=warm_start)
-        self.l1_ratio = l1_ratio
-        self.verbose = verbose
-        self.max_epochs = max_epochs
-        self.p0 = p0
-        self.prune = prune
-        self.positive = positive
-        self.weights = weights
+        if l1_ratio == 0:
+            raise NotImplementedError(
+                "Fitting with l1_ratio=0 (Ridge regression) "
+                "not supported")
 
-    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
+        super(ElasticNet, self).__init__(
+            alpha = alpha, tol = tol, max_iter = max_iter,
+            fit_intercept = fit_intercept, warm_start = warm_start)
+        self.l1_ratio=l1_ratio
+        self.verbose=verbose
+        self.max_epochs=max_epochs
+        self.p0=p0
+        self.prune=prune
+        self.positive=positive
+        self.weights=weights
+
+    def path(self, X, y, alphas, coef_init = None, return_n_iter = True, **kwargs):
         """Compute ElasticNet path with Celer."""
-        results = celer_path(
-            X, y, "lasso", alphas=alphas, l1_ratio=self.l1_ratio, coef_init=coef_init,
-            max_iter=self.max_iter, return_n_iter=return_n_iter,
-            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
-            tol=self.tol, prune=self.prune, weights=self.weights,
-            positive=self.positive, X_scale=kwargs.get('X_scale', None),
-            X_offset=kwargs.get('X_offset', None))
+        results=celer_path(
+            X, y, "lasso", alphas = alphas, l1_ratio = self.l1_ratio, coef_init = coef_init,
+            max_iter = self.max_iter, return_n_iter = return_n_iter,
+            max_epochs = self.max_epochs, p0 = self.p0, verbose = self.verbose,
+            tol = self.tol, prune = self.prune, weights = self.weights,
+            positive = self.positive, X_scale = kwargs.get('X_scale', None),
+            X_offset = kwargs.get('X_offset', None))
 
         return results
 
@@ -461,32 +466,32 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
       http://proceedings.mlr.press/v80/massias18a.html
     """
 
-    def __init__(self, alpha=1., max_iter=100,
-                 max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
-                 fit_intercept=True, warm_start=False):
+    def __init__(self, alpha = 1., max_iter = 100,
+                 max_epochs = 50000, p0 = 10, verbose = 0, tol = 1e-4, prune = True,
+                 fit_intercept = True, warm_start = False):
         super().__init__(
-            alpha=alpha, tol=tol, max_iter=max_iter,
-            fit_intercept=fit_intercept, warm_start=warm_start)
-        self.verbose = verbose
-        self.max_epochs = max_epochs
-        self.p0 = p0
-        self.prune = prune
+            alpha = alpha, tol = tol, max_iter = max_iter,
+            fit_intercept = fit_intercept, warm_start = warm_start)
+        self.verbose=verbose
+        self.max_epochs=max_epochs
+        self.p0=p0
+        self.prune=prune
 
     def fit(self, X, y):
         """Fit MultiTaskLasso model with Celer"""
         # Need to validate separately here.
         # We can't pass multi_ouput=True because that would allow y to be csr.
-        check_X_params = dict(dtype=[np.float64, np.float32], order='F',
-                              copy=self.copy_X and self.fit_intercept)
-        check_y_params = dict(ensure_2d=False, order='F')
-        X, y = self._validate_data(X, y, validate_separately=(check_X_params,
+        check_X_params=dict(dtype = [np.float64, np.float32], order = 'F',
+                              copy = self.copy_X and self.fit_intercept)
+        check_y_params=dict(ensure_2d = False, order = 'F')
+        X, y=self._validate_data(X, y, validate_separately = (check_X_params,
                                                               check_y_params))
-        y = y.astype(X.dtype)
+        y=y.astype(X.dtype)
 
         if y.ndim == 1:
             raise ValueError("For mono-task outputs, use Lasso")
 
-        n_samples = X.shape[0]
+        n_samples=X.shape[0]
 
         if n_samples != y.shape[0]:
             raise ValueError("X and y have inconsistent dimensions (%d != %d)"
