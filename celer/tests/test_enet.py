@@ -5,9 +5,10 @@ import numpy as np
 from numpy.linalg import norm
 from numpy.testing import (assert_allclose, assert_array_less, assert_equal)
 
-from sklearn.linear_model import enet_path, ElasticNet as sk_ElasticNet
+from sklearn.linear_model import (
+    enet_path, ElasticNet as sk_ElasticNet, ElasticNetCV as sk_ElasticNetCV)
 
-from celer import Lasso, ElasticNet, celer_path
+from celer import Lasso, ElasticNet, celer_path, ElasticNetCV
 from celer.utils.testing import build_dataset
 
 
@@ -25,7 +26,7 @@ def test_raise_errors_l1_ratio():
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
-def test_enet_lasso_equivalence(sparse_X):
+def test_ElasticNet_Lasso_equivalence(sparse_X):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
     alpha_max = norm(X.T@y, ord=np.inf) / n_samples
@@ -113,7 +114,7 @@ def test_celer_ElasticNet_vs_sk_ElasticNet(sparse_X, fit_intercept, positive):
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
-def test_enet_weights(sparse_X):
+def test_weighted_ElasticNet(sparse_X):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X)
 
@@ -159,5 +160,28 @@ def test_infinite_weights(sparse_X, fit_intercept):
     assert_equal(reg.coef_[inf_indices], 0)
 
 
+@pytest.mark.parametrize("sparse_X, fit_intercept",
+                         product([False], [False, True]))
+def test_ElasticNetCV(sparse_X, fit_intercept):
+    n_samples, n_features = 30, 100
+    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+
+    params = dict(l1_ratio=[0.7, 0.8, 0.5], eps=0.05, n_alphas=10, tol=1e-10, cv=2,
+                  fit_intercept=fit_intercept, n_jobs=-1)
+
+    clf = ElasticNetCV(**params)
+    clf.fit(X, y)
+
+    clf2 = sk_ElasticNetCV(**params, max_iter=10000)
+    clf2.fit(X, y)
+
+    assert_allclose(
+        clf.mse_path_, clf2.mse_path_, rtol=1e-3, atol=1e-4)
+    assert_allclose(clf.alpha_, clf2.alpha_)
+    assert_allclose(clf.coef_, clf2.coef_, atol=1e-5)
+    assert_allclose(clf.l1_ratio_, clf2.l1_ratio_, atol=1e-5)
+
+
 if __name__ == '__main__':
+    test_ElasticNetCV(False, False)
     pass

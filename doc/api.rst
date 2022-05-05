@@ -13,6 +13,7 @@ Estimators
    :toctree: generated/
 
    ElasticNet
+   ElasticNetCV
    GroupLasso
    GroupLassoCV
    Lasso

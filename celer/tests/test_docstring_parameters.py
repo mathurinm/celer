@@ -206,6 +206,10 @@ def test_documented():
                         name not in documented_ignored_names):
                     missing.append('%s (%s.%s)' % (name, from_mod, name))
     if len(missing) > 0:
+        print(missing)
         raise AssertionError('\n\nFound new public members missing from '
                              'doc/python_reference.rst:\n\n* ' +
                              '\n* '.join(sorted(set(missing))))
+
+
+test_documented()
