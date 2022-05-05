@@ -28,9 +28,21 @@ def test_raise_errors_l1_ratio():
 def test_enet_lasso_equivalence(sparse_X):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+    alpha_max = norm(X.T@y, ord=np.inf) / n_samples
 
-    coef_lasso = Lasso().fit(X, y).coef_
-    coef_enet = ElasticNet(l1_ratio=1.0).fit(X, y).coef_
+    alpha = alpha_max / 100.
+    coef_lasso = Lasso(alpha=alpha).fit(X, y).coef_
+    coef_enet = ElasticNet(alpha=alpha, l1_ratio=1.0).fit(X, y).coef_
+
+    assert_allclose(coef_lasso, coef_enet)
+
+    np.random.seed(0)
+    weights = abs(np.random.randn(n_features))
+    alpha_max = norm(X.T@y / weights, ord=np.inf) / n_samples
+
+    alpha = alpha_max / 100.
+    coef_lasso = Lasso(alpha=alpha, weights=weights).fit(X, y).coef_
+    coef_enet = ElasticNet(alpha=alpha, l1_ratio=1.0, weights=weights).fit(X, y).coef_
 
     assert_allclose(coef_lasso, coef_enet)
 
@@ -100,31 +112,32 @@ def test_celer_ElasticNet_vs_sk_ElasticNet(sparse_X, fit_intercept, positive):
         assert_allclose(reg_celer.intercept_, reg_sk.intercept_)
 
 
-def test_enet_weights():
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_enet_weights(sparse_X):
     n_samples, n_features = 30, 50
-    X, y = build_dataset(n_samples, n_features)
+    X, y = build_dataset(n_samples, n_features, sparse_X)
 
     np.random.seed(0)
     weights = abs(np.random.randn(n_features))
+    l1_ratio = .7
+
+    params = {'max_iter': 10000, 'tol': 1e-14, 'fit_intercept': False}
+
     alpha_max = norm(X.T@y / weights, ord=np.inf) / n_samples
     alpha = alpha_max / 100.
-    l1_ratio = 1.
-    tol = 1e-8
 
-    reg_enet = ElasticNet(l1_ratio=l1_ratio, alpha=alpha, weights=weights, tol=tol)
-    reg_enet.fit(X, y)
+    reg_enet = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, **params).fit(X, y)
 
-    lmbda = alpha * l1_ratio
+    lmbda = alpha * l1_ratio * n_samples / (n_samples + n_features)
     mu = alpha * (1 - l1_ratio)
     X_tilde = np.vstack(
-        (X, np.sqrt(n_samples*mu*weights) * np.eye(n_features)))
+        (X, np.sqrt(n_samples*mu) * np.eye(n_features)))
     y_tilde = np.hstack((y, np.zeros(n_features)))
 
-    reg_lasso = Lasso(alpha=lmbda, weights=weights, tol=tol, max_iter=1000)
+    reg_lasso = Lasso(alpha=lmbda, **params)
     reg_lasso.fit(X_tilde, y_tilde)
 
-    # assert_allclose(reg_enet.intercept_, reg_lasso.intercept_, rtol=1e-3, atol=1e-3)
-    pass
+    assert_allclose(reg_enet.coef_, reg_lasso.coef_, rtol=1e-4, atol=1e-3)
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept",
@@ -147,5 +160,4 @@ def test_infinite_weights(sparse_X, fit_intercept):
 
 
 if __name__ == '__main__':
-    test_enet_weights()
     pass
