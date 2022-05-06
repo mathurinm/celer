@@ -270,9 +270,9 @@ class ElasticNet(ElasticNet_sklearn):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (
-    l1_ratio * \sum_j weights_j |w_j|
-    + 0.5 * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
+        1 / (2 * n_samples) * ||y - X w||^2_2
+        + alpha * l1_ratio * \sum_j weights_j |w_j|
+        + 0.5 * alpha * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
 
     Parameters
     ----------
@@ -288,7 +288,7 @@ class ElasticNet(ElasticNet_sklearn):
         ``l1_ratio = 0`` (Ridge regression) is not supported.
 
     max_iter : int, optional
-        The maximum number of iterations (subproblem definitions)
+        The maximum number of iterations (subproblem definitions).
 
     max_epochs : int
         Maximum number of CD epochs on each subproblem.
@@ -324,10 +324,10 @@ class ElasticNet(ElasticNet_sklearn):
     Attributes
     ----------
     coef_ : array, shape (n_features,)
-        parameter vector (w in the cost function formula)
+        parameter vector (w in the cost function formula).
 
     sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
-        ``sparse_coef_`` is a readonly property derived from ``coef_``
+        ``sparse_coef_`` is a readonly property derived from ``coef_``.
 
     intercept_ : float
         constant term in decision function.
@@ -405,9 +405,9 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
 
     The optimization objective for Lasso is::
 
-    (1 / (2 * n_samples)) * ||y - X w||^2_2 + alpha * (
-    l1_ratio * \sum_j weights_j |w_j|
-    + 0.5 * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
+        1 / (2 * n_samples) * ||y - X w||^2_2
+        + alpha * l1_ratio * \sum_j weights_j |w_j|
+        + 0.5 * alpha * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
 
     Parameters
     ----------
@@ -430,8 +430,8 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
         Number of alphas along the regularization path.
 
     alphas : numpy array, optional
-        List of alphas where to compute the models.
-        If ``None`` ``alphas`` are set automatically
+        List of alphas where to compute the models
+        If ``None`` ``alphas`` are set automatically.
 
     fit_intercept : boolean, default True
         whether to calculate the intercept for this model. If set
@@ -480,23 +480,23 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
     Attributes
     ----------
     alpha_ : float
-        The amount of penalization chosen by cross validation
+        The amount of penalization chosen by cross validation.
 
     l1_ratio_ : float
         The compromise between l1 and l2 penalization chosen by
         cross validation.
 
     coef_ : array, shape (n_features,)
-        parameter vector (w in the cost function formula)
+        parameter vector (w in the cost function formula).
 
     intercept_ : float
         independent term in decision function.
 
     mse_path_ : array, shape (n_alphas, n_folds)
-        mean square error for the test set on each fold, varying alpha
+        mean square error for the test set on each fold, varying alpha.
 
     alphas_ : numpy array, shape (n_alphas,)
-        The grid of alphas used for fitting
+        The grid of alphas used for fitting.
 
     dual_gap_ : ndarray, shape ()
         The dual gap at the end of the optimization for the optimal alpha

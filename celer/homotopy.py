@@ -38,6 +38,13 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
         \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|
 
+    ElasticNet:
+
+    .. math::
+
+        \frac{||y - X w||_2^2}{2 n} + 
+        \alpha \sum_{j=1}^p weights_j (\rho |w_j| + (1-\rho) w_j^2)
+
     Logreg:
 
     .. math::
