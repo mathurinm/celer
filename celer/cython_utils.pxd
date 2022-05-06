@@ -8,7 +8,7 @@ cdef int LOGREG
 
 cdef floating ST(floating, floating) nogil
 
-cdef floating fweighted_norm_w2(int, floating[:], floating[:]) nogil
+cdef floating fweighted_norm_w2(floating[:], floating[:]) nogil
 
 cdef floating dual(int, int, floating, floating, floating, floating, floating *, floating *) nogil
 cdef floating primal(int, floating, floating, floating[:], floating [:],

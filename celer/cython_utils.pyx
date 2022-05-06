@@ -111,9 +111,9 @@ cdef inline floating Nh(floating x) nogil:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef floating fweighted_norm_w2(int n_features, 
-                        floating[:] w, floating[:] weights) nogil: 
+cdef floating fweighted_norm_w2(floating[:] w, floating[:] weights) nogil: 
     cdef floating weighted_norm = 0.
+    cdef int n_features = w.shape[0]
     cdef int j
 
     for j in range(n_features):

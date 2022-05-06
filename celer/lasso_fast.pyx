@@ -98,7 +98,7 @@ def celer(
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
-    cdef floating weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
+    cdef floating weighted_norm_w2 = fweighted_norm_w2(w, weights)
     tmp = 1.0
 
     # max_iter + 1 is to deal with max_iter=0
@@ -128,7 +128,7 @@ def celer(
 
             #  compute ||w||^2 only for Enet
             if l1_ratio != 1:
-                weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
+                weighted_norm_w2 = fweighted_norm_w2(w, weights)
 
             d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
 
@@ -242,7 +242,7 @@ def celer(
 
                 # update norm_w2 in inner loop for Enet only
                 if l1_ratio != 1:
-                    weighted_norm_w2 = fweighted_norm_w2(n_features, w, weights)
+                    weighted_norm_w2 = fweighted_norm_w2(w, weights)
                 d_obj_in = dual(
                     pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
 
