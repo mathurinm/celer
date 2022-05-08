@@ -41,7 +41,7 @@ First clone the repository available at https://github.com/mathurinm/celer::
     $ cd celer/
     $ pip install -e .
 
-To check the installation was successful, run::
+To check that the installation was successful, run::
 
     $ python -c 'import celer'
 
