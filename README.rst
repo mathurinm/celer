@@ -1,4 +1,4 @@
-Celer
+celer
 =====
 
 |image0| |image1|
@@ -25,9 +25,9 @@ Install the released version
 ============================
 
 Assuming you have a working Python environment, e.g., with Anaconda you
-can `install Celer with pip <https://pypi.python.org/pypi/celer/>`__.
+can `install celer with pip <https://pypi.python.org/pypi/celer/>`__.
 
-From a console or terminal install Celer with pip:
+From a console or terminal install celer with pip:
 
 ::
 
@@ -36,7 +36,7 @@ From a console or terminal install Celer with pip:
 Install and work with the development version
 =============================================
 
-From a console or terminal clone the repository and install Celer:
+From a console or terminal clone the repository and install celer:
 
 ::
 
