@@ -68,7 +68,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Celer'
+project = u'celer'
 copyright = u'2018-2022, Mathurin Massias'
 author = u'Mathurin Massias'
 
@@ -176,7 +176,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'celer', u'Celer Documentation',
+    (master_doc, 'celer', u'celer Documentation',
      [author], 1)
 ]
 

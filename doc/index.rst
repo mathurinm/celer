@@ -1,13 +1,13 @@
-.. Celer documentation master file, created by
+.. celer documentation master file, created by
    sphinx-quickstart on Mon May 23 16:22:52 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Celer
+celer
 ======
 
-Celer is a library exposing many scikit-learn-like sparse models missing from scikit-learn.
-It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
+celer is a library exposing many scikit-learn-like sparse models missing from scikit-learn.
+It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (celer) algorithm [1].
 The proposed solvers tackle large-scale problems with millions of features, **up to 100 times faster than scikit-learn**.
 
 Currently, the package handles the following problems:
@@ -24,7 +24,7 @@ The estimators follow the scikit-learn API, come with automated parallel cross-v
 Install the released version
 ----------------------------
 
-From a console or terminal install Celer with pip:
+From a console or terminal install celer with pip:
 
 ::
 
