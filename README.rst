@@ -9,6 +9,8 @@ Currently, the package handles the following problems:
 
 - Lasso
 - Weighted Lasso
+- ElasticNet
+- Weighted ElasticNet
 - Sparse Logistic regression
 - Weighted Group Lasso
 - Multitask Lasso
