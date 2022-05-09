@@ -19,6 +19,8 @@ import sphinx_bootstrap_theme
 from distutils.version import LooseVersion
 import matplotlib
 
+from doc.github_link import make_linkcode_resolve
+
 # Mathurin: disable agg warnings in doc
 warnings.filterwarnings("ignore", category=UserWarning,
                         message='Matplotlib is currently using agg, which is a'
@@ -46,6 +48,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
+    "sphinx.ext.linkcode",
 ]
 
 if LooseVersion(sphinx_gallery.__version__) < LooseVersion('0.2'):
@@ -209,6 +212,14 @@ sphinx_gallery_conf = {
         'celer': None,
     }
 }
+
+# The following is used by sphinx.ext.linkcode to provide links to github
+linkcode_resolve = make_linkcode_resolve(
+    "celer",
+    "https://github.com/mathurinm/"
+    "celer/blob/{revision}/"
+    "{package}/{path}#L{lineno}",
+)
 
 
 def setup(app):
