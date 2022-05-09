@@ -7,8 +7,6 @@ The example runs the ElasticNetCV scikit-learn like estimator
 using the Celer algorithm.
 """
 
-from turtle import color
-import numpy as np
 import matplotlib.pyplot as plt
 
 from benchopt.datasets.simulated import make_correlated_data
