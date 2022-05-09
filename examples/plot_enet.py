@@ -7,6 +7,7 @@ The example runs the ElasticNetCV scikit-learn like estimator
 using the Celer algorithm.
 """
 
+from turtle import color
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -69,33 +70,26 @@ print("Best mix penalty parameter (l1_ratio): %s" % model.l1_ratio_)
 ###############################################################################
 # Plot of the CV results
 
-n_figures = len(l1_ratios)
-fig, axs = plt.subplots(1, n_figures)
-
-for i in range(n_figures):
+for i in range(l1_ratios):
     alphas = model.alphas_[i]
     mse_path = model.mse_path_[i]
 
     mean_mse_path = mse_path.mean(axis=-1)
     std_mse_path = mse_path.std(axis=-1)
-    arg_min = np.argmin(mean_mse_path, axis=None)
-    min_mse = mean_mse_path[arg_min]
 
-    axs[i].semilogx(alphas, mean_mse_path, 'k', linewidth=2)
-    axs[i].axvline(alphas[arg_min], linestyle='--', color='k')
-    axs[i].fill_between(
+    plt.semilogx(alphas, mean_mse_path, linewidth=1, label='L1_ratio=%s' % l1_ratios[i])
+    plt.fill_between(
         x=alphas,
         y1=mean_mse_path + std_mse_path,
         y2=mean_mse_path - std_mse_path,
-        alpha=0.5,
+        alpha=0.2,
     )
 
-    axs[i].set_xlabel(r'$\alpha$')
-    axs[i].set_title(f'l1_ratio = {l1_ratios[i]} (best mse={min_mse:.2f})',
-                     fontsize=10)
+plt.axvline(model.alpha_, linestyle='--', color='k')
 
+plt.ylabel('Mean square prediction error')
+plt.xlabel(r'$\alpha$')
+plt.legend()
+plt.title(r"ElasticNetCV with many l1_ratios and $\alpha$")
 
-axs[0].set_ylabel('Mean square prediction error')
-fig.suptitle(r"ElasticNetCV with many l1_ratios and $\alpha$")
-fig.tight_layout()
 plt.show()
