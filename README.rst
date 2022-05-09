@@ -3,14 +3,14 @@ celer
 
 |image0| |image1|
 
-Fast algorithm to solve Lasso-like problems with dual extrapolation, under a scikit-learn API.
-The solvers used allow for solving large scale problems with millions of features, up to 100 times faster than scikit-learn.
+A fast algorithm to solve Lasso-like problems with dual extrapolation, under a scikit-learn API.
+The proposed solvers tackle large-scale problems with millions of features, **up to 100 times faster than scikit-learn**.
 Currently, the package handles the following problems:
 
 - Lasso
-- weighted Lasso
+- Weighted Lasso
 - Sparse Logistic regression
-- weighted Group Lasso
+- Weighted Group Lasso
 - Multitask Lasso
 
 The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
@@ -36,7 +36,7 @@ From a console or terminal install celer with pip:
 Install and work with the development version
 =============================================
 
-From a console or terminal clone the repository and install Celer:
+From a console or terminal clone the repository and install celer:
 
 ::
 
@@ -44,8 +44,7 @@ From a console or terminal clone the repository and install Celer:
     cd celer/
     pip install -e .
 
-To build the documentation you will need to run:
-
+To build the documentation, run:
 
 ::
 
@@ -58,15 +57,15 @@ Demos & Examples
 ================
 
 In the `example section <https://mathurinm.github.io/celer/auto_examples/index.html>`__ of the documentation,
-you will find numerous examples on real life datasets,
-timing comparison with other estimators, easy and fast ways to perform cross validation, etc.
+you can find numerous examples on real-life datasets,
+timing comparison with other estimators as well as easy and fast ways to perform cross-validation.
 
 
 Dependencies
 ============
 
 All dependencies are in the ``./requirements.txt`` file.
-They are installed automatically when ``pip install -e .`` is run.
+They are installed automatically when running ``pip install -e .``.
 
 Cite
 ====
@@ -76,12 +75,12 @@ If you use this code, please cite:
 ::
 
     @InProceedings{pmlr-v80-massias18a,
-      title = 	 {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
-      author = 	 {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
-      booktitle = 	 {Proceedings of the 35th International Conference on Machine Learning},
-      pages = 	 {3321--3330},
-      year = 	 {2018},
-      volume = 	 {80},
+      title =    {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
+      author =   {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
+      booktitle =    {Proceedings of the 35th International Conference on Machine Learning},
+      pages =    {3321--3330},
+      year =   {2018},
+      volume =   {80},
     }
 
 

@@ -4,7 +4,7 @@ import os
 dist.Distribution().fetch_build_eggs(['numpy>=1.12'])
 import numpy as np  # noqa
 
-descr = 'Fast algorithm with dual extrapolation for sparse problems'
+descr = 'A fast algorithm with dual extrapolation for sparse problems'
 
 version = None
 with open(os.path.join('celer', '__init__.py'), 'r') as fid:
@@ -17,6 +17,8 @@ if version is None:
 
 DISTNAME = 'celer'
 DESCRIPTION = descr
+with open('README.rst', 'r') as f:
+    LONG_DESCRIPTION = f.read()
 MAINTAINER = 'Mathurin Massias'
 MAINTAINER_EMAIL = 'mathurin.massias@gmail.com'
 LICENSE = 'BSD (3-clause)'
@@ -24,10 +26,10 @@ DOWNLOAD_URL = 'https://github.com/mathurinm/celer.git'
 VERSION = version
 URL = 'https://mathurinm.github.io/celer'
 
-setup(name='celer',
+setup(name=DISTNAME,
       version=VERSION,
       description=DESCRIPTION,
-      long_description=open('README.rst').read(),
+      long_description=LONG_DESCRIPTION,
       license=LICENSE,
       maintainer=MAINTAINER,
       maintainer_email=MAINTAINER_EMAIL,
