@@ -68,7 +68,7 @@ print("Best mix penalty parameter (l1_ratio): %s" % model.l1_ratio_)
 ###############################################################################
 # Plot of the CV results
 
-for i in range(l1_ratios):
+for i in range(len(l1_ratios)):
     alphas = model.alphas_[i]
     mse_path = model.mse_path_[i]
 
