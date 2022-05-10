@@ -1,4 +1,4 @@
-# this code is a copy/past of
+# this code is a copy/paste of
 # https://github.com/scikit-learn/scikit-learn/blob/
 # b0b8a39d8bb80611398e4c57895420d5cb1dfe09/doc/sphinxext/github_link.py
 
