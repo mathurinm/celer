@@ -1,3 +1,7 @@
+# this code is a copy/past of
+# https://github.com/scikit-learn/scikit-learn/blob/
+# b0b8a39d8bb80611398e4c57895420d5cb1dfe09/doc/sphinxext/github_link.py
+
 from operator import attrgetter
 import inspect
 import subprocess
