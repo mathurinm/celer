@@ -21,8 +21,9 @@ configure_plt()
 
 X, y, _ = make_correlated_data(50, 100, rho=.9, random_state=0)
 
+n_jobs = 5
 kf = KFold(shuffle=True, n_splits=3, random_state=0)
-model = ElasticNetCV(cv=kf, n_jobs=3, l1_ratio=0.8)
+model = ElasticNetCV(cv=kf, n_jobs=n_jobs, l1_ratio=0.8)
 model.fit(X, y)
 
 print("Estimated regularization parameter alpha: %s" % model.alpha_)
@@ -59,7 +60,7 @@ plt.show()
 
 l1_ratios = [1., 0.9, 0.8, 0.7]
 
-model = ElasticNetCV(cv=kf, n_jobs=5, l1_ratio=l1_ratios)
+model = ElasticNetCV(cv=kf, n_jobs=n_jobs, l1_ratio=l1_ratios)
 model.fit(X, y)
 
 print("Estimated regularization parameter alpha: %s" % model.alpha_)

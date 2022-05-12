@@ -1,6 +1,7 @@
 # Authors:
 # Mathurin Massias
 # Thomas Moreau
+# Chafik
 
 import numpy as np
 from numpy.linalg import norm
@@ -96,7 +97,7 @@ def make_correlated_data(n_samples=100, n_features=50, corr=0.6, snr=3,
 
 def make_group_correlated_data(n_samples: int, n_features: int, n_groups: int,
                                corr: float = 0.8, snr: float = 3,
-                               return_w_group: bool = False, random_state: int = None):
+                               random_state: int = None):
     r"""Generate design matrix with group correlated features.
 
     .. math::
@@ -106,14 +107,14 @@ def make_group_correlated_data(n_samples: int, n_features: int, n_groups: int,
     such that :math:`||X w^*|| / ||\epsilon|| = snr`.
 
     The row of X are drawn from a multi-variate normal distribution with mean 0
-    and n_group-bloc diagonal covariance matrix. 
-    Every bloc B is a n_features // n_groups square matrix where
+    and ``n_group``-bloc diagonal covariance matrix.
+    Every bloc :math:`B`  is a ``n_features // n_groups`` square matrix where
 
     .. math::
 
-        B[i, j] = 
+        B[i, j] =
         \begin{cases}
-            corr & \text{if} i \neq j \\
+            corr & \text{if } i \neq j \\
             0 & \text{otherwise} \\
         \end{cases}
 

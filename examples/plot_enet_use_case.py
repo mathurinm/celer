@@ -13,6 +13,7 @@ ElasticNet estimator extend the Lasso estimator by producing
 sparse solutions regardless of the number of samples.
 The following example illustrates such a property.
 """
+import warnings
 
 from celer import ElasticNetCV, LassoCV
 from sklearn.model_selection import KFold
@@ -21,6 +22,9 @@ from celer.datasets.simulated import make_group_correlated_data
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+# disable deprecation warning
+warnings.simplefilter("ignore")
 
 random_state = 42
 data_params = {'n_groups': 10, 'corr': 0.8, 'snr': 2, 'random_state': random_state}

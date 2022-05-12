@@ -268,7 +268,7 @@ class ElasticNet(ElasticNet_sklearn):
     r"""
     ElasticNet scikit-learn estimator based on Celer solver
 
-    The optimization objective for Lasso is::
+    The optimization objective for ElasticNet is::
 
         1 / (2 * n_samples) * ||y - X w||^2_2
         + alpha * l1_ratio * \sum_j weights_j |w_j|
@@ -403,7 +403,7 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
 
     The best model is selected by cross-validation.
 
-    The optimization objective for Lasso is::
+    The optimization objective for ElasticNet is::
 
         1 / (2 * n_samples) * ||y - X w||^2_2
         + alpha * l1_ratio * \sum_j weights_j |w_j|
