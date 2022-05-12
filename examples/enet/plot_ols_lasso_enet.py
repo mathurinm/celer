@@ -5,7 +5,7 @@ from celer import ElasticNetCV, LassoCV
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 
-from examples.enet.tools import make_group_correlated_data
+from celer.datasets.simulated import make_group_correlated_data
 
 random_state = 42
 n_samples, n_features, n_groups, corr, snr = 500, 1000, 10, 0.8, 3
@@ -50,7 +50,6 @@ for i, (model_name, model) in enumerate(
 
     # axs[i].set_title("%s coefficients" % model_name)
     axs[i].set_ylabel("%s coefs" % model_name)
-
 
 axs[-1].set_xlabel("feature index")
 fig.suptitle(

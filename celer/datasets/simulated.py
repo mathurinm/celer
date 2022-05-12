@@ -5,6 +5,7 @@
 import numpy as np
 from numpy.linalg import norm
 from sklearn.utils import check_random_state
+from scipy.linalg import block_diag
 
 
 def make_correlated_data(n_samples=100, n_features=50, corr=0.6, snr=3,
@@ -90,4 +91,80 @@ def make_correlated_data(n_samples=100, n_features=50, corr=0.6, snr=3,
     if snr != np.inf:
         noise = rng.randn(n_samples)
         y += noise / norm(noise) * norm(y) / snr
+    return X, y, w_true
+
+
+def make_group_correlated_data(n_samples: int, n_features: int, n_groups: int,
+                               corr: float = 0.8, snr: float = 3,
+                               return_w_group: bool = False, random_state: int = None):
+    r"""Generate design matrix with group correlated features.
+
+    .. math::
+
+        y = X w^* + \epsilon
+
+    such that :math:`||X w^*|| / ||\epsilon|| = snr`.
+
+    The row of X are drawn from a multi-variate normal distribution with mean 0
+    and n_group-bloc diagonal covariance matrix. 
+    Every bloc B is a n_features // n_groups square matrix where
+
+    .. math::
+
+        B[i, j] = 
+        \begin{cases}
+            corr & \text{if} i \neq j \\
+            0 & \text{otherwise} \\
+        \end{cases}
+
+    Parameters
+    ----------
+    n_samples : int
+        Number of samples in the design matrix.
+    n_features : int
+        Number of features in the design matrix.
+    n_groups : int
+        Number of groups of correlated features. Also the number
+        of blocs in correlation matrix.
+    corr : float, optional
+        Correlation whithin a group of features, by default 0.8.
+        Must be chosen in [0, 1).
+    snr : float, or np.inf optional
+        Signal to noise ratio, by default 3. When ``np.inf`` is provided,
+        no noise is added.
+    random_state : int, optional
+        Number to control the randomness of data generation, by default None.
+    """
+    if not 0 <= corr < 1:
+        raise ValueError(
+            "The correlation `corr` must be chosen in [0, 1). "
+            "got: %r" % corr)
+
+    if random_state is not None:
+        np.random.seed(random_state)
+
+    n_features_group = n_features // n_groups
+
+    # build corr matrix
+    blocs_corr_matrix = []
+    for g in range(n_groups):
+        bloc_matrix = np.array([[corr]*i + [1] + [corr]*(n_features_group-i-1)
+                                for i in range(n_features_group)], dtype=float)
+        blocs_corr_matrix.append(bloc_matrix)
+
+    corr_matrix = block_diag(*blocs_corr_matrix)
+
+    # weight vector
+    w_group = np.random.choice(2, n_groups)
+    w_true = np.repeat(w_group, n_features_group)
+
+    # build X, y
+    mean_vec = np.zeros(n_features)
+    X = np.random.multivariate_normal(mean_vec, corr_matrix, size=n_samples)
+    y = X @ w_true
+
+    if snr != np.inf:
+        noise = np.random.randn(n_samples)
+        y += noise / norm(noise) * norm(y) / snr
+
     return X, y, w_true

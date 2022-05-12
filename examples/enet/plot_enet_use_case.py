@@ -16,7 +16,7 @@ The following example illustrates such a property.
 
 from celer import ElasticNetCV, LassoCV
 from sklearn.model_selection import KFold
-from examples.enet.utils import make_group_correlated_data
+from celer.datasets.simulated import make_group_correlated_data
 
 import numpy as np
 import matplotlib.pyplot as plt
