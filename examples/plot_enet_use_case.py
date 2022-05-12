@@ -19,7 +19,6 @@ import warnings
 
 from celer import ElasticNetCV, LassoCV
 from sklearn.model_selection import KFold
-from celer.datasets.simulated import make_group_correlated_data
 
 import numpy as np
 from numpy.linalg import norm
