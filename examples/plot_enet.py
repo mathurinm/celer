@@ -9,7 +9,7 @@ using the Celer algorithm.
 
 import matplotlib.pyplot as plt
 
-from benchopt.datasets.simulated import make_correlated_data
+from celer.datasets.simulated import make_correlated_data
 from sklearn.model_selection import KFold
 
 from celer import ElasticNetCV
@@ -19,7 +19,7 @@ print(__doc__)
 configure_plt()
 
 
-X, y, _ = make_correlated_data(50, 100, rho=.9, random_state=0)
+X, y, _ = make_correlated_data(50, 100, corr=.9, random_state=0)
 
 n_jobs = 5
 kf = KFold(shuffle=True, n_splits=3, random_state=0)

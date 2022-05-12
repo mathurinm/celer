@@ -3,15 +3,17 @@
 ElasticNet vs. Lasso: Illustration of ElasticNet use case
 ===============================================================
 
-Lasso estimator is useful in feature selection thanks to its
-ability to produce sparse solutions. However, the latter
-becomes ineffective when it comes to high dimensional data
-as the support of the produced solution is limited by the
-number of samples.
+The Lasso estimator is useful in features selection thanks 
+to its ability to produce sparse solutions. However, 
+the latter becomes ineffective when it comes to high dimensional 
+datasets as the support of the produced solution is limited 
+by the number of samples.
 
-ElasticNet estimator extend the Lasso estimator by producing
-sparse solutions regardless of the number of samples.
-The following example illustrates such a property.
+The ElasticNet estimator extend the feature selection property 
+of Lasso estimator by producing sparse solutions regardless 
+of the number of samples.
+
+Below is an example that illustrates that.
 """
 import warnings
 
