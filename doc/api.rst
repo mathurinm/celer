@@ -47,7 +47,6 @@ Datasets fetchers
    :toctree: generated/
 
    make_correlated_data
-   make_group_correlated_data
    fetch_ml_uci
    fetch_libsvm
    fetch_climate

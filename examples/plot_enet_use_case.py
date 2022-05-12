@@ -22,11 +22,52 @@ from sklearn.model_selection import KFold
 from celer.datasets.simulated import make_group_correlated_data
 
 import numpy as np
+from numpy.linalg import norm
+from scipy.linalg import block_diag
 import matplotlib.pyplot as plt
 
 
 # disable deprecation warning
 warnings.simplefilter("ignore")
+
+
+###############################################################################
+# Create function to generate group-correlated data
+
+def make_group_correlated_data(n_samples, n_features, n_groups, corr, snr,
+                               random_state):
+    if random_state is not None:
+        np.random.seed(random_state)
+
+    n_features_group = n_features // n_groups
+
+    # build corr matrix
+    blocs_corr_matrix = []
+    for _ in range(n_groups):
+        bloc_matrix = np.array([[corr]*i + [1] + [corr]*(n_features_group-i-1)
+                                for i in range(n_features_group)], dtype=float)
+        blocs_corr_matrix.append(bloc_matrix)
+
+    corr_matrix = block_diag(*blocs_corr_matrix)
+
+    # weight vector
+    w_group = np.random.choice(2, n_groups)
+    w_true = np.repeat(w_group, n_features_group)
+
+    # build X, y
+    mean_vec = np.zeros(n_features)
+    X = np.random.multivariate_normal(mean_vec, corr_matrix, size=n_samples)
+    y = X @ w_true
+
+    if snr != np.inf:
+        noise = np.random.randn(n_samples)
+        y += noise / norm(noise) * norm(y) / snr
+
+    return X, y, w_true
+
+
+###############################################################################
+#
 
 random_state = 42
 data_params = {'n_groups': 10, 'corr': 0.8, 'snr': 2, 'random_state': random_state}
