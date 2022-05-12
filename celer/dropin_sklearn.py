@@ -337,15 +337,14 @@ class ElasticNet(ElasticNet_sklearn):
 
     Examples
     --------
-    >>> from celer import Lasso
-    >>> clf = Lasso(alpha=0.1)
+    >>> from celer import ElasticNet
+    >>> clf = ElasticNet(l1_ratio=0.8, alpha=0.1)
     >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
-    Lasso(alpha=0.1, max_epochs=50000, max_iter=100,
-    p0=10, prune=0, tol=1e-06, verbose=0)
+    ElasticNet(alpha=0.1, l1_ratio=0.8)
     >>> print(clf.coef_)
-    [0.85 0.  ]
+    [0.43470641 0.43232388]
     >>> print(clf.intercept_)
-    0.15
+    0.13296971635785026
 
     See also
     --------
