@@ -18,9 +18,10 @@ code {
     color: #2c3e50 !important;
 }
 
-.function dt {
+/* This breaks the sphinx.ext.linkcode in bootstrap theme (see PR 251) */
+/* .function dt {
     padding-top: 150px;
     margin-top: -150px;
     -webkit-background-clip: content-box;
     background-clip: content-box;
-}
+} */

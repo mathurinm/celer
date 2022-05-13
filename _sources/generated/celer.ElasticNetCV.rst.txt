@@ -1,0 +1,28 @@
+﻿celer.ElasticNetCV
+==================
+
+.. currentmodule:: celer
+
+.. autoclass:: ElasticNetCV
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ElasticNetCV.__init__
+      ~ElasticNetCV.fit
+      ~ElasticNetCV.get_params
+      ~ElasticNetCV.path
+      ~ElasticNetCV.predict
+      ~ElasticNetCV.score
+      ~ElasticNetCV.set_params
+   
+   
+
+   
+   
+   

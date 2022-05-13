@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Celer &#8212; celer 0.7dev documentation</title>
+    <title>celer &#8212; celer 0.7dev documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
@@ -24,10 +24,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -93,16 +93,18 @@
     <div class="body col-md-12 content" role="main">
       
   <section id="celer">
-<h1>Celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
-<p>Celer is a library exposing many scikit-learn like sparse models missing from scikit-learn.
-It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
-The solvers used allow for solving large scale problems with millions of features, <strong>up to 100 times faster than scikit-learn</strong>.</p>
+<h1>celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
+<p>celer is a library exposing many scikit-learn-like sparse models missing from scikit-learn.
+It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (celer) algorithm [1].
+The proposed solvers tackle large-scale problems with millions of features, <strong>up to 100 times faster than scikit-learn</strong>.</p>
 <p>Currently, the package handles the following problems:</p>
 <ul class="simple">
 <li><p>Lasso</p></li>
-<li><p>weighted Lasso</p></li>
-<li><p>sparse Logistic regression</p></li>
-<li><p>weighted Group Lasso</p></li>
+<li><p>Weighted Lasso</p></li>
+<li><p>ElasticNet</p></li>
+<li><p>Weighted ElasticNet</p></li>
+<li><p>Sparse Logistic regression</p></li>
+<li><p>Weighted Group Lasso</p></li>
 <li><p>Multitask Lasso.</p></li>
 </ul>
 <p>The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.</p>
@@ -115,14 +117,14 @@ The solvers used allow for solving large scale problems with millions of feature
 </section>
 <section id="install-the-development-version">
 <h2>Install the development version<a class="headerlink" href="#install-the-development-version" title="Permalink to this headline">¶</a></h2>
-<p>We recommend to use the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.
+<p>We recommend using the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.
 First clone the repository available at <a class="reference external" href="https://github.com/mathurinm/celer">https://github.com/mathurinm/celer</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/mathurinm/celer.git
 $ cd celer/
 $ pip install -e .
 </pre></div>
 </div>
-<p>To check if everything worked fine, you can do:</p>
+<p>To check that the installation was successful, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import celer&#39;
 </pre></div>
 </div>
@@ -164,7 +166,7 @@ $ pip install -e .
 </section>
 <section id="build-the-documentation">
 <h2>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permalink to this headline">¶</a></h2>
-<p>To build the documentation you will need to run:</p>
+<p>To build the documentation, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx_gallery</span> <span class="n">sphinx_bootstrap_theme</span>
 <span class="n">cd</span> <span class="n">doc</span>
 <span class="n">make</span> <span class="n">html</span>
@@ -193,8 +195,8 @@ $ pip install -e .
       
     </p>
     <p>
-        &copy; Copyright 2018, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br/>
+        &copy; Copyright 2018-2022, Mathurin Massias.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br/>
     </p>
   </div>
 </footer>

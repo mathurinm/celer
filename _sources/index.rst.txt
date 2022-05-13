@@ -3,19 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Celer
+celer
 ======
 
-Celer is a library exposing many scikit-learn like sparse models missing from scikit-learn.
-It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (Celer) algorithm [1].
-The solvers used allow for solving large scale problems with millions of features, **up to 100 times faster than scikit-learn**.
+celer is a library exposing many scikit-learn-like sparse models missing from scikit-learn.
+It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (celer) algorithm [1].
+The proposed solvers tackle large-scale problems with millions of features, **up to 100 times faster than scikit-learn**.
 
 Currently, the package handles the following problems:
 
 - Lasso
-- weighted Lasso
-- sparse Logistic regression
-- weighted Group Lasso
+- Weighted Lasso
+- ElasticNet
+- Weighted ElasticNet
+- Sparse Logistic regression
+- Weighted Group Lasso
 - Multitask Lasso.
 
 The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
@@ -34,14 +36,14 @@ From a console or terminal install celer with pip:
 Install the development version
 -------------------------------
 
-We recommend to use the `Anaconda Python distribution <https://www.continuum.io/downloads>`_.
+We recommend using the `Anaconda Python distribution <https://www.continuum.io/downloads>`_.
 First clone the repository available at https://github.com/mathurinm/celer::
 
     $ git clone https://github.com/mathurinm/celer.git
     $ cd celer/
     $ pip install -e .
 
-To check if everything worked fine, you can do::
+To check that the installation was successful, run::
 
     $ python -c 'import celer'
 
@@ -89,7 +91,7 @@ ArXiv links:
 Build the documentation
 -----------------------
 
-To build the documentation you will need to run:
+To build the documentation, run:
 
 
 ::
