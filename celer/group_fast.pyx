@@ -53,7 +53,7 @@ cpdef floating dnorm_grp(
         floating[:] weights, int ws_size, int[:] C, bint center):
     """Dual norm in the group case, i.e. L2/infty ofter groups."""
     cdef floating Xj_theta, tmp
-    cdef floating scal = 0.
+    cdef floating dnorm = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, g, g_idx, k, startptr, endptr
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -85,7 +85,7 @@ cpdef floating dnorm_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            scal = max(scal, sqrt(tmp) / weights[g])
+            dnorm = max(dnorm, sqrt(tmp) / weights[g])
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
@@ -109,8 +109,8 @@ cpdef floating dnorm_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            scal = max(scal, sqrt(tmp) / weights[g])
-    return scal
+            dnorm = max(dnorm, sqrt(tmp) / weights[g])
+    return dnorm
 
 
 @cython.boundscheck(False)

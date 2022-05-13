@@ -38,7 +38,7 @@ cdef floating dual_scaling_mtl(
     cdef int ind, j, k
     cdef int inc = 1
     cdef floating tmp
-    cdef floating nrm = 0.
+    cdef floating dnorm = 0.
 
     if ws_size == n_features:
         for j in range(n_features):
@@ -47,17 +47,17 @@ cdef floating dual_scaling_mtl(
             for k in range(n_tasks):
                 Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
             tmp = fnrm2(&n_tasks, &Xj_theta[0], &inc)
-            if tmp > nrm:
-                nrm = tmp
+            if tmp > dnorm:
+                dnorm = tmp
     else:
         for ind in range(ws_size):
             j = C[ind]
             for k in range(n_tasks):
                 Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
             tmp = fnrm2(&n_tasks, &Xj_theta[0], &inc)
-            if tmp > nrm:
-                nrm = tmp
-    return nrm
+            if tmp > dnorm:
+                dnorm = tmp
+    return dnorm
 
 
 @cython.boundscheck(False)

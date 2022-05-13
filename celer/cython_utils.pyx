@@ -391,7 +391,7 @@ cpdef floating dnorm_enet(
     cdef int n_samples = theta.shape[0]
     cdef int n_features = skip.shape[0]
     cdef floating Xj_theta
-    cdef floating scal = 0.
+    cdef floating dnorm = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
 
@@ -422,8 +422,8 @@ cpdef floating dnorm_enet(
 
         if not positive:
             Xj_theta = fabs(Xj_theta)
-        scal = max(scal, Xj_theta / weights[j])
-    return scal
+        dnorm = max(dnorm, Xj_theta / weights[j])
+    return dnorm
 
 
 @cython.boundscheck(False)
