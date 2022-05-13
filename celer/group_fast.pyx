@@ -213,7 +213,7 @@ cpdef celer_grp(
     cdef floating[::1] theta_inner = np.zeros(n_samples, dtype=dtype)
     cdef floating[::1] thetacc = np.empty(n_samples, dtype=dtype)
 
-    cdef floating gap, p_obj, d_obj, scal, X_mean_j
+    cdef floating gap, p_obj, d_obj, dnorm, X_mean_j
     cdef floating gap_in, p_obj_in, d_obj_in, tol_in, d_obj_accel
     cdef floating d_obj_from_inner
     cdef floating highest_d_obj = 0.
@@ -237,24 +237,24 @@ cpdef celer_grp(
         tmp = 1. / n_samples
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        scal = dnorm_grp(
+        dnorm = dnorm_grp(
             is_sparse, theta, grp_ptr, grp_indices, X, X_data, X_indices,
             X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
-        if scal > alpha:
-            tmp = alpha / scal
+        if dnorm > alpha:
+            tmp = alpha / dnorm
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
         d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
         if t > 0:
             # also test dual point returned by inner solver after 1st iter:
-            scal = dnorm_grp(
+            dnorm = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
-            if scal > alpha:
-                tmp = alpha / scal
+            if dnorm > alpha:
+                tmp = alpha / dnorm
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
@@ -341,12 +341,12 @@ cpdef celer_grp(
                 tmp = 1. / n_samples
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
-                scal = dnorm_grp(
+                dnorm = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, weights, ws_size, C, center)
 
-                if scal > alpha:
-                    tmp = alpha / scal
+                if dnorm > alpha:
+                    tmp = alpha / dnorm
                     fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
@@ -362,13 +362,13 @@ cpdef celer_grp(
                     #     print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        scal = dnorm_grp(
+                        dnorm = dnorm_grp(
                             is_sparse, thetacc, grp_ptr, grp_indices, X,
                             X_data, X_indices, X_indptr, X_mean, weights,
                             ws_size, C, center)
 
-                        if scal > alpha:
-                            tmp = alpha / scal
+                        if dnorm > alpha:
+                            tmp = alpha / dnorm
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
                         d_obj_accel = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
