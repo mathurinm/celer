@@ -318,11 +318,13 @@ def celer(
                         w[j] = 0.
                     else:
                         if l1_ratio != 1.:
-                            w[j] = ST(w[j],
+                            w[j] = ST(
+                                w[j],
                                 alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j]) / \
                                 (1 + alpha * (1 - l1_ratio) * weights[j] /  norms_X_col[j] ** 2 * n_samples)
                         else:
-                            w[j] = ST(w[j],
+                            w[j] = ST(
+                                w[j],
                                 alpha / norms_X_col[j] ** 2 * n_samples * weights[j])
 
                     # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
