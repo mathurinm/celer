@@ -218,7 +218,7 @@ cpdef celer_grp(
     cdef floating d_obj_from_inner
     cdef floating highest_d_obj = 0.
     cdef floating highest_d_obj_in = 0.
-    cdef floating tmp, R_sum, norm_wg, bst_scal
+    cdef floating tmp, theta_scaling, R_sum, norm_wg, bst_scal
     cdef floating radius = INFINITY
 
     # acceleration variables:
@@ -242,8 +242,8 @@ cpdef celer_grp(
             X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
         if dnorm > alpha:
-            tmp = alpha / dnorm
-            fscal(&n_samples, &tmp, &theta[0], &inc)
+            theta_scaling = alpha / dnorm
+            fscal(&n_samples, &theta_scaling, &theta[0], &inc)
 
         d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
@@ -254,8 +254,8 @@ cpdef celer_grp(
                     X_indices, X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
             if dnorm > alpha:
-                tmp = alpha / dnorm
-                fscal(&n_samples, &tmp, &theta_inner[0], &inc)
+                theta_scaling = alpha / dnorm
+                fscal(&n_samples, &theta_scaling, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
                 pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_inner[0], &y[0])
@@ -346,8 +346,8 @@ cpdef celer_grp(
                     X_indices, X_indptr, X_mean, weights, ws_size, C, center)
 
                 if dnorm > alpha:
-                    tmp = alpha / dnorm
-                    fscal(&n_samples, &tmp, &theta_inner[0], &inc)
+                    theta_scaling = alpha / dnorm
+                    fscal(&n_samples, &theta_scaling, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
                 d_obj_in = dual(
@@ -368,8 +368,8 @@ cpdef celer_grp(
                             ws_size, C, center)
 
                         if dnorm > alpha:
-                            tmp = alpha / dnorm
-                            fscal(&n_samples, &tmp, &thetacc[0], &inc)
+                            theta_scaling = alpha / dnorm
+                            fscal(&n_samples, &theta_scaling, &thetacc[0], &inc)
 
                         d_obj_accel = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
                                            norm_w2, &thetacc[0], &y[0])
