@@ -652,6 +652,9 @@ class LogisticRegression(LogReg_sklearn):
         self.classes_ = enc.classes_
         n_classes = len(enc.classes_)
 
+        if not hasattr(self, "n_features_in_"):
+            self.n_features_in_ = X.shape[1]
+
         if n_classes <= 2:
             coefs = self.path(
                 X, 2 * y_ind - 1, np.array([self.C]), solver=self.solver)[0]
