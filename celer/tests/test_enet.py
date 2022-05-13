@@ -25,9 +25,9 @@ def test_raise_errors_l1_ratio():
         celer_path(X, y, 'logreg', l1_ratio=0.5)
 
 
-@pytest.mark.parametrize("sparse_X", [True, False])
+@pytest.mark.parametrize("sparse_X", (True, False))
 def test_ElasticNet_Lasso_equivalence(sparse_X):
-    n_samples, n_features = 30, 50
+    n_samples, n_features = 50, 100
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
     alpha_max = norm(X.T@y, ord=np.inf) / n_samples
 
@@ -48,48 +48,39 @@ def test_ElasticNet_Lasso_equivalence(sparse_X):
     assert_allclose(coef_lasso, coef_enet)
 
 
-@pytest.mark.parametrize("sparse_X, prune", [(False, 0), (False, 1)])
-def test_celer_enet_sk_enet_equivalence(sparse_X, prune):
+@pytest.mark.parametrize("prune", (0, 1))
+def test_sk_enet_path_equivalence(prune):
     """Test that celer_path matches sklearn enet_path."""
 
-    n_samples, n_features = 30, 50
-    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+    n_samples, n_features = 40, 80
+    X, y = build_dataset(n_samples, n_features, sparse_X=False)
 
     tol = 1e-14
     l1_ratio = 0.7
     alpha_max = norm(X.T@y, ord=np.inf) / n_samples
-    params = dict(eps=1e-3, alphas=[alpha_max / 100.], tol=tol, l1_ratio=l1_ratio)
+    params = dict(eps=1e-3, tol=tol, l1_ratio=l1_ratio)
 
+    # one alpha
+    alpha = alpha_max / 100.
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", return_thetas=False, verbose=0, prune=prune,
-        max_iter=30, **params)
+        X, y, "lasso", alphas=[alpha],
+        prune=prune, max_iter=30, **params)
 
-    alphas2, coefs2, _ = enet_path(X, y, verbose=0, **params,
-                                   max_iter=10000)
+    alphas2, coefs2, _ = enet_path(X, y, max_iter=10000,
+                                   alphas=[alpha], **params)
 
     assert_equal(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
     assert_allclose(coefs1, coefs2, rtol=1e-3, atol=1e-4)
 
-
-@pytest.mark.parametrize("sparse_X, prune", product([False], [0, 1]))
-def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
-    """Test that celer_path matches sklearn enet_path."""
-
-    n_samples, n_features = 30, 50
-    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
-
-    tol = 1e-14
-    l1_ratio = 0.7
+    # many alphas
     n_alphas = 20
-    params = dict(eps=1e-3, n_alphas=n_alphas, tol=tol, l1_ratio=l1_ratio)
-
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", return_thetas=False, verbose=0, prune=prune,
-        max_iter=30, **params)
+        X, y, "lasso", n_alphas=n_alphas,
+        prune=prune, max_iter=30, **params)
 
-    alphas2, coefs2, _ = enet_path(X, y, verbose=0, **params,
-                                   max_iter=10000)
+    alphas2, coefs2, _ = enet_path(X, y, max_iter=10000,
+                                   n_alphas=n_alphas, **params)
 
     assert_allclose(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
@@ -97,8 +88,8 @@ def test_celer_enet_sk_enet_equivalence_many(sparse_X, prune):
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept, positive",
-                         product([False], [False, True], [False, False]))
-def test_celer_ElasticNet_vs_sk_ElasticNet(sparse_X, fit_intercept, positive):
+                         product([False, True], [False, True], [False, True]))
+def test_sk_ElasticNet_equivalence(sparse_X, fit_intercept, positive):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
 
@@ -113,7 +104,7 @@ def test_celer_ElasticNet_vs_sk_ElasticNet(sparse_X, fit_intercept, positive):
         assert_allclose(reg_celer.intercept_, reg_sk.intercept_)
 
 
-@pytest.mark.parametrize("sparse_X", [True, False])
+@pytest.mark.parametrize("sparse_X", (True, False))
 def test_weighted_ElasticNet(sparse_X):
     n_samples, n_features = 30, 50
     X, y = build_dataset(n_samples, n_features, sparse_X)
@@ -141,13 +132,12 @@ def test_weighted_ElasticNet(sparse_X):
     assert_allclose(reg_enet.coef_, reg_lasso.coef_, rtol=1e-4, atol=1e-3)
 
 
-@pytest.mark.parametrize("sparse_X, fit_intercept",
-                         product([False], [False, True]))
-def test_infinite_weights(sparse_X, fit_intercept):
+@pytest.mark.parametrize("fit_intercept", (False, True))
+def test_infinite_weights(fit_intercept):
     n_samples, n_features = 30, 100
-    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples, n_features, sparse_X=False)
 
-    np.random.seed(0)
+    np.random.seed(42)
     weights = abs(np.random.rand(n_features))
     n_inf = n_features // 5
     inf_indices = np.random.choice(n_features, size=n_inf, replace=False)
@@ -160,11 +150,10 @@ def test_infinite_weights(sparse_X, fit_intercept):
     assert_equal(reg.coef_[inf_indices], 0)
 
 
-@pytest.mark.parametrize("sparse_X, fit_intercept",
-                         product([False], [False, True]))
-def test_ElasticNetCV(sparse_X, fit_intercept):
+@pytest.mark.parametrize("fit_intercept", (False, True))
+def test_ElasticNetCV(fit_intercept):
     n_samples, n_features = 30, 100
-    X, y = build_dataset(n_samples, n_features, sparse_X=sparse_X)
+    X, y = build_dataset(n_samples, n_features, sparse_X=False)
 
     params = dict(l1_ratio=[0.7, 0.8, 0.5], eps=0.05, n_alphas=10, tol=1e-10, cv=2,
                   fit_intercept=fit_intercept, n_jobs=-1)
@@ -183,5 +172,4 @@ def test_ElasticNetCV(sparse_X, fit_intercept):
 
 
 if __name__ == '__main__':
-    test_ElasticNetCV(False, False)
     pass
