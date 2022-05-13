@@ -62,7 +62,7 @@ def celer(
     cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef floating p_obj, d_obj, highest_d_obj, radius, tol_in
     cdef floating gap_in, p_obj_in, d_obj_in, d_obj_accel, highest_d_obj_in
-    cdef floating tmp, R_sum, tmp_exp, dnorm
+    cdef floating theta_scaling, R_sum, tmp, tmp_exp, dnorm
     cdef int n_screened = 0
     cdef bint center = False
     cdef floating old_w_j, X_mean_j
@@ -99,7 +99,7 @@ def celer(
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
     cdef floating weighted_norm_w2 = fweighted_norm_w2(w, weights)
-    tmp = 1.0
+    theta_scaling = 1.0
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
@@ -121,16 +121,17 @@ def celer(
                 X_mean, weights, center, positive, alpha, l1_ratio)
 
             if dnorm > alpha * l1_ratio:
-                tmp = alpha * l1_ratio / dnorm
-                fscal(&n_samples, &tmp, &theta[0], &inc)
+                theta_scaling = alpha * l1_ratio / dnorm
+                fscal(&n_samples, &theta_scaling, &theta[0], &inc)
             else:
-                tmp = 1.
+                theta_scaling = 1.
 
             #  compute ||w||^2 only for Enet
             if l1_ratio != 1:
                 weighted_norm_w2 = fweighted_norm_w2(w, weights)
 
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, 
+                theta_scaling**2*weighted_norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
             dnorm = dnorm_enet(
@@ -138,15 +139,16 @@ def celer(
                 screened, X_mean, weights, center, positive, alpha, l1_ratio)
 
             if dnorm > alpha * l1_ratio:
-                tmp = alpha * l1_ratio / dnorm
-                fscal(&n_samples, &tmp, &theta_in[0], &inc)
+                theta_scaling = alpha * l1_ratio / dnorm
+                fscal(&n_samples, &theta_scaling, &theta_in[0], &inc)
             else:
-                tmp = 1.
+                theta_scaling = 1.
 
-            d_obj_from_inner = dual(
-                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
+            d_obj_from_inner = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
+                    theta_scaling**2*weighted_norm_w2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
+                theta_scaling**2*weighted_norm_w2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -235,16 +237,16 @@ def celer(
                     notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
                 if dnorm > alpha * l1_ratio:
-                    tmp = alpha * l1_ratio / dnorm
-                    fscal(&n_samples, &tmp, &theta_in[0], &inc)
+                    theta_scaling = alpha * l1_ratio / dnorm
+                    fscal(&n_samples, &theta_scaling, &theta_in[0], &inc)
                 else:
-                    tmp = 1.
+                    theta_scaling = 1.
 
                 # update norm_w2 in inner loop for Enet only
                 if l1_ratio != 1:
                     weighted_norm_w2 = fweighted_norm_w2(w, weights)
-                d_obj_in = dual(
-                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
+                d_obj_in = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
+                    theta_scaling**2*weighted_norm_w2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
@@ -262,13 +264,13 @@ def celer(
                             positive, alpha, l1_ratio)
 
                         if dnorm > alpha * l1_ratio:
-                            tmp = alpha * l1_ratio / dnorm
-                            fscal(&n_samples, &tmp, &thetacc[0], &inc)
+                            theta_scaling = alpha * l1_ratio / dnorm
+                            fscal(&n_samples, &theta_scaling, &thetacc[0], &inc)
                         else:
-                            tmp = 1.
+                            theta_scaling = 1.
 
-                        d_obj_accel = dual(
-                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &thetacc[0], &y[0])
+                        d_obj_accel = dual(pb, n_samples, alpha, l1_ratio, norm_y2, 
+                                theta_scaling**2*weighted_norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
