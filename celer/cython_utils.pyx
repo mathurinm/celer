@@ -181,7 +181,6 @@ cdef floating primal(
         return primal_logreg(alpha, R, y, w, weights)
 
 
-# should pass in w to add support of weights
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
