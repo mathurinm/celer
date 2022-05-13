@@ -62,7 +62,7 @@ def celer(
     cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef floating p_obj, d_obj, highest_d_obj, radius, tol_in
     cdef floating gap_in, p_obj_in, d_obj_in, d_obj_accel, highest_d_obj_in
-    cdef floating tmp, R_sum, tmp_exp, scal
+    cdef floating tmp, R_sum, tmp_exp, dnorm
     cdef int n_screened = 0
     cdef bint center = False
     cdef floating old_w_j, X_mean_j
@@ -116,12 +116,12 @@ def celer(
         if t != 0:
             create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
-            scal = dnorm_enet(
+            dnorm = dnorm_enet(
                 is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
                 X_mean, weights, center, positive, alpha, l1_ratio)
 
-            if scal > alpha * l1_ratio:
-                tmp = alpha * l1_ratio / scal
+            if dnorm > alpha * l1_ratio:
+                tmp = alpha * l1_ratio / dnorm
                 fscal(&n_samples, &tmp, &theta[0], &inc)
             else:
                 tmp = 1.
@@ -133,12 +133,12 @@ def celer(
             d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
-            scal = dnorm_enet(
+            dnorm = dnorm_enet(
                 is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights, center, positive, alpha, l1_ratio)
 
-            if scal > alpha * l1_ratio:
-                tmp = alpha * l1_ratio / scal
+            if dnorm > alpha * l1_ratio:
+                tmp = alpha * l1_ratio / dnorm
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
             else:
                 tmp = 1.
@@ -230,12 +230,12 @@ def celer(
                 create_dual_pt(
                     pb, n_samples, &theta_in[0], &Xw[0], &y[0])
 
-                scal = dnorm_enet(
+                dnorm = dnorm_enet(
                     is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
                     notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
-                if scal > alpha * l1_ratio:
-                    tmp = alpha * l1_ratio / scal
+                if dnorm > alpha * l1_ratio:
+                    tmp = alpha * l1_ratio / dnorm
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
                 else:
                     tmp = 1.
@@ -256,13 +256,13 @@ def celer(
                         # print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        scal = dnorm_enet(
+                        dnorm = dnorm_enet(
                             is_sparse, thetacc, w, X, X_data, X_indices,
                             X_indptr, notin_ws, X_mean, weights, center,
                             positive, alpha, l1_ratio)
 
-                        if scal > alpha * l1_ratio:
-                            tmp = alpha * l1_ratio / scal
+                        if dnorm > alpha * l1_ratio:
+                            tmp = alpha * l1_ratio / dnorm
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
                         else:
                             tmp = 1.
