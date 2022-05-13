@@ -16,7 +16,7 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path
-from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
+from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
