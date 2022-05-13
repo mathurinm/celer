@@ -47,7 +47,7 @@ def newton_celer(
 
     cdef int t = 0
     cdef int i, j, k
-    cdef floating p_obj, d_obj, norm_Xtheta, norm_Xtheta_acc, tmp
+    cdef floating p_obj, d_obj, norm_Xtheta, norm_Xtheta_acc, tmp, theta_scaling
     cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef int info_dposv
     cdef int ws_size
@@ -115,8 +115,8 @@ def newton_celer(
             screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
         if norm_Xtheta > alpha:
-            tmp = alpha / norm_Xtheta
-            fscal(&n_samples, &tmp, &theta[0], &inc)
+            theta_scaling = alpha / norm_Xtheta
+            fscal(&n_samples, &theta_scaling, &theta[0], &inc)
 
         d_obj = dual(LOGREG, n_samples, alpha, l1_ratio, 0., norm_w2, &theta[0], &y[0])
         gap = p_obj - d_obj
@@ -174,8 +174,8 @@ def newton_celer(
                 screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
             if norm_Xtheta_acc > alpha:
-                tmp = alpha / norm_Xtheta_acc
-                fscal(&n_samples, &tmp, &theta_acc[0], &inc)
+                theta_scaling = alpha / norm_Xtheta_acc
+                fscal(&n_samples, &theta_scaling, &theta_acc[0], &inc)
 
             d_obj_acc = dual(LOGREG, n_samples, alpha, l1_ratio, 0., norm_w2, &theta_acc[0], &y[0])
             if d_obj_acc > d_obj:
