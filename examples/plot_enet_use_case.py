@@ -15,19 +15,13 @@ of the number of samples.
 
 Below is an example that illustrates that.
 """
-import warnings
-
-from celer import ElasticNetCV, LassoCV
-from sklearn.model_selection import KFold
+from celer import ElasticNet, Lasso
 
 import numpy as np
 from numpy.linalg import norm
 from scipy.linalg import block_diag
+
 import matplotlib.pyplot as plt
-
-
-# disable deprecation warning
-warnings.simplefilter("ignore")
 
 
 ###############################################################################
@@ -73,16 +67,15 @@ data_params = {'n_groups': 10, 'corr': 0.8, 'snr': 2, 'random_state': random_sta
 
 n_samples, n_features = 1000, 100
 X, y, w_true = make_group_correlated_data(n_samples, n_features, **data_params)
-kf = KFold(n_splits=5, shuffle=True, random_state=random_state)
+alpha_max = norm(X.T@y, ord=np.inf) / n_samples
+alpha = alpha_max / 10.
 
-
-# init and crossvalidate ElasticNet and Lasso
-n_jobs = 5
-l1_ratios = [0.8, 0.85, 0.9, 0.95]
-enet = ElasticNetCV(l1_ratio=l1_ratios, cv=kf, n_jobs=n_jobs)
+# init/fit ElasticNet and Lasso
+l1_ratio = 0.85
+enet = ElasticNet(l1_ratio=l1_ratio, alpha=alpha)
 enet.fit(X, y)
 
-lasso = LassoCV(cv=kf, n_jobs=n_jobs)
+lasso = Lasso(alpha=alpha)
 lasso.fit(X, y)
 
 
@@ -95,11 +88,11 @@ fig, axs = plt.subplots(len(models), 1)
 
 for i, (model_name, model) in enumerate(models):
     # true coefs
-    axs[i].stem(np.where(w_true)[0], w_true[w_true != 0], 'g',
+    axs[i].stem(np.where(w_true)[0], w_true[w_true != 0], linefmt='g',
                 label=r"true regression coefficients", markerfmt='go')
     # model coefs
     w = model.coef_
-    axs[i].stem(np.where(w)[0], w[w != 0], 'r', label=model_name,
+    axs[i].stem(np.where(w)[0], w[w != 0], linefmt='r', label=model_name,
                 markerfmt='rx')
 
     axs[i].set_ylabel("%s coefs" % model_name)
@@ -111,7 +104,7 @@ fig.suptitle(
 
 print(
     f"Support size of Lasso: {len((lasso.coef_[lasso.coef_ != 0]))}\n"
-    f"Support size of ElasticNet: {len(enet.coef_[enet.coef_ != 0])}\n"
+    f"Support size of ElasticNet: {len(enet.coef_[enet.coef_ != 0])}"
 )
 
 plt.show()
@@ -120,13 +113,16 @@ plt.show()
 # Case 2: number of features is much larger than number of samples. In this
 # setup, Lasso should fail to perform a good feature selection.
 
-n_samples, n_features = 200, 1000
+n_samples, n_features = 500, 1000
 X, y, w_true = make_group_correlated_data(n_samples, n_features, **data_params)
+alpha_max = norm(X.T@y, ord=np.inf) / n_samples
+alpha = alpha_max / 10.
 
-enet = ElasticNetCV(l1_ratio=l1_ratios, cv=kf, n_jobs=n_jobs)
+l1_ratio = 0.85
+enet = ElasticNet(l1_ratio=l1_ratio, alpha=alpha)
 enet.fit(X, y)
 
-lasso = LassoCV(cv=kf, n_jobs=n_jobs)
+lasso = Lasso(alpha=alpha)
 lasso.fit(X, y)
 
 # plot results
@@ -135,11 +131,11 @@ fig, axs = plt.subplots(len(models), 1)
 
 for i, (model_name, model) in enumerate(models):
     # true coefs
-    axs[i].stem(np.where(w_true)[0], w_true[w_true != 0], 'g',
+    axs[i].stem(np.where(w_true)[0], w_true[w_true != 0], linefmt='g',
                 label=r"true regression coefficients", markerfmt='go')
     # model coefs
     w = model.coef_
-    axs[i].stem(np.where(w)[0], w[w != 0], 'r', label=model_name,
+    axs[i].stem(np.where(w)[0], w[w != 0], linefmt='r', label=model_name,
                 markerfmt='rx')
 
     axs[i].set_ylabel("%s coefs" % model_name)
@@ -151,7 +147,7 @@ fig.suptitle(
 
 print(
     f"Support size of Lasso: {len((lasso.coef_[lasso.coef_ != 0]))}\n"
-    f"Support size of ElasticNet: {len(enet.coef_[enet.coef_ != 0])}\n"
+    f"Support size of ElasticNet: {len(enet.coef_[enet.coef_ != 0])}"
 )
 
 plt.show()
