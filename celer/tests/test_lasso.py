@@ -48,9 +48,9 @@ def test_celer_path(sparse_X, alphas, pb):
 
 def test_convergence_warning():
     X, y = build_dataset(n_samples=10, n_features=10)
-    tol = - 1  # gap canot be negative, a convergence warning should be raised
+    tol = 1e-16  # very small, not enough iterations below
     alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
-    clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
+    clf = Lasso(alpha_max / 100, max_iter=1, max_epochs=1, tol=tol)
 
     with warnings.catch_warnings(record=True) as w:
         # Cause all warnings to always be triggered.
@@ -243,21 +243,6 @@ def test_infinite_weights(pb):
         assert_array_less(dual_gaps[0], tol * norm(y) ** 2 / 2.)
 
     assert_array_equal(coefs[inf_indices], 0)
-
-
-def test_zero_iter():
-    X, y = build_dataset(n_samples=30, n_features=50)
-
-    # convergence warning is raised bc we return -1 as gap
-    with warnings.catch_warnings(record=True):
-        assert_allclose(Lasso(max_iter=0).fit(X, y).coef_, 0)
-        y = 2 * (y > 0) - 1
-        assert_allclose(
-            LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y).coef_,
-            0)
-        assert_allclose(
-            LogisticRegression(max_iter=0, solver="celer").fit(X, y).coef_,
-            0)
 
 
 if __name__ == "__main__":
