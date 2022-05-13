@@ -1,13 +1,12 @@
 # flake8: noqa F401
-import inspect
 import numbers
-
 import numpy as np
 
 from sklearn.base import RegressorMixin, MultiOutputMixin
 from sklearn.utils.validation import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.linear_model import (Lasso as Lasso_sklearn,
+from sklearn.linear_model import (ElasticNet as ElasticNet_sklearn,
+                                  Lasso as Lasso_sklearn,
                                   LogisticRegression as LogReg_sklearn,
                                   MultiTaskLasso as MultiTaskLasso_sklearn)
 from sklearn.linear_model._coordinate_descent import LinearModelCV
@@ -29,7 +28,7 @@ class Lasso(Lasso_sklearn):
     Parameters
     ----------
     alpha : float, optional
-        Constant that multiplies the L1 term. Defaults to 1.0.
+        Constant that multiplies the penalty term. Defaults to 1.0.
         ``alpha = 0`` is equivalent to an ordinary least square.
         For numerical reasons, using ``alpha = 0`` with the
         ``Lasso`` object is not advised.
@@ -110,6 +109,7 @@ class Lasso(Lasso_sklearn):
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
                  weights=None, warm_start=False,
                  positive=False):
+
         super(Lasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept, warm_start=warm_start)
@@ -123,7 +123,7 @@ class Lasso(Lasso_sklearn):
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
         """Compute Lasso path with Celer."""
         results = celer_path(
-            X, y, "lasso", alphas=alphas, coef_init=coef_init,
+            X, y, "lasso", alphas=alphas, l1_ratio=1.0, coef_init=coef_init,
             max_iter=self.max_iter, return_n_iter=return_n_iter,
             max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
             tol=self.tol, prune=self.prune, weights=self.weights,
@@ -262,6 +262,287 @@ class LassoCV(RegressorMixin, LinearModelCV):
 
     def _more_tags(self):
         return {'multioutput': False}
+
+
+class ElasticNet(ElasticNet_sklearn):
+    r"""
+    ElasticNet scikit-learn estimator based on Celer solver
+
+    The optimization objective for ElasticNet is::
+
+        1 / (2 * n_samples) * ||y - X w||^2_2
+        + alpha * l1_ratio * \sum_j weights_j |w_j|
+        + 0.5 * alpha * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
+
+    Parameters
+    ----------
+    alpha : float, optional
+        Constant that multiplies the penalty term. Defaults to 1.0.
+        ``alpha = 0`` is equivalent to an ordinary least square.
+        For numerical reasons, using ``alpha = 0`` with the
+        ``Lasso`` object is not advised.
+
+    l1_ratio : float, optional
+        The ElasticNet mixing parameter, with ``0 < l1_ratio <= 1``.
+        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
+        ``l1_ratio = 0`` (Ridge regression) is not supported.
+
+    max_iter : int, optional
+        The maximum number of iterations (subproblem definitions).
+
+    max_epochs : int
+        Maximum number of CD epochs on each subproblem.
+
+    p0 : int
+        First working set size.
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    tol : float, optional
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
+
+    prune : 0 | 1, optional
+        Whether or not to use pruning when growing working sets.
+
+    fit_intercept : bool, optional (default=True)
+        Whether or not to fit an intercept.
+
+    weights : array, shape (n_features,), optional (default=None)
+        Strictly positive weights used in the L1 penalty part of the Lasso
+        objective. If None, weights equal to 1 are used.
+
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+
+    positive : bool, optional (default=False)
+        When set to True, forces the coefficients to be positive.
+
+    Attributes
+    ----------
+    coef_ : array, shape (n_features,)
+        parameter vector (w in the cost function formula).
+
+    sparse_coef_ : scipy.sparse matrix, shape (n_features, 1)
+        ``sparse_coef_`` is a readonly property derived from ``coef_``.
+
+    intercept_ : float
+        constant term in decision function.
+
+    n_iter_ : int
+        Number of subproblems solved by Celer to reach the specified tolerance.
+
+    Examples
+    --------
+    >>> from celer import ElasticNet
+    >>> clf = ElasticNet(l1_ratio=0.8, alpha=0.1)
+    >>> clf.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
+    ElasticNet(alpha=0.1, l1_ratio=0.8)
+    >>> print(clf.coef_)
+    [0.43470641 0.43232388]
+    >>> print(clf.intercept_)
+    0.13296971635785026
+
+    See also
+    --------
+    celer_path
+    LassoCV
+
+    References
+    ----------
+    .. [1] M. Massias, A. Gramfort, J. Salmon
+      "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
+      http://proceedings.mlr.press/v80/massias18a.html
+    """
+
+    def __init__(self, alpha=1., l1_ratio=1., max_iter=100, max_epochs=50000, p0=10,
+                 verbose=0, tol=1e-4, prune=True, fit_intercept=True,
+                 weights=None, warm_start=False,
+                 positive=False):
+        if l1_ratio > 1 or l1_ratio < 0:
+            raise ValueError(
+                "l1_ratio must be between 0 and 1; "
+                f"got {l1_ratio:.2e}")
+
+        if l1_ratio == 0:
+            raise NotImplementedError(
+                "Fitting with l1_ratio=0 (Ridge regression) "
+                "not supported")
+
+        super(ElasticNet, self).__init__(
+            alpha=alpha, tol=tol, max_iter=max_iter,
+            fit_intercept=fit_intercept, warm_start=warm_start)
+        self.l1_ratio = l1_ratio
+        self.verbose = verbose
+        self.max_epochs = max_epochs
+        self.p0 = p0
+        self.prune = prune
+        self.positive = positive
+        self.weights = weights
+
+    def path(self, X, y, alphas, coef_init=None, return_n_iter=True, **kwargs):
+        """Compute ElasticNet path with Celer."""
+        results = celer_path(
+            X, y, "lasso", alphas=alphas, l1_ratio=self.l1_ratio, coef_init=coef_init,
+            max_iter=self.max_iter, return_n_iter=return_n_iter,
+            max_epochs=self.max_epochs, p0=self.p0, verbose=self.verbose,
+            tol=self.tol, prune=self.prune, weights=self.weights,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+
+        return results
+
+
+class ElasticNetCV(RegressorMixin, LinearModelCV):
+    r"""
+    ElasticNetCV scikit-learn estimator based on Celer solver
+
+    The best model is selected by cross-validation.
+
+    The optimization objective for ElasticNet is::
+
+        1 / (2 * n_samples) * ||y - X w||^2_2
+        + alpha * l1_ratio * \sum_j weights_j |w_j|
+        + 0.5 * alpha * (1 - l1_ratio) * \sum_j weights_j |w_j|^2)
+
+    Parameters
+    ----------
+    l1_ratio : float or list of float, optional
+        The ElasticNet mixing parameter, with ``0 < l1_ratio <= 1``.
+        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
+        ``l1_ratio = 0`` (Ridge regression) is not supported.
+        This parameter can be a list, in which case the different
+        values are tested by cross-validation and the one giving the best
+        prediction score is used. Note that a good choice of list of
+        values for ``l1_ratio`` is often to put more values close to 1
+        (i.e. Lasso) and less close to 0 (i.e. Ridge), as in ``[.1, .5, .7,
+        .9, .95, .99, 1]``.
+
+    eps : float, optional
+        Length of the path. ``eps=1e-3`` means that
+        ``alpha_min / alpha_max = 1e-3``.
+
+    n_alphas : int, optional
+        Number of alphas along the regularization path.
+
+    alphas : numpy array, optional
+        List of alphas where to compute the models
+        If ``None`` ``alphas`` are set automatically.
+
+    fit_intercept : boolean, default True
+        whether to calculate the intercept for this model. If set
+        to false, no intercept will be used in calculations
+        (e.g. data is expected to be already centered).
+
+    max_iter : int, optional
+        The maximum number of iterations (subproblem definitions).
+
+    tol : float, optional
+        Stopping criterion for the optimization: the solver runs until the
+        duality gap is smaller than ``tol * norm(y) ** 2 / len(y)`` or the
+        maximum number of iteration is reached.
+
+    cv : int, cross-validation generator or an iterable, optional
+        Determines the cross-validation splitting strategy.
+        Possible inputs for ``cv`` are:
+        - None, to use the default 3-fold cross-validation,
+        - integer, to specify the number of folds.
+        - An object to be used as a cross-validation generator.
+        - An iterable yielding train/test splits.
+        For integer/None inputs, sklearn `KFold` is used.
+
+    verbose : bool or integer
+        Amount of verbosity.
+
+    max_epochs : int, optional (default=50000)
+        Maximum number of coordinate descent epochs when solving a subproblem.
+
+    p0 : int, optional (default=10)
+        Number of features in the first working set.
+
+    prune : bool, optional (default=False)
+        Whether to use pruning when growing the working sets.
+
+    precompute : ignored parameter, kept for sklearn compatibility.
+
+    positive : bool, optional (default=False)
+        When set to True, forces the coefficients to be positive.
+
+    n_jobs : int or None, optional (default=None)
+        Number of CPUs to use during the cross validation.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors.
+
+    Attributes
+    ----------
+    alpha_ : float
+        The amount of penalization chosen by cross validation.
+
+    l1_ratio_ : float
+        The compromise between l1 and l2 penalization chosen by
+        cross validation.
+
+    coef_ : array, shape (n_features,)
+        parameter vector (w in the cost function formula).
+
+    intercept_ : float
+        independent term in decision function.
+
+    mse_path_ : array, shape (n_alphas, n_folds)
+        mean square error for the test set on each fold, varying alpha.
+
+    alphas_ : numpy array, shape (n_alphas,)
+        The grid of alphas used for fitting.
+
+    dual_gap_ : ndarray, shape ()
+        The dual gap at the end of the optimization for the optimal alpha
+        (``alpha_``).
+
+    n_iter_ : int
+        number of iterations run by the coordinate descent solver to reach
+        the specified tolerance for the optimal alpha.
+
+    See also
+    --------
+    celer_path
+    Lasso
+    """
+
+    def __init__(self, l1_ratio=1., eps=1e-3, n_alphas=100, alphas=None,
+                 fit_intercept=True, max_iter=100,
+                 tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
+                 prune=True, precompute='auto', positive=False, n_jobs=None):
+        super(ElasticNetCV, self).__init__(
+            eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
+            tol=tol, cv=cv, fit_intercept=fit_intercept,
+            verbose=verbose, n_jobs=n_jobs)
+        self.l1_ratio = l1_ratio
+        self.max_epochs = max_epochs
+        self.p0 = p0
+        self.prune = prune
+        self.positive = positive
+
+    def path(self, X, y, alphas, coef_init=None, **kwargs):
+        """Compute Lasso path with Celer."""
+        alphas, coefs, dual_gaps = celer_path(
+            X, y, "lasso", alphas=alphas, l1_ratio=kwargs.get('l1_ratio', None),
+            coef_init=coef_init, max_iter=self.max_iter, max_epochs=self.max_epochs,
+            p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
+            positive=self.positive, X_scale=kwargs.get('X_scale', None),
+            X_offset=kwargs.get('X_offset', None))
+        return alphas, coefs, dual_gaps
+
+    def _get_estimator(self):
+        return ElasticNet()
+
+    def _is_multitask(self):
+        return False
+
+    def _more_tags(self):
+        return {"multioutput": False}
 
 
 class MultiTaskLasso(MultiTaskLasso_sklearn):

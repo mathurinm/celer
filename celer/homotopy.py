@@ -13,7 +13,7 @@ from sklearn.linear_model._base import _preprocess_data
 from .lasso_fast import celer
 from .group_fast import celer_grp, dnorm_grp
 from .cython_utils import compute_norms_X_col, compute_Xw
-from .cython_utils import dnorm_l1 as dnorm_l1_cython
+from .cython_utils import dnorm_enet as dnorm_enet_cython
 from .multitask_fast import celer_mtl
 from .PN_logreg import newton_celer
 
@@ -22,7 +22,7 @@ LOGREG = 1
 GRPLASSO = 2
 
 
-def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
+def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
@@ -37,6 +37,13 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     .. math::
 
         \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|
+
+    ElasticNet:
+
+    .. math::
+
+        \frac{||y - X w||_2^2}{2 n} +
+        \alpha \sum_{j=1}^p weights_j (l1\_ratio |w_j| + (1-l1\_ratio) w_j^2)
 
     Logreg:
 
@@ -74,6 +81,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     alphas : ndarray, optional
         List of alphas where to compute the models.
         If ``None`` alphas are set automatically
+
+    l1_ratio : float, optional
+        The ElasticNet mixing parameter, with ``0 < l1_ratio <= 1``.
+        Defaults to 1.0 which corresponds to L1 penalty (Lasso).
+        ``l1_ratio = 0`` (Ridge regression) is not supported.
 
     coef_init : ndarray, shape (n_features,) | None, optional, (default=None)
         Initial value of coefficients. If None, np.zeros(n_features) is used.
@@ -147,6 +159,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     if pb.lower() not in ("lasso", "logreg", "grouplasso"):
         raise ValueError("Unsupported problem %s" % pb)
 
+    if pb.lower() != "lasso" and l1_ratio != 1.0:
+        raise NotImplementedError(
+            "Mix of l1 and l2 penalty not supported for %s" % pb
+        )
+
     n_groups = None  # set n_groups to None for lasso and logreg
     if pb.lower() == "lasso":
         pb = LASSO
@@ -185,14 +202,16 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
 
     weights = _check_weights(weights, pb, X, n_groups)
+    # to prevent ref before assignment in dnorm_enet
+    w = np.zeros(n_features, dtype=X.dtype)
 
     if alphas is None:
         if pb == LASSO:
-            alpha_max = dnorm_l1(X, y, weights, X_sparse_scaling,
-                                 positive) / n_samples
+            alpha_max = dnorm_enet(X, y, w, weights, X_sparse_scaling,
+                                   positive) / n_samples
         elif pb == LOGREG:
-            alpha_max = dnorm_l1(X, y, weights, X_sparse_scaling,
-                                 positive) / 2
+            alpha_max = dnorm_enet(X, y, w, weights, X_sparse_scaling,
+                                   positive) / 2
         elif pb == GRPLASSO:
             # TODO compute it with dscal to handle centering sparse
             alpha_max = 0
@@ -201,8 +220,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 alpha_max = max(alpha_max, norm(X_g.T @ y / weights[g], ord=2))
             alpha_max /= n_samples
 
-        alphas = alpha_max * np.geomspace(1, eps, n_alphas,
-                                          dtype=X.dtype)
+        alphas = alpha_max / l1_ratio * np.geomspace(1, eps, n_alphas, dtype=X.dtype)
     else:
         alphas = np.sort(alphas)[::-1]
 
@@ -246,6 +264,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
     # do not skip alphas[0], it is not always alpha_max
     for t in range(n_alphas):
         alpha = alphas[t]
+
         if verbose:
             to_print = "##### Computing alpha %d/%d" % (t + 1, n_alphas)
             print("#" * len(to_print))
@@ -266,7 +285,6 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     is_sparse, pb, Xw, w, y, X_sparse_scaling.any(), X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling)
             else:
-                w = np.zeros(n_features, dtype=X.dtype)
                 Xw = np.zeros(n_samples, X.dtype) if pb == LOGREG else y.copy()
 
             # different link equations and normalization scal for dual point:
@@ -275,8 +293,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     theta = Xw.copy()
                 elif pb == LOGREG:
                     theta = y / (1 + np .exp(y * Xw)) / alpha
-                scal = dnorm_l1(X, theta, weights, X_sparse_scaling,
-                                positive)
+                scal = dnorm_enet(X, theta, w, weights, X_sparse_scaling,
+                                  positive, alpha, l1_ratio)
             elif pb == GRPLASSO:
                 theta = Xw.copy()
                 scal = dnorm_grp(
@@ -284,7 +302,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
                     weights, len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
                     X_sparse_scaling.any())
-            theta /= (scal / alpha)
+            theta *= alpha * l1_ratio / scal
 
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:
@@ -294,11 +312,12 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None,
                 X_indices, X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, weights, max_iter, max_epochs, p0=p0,
                 prune=prune, verbose=verbose)
+        # TODO handle case of enet
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
                 is_sparse, pb,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
-                alpha, w, Xw, theta, norms_X_col, weights,
+                alpha, l1_ratio, w, Xw, theta, norms_X_col, weights,
                 max_iter=max_iter, max_epochs=max_epochs,
                 p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
                 positive=positive)
@@ -354,13 +373,15 @@ def _sparse_and_dense(X):
     return X_dense, X_data, X_indices, X_indptr
 
 
-def dnorm_l1(X, theta, weights, X_sparse_scaling, positive):
+def dnorm_enet(X, theta, w, weights, X_sparse_scaling,
+               positive, alpha=1.0, l1_ratio=1.0):
     """Theta should be centered."""
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
     skip = np.zeros(X.shape[1], dtype=np.int32)
-    scal = dnorm_l1_cython(
-        sparse.issparse(X), theta, X_dense, X_data, X_indices, X_indptr,
-        skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive)
+    scal = dnorm_enet_cython(
+        sparse.issparse(X), theta, w, X_dense, X_data, X_indices, X_indptr,
+        skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive,
+        alpha, l1_ratio)
     return scal
 
 

@@ -8,8 +8,10 @@ cdef int LOGREG
 
 cdef floating ST(floating, floating) nogil
 
-cdef floating dual(int, int, floating, floating *, floating *) nogil
-cdef floating primal(int, floating, floating[:], floating [:],
+cdef floating fweighted_norm_w2(floating[:], floating[:]) nogil
+
+cdef floating dual(int, int, floating, floating, floating, floating, floating *, floating *) nogil
+cdef floating primal(int, floating, floating, floating[:], floating [:],
                      floating [:], floating[:]) nogil
 cdef void create_dual_pt(int, int, floating *, floating *, floating *) nogil
 
@@ -27,7 +29,7 @@ cdef void fposv(char *, int *, int *, floating *,
                 int *, floating *, int *, int *) nogil
 
 cdef int create_accel_pt(
-    int, int, int, int, floating, floating *, floating *,
+    int, int, int, int, floating *, floating *,
     floating *, floating[:, :], floating[:, :], floating[:], floating[:])
 
 
@@ -42,11 +44,11 @@ cpdef void compute_norms_X_col(
     floating[:], int[:], int[:], floating[:])
 
 
-cpdef floating dnorm_l1(
-        bint, floating[:], floating[::1, :], floating[:],
-        int[:], int[:], int[:], floating[:], floating[:], bint, bint) nogil
+cpdef floating dnorm_enet(
+        bint, floating[:], floating[:], floating[::1, :], floating[:],
+        int[:], int[:], int[:], floating[:], floating[:], bint, bint, floating, floating) nogil
 
 
 cdef void set_prios(
-    bint, floating[:], floating, floating[::1, :], floating[:], int[:],
+    bint, floating[:], floating[:], floating, floating, floating[::1, :], floating[:], int[:],
     int[:], floating[:], floating[:], floating[:], int[:], floating, int *, bint) nogil

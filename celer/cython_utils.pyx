@@ -111,6 +111,20 @@ cdef inline floating Nh(floating x) nogil:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+cdef floating fweighted_norm_w2(floating[:] w, floating[:] weights) nogil: 
+    cdef floating weighted_norm = 0.
+    cdef int n_features = w.shape[0]
+    cdef int j
+
+    for j in range(n_features):
+        if weights[j] == INFINITY:
+            continue
+        weighted_norm += weights[j] * w[j] ** 2
+    return weighted_norm
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 @cython.cdivision(True)
 cdef inline floating sigmoid(floating x) nogil:
     return 1. / (1. + exp(- x))
@@ -141,7 +155,7 @@ cdef floating primal_logreg(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef floating primal_lasso(
-        floating alpha, floating[:] R, floating[:] w,
+        floating alpha, floating l1_ratio, floating[:] R, floating[:] w,
         floating[:] weights) nogil:
     cdef int n_samples = R.shape[0]
     cdef int n_features = w.shape[0]
@@ -152,15 +166,17 @@ cdef floating primal_lasso(
     for j in range(n_features):
         # avoid nan when weights[j] is INFINITY
         if w[j]:
-            p_obj += alpha * weights[j] * fabs(w[j])
+            p_obj += alpha * weights[j] * (
+                     l1_ratio * fabs(w[j]) +
+                     0.5 * (1. - l1_ratio) * w[j] ** 2)
     return p_obj
 
 
 cdef floating primal(
-    int pb, floating alpha, floating[:] R, floating[:] y,
+    int pb, floating alpha, floating l1_ratio, floating[:] R, floating[:] y,
     floating[:] w, floating[:] weights) nogil:
     if pb == LASSO:
-        return primal_lasso(alpha, R, w, weights)
+        return primal_lasso(alpha, l1_ratio, R, w, weights)
     else:
         return primal_logreg(alpha, R, y, w, weights)
 
@@ -168,8 +184,9 @@ cdef floating primal(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef floating dual_lasso(int n_samples, floating norm_y2,
-                         floating * theta, floating * y) nogil:
+cdef floating dual_enet(int n_samples, floating alpha, floating l1_ratio,
+                         floating norm_y2, floating norm_w2, floating * theta,
+                         floating * y) nogil:
     """Theta must be feasible"""
     cdef int i
     cdef floating d_obj = 0.
@@ -178,6 +195,8 @@ cdef floating dual_lasso(int n_samples, floating norm_y2,
         d_obj -= (y[i] - n_samples * theta[i]) ** 2
     d_obj *= 0.5 / n_samples
     d_obj += norm_y2 / (2. * n_samples)
+    if l1_ratio != 1.0:
+        d_obj -= 0.5 * alpha * (1 - l1_ratio) * norm_w2
     return d_obj
 
 
@@ -195,11 +214,10 @@ cdef floating dual_logreg(int n_samples, floating * theta,
     return d_obj
 
 
-cdef floating dual(int pb, int n_samples, floating norm_y2,
-                   floating * theta, floating * y) nogil:
-
+cdef floating dual(int pb, int n_samples, floating alpha, floating l1_ratio,
+                   floating norm_y2, floating norm_w2, floating * theta, floating * y) nogil:
     if pb == LASSO:
-        return dual_lasso(n_samples, norm_y2, &theta[0], &y[0])
+        return dual_enet(n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
     else:
         return dual_logreg(n_samples, &theta[0], &y[0])
 
@@ -226,7 +244,6 @@ cdef void create_dual_pt(
 @cython.cdivision(True)
 cdef int create_accel_pt(
     int pb, int n_samples, int epoch, int gap_freq,
-    floating alpha,
     floating * R, floating * out, floating * last_K_R, floating[:, :] U,
     floating[:, :] UtU, floating[:] onesK, floating[:] y):
 
@@ -365,11 +382,11 @@ cpdef void compute_Xw(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef floating dnorm_l1(
-        bint is_sparse, floating[:] theta, floating[::1, :] X,
+cpdef floating dnorm_enet(
+        bint is_sparse, floating[:] theta, floating[:] w, floating[::1, :] X,
         floating[:] X_data, int[:] X_indices, int[:] X_indptr, int[:] skip,
         floating[:] X_mean, floating[:] weights, bint center,
-        bint positive) nogil:
+        bint positive, floating alpha, floating l1_ratio) nogil:
     """compute norm(X[:, ~skip].T.dot(theta), ord=inf)"""
     cdef int n_samples = theta.shape[0]
     cdef int n_features = skip.shape[0]
@@ -399,6 +416,10 @@ cpdef floating dnorm_l1(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
+        # minus sign to consider the choice theta = y - Xw and not theta = Xw -y
+        if l1_ratio != 1:
+            Xj_theta -= alpha * (1 - l1_ratio) * weights[j] * w[j]
+
         if not positive:
             Xj_theta = fabs(Xj_theta)
         scal = max(scal, Xj_theta / weights[j])
@@ -409,7 +430,7 @@ cpdef floating dnorm_l1(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios(
-    bint is_sparse, floating[:] theta, floating alpha,
+    bint is_sparse, floating[:] theta, floating[:] w, floating alpha, floating l1_ratio,
     floating[::1, :] X, floating[:] X_data, int[:] X_indices, int[:] X_indptr,
     floating[:] norms_X_col, floating[:] weights, floating[:] prios,
     int[:] screened, floating radius, int * n_screened, bint positive) nogil:
@@ -417,6 +438,7 @@ cdef void set_prios(
     cdef floating Xj_theta
     cdef int n_samples = theta.shape[0]
     cdef int n_features = prios.shape[0]
+    cdef floating norms_X_col_j = 0.
 
     # TODO we do not substract theta_sum, which seems to indicate that theta
     # is always centered...
@@ -433,11 +455,17 @@ cdef void set_prios(
         else:
             Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
 
+        norms_X_col_j = norms_X_col[j]
+        if l1_ratio != 1:
+            Xj_theta -= alpha * (1 - l1_ratio) * weights[j] * w[j] 
+
+            norms_X_col_j = norms_X_col_j ** 2 
+            norms_X_col_j += sqrt(norms_X_col_j + alpha * (1 - l1_ratio) * weights[j])
 
         if positive:
-            prios[j] = fabs(Xj_theta - alpha * weights[j]) / norms_X_col[j]
+            prios[j] = fabs(Xj_theta - alpha * l1_ratio * weights[j]) / norms_X_col_j
         else:
-            prios[j] = (alpha * weights[j] - fabs(Xj_theta)) / norms_X_col[j]
+            prios[j] = (alpha * l1_ratio * weights[j] - fabs(Xj_theta)) / norms_X_col_j
 
         if prios[j] > radius:
             screened[j] = True

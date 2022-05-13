@@ -168,6 +168,8 @@ cpdef celer_grp(
 
     pb = LASSO
     cdef int verbose_in = max(0, verbose - 1)
+    cdef floating l1_ratio = 1.0
+    cdef floating norm_w2 = 0.
 
     if floating is double:
         dtype = np.float64
@@ -243,7 +245,7 @@ cpdef celer_grp(
             tmp = alpha / scal
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(pb, n_samples, norm_y2, &theta[0], &y[0])
+        d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
         if t > 0:
             # also test dual point returned by inner solver after 1st iter:
@@ -256,7 +258,7 @@ cpdef celer_grp(
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
-                pb, n_samples, norm_y2, &theta_inner[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_inner[0], &y[0])
 
             if d_obj_from_inner > d_obj:
                 d_obj = d_obj_from_inner
@@ -349,11 +351,11 @@ cpdef celer_grp(
 
                 # dual value is the same as for the Lasso
                 d_obj_in = dual(
-                    pb, n_samples, norm_y2, &theta_inner[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_inner[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
-                        LASSO, n_samples, epoch, gap_freq, alpha, &R[0],
+                        LASSO, n_samples, epoch, gap_freq, &R[0],
                         &thetacc[0], &last_K_R[0, 0], U, UtU, onesK, y)
 
                     # if info_dposv != 0 and verbose:
@@ -369,8 +371,8 @@ cpdef celer_grp(
                             tmp = alpha / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
-                        d_obj_accel = dual(pb, n_samples, norm_y2,
-                                           &thetacc[0], &y[0])
+                        d_obj_accel = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
+                                           norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,

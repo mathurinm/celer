@@ -343,7 +343,7 @@ cpdef void inner_solver(
 
             if use_accel:
                 create_accel_pt(
-                    LASSO, n_obs, epoch, gap_freq, alpha,
+                    LASSO, n_obs, epoch, gap_freq,
                     &R[0, 0], &theta_acc[0, 0], &last_K_R[0, 0], U, UtU,
                     onesK, onesK)  # passing onesK as y which is ignored
                     # account for wrong n_samples passed to create_accel_pt
