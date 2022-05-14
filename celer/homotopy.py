@@ -293,16 +293,16 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                     theta = Xw.copy()
                 elif pb == LOGREG:
                     theta = y / (1 + np .exp(y * Xw)) / alpha
-                scal = dnorm_enet(X, theta, w, weights, X_sparse_scaling,
-                                  positive, alpha, l1_ratio)
+                dnorm = dnorm_enet(X, theta, w, weights, X_sparse_scaling,
+                                   positive, alpha, l1_ratio)
             elif pb == GRPLASSO:
                 theta = Xw.copy()
-                scal = dnorm_grp(
+                dnorm = dnorm_grp(
                     is_sparse, theta, grp_ptr, grp_indices, X_dense,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
                     weights, len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
                     X_sparse_scaling.any())
-            theta *= alpha * l1_ratio / scal
+            theta *= alpha * l1_ratio / dnorm
 
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:
@@ -378,11 +378,11 @@ def dnorm_enet(X, theta, w, weights, X_sparse_scaling,
     """Theta should be centered."""
     X_dense, X_data, X_indices, X_indptr = _sparse_and_dense(X)
     skip = np.zeros(X.shape[1], dtype=np.int32)
-    scal = dnorm_enet_cython(
+    dnorm = dnorm_enet_cython(
         sparse.issparse(X), theta, w, X_dense, X_data, X_indices, X_indptr,
         skip, X_sparse_scaling, weights, X_sparse_scaling.any(), positive,
         alpha, l1_ratio)
-    return scal
+    return dnorm
 
 
 def _alpha_max_grp(X, y, groups, center=False, normalize=False):
