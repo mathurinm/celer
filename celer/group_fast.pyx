@@ -25,18 +25,21 @@ cdef:
 @cython.cdivision(True)
 cpdef floating primal_grplasso(
         floating alpha, floating[:] R, int[::1] grp_ptr,
-        int[::1] grp_indices, floating[:] w):
+        int[::1] grp_indices, floating[:] w, floating[:] weights):
     cdef floating nrm = 0.
     cdef int j, k, g
     cdef int n_samples = R.shape[0]
     cdef int n_groups = grp_ptr.shape[0] - 1
     cdef floating p_obj = fnrm2(&n_samples, &R[0], &inc) ** 2 / (2 * n_samples)
+
     for g in range(n_groups):
-        nrm = 0.
-        for k in range(grp_ptr[g], grp_ptr[g + 1]):
-            j = grp_indices[k]
-            nrm += w[j] ** 2
-        p_obj += alpha * sqrt(nrm)
+        if weights[g] != INFINITY:
+            nrm = 0.
+            for k in range(grp_ptr[g], grp_ptr[g + 1]):
+                j = grp_indices[k]
+                nrm += w[j] ** 2
+            p_obj += alpha * sqrt(nrm) * weights[g]
+
     return p_obj
 
 
@@ -47,7 +50,7 @@ cpdef floating dnorm_grp(
         bint is_sparse, floating[::1] theta, int[::1] grp_ptr,
         int[::1] grp_indices, floating[::1, :] X, floating[::1] X_data,
         int[::1] X_indices, int[::1] X_indptr, floating[::1] X_mean,
-        int ws_size, int[:] C, bint center):
+        floating[:] weights, int ws_size, int[:] C, bint center):
     """Dual norm in the group case, i.e. L2/infty ofter groups."""
     cdef floating Xj_theta, tmp
     cdef floating scal = 0.
@@ -63,6 +66,9 @@ cpdef floating dnorm_grp(
 
     if ws_size == n_groups:  # max over all groups
         for g in range(n_groups):
+            if weights[g] == INFINITY:
+                continue
+
             tmp = 0
             for k in range(grp_ptr[g], grp_ptr[g + 1]):
                 j = grp_indices[k]
@@ -79,10 +85,13 @@ cpdef floating dnorm_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            scal = max(scal, sqrt(tmp))
+            scal = max(scal, sqrt(tmp) / weights[g])
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
+            if weights[g] == INFINITY:
+                continue
+
             g = C[g_idx]
             tmp = 0
             for k in range(grp_ptr[g], grp_ptr[g + 1]):
@@ -100,7 +109,7 @@ cpdef floating dnorm_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            scal = max(scal, sqrt(tmp))
+            scal = max(scal, sqrt(tmp) / weights[g])
     return scal
 
 
@@ -108,11 +117,11 @@ cpdef floating dnorm_grp(
 @cython.wraparound(False)
 @cython.cdivision(True)
 cdef void set_prios_grp(
-        bint is_sparse, int pb, floating[::1] theta, floating[::1, :] X,
+        bint is_sparse, int pb, floating[::1] theta, floating alpha, floating[::1, :] X,
         floating[::1] X_data, int[::1] X_indices, int[::1] X_indptr,
-        floating[::1] norms_X_grp, int[::1] grp_ptr, int[::1] grp_indices,
-        floating[::1] prios, int[::1] screened, floating radius,
-        int * n_screened):
+        floating[:] weights, floating[::1] norms_X_grp, int[::1] grp_ptr,
+        int[::1] grp_indices, floating[::1] prios, int[::1] screened,
+        floating radius, int * n_screened):
     cdef int i, j, k, g, startptr, endptr
     cdef floating nrm_Xgtheta, Xj_theta
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -134,13 +143,15 @@ cdef void set_prios_grp(
             else:
                 Xj_theta = fdot(&n_samples, &theta[0], &inc, &X[0, j], &inc)
             nrm_Xgtheta += Xj_theta ** 2
-        nrm_Xgtheta = sqrt(nrm_Xgtheta)
+        nrm_Xgtheta = sqrt(nrm_Xgtheta) / weights[g]
 
-        prios[g] = (1. - nrm_Xgtheta) / norms_X_grp[g]
+        prios[g] = (alpha - nrm_Xgtheta) / norms_X_grp[g]
 
         if prios[g] > radius:
-            screened[g] = True
-            n_screened[0] += 1
+            pass
+            # TODO check
+            # screened[g] = True
+            # n_screened[0] += 1
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -150,13 +161,15 @@ cpdef celer_grp(
         int[::1] grp_ptr, floating[::1] X_data, int[::1] X_indices,
         int[::1] X_indptr, floating[::1] X_mean, floating[:] y, floating alpha,
         floating[:] w, floating[:] R, floating[::1] theta,
-        floating[::1] norms_X_grp, floating tol, int max_iter, int max_epochs,
-        int gap_freq=10, floating tol_ratio_inner=0.3, int p0=100,
+        floating[::1] norms_X_grp, floating tol, floating[:] weights, int max_iter,
+        int max_epochs, int gap_freq=10, floating tol_ratio_inner=0.3, int p0=100,
         bint prune=1, bint use_accel=1,
         bint verbose=0):
 
     pb = LASSO
     cdef int verbose_in = max(0, verbose - 1)
+    cdef floating l1_ratio = 1.0
+    cdef floating norm_w2 = 0.
 
     if floating is double:
         dtype = np.float64
@@ -220,31 +233,32 @@ cpdef celer_grp(
     for t in range(max_iter):
         # if t != 0: TODO potential speedup at iteration 0
         fcopy(&n_samples, &R[0], &inc, &theta[0], &inc)
-        tmp = 1. / (alpha * n_samples)
+
+        tmp = 1. / n_samples
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
         scal = dnorm_grp(
             is_sparse, theta, grp_ptr, grp_indices, X, X_data, X_indices,
-            X_indptr, X_mean, n_groups, dummy_C, center)
+            X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
-        if scal > 1. :
-            tmp = 1. / scal
+        if scal > alpha:
+            tmp = alpha / scal
             fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+        d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
         if t > 0:
-            pass
             # also test dual point returned by inner solver after 1st iter:
             scal = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
-                    X_indices, X_indptr, X_mean, n_groups, dummy_C, center)
-            if scal > 1.:
-                tmp = 1. / scal
+                    X_indices, X_indptr, X_mean, weights, n_groups, dummy_C, center)
+
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_inner[0], &y[0])
 
             if d_obj_from_inner > d_obj:
                 d_obj = d_obj_from_inner
@@ -254,7 +268,7 @@ cpdef celer_grp(
             highest_d_obj = d_obj
             # TODO implement a best_theta
 
-        p_obj = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
+        p_obj = primal_grplasso(alpha, R, grp_ptr, grp_indices, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
 
@@ -267,13 +281,14 @@ cpdef celer_grp(
             break
 
         # if pb == LASSO:
-        radius = sqrt(2 * gap / n_samples) / alpha
+        radius = sqrt(2 * gap / n_samples)
         # elif pb == LOGREG:
-            # radius = sqrt(gap / 2.) / alpha
+            # radius = sqrt(gap / 2.)
 
         set_prios_grp(
-            is_sparse, pb, theta, X, X_data, X_indices, X_indptr, lc_groups,
-            grp_ptr, grp_indices, prios, screened, radius, &n_screened)
+            is_sparse, pb, theta, alpha, X, X_data, X_indices, X_indptr,
+            weights, lc_groups, grp_ptr, grp_indices, prios, screened,
+            radius, &n_screened)
 
         if prune:
             nnz = 0
@@ -322,24 +337,25 @@ cpdef celer_grp(
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 fcopy(&n_samples, &R[0], &inc, &theta_inner[0], &inc)
-                tmp = 1. / (alpha * n_samples)
+
+                tmp = 1. / n_samples
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 scal = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
-                    X_indices, X_indptr, X_mean, ws_size, C, center)
+                    X_indices, X_indptr, X_mean, weights, ws_size, C, center)
 
-                if scal > 1. :
-                    tmp = 1. / scal
+                if scal > alpha:
+                    tmp = alpha / scal
                     fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
                 d_obj_in = dual(
-                    pb, n_samples, alpha, norm_y2, &theta_inner[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta_inner[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
-                        LASSO, n_samples, epoch, gap_freq, alpha, &R[0],
+                        LASSO, n_samples, epoch, gap_freq, &R[0],
                         &thetacc[0], &last_K_R[0, 0], U, UtU, onesK, y)
 
                     # if info_dposv != 0 and verbose:
@@ -348,15 +364,15 @@ cpdef celer_grp(
                     if epoch // gap_freq >= K:
                         scal = dnorm_grp(
                             is_sparse, thetacc, grp_ptr, grp_indices, X,
-                            X_data, X_indices, X_indptr, X_mean, ws_size, C,
-                            center)
+                            X_data, X_indices, X_indptr, X_mean, weights,
+                            ws_size, C, center)
 
-                        if scal > 1.:
-                            tmp = 1. / scal
+                        if scal > alpha:
+                            tmp = alpha / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
 
-                        d_obj_accel = dual(pb, n_samples, alpha, norm_y2,
-                                           &thetacc[0], &y[0])
+                        d_obj_accel = dual(pb, n_samples, alpha, l1_ratio, norm_y2,
+                                           norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
@@ -365,7 +381,8 @@ cpdef celer_grp(
 
                 if d_obj_in > highest_d_obj_in:
                     highest_d_obj_in = d_obj_in
-                p_obj_in = primal_grplasso(alpha, R, grp_ptr, grp_indices, w)
+
+                p_obj_in = primal_grplasso(alpha, R, grp_ptr, grp_indices, w, weights)
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
@@ -402,7 +419,7 @@ cpdef celer_grp(
                     norm_wg += w[j] ** 2
                 norm_wg = sqrt(norm_wg)
                 bst_scal = max(0.,
-                               1. - alpha / lc_groups[g] * n_samples / norm_wg)
+                               1. - alpha * weights[g] / lc_groups[g] * n_samples / norm_wg)
 
                 for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                     j = grp_indices[grp_ptr[g] + k]

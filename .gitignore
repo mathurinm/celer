@@ -4,22 +4,29 @@
 *.o
 *.c
 *.html
-celer.egg-info/*
-.eggs/*
-build/*
+
+celer.egg-info
+.eggs
+build
+.whl
+.egg
 
 # Python precompilation
 *pyc
+*pyd
 
-# wheel
-*.whl
-.egg/* 
+
+# generated doc
+doc/_build/
+doc/auto_examples/
+doc/generated
 
 # cache
-.pytest_cache/*
+.pytest_cache
+__pycache__
 
-doc/*
-coverage/*
+
+coverage
 .coverage
 
 .DS_Store

@@ -8,7 +8,7 @@ from itertools import product
 
 import numpy as np
 from numpy.linalg import norm
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 import pytest
 
 from sklearn.exceptions import ConvergenceWarning
@@ -16,7 +16,7 @@ from sklearn.linear_model import (LassoCV as sklearn_LassoCV,
                                   Lasso as sklearn_Lasso, lasso_path)
 
 from celer import celer_path
-from celer.dropin_sklearn import Lasso, LassoCV, LogisticRegression
+from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
@@ -48,9 +48,9 @@ def test_celer_path(sparse_X, alphas, pb):
 
 def test_convergence_warning():
     X, y = build_dataset(n_samples=10, n_features=10)
-    tol = - 1  # gap canot be negative, a convergence warning should be raised
+    tol = 1e-16  # very small, not enough iterations below
     alpha_max = np.max(np.abs(X.T.dot(y))) / X.shape[0]
-    clf = Lasso(alpha_max / 10, max_iter=1, max_epochs=100, tol=tol)
+    clf = Lasso(alpha_max / 100, max_iter=1, max_epochs=1, tol=tol)
 
     with warnings.catch_warnings(record=True) as w:
         # Cause all warnings to always be triggered.
@@ -184,9 +184,8 @@ def test_warm_start():
         assert_array_less(reg1.n_iter_, 2.01)
 
 
-def test_weights():
-    sparse_X = 1
-    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+def test_weights_lasso():
+    X, y = build_dataset(n_samples=30, n_features=50, sparse_X=True)
 
     np.random.seed(0)
     weights = np.abs(np.random.randn(X.shape[1]))
@@ -194,15 +193,13 @@ def test_weights():
     tol = 1e-14
     params = {'n_alphas': 10, 'tol': tol}
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", weights=weights, verbose=1,
-        **params)
+        X, y, "lasso", weights=weights, verbose=1, **params)
 
     alphas2, coefs2, gaps2 = celer_path(
         X.multiply(1 / weights[None, :]), y, "lasso", **params)
 
     assert_allclose(alphas1, alphas2)
-    assert_allclose(
-        coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
+    assert_allclose(coefs1, coefs2 / weights[:, None], atol=1e-4, rtol=1e-3)
     assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
     assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
 
@@ -216,21 +213,36 @@ def test_weights():
     # weights must be > 0
     clf1.weights[0] = 0.
     np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
+    # weights must be equal to X.shape[1]
+    clf1.weights = np.ones(X.shape[1] + 1)
+    np.testing.assert_raises(ValueError, clf1.fit, X=X, y=y)
 
 
-def test_zero_iter():
-    X, y = build_dataset(n_samples=30, n_features=50)
+@pytest.mark.parametrize("pb", ["lasso", "logreg"])
+def test_infinite_weights(pb):
+    n_samples, n_features = 50, 100
+    X, y = build_dataset(n_samples, n_features)
+    if pb == "logreg":
+        y = np.sign(y)
 
-    # convergence warning is raised bc we return -1 as gap
-    with warnings.catch_warnings(record=True):
-        assert_allclose(Lasso(max_iter=0).fit(X, y).coef_, 0)
-        y = 2 * (y > 0) - 1
-        assert_allclose(
-            LogisticRegression(max_iter=0, solver="celer-pn").fit(X, y).coef_,
-            0)
-        assert_allclose(
-            LogisticRegression(max_iter=0, solver="celer").fit(X, y).coef_,
-            0)
+    np.random.seed(1)
+    weights = np.abs(np.random.randn(n_features))
+    n_inf = n_features // 10
+    inf_indices = np.random.choice(n_features, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+
+    alpha = norm(X.T @ y / weights, ord=np.inf) / n_samples / 100
+
+    tol = 1e-8
+    _, coefs, dual_gaps = celer_path(
+        X, y, pb=pb, alphas=[alpha], weights=weights, tol=tol)
+
+    if pb == "logreg":
+        assert_array_less(dual_gaps[0], tol * n_samples * np.log(2))
+    else:
+        assert_array_less(dual_gaps[0], tol * norm(y) ** 2 / 2.)
+
+    assert_array_equal(coefs[inf_indices], 0)
 
 
 if __name__ == "__main__":

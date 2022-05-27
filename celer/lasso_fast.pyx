@@ -13,8 +13,8 @@ from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, fasum, faxpy, fnrm2, fcopy, fscal, fposv
 from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
-                            sigmoid, ST, LASSO, LOGREG, dnorm_l1,
-                            set_prios)
+                            sigmoid, ST, LASSO, LOGREG, dnorm_enet,
+                            set_prios, fweighted_norm_w2)
 
 
 @cython.boundscheck(False)
@@ -23,7 +23,7 @@ from .cython_utils cimport (primal, dual, create_dual_pt, create_accel_pt,
 def celer(
         bint is_sparse, int pb, floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, floating[:] X_mean,
-        floating[:] y, floating alpha, floating[:] w, floating[:] Xw,
+        floating[:] y, floating alpha, floating l1_ratio, floating[:] w, floating[:] Xw,
         floating[:] theta, floating[:] norms_X_col, floating[:] weights,
         int max_iter, int max_epochs, int gap_freq=10,
         float tol=1e-6, int p0=100, int verbose=0,
@@ -86,6 +86,7 @@ def celer(
                 center = True
                 break
 
+    # TODO this is used only for logreg, L97 is misleading and deserves a comment/refactoring
     cdef floating[:] inv_lc = np.zeros(n_features)
 
     for j in range(n_features):
@@ -97,6 +98,8 @@ def celer(
                 inv_lc[j] = 1. / norms_X_col[j] ** 2
 
     cdef floating norm_y2 = fnrm2(&n_samples, &y[0], &inc) ** 2
+    cdef floating weighted_norm_w2 = fweighted_norm_w2(w, weights)
+    tmp = 1.0
 
     # max_iter + 1 is to deal with max_iter=0
     cdef floating[:] gaps = np.zeros(max_iter + 1, dtype=dtype)
@@ -111,30 +114,39 @@ def celer(
 
     for t in range(max_iter):
         if t != 0:
-            create_dual_pt(pb, n_samples, alpha, &theta[0], &Xw[0], &y[0])
+            create_dual_pt(pb, n_samples, &theta[0], &Xw[0], &y[0])
 
-            scal = dnorm_l1(
-                is_sparse, theta, X, X_data, X_indices, X_indptr, screened,
-                X_mean, weights, center, positive)
+            scal = dnorm_enet(
+                is_sparse, theta, w, X, X_data, X_indices, X_indptr, screened,
+                X_mean, weights, center, positive, alpha, l1_ratio)
 
-            if scal > 1. :
-                tmp = 1. / scal
+            if scal > alpha * l1_ratio:
+                tmp = alpha * l1_ratio / scal
                 fscal(&n_samples, &tmp, &theta[0], &inc)
+            else:
+                tmp = 1.
 
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            #  compute ||w||^2 only for Enet
+            if l1_ratio != 1:
+                weighted_norm_w2 = fweighted_norm_w2(w, weights)
+
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
 
             # also test dual point returned by inner solver after 1st iter:
-            scal = dnorm_l1(
-                is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                screened, X_mean, weights, center, positive)
-            if scal > 1.:
-                tmp = 1. / scal
+            scal = dnorm_enet(
+                is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
+                screened, X_mean, weights, center, positive, alpha, l1_ratio)
+
+            if scal > alpha * l1_ratio:
+                tmp = alpha * l1_ratio / scal
                 fscal(&n_samples, &tmp, &theta_in[0], &inc)
+            else:
+                tmp = 1.
 
             d_obj_from_inner = dual(
-                pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
         else:
-            d_obj = dual(pb, n_samples, alpha, norm_y2, &theta[0], &y[0])
+            d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta[0], &y[0])
 
         if d_obj_from_inner > d_obj:
             d_obj = d_obj_from_inner
@@ -144,7 +156,7 @@ def celer(
         # would add yet another variable, best_theta. I'm not sure it brings
         # anything.
 
-        p_obj = primal(pb, alpha, Xw, y, w, weights)
+        p_obj = primal(pb, alpha, l1_ratio, Xw, y, w, weights)
         gap = p_obj - highest_d_obj
         gaps[t] = gap
         if verbose:
@@ -156,11 +168,11 @@ def celer(
             break
 
         if pb == LASSO:
-            radius = sqrt(2 * gap / n_samples) / alpha
+            radius = sqrt(2 * gap / n_samples)
         else:
-            radius = sqrt(gap / 2.) / alpha
+            radius = sqrt(gap / 2.)
         set_prios(
-            is_sparse, theta, X, X_data, X_indices, X_indptr, norms_X_col,
+            is_sparse, theta, w, alpha, l1_ratio, X, X_data, X_indices, X_indptr, norms_X_col,
             weights, prios, screened, radius, &n_screened, positive)
 
         if prune:
@@ -216,22 +228,27 @@ def celer(
         for epoch in range(max_epochs):
             if epoch != 0 and epoch % gap_freq == 0:
                 create_dual_pt(
-                    pb, n_samples, alpha, &theta_in[0], &Xw[0], &y[0])
+                    pb, n_samples, &theta_in[0], &Xw[0], &y[0])
 
-                scal = dnorm_l1(
-                    is_sparse, theta_in, X, X_data, X_indices, X_indptr,
-                    notin_ws, X_mean, weights, center, positive)
+                scal = dnorm_enet(
+                    is_sparse, theta_in, w, X, X_data, X_indices, X_indptr,
+                    notin_ws, X_mean, weights, center, positive, alpha, l1_ratio)
 
-                if scal > 1. :
-                    tmp = 1. / scal
+                if scal > alpha * l1_ratio:
+                    tmp = alpha * l1_ratio / scal
                     fscal(&n_samples, &tmp, &theta_in[0], &inc)
+                else:
+                    tmp = 1.
 
+                # update norm_w2 in inner loop for Enet only
+                if l1_ratio != 1:
+                    weighted_norm_w2 = fweighted_norm_w2(w, weights)
                 d_obj_in = dual(
-                    pb, n_samples, alpha, norm_y2, &theta_in[0], &y[0])
+                    pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &theta_in[0], &y[0])
 
                 if use_accel: # also compute accelerated dual_point
                     info_dposv = create_accel_pt(
-                        pb, n_samples, epoch, gap_freq, alpha, &Xw[0],
+                        pb, n_samples, epoch, gap_freq, &Xw[0],
                         &thetacc[0], &last_K_Xw[0, 0], U, UtU, onesK, y)
 
                     if info_dposv != 0 and verbose_in:
@@ -239,17 +256,19 @@ def celer(
                         # print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        scal = dnorm_l1(
-                            is_sparse, thetacc, X, X_data, X_indices,
+                        scal = dnorm_enet(
+                            is_sparse, thetacc, w, X, X_data, X_indices,
                             X_indptr, notin_ws, X_mean, weights, center,
-                            positive)
+                            positive, alpha, l1_ratio)
 
-                        if scal > 1. :
-                            tmp = 1. / scal
+                        if scal > alpha * l1_ratio:
+                            tmp = alpha * l1_ratio / scal
                             fscal(&n_samples, &tmp, &thetacc[0], &inc)
+                        else:
+                            tmp = 1.
 
                         d_obj_accel = dual(
-                            pb, n_samples, alpha, norm_y2, &thetacc[0], &y[0])
+                            pb, n_samples, alpha, l1_ratio, norm_y2, tmp**2*weighted_norm_w2, &thetacc[0], &y[0])
                         if d_obj_accel > d_obj_in:
                             d_obj_in = d_obj_accel
                             fcopy(&n_samples, &thetacc[0], &inc,
@@ -261,7 +280,7 @@ def celer(
                 # CAUTION: code does not yet include a best_theta.
                 # Can be an issue in screening: dgap and theta might disagree.
 
-                p_obj_in = primal(pb, alpha, Xw, y, w, weights)
+                p_obj_in = primal(pb, alpha, l1_ratio, Xw, y, w, weights)
                 gap_in = p_obj_in - highest_d_obj_in
 
                 if verbose_in:
@@ -278,6 +297,7 @@ def celer(
                 if norms_X_col[j] == 0. or weights[j] == INFINITY:
                     continue
                 old_w_j = w[j]
+
                 if pb == LASSO:
                     if is_sparse:
                         X_mean_j = X_mean[j]
@@ -297,8 +317,15 @@ def celer(
                     if positive and w[j] <= 0.:
                         w[j] = 0.
                     else:
-                        w[j] = ST(w[j], alpha / norms_X_col[j] ** 2 *
-                                       n_samples * weights[j])
+                        if l1_ratio != 1.:
+                            w[j] = ST(
+                                w[j],
+                                alpha * l1_ratio / norms_X_col[j] ** 2 * n_samples * weights[j]) / \
+                                (1 + alpha * (1 - l1_ratio) * weights[j] /  norms_X_col[j] ** 2 * n_samples)
+                        else:
+                            w[j] = ST(
+                                w[j],
+                                alpha / norms_X_col[j] ** 2 * n_samples * weights[j])
 
                     # R -= (w_j - old_w_j) * (X[:, j] - X_mean[j])
                     tmp = old_w_j - w[j]
@@ -354,8 +381,10 @@ def celer(
                             faxpy(&n_samples, &tmp, &X[0, j], &inc,
                                   &Xw[0], &inc)
         else:
-            print("!!! Inner solver did not converge at epoch "
-                  "%d, gap: %.2e > %.2e" % (epoch, gap_in, tol_in))
+            warnings.warn(
+                'Inner solver did not converge at ' +
+                f'epoch: {epoch}, gap: {gap_in:.2e} > {tol_in:.2e}',
+                ConvergenceWarning)
     else:
         warnings.warn(
             'Objective did not converge: duality ' +

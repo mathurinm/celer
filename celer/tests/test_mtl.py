@@ -1,7 +1,9 @@
 import pytest
 import itertools
+
 import numpy as np
 from numpy.linalg import norm
+from numpy.testing import assert_allclose, assert_array_less, assert_array_equal
 
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.linear_model import MultiTaskLassoCV as sklearn_MultiTaskLassoCV
@@ -57,9 +59,11 @@ def test_GroupLasso_MultitaskLasso_equivalence():
     X_data = np.empty([1], dtype=X.dtype)
     X_indices = np.empty([1], dtype=np.int32)
     X_indptr = np.empty([1], dtype=np.int32)
+    weights = np.ones(len(grp_ptr) - 1)
+
     other = dnorm_grp(
         False, y, grp_ptr, grp_indices, X, X_data,
-        X_indices, X_indptr, X_data, len(grp_ptr) - 1,
+        X_indices, X_indptr, X_data, weights, len(grp_ptr) - 1,
         np.zeros(1, dtype=np.int32), False)
     np.testing.assert_allclose(alpha_max, other / len(Y_))
 
@@ -197,6 +201,69 @@ def test_GroupLassoCV(sparse_X):
     clf.tol = 1e-6
     clf.groups = 1  # unsatisfying but sklearn will fit with 5 features
     check_estimator(clf)
+
+
+def test_weights_group_lasso():
+    n_samples, n_features = 30, 50
+    X, y = build_dataset(n_samples, n_features, sparse_X=True)
+
+    groups = 5
+    n_groups = n_features // groups
+    np.random.seed(0)
+    weights = np.abs(np.random.randn(n_groups))
+
+    tol = 1e-14
+    params = {'n_alphas': 10, 'tol': tol, 'verbose': 1}
+    augmented_weights = np.repeat(weights, groups)
+
+    alphas1, coefs1, gaps1 = celer_path(
+        X, y, "grouplasso", groups=groups, weights=weights,
+        eps=1e-2, **params)
+    alphas2, coefs2, gaps2 = celer_path(
+        X.multiply(1 / augmented_weights[None, :]), y, "grouplasso",
+        groups=groups, eps=1e-2, **params)
+
+    assert_allclose(alphas1, alphas2)
+    assert_allclose(
+        coefs1, coefs2 / augmented_weights[:, None], rtol=1e-3)
+    assert_array_less(gaps1, tol * norm(y) ** 2 / len(y))
+    assert_array_less(gaps2, tol * norm(y) ** 2 / len(y))
+
+
+def test_check_weights():
+    X, y = build_dataset(30, 42)
+    weights = np.ones(X.shape[1] // 7)
+    weights[0] = 0
+    clf = GroupLasso(weights=weights, groups=7)  # groups of size 7
+    # weights must be > 0
+    np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
+    # len(weights) must be equal to number of groups (6 here)
+    clf.weights = np.ones(8)
+    np.testing.assert_raises(ValueError, clf.fit, X=X, y=y)
+
+
+def test_infinite_weights_group():
+    n_samples, n_features = 50, 100
+    X, y = build_dataset(n_samples, n_features)
+
+    np.random.seed(1)
+    group_size = 5
+    weights = np.abs(np.random.randn(n_features // group_size))
+    n_inf = 3
+    inf_indices = np.random.choice(
+        n_features // group_size, size=n_inf, replace=False)
+    weights[inf_indices] = np.inf
+    alpha_max = np.max(
+        norm((X.T @ y).reshape(-1, group_size), 2, axis=1)
+    ) / n_samples
+
+    clf = GroupLasso(
+        alpha=alpha_max / 100., weights=weights, groups=group_size, tol=1e-8
+    ).fit(X, y)
+
+    assert_array_less(clf.dual_gap_, clf.tol * norm(y) ** 2 / 2)
+    assert_array_equal(
+        norm(clf.coef_.reshape(-1, group_size), axis=1)[inf_indices], 0)
 
 
 if __name__ == "__main__":

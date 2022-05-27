@@ -1,6 +1,5 @@
 # Author: Mathurin Massias <mathurin.massias@gmail.com>
 # License: BSD 3 clause
-
 import pytest
 import numpy as np
 from numpy.linalg import norm
@@ -26,7 +25,7 @@ def test_celer_path_logreg(solver):
     tol = 1e-11
     coefs, Cs, n_iters = _logistic_regression_path(
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
-        solver='liblinear', tol=tol)
+        solver='liblinear', tol=tol, max_iter=1000, random_state=0)
 
     _, coefs_c, gaps = celer_path(
         X, y, "logreg", alphas=alphas, tol=tol, verbose=0,
@@ -38,7 +37,7 @@ def test_celer_path_logreg(solver):
 
 
 @pytest.mark.parametrize("sparse_X", [True, False])
-def test_LogisticRegression(sparse_X):
+def test_binary(sparse_X):
     np.random.seed(1409)
     X, y = build_dataset(
         n_samples=30, n_features=60, sparse_X=sparse_X)
@@ -49,28 +48,34 @@ def test_LogisticRegression(sparse_X):
     clf = LogisticRegression(C=-1)
     np.testing.assert_raises(ValueError, clf.fit, X, y)
     tol = 1e-8
-    clf1 = LogisticRegression(C=C, tol=tol, verbose=0)
-    clf1.fit(X, y)
+    clf = LogisticRegression(C=C, tol=tol, verbose=0)
+    clf.fit(X, y)
 
-    clf2 = sklearn_Logreg(
+    clf_sk = sklearn_Logreg(
         C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
-    clf2.fit(X, y)
-    assert_allclose(clf1.coef_, clf2.coef_, rtol=1e-3, atol=1e-5)
+    clf_sk.fit(X, y)
+    assert_allclose(clf.coef_, clf_sk.coef_, rtol=1e-3, atol=1e-5)
 
-    # this uses float32 so we increase the tol else there are precision issues
-    clf1.tol = 1e-4
-    check_estimator(clf1)
 
-    # multinomial test, need to have a slightly lower tol
-    # for results to be comparable
+@pytest.mark.parametrize("sparse_X", [True, False])
+def test_multinomial(sparse_X):
+    np.random.seed(1409)
+    X, y = build_dataset(
+        n_samples=30, n_features=60, sparse_X=sparse_X)
     y = np.random.choice(4, len(y))
-    clf3 = LogisticRegression(C=C, tol=tol, verbose=0)
-    clf3.fit(X, y)
+    tol = 1e-8
+    clf = LogisticRegression(C=1, tol=tol, verbose=0)
+    clf.fit(X, y)
 
-    clf4 = sklearn_Logreg(
-        C=C, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
-    clf4.fit(X, y)
-    assert_allclose(clf3.coef_, clf4.coef_, rtol=1e-3, atol=1e-3)
+    clf_sk = sklearn_Logreg(
+        C=1, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
+    clf_sk.fit(X, y)
+    assert_allclose(clf.coef_, clf_sk.coef_, rtol=1e-3, atol=1e-3)
 
-    clf3.tol = 1e-3
-    check_estimator(clf3)
+
+@pytest.mark.parametrize("solver", ["celer-pn"])
+def test_check_estimator(solver):
+    # sklearn fits on unnormalized data for which there are convergence issues
+    # fix with increased tolerance:
+    clf = LogisticRegression(C=1, solver=solver, tol=0.1)
+    check_estimator(clf)

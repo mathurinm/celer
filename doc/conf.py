@@ -19,6 +19,8 @@ import sphinx_bootstrap_theme
 from distutils.version import LooseVersion
 import matplotlib
 
+from doc.github_link import make_linkcode_resolve
+
 # Mathurin: disable agg warnings in doc
 warnings.filterwarnings("ignore", category=UserWarning,
                         message='Matplotlib is currently using agg, which is a'
@@ -46,6 +48,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
+    "sphinx.ext.linkcode",
 ]
 
 if LooseVersion(sphinx_gallery.__version__) < LooseVersion('0.2'):
@@ -69,7 +72,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'celer'
-copyright = u'2018, Mathurin Massias'
+copyright = u'2018-2022, Mathurin Massias'
 author = u'Mathurin Massias'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -176,7 +179,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'celer', u'Celer Documentation',
+    (master_doc, 'celer', u'celer Documentation',
      [author], 1)
 ]
 
@@ -192,16 +195,31 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+
+intersphinx_mapping = {
+    # 'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    # 'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'sklearn': ('http://scikit-learn.org/stable', None),
+}
+
 sphinx_gallery_conf = {
-    'doc_module': ('celer',),
+    'doc_module': ('celer', 'sklearn'),
     'reference_url': dict(celer=None),
     'examples_dirs': '../examples',
     'gallery_dirs': 'auto_examples',
     'reference_url': {
-        'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
-        'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference',
+        'celer': None,
     }
 }
+
+# The following is used by sphinx.ext.linkcode to provide links to github
+linkcode_resolve = make_linkcode_resolve(
+    "celer",
+    "https://github.com/mathurinm/"
+    "celer/blob/{revision}/"
+    "{package}/{path}#L{lineno}",
+)
 
 
 def setup(app):

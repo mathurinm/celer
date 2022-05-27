@@ -65,7 +65,7 @@ cdef floating dual_scaling_mtl(
 @cython.cdivision(True)
 cdef void set_prios_mtl(
         floating[:, ::1] W, int[:] screened,
-        floating[::1, :] X, floating[::1, :] theta, floating[:] norms_X_col,
+        floating[::1, :] X, floating[::1, :] theta, floating alpha, floating[:] norms_X_col,
         floating[:] Xj_theta, floating[:] prios, floating radius,
         int * n_screened) nogil:
     cdef int j, k
@@ -84,7 +84,7 @@ cdef void set_prios_mtl(
             Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
 
         nrm = fnrm2(&n_tasks, &Xj_theta[0], &inc)
-        prios[j] = (1. - nrm) / norms_X_col[j]
+        prios[j] = (alpha - nrm) / norms_X_col[j]
         if prios[j] > radius:
             # screen only if W[j, :] is zero:
             for k in range(n_tasks):
@@ -100,15 +100,15 @@ cdef void set_prios_mtl(
 @cython.cdivision(True)
 cdef floating dual_mtl(
         int n_samples, int n_tasks, floating[::1, :] theta, floating[::1, :] Y,
-        floating norm_Y2, floating alpha) nogil:
+        floating norm_Y2) nogil:
     cdef int inc = 1
     cdef int i, k
     cdef floating d_obj = 0.
 
     for k in range(n_tasks):
         for i in range(n_samples):
-            d_obj -= (Y[i, k] / (alpha * n_samples) - theta[i, k]) ** 2
-    d_obj *= 0.5 * alpha ** 2 * n_samples
+            d_obj -= (Y[i, k] / n_samples - theta[i, k]) ** 2
+    d_obj *= 0.5 * n_samples
     d_obj += norm_Y2 / (2. * n_samples)
     return d_obj
 
@@ -188,29 +188,30 @@ def celer_mtl(
     for t in range(max_iter):
         # if t != 0: TODO
         p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
-        # theta = R / alpha:
+        # theta = R :
         fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
-        tmp = 1. / alpha
-        fscal(&n_obs, &tmp, &theta[0, 0], &inc)
+
+        tmp = 1.
 
         scal = dual_scaling_mtl(
             n_features, n_samples, n_tasks, theta, X, n_features,
             &dummy_C[0], &screened[0], &Xj_theta[0])
 
-        if scal > 1.:
-            tmp = 1. / scal
+        if scal > alpha:
+            tmp = alpha / scal
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
-        d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
+        d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2)
 
         if t > 0:
             scal = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta_inner, X,
                 n_features, &dummy_C[0], &screened[0], &Xj_theta[0])
-            if scal > 1.:
-                tmp = 1. / scal
+
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_obs, &tmp, &theta_inner[0, 0], &inc)
             d_obj_from_inner = dual_mtl(
-                n_samples, n_tasks, theta_inner, Y, norm_Y2, alpha)
+                n_samples, n_tasks, theta_inner, Y, norm_Y2)
             if d_obj_from_inner > d_obj:
                 d_obj = d_obj_from_inner
 
@@ -223,10 +224,10 @@ def celer_mtl(
                 print("\nEarly exit, gap %.2e < %.2e" % (gap, tol))
             break
 
-        radius = sqrt(2 * gap / n_samples) / alpha
+        radius = sqrt(2 * gap / n_samples)
         # TODO prios could be computed along with scaling
         set_prios_mtl(
-            W, screened, X, theta, norms_X_col, Xj_theta, prios, radius,
+            W, screened, X, theta, alpha, norms_X_col, Xj_theta, prios, radius,
             &n_screened)
 
         if t == 0:
@@ -328,23 +329,21 @@ cpdef void inner_solver(
             p_obj = primal_mtl(n_samples, n_features, n_tasks, W, alpha, R)
             fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-            tmp = 1. / (alpha * n_samples)
-            # tmp = 1. / alpha
+            tmp = 1. / n_samples
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
             scal = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta, X, ws_size,
                 &C[0], &dummy_screened[0], &Xj_theta[0])
 
-
-            if scal > 1.:
-                tmp = 1. / scal
+            if scal > alpha:
+                tmp = alpha / scal
                 fscal(&n_obs, &tmp, &theta[0, 0], &inc)
-            d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2, alpha)
+            d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2)
 
             if use_accel:
                 create_accel_pt(
-                    LASSO, n_obs, epoch, gap_freq, alpha,
+                    LASSO, n_obs, epoch, gap_freq,
                     &R[0, 0], &theta_acc[0, 0], &last_K_R[0, 0], U, UtU,
                     onesK, onesK)  # passing onesK as y which is ignored
                     # account for wrong n_samples passed to create_accel_pt
@@ -355,11 +354,11 @@ cpdef void inner_solver(
                         n_features, n_samples, n_tasks, theta_acc, X, ws_size,
                         &C[0], &dummy_screened[0], &Xj_theta[0])
 
-                    if scal > 1.:
-                        tmp = 1. / scal
+                    if scal > alpha:
+                        tmp = alpha / scal
                         fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
                     d_obj_acc = dual_mtl(
-                        n_samples, n_tasks, theta_acc, Y, norm_Y2, alpha)
+                        n_samples, n_tasks, theta_acc, Y, norm_Y2)
                     if d_obj_acc > d_obj:
                         d_obj = d_obj_acc
                         fcopy(&n_obs, &theta_acc[0, 0], &inc, &theta[0, 0],
