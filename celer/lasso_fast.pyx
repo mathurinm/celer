@@ -87,7 +87,7 @@ def celer(
                 break
 
     # TODO this is used only for logreg, L97 is misleading and deserves a comment/refactoring
-    cdef floating[:] inv_lc = np.zeros(n_features)
+    cdef floating[:] inv_lc = np.zeros(n_features, dtype=dtype)
 
     for j in range(n_features):
         # can have 0 features when performing CV on sparse X
