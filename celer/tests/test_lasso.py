@@ -20,12 +20,16 @@ from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
-@pytest.mark.parametrize("sparse_X, alphas, pb",
+@pytest.mark.parametrize("sparse_X, alphas, pb, dtype",
                          product([False, True], [None, 1],
-                                 ["lasso", "logreg"]))
-def test_celer_path(sparse_X, alphas, pb):
+                                 ["lasso", "logreg"],
+                                 [np.float32, np.float64]))
+def test_celer_path(sparse_X, alphas, pb, dtype):
     """Test Lasso path convergence."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    X = X.astype(dtype)
+    y = y.astype(dtype)
+
     tol = 1e-6
     if pb == "logreg":
         y = np.sign(y)
