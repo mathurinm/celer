@@ -66,6 +66,7 @@ using the Celer algorithm.
  .. code-block:: none
 
 
+    usetex mode requires TeX.
     Loading data...
     Estimated regularization parameter alpha: 160.15306704065625
 
@@ -108,7 +109,7 @@ Display results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.351 seconds)
+   **Total running time of the script:** ( 0 minutes  11.018 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:
