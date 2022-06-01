@@ -1,0 +1,28 @@
+name: build-many-linux-wheels
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  ml-wheels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Build manylinux Python wheels
+        uses: RalfG/python-wheels-manylinux-build@v0.4.2-manylinux2014_x86_64
+        with:
+          python-versions: 'cp38-cp38m'
+          build-requirements: 'cython numpy scipy libsvmdata scikit-learn xarray download'
