@@ -24,7 +24,7 @@ Currently, the package handles the following problems:
 
 ## Why ``celer``?
 
-``celer`` is specially designed to handle Lasso-like problem which make it a fast solver of such problem.
+``celer`` is specially designed to handle Lasso-like problems which makes it a fast solver of such problems.
 ``celer`` comes particularly with
 
 - automated parallel cross-validation
@@ -32,7 +32,7 @@ Currently, the package handles the following problems:
 - optional feature centering and normalization
 - unpenalized intercept fitting
 
-``celer`` provides also easy-to-use estimators as it was designed while considering the ``scikit-learn`` API.
+``celer`` also provides easy-to-use estimators as it is designed under the ``scikit-learn`` API.
 
 
 
@@ -44,27 +44,27 @@ To get stared, install ``celer`` via pip
 pip install -U celer
 ```
 
-On your python console, 
-run the following commands to fit a Lasso estimator on a dummy dataset.
+On your python console,
+run the following commands to fit a Lasso estimator on a toy dataset.
 
 ```python
 >>> from celer Lasso
->>> from celer.datasets import make_correlated_data 
+>>> from celer.datasets import make_correlated_data
 >>> X, y, _ = make_correlated_data(n_samples=100, n_features=1000)
 >>> estimator = Lasso()
 >>> estimator.fit(X, y)
 ```
 
-This is just an starter examples. 
+This is just a starter examples.
 Make sure to browse [``celer`` documentation ](https://mathurinm.github.io/celer/) to learn more about its features.
-Also to get familiar with [``celer`` API](https://mathurinm.github.io/celer/api.html), you can explore the gallery of examples
+To get familiar with [``celer`` API](https://mathurinm.github.io/celer/api.html), you can also explore the gallery of examples
 which includes examples on real-life datasets as well as timing comparison with other solvers.
 
 
 
 ## Contribute to celer
 
-``celer`` is an open source project and hence rely on the community efforts to evolve.
+``celer`` is an open source project and hence rely on community efforts to evolve.
 Your contribution is highly valuable and can come in three forms
 
 - bug report: you may encounter a bug while using ``celer``. Don't hesitate to report it on the [issue section](https://github.com/mathurinm/celer/issues).
@@ -73,7 +73,7 @@ Your contribution is highly valuable and can come in three forms
 
 For the last mean of contribution, here are the steps to help you setup ``celer`` on your local machine:
 
-1. Fork the repository and afterward run the following command to clone it on your local machine
+1. Fork the repository and afterwards run the following command to clone it on your local machine
 
 ```shell
 git clone https://github.com/{YOUR_GITHUB_USERNAME}/celer.git
@@ -98,7 +98,7 @@ make html
 ## Cite
 
 ``celer`` is licensed under the [BSD 3-Clause](https://github.com/mathurinm/celer/blob/main/LICENSE). Hence, you are free to use it.
-If you do so, don't forget to cite:
+If you do so, please cite:
 
 
 ```tex
