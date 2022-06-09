@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>celer &#8212; celer 0.7dev documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -16,6 +16,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -93,7 +94,7 @@
     <div class="body col-md-12 content" role="main">
       
   <section id="celer">
-<h1>celer<a class="headerlink" href="#celer" title="Permalink to this headline">¶</a></h1>
+<h1>celer<a class="headerlink" href="#celer" title="Permalink to this heading">¶</a></h1>
 <p>celer is a library exposing many scikit-learn-like sparse models missing from scikit-learn.
 It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (celer) algorithm [1].
 The proposed solvers tackle large-scale problems with millions of features, <strong>up to 100 times faster than scikit-learn</strong>.</p>
@@ -109,14 +110,14 @@ The proposed solvers tackle large-scale problems with millions of features, <str
 </ul>
 <p>The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.</p>
 <section id="install-the-released-version">
-<h2>Install the released version<a class="headerlink" href="#install-the-released-version" title="Permalink to this headline">¶</a></h2>
+<h2>Install the released version<a class="headerlink" href="#install-the-released-version" title="Permalink to this heading">¶</a></h2>
 <p>From a console or terminal install celer with pip:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">celer</span>
 </pre></div>
 </div>
 </section>
 <section id="install-the-development-version">
-<h2>Install the development version<a class="headerlink" href="#install-the-development-version" title="Permalink to this headline">¶</a></h2>
+<h2>Install the development version<a class="headerlink" href="#install-the-development-version" title="Permalink to this heading">¶</a></h2>
 <p>We recommend using the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>.
 First clone the repository available at <a class="reference external" href="https://github.com/mathurinm/celer">https://github.com/mathurinm/celer</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/mathurinm/celer.git
@@ -135,7 +136,7 @@ $ pip install -e .
 </div>
 </section>
 <section id="cite">
-<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
+<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this heading">¶</a></h2>
 <p>If you use this code, please cite:</p>
 <div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@InProceedings</span><span class="p">{</span><span class="nl">pmlr-v80-massias18a</span><span class="p">,</span><span class="w"></span>
 <span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Celer: a Fast Solver for the Lasso with Dual Extrapolation}</span><span class="p">,</span><span class="w"></span>
@@ -165,7 +166,7 @@ $ pip install -e .
 </ul>
 </section>
 <section id="build-the-documentation">
-<h2>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permalink to this headline">¶</a></h2>
+<h2>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permalink to this heading">¶</a></h2>
 <p>To build the documentation, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx_gallery</span> <span class="n">sphinx_bootstrap_theme</span>
 <span class="n">cd</span> <span class="n">doc</span>
@@ -174,7 +175,7 @@ $ pip install -e .
 </div>
 </section>
 <section id="api">
-<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<h2>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
@@ -196,7 +197,7 @@ $ pip install -e .
     </p>
     <p>
         &copy; Copyright 2018-2022, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br/>
     </p>
   </div>
 </footer>
