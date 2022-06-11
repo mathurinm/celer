@@ -1,5 +1,10 @@
 name: build-many-linux-wheels
 
+on:
+  pull_request:
+    branches:
+      - 'main'
+
 jobs:
   ml-wheels:
     runs-on: ubuntu-latest
