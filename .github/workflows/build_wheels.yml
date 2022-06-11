@@ -1,11 +1,10 @@
 name: build-many-linux-wheels
 
-on:
-  tags: release*
-
 jobs:
   ml-wheels:
     runs-on: ubuntu-latest
+    on:
+      tags: release*
 
     steps:
       - name: Checkout code
@@ -37,3 +36,10 @@ jobs:
         run: |
           pip install twine
           twine upload --repository testpypi dist/*-manylinux*.whl dist/*.tar.gz
+  always-run-job:
+    name: Always run job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Always run
+        run: echo "1"
+
