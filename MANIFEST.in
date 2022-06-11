@@ -13,11 +13,15 @@ recursive-include celer *.pxd
 
 ### Exclude
 
+exclude .gitignore
 exclude Makefile
 exclude .coveragerc
 exclude *.yml
 exclude .circleci/config.yml
 exclude .mailmap
 recursive-exclude celer *.pyc
+recursive-exclude celer *.cpp
+recursive-exclude examples *
+recursive-exclude .github/ *
 
 recursive-exclude doc *
