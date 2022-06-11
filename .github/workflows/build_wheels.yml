@@ -28,11 +28,18 @@ jobs:
           python-versions: 'cp37-cp37m cp38-cp38 cp39-cp39 cp310-cp310'
           build-requirements: 'cython numpy scipy libsvmdata scikit-learn xarray download'
 
-      - name: publish to Test PyPI
+      # - name: publish to Test PyPI
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      #   run: |
+      #     pip install twine
+      #     twine upload --repository testpypi dist/*-manylinux*.whl dist/*.tar.gz
+
+      - name: publish to PyPI
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          pip install twine
-          twine upload --repository testpypi dist/*-manylinux*.whl dist/*.tar.gz
+          twine upload dist/*-manylinux*.whl dist/*.tar.gz
 
