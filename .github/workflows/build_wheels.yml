@@ -1,12 +1,7 @@
 name: build-many-linux-wheels
 
 on:
-  push:
-    branches:
-      - 'main'
-  pull_request:
-    branches:
-      - 'main'
+  tags: release*
 
 jobs:
   ml-wheels:
