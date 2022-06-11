@@ -1,6 +1,13 @@
 name: build-many-linux-wheels
 
 jobs:
+  always-run-job:
+    name: Always run job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Always run
+        run: echo "1"
+
   ml-wheels:
     runs-on: ubuntu-latest
     on:
@@ -36,10 +43,4 @@ jobs:
         run: |
           pip install twine
           twine upload --repository testpypi dist/*-manylinux*.whl dist/*.tar.gz
-  always-run-job:
-    name: Always run job
-    runs-on: ubuntu-latest
-    steps:
-      - name: Always run
-        run: echo "1"
 
