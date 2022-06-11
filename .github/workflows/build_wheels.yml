@@ -1,17 +1,9 @@
 name: build-many-linux-wheels
 
 jobs:
-  always-run-job:
-    name: Always run job
-    runs-on: ubuntu-latest
-    steps:
-      - name: Always run
-        run: echo "1"
-
   ml-wheels:
     runs-on: ubuntu-latest
-    on:
-      tags: release*
+    if: startsWith(github.ref, 'refs/tags/release')
 
     steps:
       - name: Checkout code
