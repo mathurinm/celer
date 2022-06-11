@@ -3,7 +3,6 @@ name: build-many-linux-wheels
 jobs:
   ml-wheels:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/release')
 
     steps:
       - name: Checkout code
@@ -37,6 +36,7 @@ jobs:
       #     twine upload --repository testpypi dist/*-manylinux*.whl dist/*.tar.gz
 
       - name: publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/release')
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
