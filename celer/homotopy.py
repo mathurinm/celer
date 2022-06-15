@@ -26,7 +26,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
-               X_scale=None, return_n_iter=False, positive=False):
+               X_scale=None, return_n_iter=False, positive=False, use_acc=True):
     r"""Compute optimization path with Celer as inner solver.
 
     With `n = len(y)` and `p = len(w)` the number of samples and features,
@@ -139,6 +139,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
     positive : bool, optional (default=False)
         If True and pb == "lasso", forces the coefficients to be positive.
+
+    use_acc: bool, optional (default=True)
+        Whether to extrapolation to accelerate the solver.
 
     Returns
     -------
@@ -311,7 +314,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                 is_sparse, LASSO, X_dense, grp_indices, grp_ptr, X_data,
                 X_indices, X_indptr, X_sparse_scaling, y, alpha, w, Xw, theta,
                 norms_X_grp, tol, weights, max_iter, max_epochs, p0=p0,
-                prune=prune, verbose=verbose)
+                prune=prune, verbose=verbose, use_accel=use_acc)
         # TODO handle case of enet
         elif pb == LASSO or (pb == LOGREG and not use_PN):
             sol = celer(
@@ -319,7 +322,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                 X_dense, X_data, X_indices, X_indptr, X_sparse_scaling, y,
                 alpha, l1_ratio, w, Xw, theta, norms_X_col, weights,
                 max_iter=max_iter, max_epochs=max_epochs,
-                p0=p0, verbose=verbose, use_accel=1, tol=tol, prune=prune,
+                p0=p0, verbose=verbose, use_accel=use_acc, tol=tol, prune=prune,
                 positive=positive)
         else:  # pb == LOGREG and use_PN
             sol = newton_celer(

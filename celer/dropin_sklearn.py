@@ -1046,6 +1046,9 @@ class GroupLasso(Lasso_sklearn):
         When set to True, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
 
+    use_acc: bool, optional (default=True)
+        Whether to extrapolation to accelerate the solver.
+
     Attributes
     ----------
     coef_ : array, shape (n_features,)
@@ -1091,7 +1094,7 @@ class GroupLasso(Lasso_sklearn):
 
     def __init__(self, groups=1, alpha=1., max_iter=100,
                  max_epochs=50000, p0=10, verbose=0, tol=1e-4, prune=True,
-                 fit_intercept=True, weights=None, warm_start=False):
+                 fit_intercept=True, weights=None, warm_start=False, use_acc=True):
         super(GroupLasso, self).__init__(
             alpha=alpha, tol=tol, max_iter=max_iter,
             fit_intercept=fit_intercept,
@@ -1102,6 +1105,7 @@ class GroupLasso(Lasso_sklearn):
         self.p0 = p0
         self.prune = prune
         self.weights = weights
+        self.use_acc = use_acc
 
     def path(self, X, y, alphas, coef_init=None, return_n_iter=True,
              **kwargs):
@@ -1112,7 +1116,7 @@ class GroupLasso(Lasso_sklearn):
             return_n_iter=return_n_iter, max_epochs=self.max_epochs,
             p0=self.p0, verbose=self.verbose, tol=self.tol, prune=self.prune,
             weights=self.weights, X_scale=kwargs.get('X_scale', None),
-            X_offset=kwargs.get('X_offset', None))
+            X_offset=kwargs.get('X_offset', None),  use_acc=self.use_acc)
 
         return results
 
