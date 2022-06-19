@@ -41,7 +41,7 @@ Currently, the package handles the following problems:
 To get stared, install ``celer`` via pip
 
 ```shell
-$ pip install -U celer
+pip install -U celer
 ```
 
 On your python console,
@@ -76,22 +76,22 @@ For the last mean of contribution, here are the steps to help you setup ``celer`
 1. Fork the repository and afterwards run the following command to clone it on your local machine
 
 ```shell
-$ git clone https://github.com/{YOUR_GITHUB_USERNAME}/celer.git
+git clone https://github.com/{YOUR_GITHUB_USERNAME}/celer.git
 ```
 
 2. ``cd`` to ``celer`` directory and install it in edit mode by running
 
 ```shell
-$ cd celer
-$ pip install -e .
+cd celer
+pip install -e .
 ```
 
 3. To run the gallery examples and build the documentation, run the followings
 
 ```shell
-$ cd doc
-$ pip install -r doc-requirements.txt
-$ make html
+cd doc
+pip install -r doc-requirements.txt
+make html
 ```
 
 
