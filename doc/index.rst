@@ -1,110 +1,73 @@
-.. celer documentation master file, created by
-   sphinx-quickstart on Mon May 23 16:22:52 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 celer
-======
+=====
 
-celer is a library exposing many scikit-learn-like sparse models missing from scikit-learn.
-It estimates these models with the Constraint Elimination for the Lasso with Extrapolated Residuals (celer) algorithm [1].
-The proposed solvers tackle large-scale problems with millions of features, **up to 100 times faster than scikit-learn**.
+
+A fast solver for Lasso-like problems
+-------------------------------------
+
+``celer`` is a Python package that solves Lasso-like problems and provides estimators 
+that follow the ``scikit-learn`` API. Thanks to a tailored implementation,
+``celer`` provides a fast solver that tackles large-scale datasets with millions of features 
+**up to 100 times faster than** ``scikit-learn``.
 
 Currently, the package handles the following problems:
 
-- Lasso
-- Weighted Lasso
-- ElasticNet
-- Weighted ElasticNet
-- Sparse Logistic regression
-- Weighted Group Lasso
-- Multitask Lasso.
+.. list-table:: The supported lasso-like problems
+   :header-rows: 1
 
-The estimators follow the scikit-learn API, come with automated parallel cross-validation, and support both sparse and dense data, with optionally feature centering, normalization, and unpenalized intercept fitting.
-
-
-Install the released version
-----------------------------
-
-From a console or terminal install celer with pip:
-
-::
-
-    pip install -U celer
-
-
-Install the development version
--------------------------------
-
-We recommend using the `Anaconda Python distribution <https://www.continuum.io/downloads>`_.
-First clone the repository available at https://github.com/mathurinm/celer::
-
-    $ git clone https://github.com/mathurinm/celer.git
-    $ cd celer/
-    $ pip install -e .
-
-To check that the installation was successful, run::
-
-    $ python -c 'import celer'
-
-and it should not give any error message.
-
-From a Python shell you can just do::
-
-    >>> import celer
+   * - Problem
+     - Support of weights
+     - Native cross-validation
+   * - Lasso
+     - ✓
+     - ✓
+   * - ElasticNet 
+     - ✓
+     - ✓
+   * - Group Lasso 
+     - ✓
+     - ✓
+   * - Multitask Lasso
+     - ✕
+     - ✓
+   * - Sparse Logistic regression
+     - ✕
+     - ✕
 
 
-Cite
-----
+Why ``celer``?
+--------------
 
-If you use this code, please cite:
+``celer`` is specially designed to handle Lasso-like problems which enable it to solve them quickly.
+``celer`` comes particularly with
 
-.. code-block:: bibtex
+- automated parallel cross-validation
+- support of sparse and dense data
+- optional feature centering and normalization
+- unpenalized intercept fitting
 
-  @InProceedings{pmlr-v80-massias18a,
-    title = {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
-    author = {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
-    booktitle = {Proceedings of the 35th International Conference on Machine Learning},
-    pages = {3321--3330},
-    year = 2018,
-    volume = 80,
-  }
-
-  @article{massias2020dual,
-    author  = {Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon},
-    title   = {Dual Extrapolation for Sparse GLMs},
-    journal = {Journal of Machine Learning Research},
-    year    = {2020},
-    volume  = {21},
-    number  = {234},
-    pages   = {1-33},
-    url     = {http://jmlr.org/papers/v21/19-587.html}
-  }
+``celer`` also provides easy-to-use estimators as it is designed under the ``scikit-learn`` API.
 
 
-ArXiv links:
+Install ``celer``
+-----------------
 
-- https://arxiv.org/abs/1802.07481
-- https://arxiv.org/abs/1907.05830
+``celer`` can be easily installed through the Python package manager ``pip``.
+To get the laster version of the package, run::
 
+    $ pip install -U celer
 
-Build the documentation
------------------------
-
-To build the documentation, run:
-
-
-::
-
-    pip install -U sphinx_gallery sphinx_bootstrap_theme
-    cd doc
-    make html
+Head directly to the :ref:`Get started` page to get a hands-on example of how to use ``celer``.
 
 
-API
----
+Explore the documentation
+-------------------------
 
 .. toctree::
     :maxdepth: 1
 
+    get_started.rst
     api.rst
+    contribute.rst
+    auto_examples/index.rst
+    about.rst

@@ -14,11 +14,11 @@ Currently, the package handles the following problems:
 
 | Problem                       | Support Weights | Native cross-validation
 | -----------                   | -----------     |----------------
-| Lasso                         | yes             | yes
-| ElasticNet                    | yes             | yes
-| Group Lasso                   | yes             | yes
-| Multitask Lasso               | no              | yes
-| Sparse Logistic regression    | no              | no
+| Lasso                         | ✓               | ✓
+| ElasticNet                    | ✓               | ✓
+| Group Lasso                   | ✓               | ✓
+| Multitask Lasso               | ✕               | ✓
+| Sparse Logistic regression    | ✕               | ✕
 
 
 
@@ -41,14 +41,14 @@ Currently, the package handles the following problems:
 To get stared, install ``celer`` via pip
 
 ```shell
-pip install -U celer
+$ pip install -U celer
 ```
 
 On your python console,
 run the following commands to fit a Lasso estimator on a toy dataset.
 
 ```python
->>> from celer Lasso
+>>> from celer import Lasso
 >>> from celer.datasets import make_correlated_data
 >>> X, y, _ = make_correlated_data(n_samples=100, n_features=1000)
 >>> estimator = Lasso()
@@ -76,22 +76,22 @@ For the last mean of contribution, here are the steps to help you setup ``celer`
 1. Fork the repository and afterwards run the following command to clone it on your local machine
 
 ```shell
-git clone https://github.com/{YOUR_GITHUB_USERNAME}/celer.git
+$ git clone https://github.com/{YOUR_GITHUB_USERNAME}/celer.git
 ```
 
 2. ``cd`` to ``celer`` directory and install it in edit mode by running
 
 ```shell
-cd celer
-pip install -e .
+$ cd celer
+$ pip install -e .
 ```
 
 3. To run the gallery examples and build the documentation, run the followings
 
 ```shell
-cd doc
-pip install -r doc-requirements.txt
-make html
+$ cd doc
+$ pip install -r doc-requirements.txt
+$ make html
 ```
 
 
@@ -101,7 +101,7 @@ make html
 If you do so, please cite:
 
 
-```tex
+```bibtex
     @InProceedings{pmlr-v80-massias18a,
       title     = {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
       author    = {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
