@@ -111,7 +111,6 @@ If you do so, please cite:
       volume    = {80},
     }
 
-
     @article{massias2020dual,
       author  = {Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon},
       title   = {Dual Extrapolation for Sparse GLMs},
@@ -123,7 +122,6 @@ If you do so, please cite:
       url     = {http://jmlr.org/papers/v21/19-587.html}
     }
 ```
-
 
 ## Further links
 
