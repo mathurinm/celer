@@ -67,9 +67,9 @@ which includes examples on real-life datasets as well as timing comparison with 
 ``celer`` is an open source project and hence rely on community efforts to evolve.
 Your contribution is highly valuable and can come in three forms
 
-- bug report: you may encounter a bug while using ``celer``. Don't hesitate to report it on the [issue section](https://github.com/mathurinm/celer/issues).
-- feature request: you may want to extend/add new features to ``celer``. You can use the [issue section](https://github.com/mathurinm/celer/issues) to make suggestions.
-- pull request: you may have fixed a bug, enhanced the documentation, ... you can submit a [pull request](https://github.com/mathurinm/celer/pulls) and we will reach out to you asap.
+- **bug report:** you may encounter a bug while using ``celer``. Don't hesitate to report it on the [issue section](https://github.com/mathurinm/celer/issues).
+- **feature request:** you may want to extend/add new features to ``celer``. You can use the [issue section](https://github.com/mathurinm/celer/issues) to make suggestions.
+- **pull request:** you may have fixed a bug, enhanced the documentation, ... you can submit a [pull request](https://github.com/mathurinm/celer/pulls) and we will reach out to you asap.
 
 For the last mean of contribution, here are the steps to help you setup ``celer`` on your local machine:
 
