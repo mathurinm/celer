@@ -15,7 +15,7 @@
 import sys
 import warnings
 import sphinx_gallery
-import sphinx_bootstrap_theme
+# import sphinx_bootstrap_theme
 from distutils.version import LooseVersion
 import matplotlib
 
@@ -136,7 +136,7 @@ html_theme_options = {
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+# html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
