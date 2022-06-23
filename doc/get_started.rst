@@ -93,6 +93,6 @@ And look how fast ``celer`` is compared to the ``scikit-learn``.
 Further links
 -------------
 
-This was just a starter examples. Get familiar with ``celer`` by browsing its :ref:`API documentation` or
+This was just a starter example. Get familiar with ``celer`` by browsing its :ref:`API documentation` or
 explore the :ref:`Examples Gallery`, which includes examples on real-life datasets as well as 
 timing comparison with other solvers.
