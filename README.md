@@ -14,11 +14,11 @@ Currently, the package handles the following problems:
 
 | Problem                       | Support Weights | Native cross-validation
 | -----------                   | -----------     |----------------
-| Lasso                         | yes             | yes
-| ElasticNet                    | yes             | yes
-| Group Lasso                   | yes             | yes
-| Multitask Lasso               | no              | yes
-| Sparse Logistic regression    | no              | no
+| Lasso                         | ✓               | ✓
+| ElasticNet                    | ✓               | ✓
+| Group Lasso                   | ✓               | ✓
+| Multitask Lasso               | ✕               | ✓
+| Sparse Logistic regression    | ✕               | ✕
 
 
 
@@ -48,7 +48,7 @@ On your python console,
 run the following commands to fit a Lasso estimator on a toy dataset.
 
 ```python
->>> from celer Lasso
+>>> from celer import Lasso
 >>> from celer.datasets import make_correlated_data
 >>> X, y, _ = make_correlated_data(n_samples=100, n_features=1000)
 >>> estimator = Lasso()
@@ -67,9 +67,9 @@ which includes examples on real-life datasets as well as timing comparison with 
 ``celer`` is an open source project and hence rely on community efforts to evolve.
 Your contribution is highly valuable and can come in three forms
 
-- bug report: you may encounter a bug while using ``celer``. Don't hesitate to report it on the [issue section](https://github.com/mathurinm/celer/issues).
-- feature request: you may want to extend/add new features to ``celer``. You can use the [issue section](https://github.com/mathurinm/celer/issues) to make suggestions.
-- pull request: you may have fixed a bug, enhanced the documentation, ... you can submit a [pull request](https://github.com/mathurinm/celer/pulls) and we will reach out to you asap.
+- **bug report:** you may encounter a bug while using ``celer``. Don't hesitate to report it on the [issue section](https://github.com/mathurinm/celer/issues).
+- **feature request:** you may want to extend/add new features to ``celer``. You can use the [issue section](https://github.com/mathurinm/celer/issues) to make suggestions.
+- **pull request:** you may have fixed a bug, enhanced the documentation, ... you can submit a [pull request](https://github.com/mathurinm/celer/pulls) and we will reach out to you asap.
 
 For the last mean of contribution, here are the steps to help you setup ``celer`` on your local machine:
 
@@ -101,7 +101,7 @@ make html
 If you do so, please cite:
 
 
-```tex
+```bibtex
     @InProceedings{pmlr-v80-massias18a,
       title     = {Celer: a Fast Solver for the Lasso with Dual Extrapolation},
       author    = {Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph},
@@ -110,7 +110,6 @@ If you do so, please cite:
       year      = {2018},
       volume    = {80},
     }
-
 
     @article{massias2020dual,
       author  = {Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon},
@@ -123,7 +122,6 @@ If you do so, please cite:
       url     = {http://jmlr.org/papers/v21/19-587.html}
     }
 ```
-
 
 ## Further links
 
