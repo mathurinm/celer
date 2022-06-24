@@ -1,104 +1,234 @@
-<!DOCTYPE html>
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Run GroupLasso and GroupLasso CV for structured sparse recovery" href="plot_group_lasso.html" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Lasso path computation on Finance/log1p dataset &#8212; celer 0.7.2dev0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <meta name="generator" content="sphinx-5.0.2, furo 2022.06.21"/>
+        <title>Lasso path computation on Finance/log1p dataset - celer 0.7.2dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-<meta charset='utf-8'>
-<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
 
-  </head><body>
 
-  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">celer 0.7.2dev0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
-        <a class="navbar-brand" href="../index.html">
-          celer</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.7.2dev0</b></span>
       </div>
-
-        <div class="collapse navbar-collapse nav-collapse">
-          <ul class="nav navbar-nav">
-            
-                <li><a href="index.html">Examples</a></li>
-                <li><a href="../api.html">API</a></li>
-                <li><a href="https://github.com/mathurinm/celer">GitHub</a></li>
-            
-            
-              <li class="dropdown globaltoc-container">
-  <a role="button"
-     id="dLabelGlobalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
-  <ul class="dropdown-menu globaltoc"
-      role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
-</ul>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">celer 0.7.2dev0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../get_started.html">Get started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.ElasticNet.html">celer.ElasticNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.ElasticNetCV.html">celer.ElasticNetCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.GroupLasso.html">celer.GroupLasso</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.GroupLassoCV.html">celer.GroupLassoCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.Lasso.html">celer.Lasso</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.LassoCV.html">celer.LassoCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.LogisticRegression.html">celer.LogisticRegression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.MultiTaskLasso.html">celer.MultiTaskLasso</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.MultiTaskLassoCV.html">celer.MultiTaskLassoCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.celer_path.html">celer.celer_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.datasets.make_correlated_data.html">celer.datasets.make_correlated_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.datasets.fetch_ml_uci.html">celer.datasets.fetch_ml_uci</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.datasets.fetch_libsvm.html">celer.datasets.fetch_libsvm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/celer.datasets.fetch_climate.html">celer.datasets.fetch_climate</a></li>
 </ul>
 </li>
-              
-            
-            
-            
-            
-            
-          </ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Become a contributor</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples Gallery</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_lasso_cv.html">Run LassoCV for cross-validation on the Leukemia dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_leukemia_path.html">Lasso path computation on Leukemia dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_logreg_timings.html">Compare LogisticRegression solver with sklearn’s liblinear backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_multitask_lasso_cv.html">Run MultitaskLassoCV and compare performance with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_group_lasso.html">Run GroupLasso and GroupLasso CV for structured sparse recovery</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Lasso path computation on Finance/log1p dataset</a></li>
+</ul>
+</li>
+</ul>
 
-          
-            
-<form class="navbar-form navbar-right" action="../search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
-          
-        </div>
-    </div>
-  </div>
+</div>
+</div>
 
-<div class="container">
-  <div class="row">
-    <div class="body col-md-12 content" role="main">
+      </div>
       
-  <div class="sphx-glr-download-link-note admonition note">
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-finance-path-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="lasso-path-computation-on-finance-log1p-dataset">
-<span id="sphx-glr-auto-examples-plot-finance-path-py"></span><h1>Lasso path computation on Finance/log1p dataset<a class="headerlink" href="#lasso-path-computation-on-finance-log1p-dataset" title="Permalink to this heading">¶</a></h1>
+<span id="sphx-glr-auto-examples-plot-finance-path-py"></span><h1>Lasso path computation on Finance/log1p dataset<a class="headerlink" href="#lasso-path-computation-on-finance-log1p-dataset" title="Permalink to this heading">#</a></h1>
 <p>The example runs the Celer algorithm on the Finance dataset
 which is a large sparse dataset.</p>
 <p>Running time is not compared with the scikit-learn
@@ -128,6 +258,172 @@ implementation as it makes the example too long to run.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>*** Warning: this example may take more than 5 minutes to run ***
+
+file_sizes:   0%|                                    | 0.00/246M [00:00&lt;?, ?B/s]
+file_sizes:   0%|                            | 24.6k/246M [00:00&lt;33:26, 122kB/s]
+file_sizes:   0%|                            | 49.2k/246M [00:00&lt;33:33, 122kB/s]
+file_sizes:   0%|                             | 106k/246M [00:00&lt;20:52, 196kB/s]
+file_sizes:   0%|                             | 156k/246M [00:00&lt;19:01, 215kB/s]
+file_sizes:   0%|                             | 401k/246M [00:01&lt;07:05, 576kB/s]
+file_sizes:   0%|                            | 860k/246M [00:01&lt;03:32, 1.15MB/s]
+file_sizes:   1%|1                          | 1.78M/246M [00:01&lt;01:48, 2.25MB/s]
+file_sizes:   1%|2                          | 2.56M/246M [00:01&lt;01:27, 2.79MB/s]
+file_sizes:   2%|4                          | 4.40M/246M [00:01&lt;00:50, 4.75MB/s]
+file_sizes:   2%|6                          | 5.97M/246M [00:02&lt;00:42, 5.69MB/s]
+file_sizes:   3%|8                          | 7.54M/246M [00:02&lt;00:37, 6.33MB/s]
+file_sizes:   4%|#                          | 9.12M/246M [00:02&lt;00:34, 6.78MB/s]
+file_sizes:   4%|#1                         | 10.7M/246M [00:02&lt;00:33, 7.08MB/s]
+file_sizes:   5%|#3                         | 12.3M/246M [00:02&lt;00:31, 7.30MB/s]
+file_sizes:   6%|#5                         | 13.8M/246M [00:03&lt;00:31, 7.45MB/s]
+file_sizes:   6%|#6                         | 15.4M/246M [00:03&lt;00:30, 7.55MB/s]
+file_sizes:   7%|#8                         | 17.0M/246M [00:03&lt;00:29, 7.63MB/s]
+file_sizes:   8%|##                         | 18.6M/246M [00:03&lt;00:29, 7.68MB/s]
+file_sizes:   8%|##2                        | 20.1M/246M [00:03&lt;00:29, 7.71MB/s]
+file_sizes:   9%|##3                        | 21.7M/246M [00:04&lt;00:28, 7.74MB/s]
+file_sizes:   9%|##5                        | 23.3M/246M [00:04&lt;00:28, 7.75MB/s]
+file_sizes:  10%|##7                        | 24.8M/246M [00:04&lt;00:28, 7.77MB/s]
+file_sizes:  11%|##9                        | 26.4M/246M [00:04&lt;00:28, 7.77MB/s]
+file_sizes:  11%|###                        | 28.0M/246M [00:04&lt;00:27, 7.78MB/s]
+file_sizes:  12%|###2                       | 29.6M/246M [00:05&lt;00:27, 7.79MB/s]
+file_sizes:  13%|###4                       | 31.1M/246M [00:05&lt;00:27, 7.79MB/s]
+file_sizes:  13%|###5                       | 32.7M/246M [00:05&lt;00:27, 7.79MB/s]
+file_sizes:  14%|###7                       | 34.3M/246M [00:05&lt;00:27, 7.79MB/s]
+file_sizes:  15%|###9                       | 35.9M/246M [00:05&lt;00:26, 7.79MB/s]
+file_sizes:  15%|####1                      | 37.4M/246M [00:06&lt;00:26, 7.79MB/s]
+file_sizes:  16%|####2                      | 39.0M/246M [00:06&lt;00:26, 7.79MB/s]
+file_sizes:  17%|####4                      | 40.6M/246M [00:06&lt;00:26, 7.80MB/s]
+file_sizes:  17%|####6                      | 42.1M/246M [00:06&lt;00:26, 7.80MB/s]
+file_sizes:  18%|####8                      | 43.7M/246M [00:06&lt;00:25, 7.80MB/s]
+file_sizes:  18%|####9                      | 45.3M/246M [00:07&lt;00:25, 7.80MB/s]
+file_sizes:  19%|#####1                     | 46.9M/246M [00:07&lt;00:25, 7.80MB/s]
+file_sizes:  20%|#####3                     | 48.4M/246M [00:07&lt;00:25, 7.80MB/s]
+file_sizes:  20%|#####4                     | 50.0M/246M [00:07&lt;00:25, 7.79MB/s]
+file_sizes:  21%|#####6                     | 51.6M/246M [00:07&lt;00:24, 7.80MB/s]
+file_sizes:  22%|#####8                     | 53.2M/246M [00:08&lt;00:24, 7.80MB/s]
+file_sizes:  22%|######                     | 54.7M/246M [00:08&lt;00:24, 7.80MB/s]
+file_sizes:  23%|######1                    | 56.3M/246M [00:08&lt;00:24, 7.79MB/s]
+file_sizes:  24%|######3                    | 57.9M/246M [00:08&lt;00:24, 7.79MB/s]
+file_sizes:  24%|######5                    | 59.4M/246M [00:08&lt;00:23, 7.80MB/s]
+file_sizes:  25%|######7                    | 61.0M/246M [00:09&lt;00:23, 7.80MB/s]
+file_sizes:  25%|######8                    | 62.6M/246M [00:09&lt;00:23, 7.79MB/s]
+file_sizes:  26%|#######                    | 64.2M/246M [00:09&lt;00:23, 7.80MB/s]
+file_sizes:  27%|#######2                   | 65.7M/246M [00:09&lt;00:23, 7.79MB/s]
+file_sizes:  27%|#######3                   | 67.3M/246M [00:09&lt;00:22, 7.80MB/s]
+file_sizes:  28%|#######5                   | 68.9M/246M [00:10&lt;00:22, 7.79MB/s]
+file_sizes:  29%|#######7                   | 70.5M/246M [00:10&lt;00:22, 7.79MB/s]
+file_sizes:  29%|#######9                   | 72.0M/246M [00:10&lt;00:22, 7.79MB/s]
+file_sizes:  30%|########                   | 73.6M/246M [00:10&lt;00:22, 7.79MB/s]
+file_sizes:  31%|########2                  | 75.2M/246M [00:10&lt;00:21, 7.79MB/s]
+file_sizes:  31%|########4                  | 76.8M/246M [00:11&lt;00:21, 7.80MB/s]
+file_sizes:  32%|########5                  | 77.8M/246M [00:11&lt;00:23, 7.07MB/s]
+file_sizes:  32%|########7                  | 79.6M/246M [00:11&lt;00:21, 7.65MB/s]
+file_sizes:  33%|########9                  | 81.2M/246M [00:11&lt;00:21, 7.69MB/s]
+file_sizes:  34%|#########                  | 82.8M/246M [00:11&lt;00:21, 7.72MB/s]
+file_sizes:  34%|#########2                 | 84.4M/246M [00:12&lt;00:20, 7.74MB/s]
+file_sizes:  35%|#########4                 | 85.9M/246M [00:12&lt;00:20, 7.76MB/s]
+file_sizes:  36%|#########6                 | 87.5M/246M [00:12&lt;00:20, 7.77MB/s]
+file_sizes:  36%|#########7                 | 89.1M/246M [00:12&lt;00:20, 7.78MB/s]
+file_sizes:  37%|#########9                 | 90.6M/246M [00:12&lt;00:19, 7.78MB/s]
+file_sizes:  38%|##########1                | 92.2M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  38%|##########3                | 93.8M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  39%|##########4                | 95.4M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  39%|##########6                | 96.9M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  40%|##########8                | 98.5M/246M [00:13&lt;00:18, 7.79MB/s]
+file_sizes:  41%|###########4                | 100M/246M [00:14&lt;00:18, 7.79MB/s]
+file_sizes:  41%|###########5                | 101M/246M [00:14&lt;00:20, 7.08MB/s]
+file_sizes:  42%|###########7                | 103M/246M [00:14&lt;00:18, 7.66MB/s]
+file_sizes:  42%|###########8                | 104M/246M [00:14&lt;00:19, 7.33MB/s]
+file_sizes:  43%|############                | 106M/246M [00:14&lt;00:17, 7.84MB/s]
+file_sizes:  44%|############2               | 107M/246M [00:15&lt;00:18, 7.46MB/s]
+file_sizes:  44%|############4               | 109M/246M [00:15&lt;00:17, 7.92MB/s]
+file_sizes:  45%|############5               | 111M/246M [00:15&lt;00:17, 7.53MB/s]
+file_sizes:  46%|############8               | 112M/246M [00:15&lt;00:16, 7.97MB/s]
+file_sizes:  46%|############9               | 114M/246M [00:15&lt;00:17, 7.56MB/s]
+file_sizes:  47%|#############1              | 116M/246M [00:16&lt;00:16, 7.99MB/s]
+file_sizes:  48%|#############3              | 117M/246M [00:16&lt;00:17, 7.57MB/s]
+file_sizes:  48%|#############4              | 118M/246M [00:16&lt;00:17, 7.28MB/s]
+file_sizes:  49%|#############6              | 120M/246M [00:16&lt;00:16, 7.80MB/s]
+file_sizes:  49%|#############8              | 121M/246M [00:16&lt;00:16, 7.43MB/s]
+file_sizes:  50%|##############              | 123M/246M [00:17&lt;00:15, 7.90MB/s]
+file_sizes:  51%|##############2             | 125M/246M [00:17&lt;00:15, 7.86MB/s]
+file_sizes:  51%|##############3             | 126M/246M [00:17&lt;00:15, 7.85MB/s]
+file_sizes:  52%|##############5             | 128M/246M [00:17&lt;00:15, 7.83MB/s]
+file_sizes:  53%|##############7             | 129M/246M [00:17&lt;00:14, 7.82MB/s]
+file_sizes:  53%|##############9             | 131M/246M [00:18&lt;00:14, 7.81MB/s]
+file_sizes:  54%|###############1            | 133M/246M [00:18&lt;00:14, 7.80MB/s]
+file_sizes:  55%|###############2            | 134M/246M [00:18&lt;00:14, 7.80MB/s]
+file_sizes:  55%|###############4            | 136M/246M [00:18&lt;00:14, 7.80MB/s]
+file_sizes:  56%|###############6            | 137M/246M [00:18&lt;00:13, 7.80MB/s]
+file_sizes:  57%|###############8            | 139M/246M [00:19&lt;00:13, 7.80MB/s]
+file_sizes:  57%|################            | 140M/246M [00:19&lt;00:13, 7.80MB/s]
+file_sizes:  58%|################1           | 142M/246M [00:19&lt;00:13, 7.80MB/s]
+file_sizes:  58%|################3           | 144M/246M [00:19&lt;00:13, 7.80MB/s]
+file_sizes:  59%|################5           | 145M/246M [00:19&lt;00:12, 7.80MB/s]
+file_sizes:  60%|################7           | 147M/246M [00:20&lt;00:12, 7.80MB/s]
+file_sizes:  60%|################9           | 148M/246M [00:20&lt;00:12, 7.80MB/s]
+file_sizes:  61%|#################           | 150M/246M [00:20&lt;00:12, 7.44MB/s]
+file_sizes:  62%|#################2          | 151M/246M [00:20&lt;00:11, 7.91MB/s]
+file_sizes:  62%|#################4          | 153M/246M [00:20&lt;00:12, 7.51MB/s]
+file_sizes:  63%|#################6          | 155M/246M [00:21&lt;00:11, 7.96MB/s]
+file_sizes:  63%|#################7          | 156M/246M [00:21&lt;00:11, 7.55MB/s]
+file_sizes:  64%|#################9          | 158M/246M [00:21&lt;00:11, 7.99MB/s]
+file_sizes:  65%|##################1         | 159M/246M [00:21&lt;00:11, 7.57MB/s]
+file_sizes:  65%|##################2         | 160M/246M [00:21&lt;00:11, 7.28MB/s]
+file_sizes:  66%|##################4         | 162M/246M [00:22&lt;00:10, 7.79MB/s]
+file_sizes:  67%|##################6         | 164M/246M [00:22&lt;00:11, 7.43MB/s]
+file_sizes:  67%|##################8         | 165M/246M [00:22&lt;00:10, 7.90MB/s]
+file_sizes:  68%|##################9         | 167M/246M [00:22&lt;00:10, 7.51MB/s]
+file_sizes:  69%|###################2        | 169M/246M [00:22&lt;00:09, 7.95MB/s]
+file_sizes:  69%|###################3        | 170M/246M [00:23&lt;00:10, 7.55MB/s]
+file_sizes:  70%|###################5        | 172M/246M [00:23&lt;00:09, 7.98MB/s]
+file_sizes:  70%|###################7        | 173M/246M [00:23&lt;00:09, 7.57MB/s]
+file_sizes:  71%|###################9        | 175M/246M [00:23&lt;00:08, 7.99MB/s]
+file_sizes:  72%|####################        | 176M/246M [00:23&lt;00:09, 7.58MB/s]
+file_sizes:  72%|####################2       | 178M/246M [00:24&lt;00:08, 8.00MB/s]
+file_sizes:  73%|####################4       | 179M/246M [00:24&lt;00:08, 7.58MB/s]
+file_sizes:  74%|####################6       | 181M/246M [00:24&lt;00:08, 8.01MB/s]
+file_sizes:  74%|####################7       | 182M/246M [00:24&lt;00:08, 7.58MB/s]
+file_sizes:  75%|####################9       | 184M/246M [00:25&lt;00:07, 8.01MB/s]
+file_sizes:  76%|#####################1      | 186M/246M [00:25&lt;00:07, 7.58MB/s]
+file_sizes:  76%|#####################3      | 187M/246M [00:25&lt;00:07, 8.01MB/s]
+file_sizes:  77%|#####################5      | 189M/246M [00:25&lt;00:07, 7.58MB/s]
+file_sizes:  77%|#####################6      | 190M/246M [00:25&lt;00:07, 7.46MB/s]
+file_sizes:  78%|#####################8      | 192M/246M [00:26&lt;00:06, 7.93MB/s]
+file_sizes:  79%|######################      | 193M/246M [00:26&lt;00:06, 7.53MB/s]
+file_sizes:  79%|######################2     | 195M/246M [00:26&lt;00:06, 7.97MB/s]
+file_sizes:  80%|######################3     | 196M/246M [00:26&lt;00:06, 7.55MB/s]
+file_sizes:  81%|######################5     | 198M/246M [00:26&lt;00:05, 7.99MB/s]
+file_sizes:  81%|######################7     | 200M/246M [00:27&lt;00:06, 7.57MB/s]
+file_sizes:  82%|######################9     | 201M/246M [00:27&lt;00:05, 7.46MB/s]
+file_sizes:  83%|#######################1    | 203M/246M [00:27&lt;00:05, 7.92MB/s]
+file_sizes:  83%|#######################2    | 204M/246M [00:27&lt;00:05, 7.52MB/s]
+file_sizes:  84%|#######################4    | 206M/246M [00:27&lt;00:04, 7.96MB/s]
+file_sizes:  84%|#######################6    | 207M/246M [00:28&lt;00:05, 7.55MB/s]
+file_sizes:  85%|#######################8    | 209M/246M [00:28&lt;00:04, 7.99MB/s]
+file_sizes:  86%|#######################9    | 210M/246M [00:28&lt;00:04, 7.57MB/s]
+file_sizes:  86%|########################2   | 212M/246M [00:28&lt;00:04, 8.17MB/s]
+file_sizes:  87%|########################3   | 214M/246M [00:28&lt;00:04, 7.71MB/s]
+file_sizes:  88%|########################5   | 215M/246M [00:29&lt;00:04, 7.55MB/s]
+file_sizes:  88%|########################7   | 217M/246M [00:29&lt;00:03, 8.16MB/s]
+file_sizes:  89%|########################8   | 218M/246M [00:29&lt;00:03, 7.33MB/s]
+file_sizes:  90%|#########################   | 220M/246M [00:29&lt;00:03, 8.01MB/s]
+file_sizes:  90%|#########################2  | 222M/246M [00:29&lt;00:03, 7.94MB/s]
+file_sizes:  91%|#########################4  | 223M/246M [00:30&lt;00:03, 7.54MB/s]
+file_sizes:  91%|#########################5  | 224M/246M [00:30&lt;00:02, 7.43MB/s]
+file_sizes:  92%|#########################8  | 226M/246M [00:30&lt;00:02, 8.08MB/s]
+file_sizes:  93%|#########################9  | 228M/246M [00:30&lt;00:02, 7.64MB/s]
+file_sizes:  93%|##########################1 | 229M/246M [00:30&lt;00:02, 7.87MB/s]
+file_sizes:  94%|##########################3 | 231M/246M [00:31&lt;00:01, 7.85MB/s]
+file_sizes:  95%|##########################4 | 232M/246M [00:31&lt;00:01, 7.45MB/s]
+file_sizes:  95%|##########################6 | 234M/246M [00:31&lt;00:01, 7.73MB/s]
+file_sizes:  96%|##########################8 | 235M/246M [00:31&lt;00:01, 7.57MB/s]
+file_sizes:  96%|##########################9 | 237M/246M [00:31&lt;00:01, 7.47MB/s]
+file_sizes:  97%|###########################2| 239M/246M [00:32&lt;00:00, 8.04MB/s]
+file_sizes:  98%|###########################3| 240M/246M [00:32&lt;00:00, 7.67MB/s]
+file_sizes:  98%|###########################5| 242M/246M [00:32&lt;00:00, 7.88MB/s]
+file_sizes:  99%|###########################7| 243M/246M [00:32&lt;00:00, 7.50MB/s]
+file_sizes: 100%|###########################9| 245M/246M [00:32&lt;00:00, 7.76MB/s]
+file_sizes: 100%|############################| 246M/246M [00:32&lt;00:00, 7.46MB/s]
 Dataset size: 16087 samples, 4272227 features
 </pre></div>
 </div>
@@ -496,7 +792,7 @@ Early exit, gap: 1.22e-07 &lt; 4.00e-07
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_finance_path_003.png" srcset="../_images/sphx_glr_plot_finance_path_003.png" alt="plot finance path" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 5 minutes  45.541 seconds)</p>
+<img src="../_images/sphx_glr_plot_finance_path_003.png" srcset="../_images/sphx_glr_plot_finance_path_003.png" alt="plot finance path" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 8 minutes  24.073 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-finance-path-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1e2b507d59f5c81fd7116ff6c187df47/plot_finance_path.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_finance_path.py</span></code></a></p>
@@ -508,22 +804,61 @@ Early exit, gap: 1.22e-07 &lt; 4.00e-07
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </section>
 
-
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="plot_group_lasso.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Run GroupLasso and GroupLasso CV for structured sparse recovery</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018-2022, Mathurin Massias
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/mathurinm/celer" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
     </div>
+    <aside class="toc-drawer no-toc">
       
-  </div>
-</div>
-<footer class="footer">
-  <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
       
-    </p>
-    <p>
-        &copy; Copyright 2018-2022, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br/>
-    </p>
+      
+    </aside>
   </div>
-</footer>
-  </body>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    </body>
 </html>
