@@ -226,32 +226,40 @@
 <h1>celer.celer_path<a class="headerlink" href="#celer-celer-path" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="celer.celer_path">
-<span class="sig-prename descclassname"><span class="pre">celer.</span></span><span class="sig-name descname"><span class="pre">celer_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_thetas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_PN</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mathurinm/celer/blob/12bea9e/celer/homotopy.py#L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">celer.</span></span><span class="sig-name descname"><span class="pre">celer_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_thetas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_PN</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mathurinm/celer/blob/32d8196/celer/homotopy.py#L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celer.celer_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute optimization path with Celer as inner solver.</p>
-<p>With <cite>n = len(y)</cite> and <cite>p = len(w)</cite> the number of samples and features,
+<p>With <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">=</span> <span class="pre">len(y)</span></code> and <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">len(w)</span></code> the number of samples and features,
 the losses are:</p>
-<p>Lasso:</p>
+<ul class="simple">
+<li><p>Lasso:</p></li>
+</ul>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
-\[\frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|\]</div>
+\[\frac{\| y - X w \||_2^2}{2 n} + \alpha \sum_{j=1}^p weights_j |w_j|\]</div>
 </div>
-<p>ElasticNet:</p>
+<ul class="simple">
+<li><p>ElasticNet:</p></li>
+</ul>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
-\[\frac{||y - X w||_2^2}{2 n} +
+\[\frac{\| y - X w \|_2^2}{2 n} +
 \alpha \sum_{j=1}^p weights_j (l1\_ratio |w_j| + (1-l1\_ratio) w_j^2)\]</div>
 </div>
-<p>Logreg:</p>
+<ul class="simple">
+<li><p>Logreg:</p></li>
+</ul>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha
-\sum_1^p weights_j |w_j|\]</div>
+\sum_{j=1}^p weights_j |w_j|\]</div>
 </div>
-<p>GroupLasso, with <cite>G</cite> the number of groups and <cite>w_{[g]}</cite> the subvector
-corresponding the group <cite>g</cite>:</p>
+<ul class="simple">
+<li><p>GroupLasso, with <cite>G</cite> the number of groups and <span class="math notranslate nohighlight">\(w_{[g]}\)</span> the subvector</p></li>
+</ul>
+<p>corresponding the group <cite>g</cite>:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
-\[\frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^G weights_g ||w_{[g]}||_2\]</div>
+\[\frac{\| y - X w \|_2^2}{2 n} + \alpha \sum_{g=1}^G weights_g \| w_{[g]} \|_2\]</div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -259,32 +267,32 @@ corresponding the group <cite>g</cite>:</p>
 <dt><strong>X</strong><span class="classifier">{array-like, sparse matrix}, shape (n_samples, n_features)</span></dt><dd><p>Training data. Pass directly as Fortran-contiguous data or column
 sparse format (CSC) to avoid unnecessary memory duplication.</p>
 </dd>
-<dt><strong>y</strong><span class="classifier">ndarray, shape (n_samples,)</span></dt><dd><p>Target values</p>
+<dt><strong>y</strong><span class="classifier">ndarray, shape (n_samples,)</span></dt><dd><p>Target values.</p>
 </dd>
 <dt><strong>pb</strong><span class="classifier">“lasso” | “logreg” | “grouplasso”</span></dt><dd><p>Optimization problem to solve.</p>
 </dd>
 <dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Length of the path. <code class="docutils literal notranslate"><span class="pre">eps=1e-3</span></code> means that
-<code class="docutils literal notranslate"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">alpha_min</span> <span class="pre">=</span> <span class="pre">1e-3</span> <span class="pre">*</span> <span class="pre">alpha_max</span></code>.</p>
 </dd>
-<dt><strong>n_alphas</strong><span class="classifier">int, optional</span></dt><dd><p>Number of alphas along the regularization path</p>
+<dt><strong>n_alphas</strong><span class="classifier">int, optional</span></dt><dd><p>Number of alphas along the regularization path.</p>
 </dd>
 <dt><strong>alphas</strong><span class="classifier">ndarray, optional</span></dt><dd><p>List of alphas where to compute the models.
-If <code class="docutils literal notranslate"><span class="pre">None</span></code> alphas are set automatically</p>
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> alphas are set automatically.</p>
 </dd>
 <dt><strong>l1_ratio</strong><span class="classifier">float, optional</span></dt><dd><p>The ElasticNet mixing parameter, with <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;</span> <span class="pre">l1_ratio</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code>.
 Defaults to 1.0 which corresponds to L1 penalty (Lasso).
 <code class="docutils literal notranslate"><span class="pre">l1_ratio</span> <span class="pre">=</span> <span class="pre">0</span></code> (Ridge regression) is not supported.</p>
 </dd>
-<dt><strong>coef_init</strong><span class="classifier">ndarray, shape (n_features,) | None, optional, (default=None)</span></dt><dd><p>Initial value of coefficients. If None, np.zeros(n_features) is used.</p>
+<dt><strong>coef_init</strong><span class="classifier">ndarray, shape (n_features,) | None, optional, (default=None)</span></dt><dd><p>Initial value of coefficients. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">np.zeros(n_features)</span></code> is used.</p>
 </dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations (definition of working set and
-resolution of problem restricted to features in working set)</p>
+resolution of problem restricted to features in working set).</p>
 </dd>
 <dt><strong>max_epochs</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of (block) CD epochs on each subproblem.</p>
 </dd>
 <dt><strong>p0</strong><span class="classifier">int, optional</span></dt><dd><p>First working set size.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool or integer, optional</span></dt><dd><p>Amount of verbosity. 0/False is silent</p>
+<dt><strong>verbose</strong><span class="classifier">bool or integer, optional</span></dt><dd><p>Amount of verbosity. <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> is silent.</p>
 </dd>
 <dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: the solver runs until the duality
 gap is smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code> or the maximum number of iteration is
@@ -293,25 +301,26 @@ reached.</p>
 <dt><strong>prune</strong><span class="classifier">0 | 1, optional</span></dt><dd><p>Whether or not to use pruning when growing working sets.</p>
 </dd>
 <dt><strong>weights</strong><span class="classifier">ndarray, shape (n_features,) or (n_groups,), optional</span></dt><dd><p>Feature/group weights used in the penalty. Default to array of ones.
-Features with weights equal to np.inf are ignored.</p>
+Features with weights equal to <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> are ignored.</p>
 </dd>
 <dt><strong>groups</strong><span class="classifier">int or list of ints or list of list of ints, optional</span></dt><dd><p>Used for the group Lasso only. See the documentation of the
-GroupLasso class.</p>
+<a class="reference internal" href="celer.GroupLasso.html#celer-grouplasso"><span class="std std-ref">celer.GroupLasso</span></a> class.</p>
 </dd>
-<dt><strong>return_thetas</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, dual variables along the path are returned.</p>
+<dt><strong>return_thetas</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, dual variables along the path are returned.</p>
 </dd>
-<dt><strong>use_PN</strong><span class="classifier">bool, optional</span></dt><dd><p>If pb == “logreg”, use ProxNewton solver instead of coordinate
+<dt><strong>use_PN</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">pb</span> <span class="pre">==</span> <span class="pre">&quot;logreg&quot;</span></code>, use ProxNewton solver instead of coordinate
 descent.</p>
 </dd>
 <dt><strong>X_offset</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to center sparse X without breaking sparsity. Mean of each column.
-See sklearn.linear_model.base._preprocess_data().</p>
+See <a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/213d21fe719ce5778726203893c78251b8af34fa/sklearn/linear_model/_base.py#L216">sklearn.linear_model.base._preprocess_data()</a>.</p>
 </dd>
 <dt><strong>X_scale</strong><span class="classifier">np.array, shape (n_features,), optional</span></dt><dd><p>Used to scale centered sparse X without breaking sparsity. Norm of each
-centered column. See sklearn.linear_model.base._preprocess_data().</p>
+centered column.
+See <a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/213d21fe719ce5778726203893c78251b8af34fa/sklearn/linear_model/_base.py#L216">sklearn.linear_model.base._preprocess_data()</a>.</p>
 </dd>
-<dt><strong>return_n_iter</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, number of iterations along the path are returned.</p>
+<dt><strong>return_n_iter</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, number of iterations along the path are returned.</p>
 </dd>
-<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>If True and pb == “lasso”, forces the coefficients to be positive.</p>
+<dt><strong>positive</strong><span class="classifier">bool, optional (default=False)</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">pb</span> <span class="pre">==</span> <span class="pre">&quot;lasso&quot;</span></code>, forces the coefficients to be positive.</p>
 </dd>
 </dl>
 </dd>
@@ -324,7 +333,7 @@ centered column. See sklearn.linear_model.base._preprocess_data().</p>
 <dt><strong>dual_gaps</strong><span class="classifier">array, shape (n_alphas,)</span></dt><dd><p>Duality gaps returned by the solver along the path.</p>
 </dd>
 <dt><strong>thetas</strong><span class="classifier">array, shape (n_alphas, n_samples)</span></dt><dd><p>The dual variables along the path.
-(Is returned only when <code class="docutils literal notranslate"><span class="pre">return_thetas</span></code> is set to True).</p>
+(<code class="docutils literal notranslate"><span class="pre">thetas</span></code> are returned if <code class="docutils literal notranslate"><span class="pre">return_thetas</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>).</p>
 </dd>
 </dl>
 </dd>
