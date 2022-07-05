@@ -29,35 +29,36 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                X_scale=None, return_n_iter=False, positive=False):
     r"""Compute optimization path with Celer as inner solver.
 
-    With `n = len(y)` and `p = len(w)` the number of samples and features,
+    With ``n = len(y)`` and ``p = len(w)`` the number of samples and features,
     the losses are:
 
-    Lasso:
+    * Lasso:
 
     .. math::
 
-        \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^p weights_j |w_j|
+        \frac{\| y - X w \||_2^2}{2 n} + \alpha \sum_{j=1}^p weights_j |w_j|
 
-    ElasticNet:
+    * ElasticNet:
 
     .. math::
 
-        \frac{||y - X w||_2^2}{2 n} +
+        \frac{\| y - X w \|_2^2}{2 n} +
         \alpha \sum_{j=1}^p weights_j (l1\_ratio |w_j| + (1-l1\_ratio) w_j^2)
 
-    Logreg:
+    * Logreg:
 
     .. math::
 
         \sum_{i=1}^n \text{log} \,(1 + e^{-y_i x_i^\top w}) + \alpha
-        \sum_1^p weights_j |w_j|
+        \sum_{j=1}^p weights_j |w_j|
 
-    GroupLasso, with `G` the number of groups and `w_{[g]}` the subvector
+    * GroupLasso, with `G` the number of groups and :math:`w_{[g]}` the subvector
     corresponding the group `g`:
 
     .. math::
 
-        \frac{||y - X w||_2^2}{2 n} + \alpha \sum_1^G weights_g ||w_{[g]}||_2
+        \frac{\| y - X w \|_2^2}{2 n} + \alpha \sum_{g=1}^G weights_g \| w_{[g]} \|_2
+
 
     Parameters
     ----------
@@ -66,21 +67,21 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
         sparse format (CSC) to avoid unnecessary memory duplication.
 
     y : ndarray, shape (n_samples,)
-        Target values
+        Target values.
 
     pb : "lasso" | "logreg" | "grouplasso"
         Optimization problem to solve.
 
     eps : float, optional
         Length of the path. ``eps=1e-3`` means that
-        ``alpha_min = 1e-3 * alpha_max``
+        ``alpha_min = 1e-3 * alpha_max``.
 
     n_alphas : int, optional
-        Number of alphas along the regularization path
+        Number of alphas along the regularization path.
 
     alphas : ndarray, optional
         List of alphas where to compute the models.
-        If ``None`` alphas are set automatically
+        If ``None`` alphas are set automatically.
 
     l1_ratio : float, optional
         The ElasticNet mixing parameter, with ``0 < l1_ratio <= 1``.
@@ -88,11 +89,11 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
         ``l1_ratio = 0`` (Ridge regression) is not supported.
 
     coef_init : ndarray, shape (n_features,) | None, optional, (default=None)
-        Initial value of coefficients. If None, np.zeros(n_features) is used.
+        Initial value of coefficients. If ``None``, ``np.zeros(n_features)`` is used.
 
     max_iter : int, optional
         The maximum number of iterations (definition of working set and
-        resolution of problem restricted to features in working set)
+        resolution of problem restricted to features in working set).
 
     max_epochs : int, optional
         Maximum number of (block) CD epochs on each subproblem.
@@ -101,7 +102,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
         First working set size.
 
     verbose : bool or integer, optional
-        Amount of verbosity. 0/False is silent
+        Amount of verbosity. ``0`` or ``False`` is silent.
 
     tol : float, optional
         The tolerance for the optimization: the solver runs until the duality
@@ -113,32 +114,37 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
     weights : ndarray, shape (n_features,) or (n_groups,), optional
         Feature/group weights used in the penalty. Default to array of ones.
-        Features with weights equal to np.inf are ignored.
+        Features with weights equal to ``np.inf`` are ignored.
 
     groups : int or list of ints or list of list of ints, optional
         Used for the group Lasso only. See the documentation of the
-        GroupLasso class.
+        :ref:`celer.GroupLasso` class.
 
     return_thetas : bool, optional
-        If True, dual variables along the path are returned.
+        If ``True``, dual variables along the path are returned.
 
     use_PN : bool, optional
-        If pb == "logreg", use ProxNewton solver instead of coordinate
+        If ``pb == "logreg"``, use ProxNewton solver instead of coordinate
         descent.
 
     X_offset : np.array, shape (n_features,), optional
         Used to center sparse X without breaking sparsity. Mean of each column.
-        See sklearn.linear_model.base._preprocess_data().
+        See `sklearn.linear_model.base._preprocess_data()
+        <https://github.com/scikit-learn/scikit-learn/blob
+        /213d21fe719ce5778726203893c78251b8af34fa/sklearn/linear_model/_base.py#L216>`_.
 
     X_scale : np.array, shape (n_features,), optional
         Used to scale centered sparse X without breaking sparsity. Norm of each
-        centered column. See sklearn.linear_model.base._preprocess_data().
+        centered column.
+        See `sklearn.linear_model.base._preprocess_data()
+        <https://github.com/scikit-learn/scikit-learn/blob
+        /213d21fe719ce5778726203893c78251b8af34fa/sklearn/linear_model/_base.py#L216>`_.
 
     return_n_iter : bool, optional
-        If True, number of iterations along the path are returned.
+        If ``True``, number of iterations along the path are returned.
 
     positive : bool, optional (default=False)
-        If True and pb == "lasso", forces the coefficients to be positive.
+        If ``True`` and ``pb == "lasso"``, forces the coefficients to be positive.
 
     Returns
     -------
@@ -153,7 +159,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
     thetas : array, shape (n_alphas, n_samples)
         The dual variables along the path.
-        (Is returned only when ``return_thetas`` is set to True).
+        (``thetas`` are returned if ``return_thetas`` is set to ``True``).
     """
 
     if pb.lower() not in ("lasso", "logreg", "grouplasso"):
