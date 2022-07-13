@@ -33,10 +33,10 @@ jobs:
       - name: Build source dist
         run: |
           pip install -e .
-          # pip install wheel
-          # python setup.py sdist
-          # python setup.py bdist_wheel
-          # ls dist
+          pip install wheel
+          python setup.py sdist
+          python setup.py bdist_wheel
+          ls dist
 
       # - name: Build manylinux Python wheels
       #   uses: RalfG/python-wheels-manylinux-build@v0.4.2-manylinux2014_x86_64
