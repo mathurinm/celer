@@ -32,6 +32,7 @@ jobs:
 
       - name: Build source dist
         run: |
+          pip install wheel
           python setup.py sdist
           python setup.py bdist_wheel
           ls dist
