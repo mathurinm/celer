@@ -24,7 +24,7 @@ jobs:
 
       - name: Install celer
         run: |
-          pip install numpy=1.21
+          pip install numpy==1.21
           pip install -e .
 
       - name: Build source dist
