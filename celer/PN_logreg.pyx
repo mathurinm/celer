@@ -408,7 +408,8 @@ cpdef void do_line_search(
         floating[::1, :] X, floating[:] X_data,
         int[:] X_indices, int[:] X_indptr, int MAX_BACKTRACK_ITR,
         floating[:] y, floating[:] exp_Xw, floating[:] low_exp_Xw,
-        floating[:] aux, int[:] is_positive_label) nogil:
+        # floating[:] aux, int[:] is_positive_label) nogil:
+        floating[:] aux, int[:] is_positive_label):
 
     cdef int i, ind, backtrack_itr
     cdef floating deriv
@@ -434,7 +435,7 @@ cpdef void do_line_search(
     else:
         pass
         # TODO what do we do in this case?
-    printf("%f\n", step_size)
+    print("stepsize is", step_size)
 
     # a suitable step size is found, perform step:
     for ind in range(WS.shape[0]):
