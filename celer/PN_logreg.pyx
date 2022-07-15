@@ -10,6 +10,7 @@ import warnings
 from numpy.linalg import norm
 from cython cimport floating
 from libc.math cimport fabs, sqrt, exp
+from libc.stdio cimport printf
 from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport fdot, faxpy, fcopy, fposv, fscal, fnrm2
@@ -431,6 +432,7 @@ cpdef void do_line_search(
     else:
         pass
         # TODO what do we do in this case?
+    printf("%f\n", step_size)
 
     # a suitable step size is found, perform step:
     for ind in range(WS.shape[0]):
