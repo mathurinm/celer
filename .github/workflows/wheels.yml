@@ -1,0 +1,46 @@
+name: Build wheels
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macOS-10.15]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install celer
+        run: |
+          pip install numpy==1.21
+          pip install -e .
+
+      - name: Install and run cibuildwheel
+        run: |
+          python -m pip install cibuildwheel
+          python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: cp38-manylinux_x86_64 cp38-win32 cp38-macosx_x86_64 cp39-manylinux_x86_64
+
+      - name: Inspect wheelhouse
+        run: ls wheelhouse
+
+      - name: publish to Test PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          pip install twine
+          twine upload --skip-existing --repository testpypi wheelhouse/*.whl
