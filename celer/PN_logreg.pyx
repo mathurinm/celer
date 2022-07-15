@@ -223,6 +223,8 @@ def newton_celer(
         if verbose:
             print("Solving subproblem with %d constraints" % len(WS))
 
+        print("w is", np.asarray(w)[:10])
+
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
                   aux, is_positive_label, X_mean, weights_pen, center,
