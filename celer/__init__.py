@@ -7,4 +7,4 @@ from .dropin_sklearn import (ElasticNet, ElasticNetCV,
                              MultiTaskLasso, MultiTaskLassoCV)
 
 
-__version__ = '0.7.2dev0'
+__version__ = '0.7.2dev1'
