@@ -29,7 +29,7 @@ def newton_celer(
         int[:] X_indices, int[:] X_indptr, floating[:] y, floating alpha,
         floating[:] w, int max_iter, floating tol=1e-4, int p0=100,
         int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False,
-        int max_pn_iter=50):
+        int max_pn_iter=1):
 
     if floating is double:
         dtype = np.float64
@@ -267,7 +267,7 @@ cpdef int PN_logreg(
     cdef:
         int MAX_BACKTRACK_ITR = 10
         int MAX_PN_CD_ITR = 10
-        int MIN_PN_CD_ITR = 2
+        int MIN_PN_CD_ITR = 1
     cdef floating PN_EPSILON_RATIO = 10.
 
     cdef floating[:] weights = np.zeros(n_samples, dtype=dtype)
@@ -301,6 +301,7 @@ cpdef int PN_logreg(
     print("working sets", np.asarray(WS))
 
     for pn_iter in range(max_pn_iter):
+        print("maxiter pn is", max_pn_iter)
         print("w is", np.asarray(w))
 
         # run prox newton iterations:
@@ -350,6 +351,7 @@ cpdef int PN_logreg(
                     else:
                         for i in range(n_samples):
                             X_delta_w[i] += diff * X[i, j]
+                print('delta w is', delta_w[ind])
             if (sum_sq_hess_diff < pn_epsilon and
                     cd_itr + 1 >= MIN_PN_CD_ITR):
                 break
