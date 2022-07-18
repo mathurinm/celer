@@ -303,7 +303,6 @@ cpdef int PN_logreg(
 
     for pn_iter in range(max_pn_iter):
         print("maxiter pn is", max_pn_iter)
-        print("w is", np.asarray(w))
 
         # run prox newton iterations:
         for i in range(n_samples):
@@ -365,6 +364,8 @@ cpdef int PN_logreg(
                        exp_Xw, low_exp_Xw, aux, is_positive_label)
         # aux is an up-to-date gradient (= - alpha * unscaled dual point)
         create_dual_pt(LOGREG, n_samples, &aux[0], &Xw[0], &y[0])
+
+        print("w is", np.asarray(w))
 
         if blitz_sc:  # blitz stopping criterion for CD iter
             pn_grad_diff = 0.
