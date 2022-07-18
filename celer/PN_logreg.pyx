@@ -372,14 +372,15 @@ cpdef int PN_logreg(
                 j = WS[ind]
                 actual_grad = xj_dot(
                     aux, j, is_sparse, X, X_data, X_indices, X_indptr, n_features)
-                # TODO step_size taken into account?
+                pn_grad_cache[ind] = actual_grad
+                # TODO step_size taken into account???
+                # Hessian approximation:
+                # nabla f(w) - nabla f(w') ~ H (w - w') ~ X.T @ D @ X (w - w')
                 approx_grad = pn_grad_cache[ind] + wdot(
                     X_delta_w, weights, j, is_sparse, X, X_data, X_indices,
                     X_indptr, False)
-                pn_grad_cache[ind] = actual_grad
-                diff = approx_grad - actual_grad
 
-                pn_grad_diff += diff ** 2
+                pn_grad_diff += (approx_grad - actual_grad) ** 2
 
             norm_Xaux = 0.
             for ind in range(ws_size):
@@ -425,11 +426,13 @@ cpdef void do_line_search(
     cdef floating step_size = 1.
 
     cdef int n_samples = y.shape[0]
+    # trick to avoid recomputing exponentials inside the backtracking iterations
     fcopy(&n_samples, &exp_Xw[0], &inc, &low_exp_Xw[0], &inc)
     for i in range(n_samples):
         exp_Xw[i] = exp(Xw[i] + X_delta_w[i])
 
     for backtrack_itr in range(MAX_BACKTRACK_ITR):
+        # aux = -y / (1. + exp(y * Xw))   (= nabla F(Xw))
         compute_aux(aux, is_positive_label, exp_Xw)
 
         deriv = compute_derivative(
