@@ -17,7 +17,7 @@ if version is None:
 
 DISTNAME = 'celer'
 DESCRIPTION = descr
-with open('README.md', 'r') as f:
+with open('README.md', 'r', encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'Mathurin Massias'
 MAINTAINER_EMAIL = 'mathurin.massias@gmail.com'
