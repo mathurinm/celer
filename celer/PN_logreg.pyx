@@ -29,7 +29,7 @@ def newton_celer(
         int[:] X_indices, int[:] X_indptr, floating[:] y, floating alpha,
         floating[:] w, int max_iter, floating tol=1e-4, int p0=100,
         int verbose=0, bint use_accel=1, bint prune=1, bint blitz_sc=False,
-        int max_pn_iter=1):
+        int max_pn_iter=1,  int max_cd_itr=2):
 
     if floating is double:
         dtype = np.float64
@@ -107,6 +107,7 @@ def newton_celer(
     cdef bint positive = 0
 
     for t in range(max_iter):
+        print('max iter', max_iter)
         p_obj = primal(LOGREG, alpha, l1_ratio, Xw, y, w, weights_pen)
 
         # theta = y * sigmoid(-y * Xw)
@@ -223,11 +224,11 @@ def newton_celer(
         if verbose:
             print("Solving subproblem with %d constraints" % len(WS))
 
-
+        print('max iter', max_iter)
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
                   aux, is_positive_label, X_mean, weights_pen, center,
-                  blitz_sc, verbose_in, max_pn_iter)
+                  blitz_sc, verbose_in, max_pn_iter, max_cd_itr)
     else:
         warnings.warn(
             'Objective did not converge: duality ' +
@@ -249,7 +250,7 @@ cpdef int PN_logreg(
         floating[:] exp_Xw, floating[:] low_exp_Xw, floating[:] aux,
         int[:] is_positive_label, floating[:] X_mean,
         floating[:] weights_pen, bint center, bint blitz_sc, int verbose_in,
-        int max_pn_iter):
+        int max_pn_iter, int max_cd_itr):
 
     cdef int n_samples = Xw.shape[0]
     cdef int ws_size = WS.shape[0]
@@ -287,7 +288,7 @@ cpdef int PN_logreg(
     cdef floating approx_grad, actual_grad, sum_sq_hess_diff, pn_epsilon
     cdef floating[:] pn_grad_cache = np.zeros(ws_size, dtype=dtype)
 
-    cdef int i, j, ind, max_cd_itr, cd_itr, pn_iter
+    cdef int i, j, ind, cd_itr, pn_iter
     cdef floating prob
 
     cdef int start_ptr, end_ptr
@@ -316,20 +317,23 @@ cpdef int PN_logreg(
             bias[ind] = xj_dot(grad, WS[ind], is_sparse, X,
                              X_data, X_indices, X_indptr, n_samples)
 
-        if first_pn_iteration:
-            # very weird: first cd iter, do only
-            max_cd_itr = MIN_PN_CD_ITR
-            pn_epsilon = 0
-            first_pn_iteration = False
-        else:
-            max_cd_itr = MAX_PN_CD_ITR
-            pn_epsilon = PN_EPSILON_RATIO * pn_grad_diff
+        # if first_pn_iteration:
+        #    # very weird: first cd iter, do only
+        #    max_cd_itr = MIN_PN_CD_ITR
+        #    pn_epsilon = 0
+        #    first_pn_iteration = False
+        #else:
+        #max_cd_itr = MAX_PN_CD_ITR
+        pn_epsilon = PN_EPSILON_RATIO * pn_grad_diff
 
         for ind in range(ws_size):
             delta_w[ind] = 0.
         for i in range(n_samples):
             X_delta_w[i] = 0
         for cd_itr in range(max_cd_itr):
+            print('pn cd epoch', cd_itr)
+            print('###################')
+
             sum_sq_hess_diff = 0.
 
             for ind in range(ws_size):

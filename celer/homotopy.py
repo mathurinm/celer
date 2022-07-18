@@ -26,7 +26,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
-               X_scale=None, return_n_iter=False, positive=False):
+               X_scale=None, return_n_iter=False, positive=False,
+               max_pn_iter=1, max_cd_itr=2):
     r"""Compute optimization path with Celer as inner solver.
 
     With ``n = len(y)`` and ``p = len(w)`` the number of samples and features,
@@ -330,7 +331,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
         else:  # pb == LOGREG and use_PN
             sol = newton_celer(
                 is_sparse, X_dense, X_data, X_indices, X_indptr, y, alpha, w,
-                max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune)
+                max_iter, tol=tol, p0=p0, verbose=verbose, prune=prune,
+                max_pn_iter=max_pn_iter, max_cd_itr=max_cd_itr)
 
         coefs[:, t], thetas[t], dual_gaps[t] = sol[0], sol[1], sol[2][-1]
         if return_n_iter:
