@@ -366,14 +366,15 @@ cpdef int PN_logreg(
                 j = WS[ind]
                 actual_grad = xj_dot(
                     aux, j, is_sparse, X, X_data, X_indices, X_indptr, n_features)
-                # TODO step_size taken into account?
+                pn_grad_cache[ind] = actual_grad
+                # TODO step_size taken into account???
+                # Hessian approximation:
+                # nabla f(a) - nabla f(b) ~ H (a - b) ~ X.T @ D @ X (a - b)
                 approx_grad = pn_grad_cache[ind] + wdot(
                     X_delta_w, weights, j, is_sparse, X, X_data, X_indices,
                     X_indptr, False)
-                pn_grad_cache[ind] = actual_grad
-                diff = approx_grad - actual_grad
 
-                pn_grad_diff += diff ** 2
+                pn_grad_diff += (approx_grad - actual_grad) ** 2
 
             norm_Xaux = 0.
             for ind in range(ws_size):
