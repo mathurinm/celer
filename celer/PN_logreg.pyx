@@ -52,7 +52,7 @@ def newton_celer(
     cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef int info_dposv
     cdef int ws_size
-    cdef floating eps_inner = 0.1
+    cdef floating eps_inner = 0.0000001
     cdef floating growth = 2.
 
 
@@ -223,7 +223,6 @@ def newton_celer(
         if verbose:
             print("Solving subproblem with %d constraints" % len(WS))
 
-        print("w is", np.asarray(w)[:10])
 
         PN_logreg(is_sparse, w, WS, X, X_data, X_indices, X_indptr, y,
                   alpha, tol_inner, Xw, exp_Xw, low_exp_Xw,
@@ -299,7 +298,11 @@ cpdef int PN_logreg(
     for ind in range(ws_size):
         notin_WS[WS[ind]] = 0
 
+    print("working sets", np.asarray(WS))
+
     for pn_iter in range(max_pn_iter):
+        print("w is", np.asarray(w))
+
         # run prox newton iterations:
         for i in range(n_samples):
             prob = 1. / (1. + exp(y[i] * Xw[i]))
@@ -392,7 +395,7 @@ cpdef int PN_logreg(
 
         gap = p_obj - d_obj
         if verbose_in:
-            print("iter %d, p_obj %.10f, d_obj % .10f" % (pn_iter, p_obj, d_obj))
+            print("iter inner %d, p_obj %.10f, d_obj % .10f" % (pn_iter, p_obj, d_obj))
         if gap <= tol_inner:
             if verbose_in:
                 print("%.2e < %.2e, exit." % (gap, tol_inner))
