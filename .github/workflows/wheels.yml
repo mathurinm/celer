@@ -66,3 +66,12 @@ jobs:
         run: |
           pip install twine
           twine upload --skip-existing --repository testpypi wheelhouse/*.whl dist/*.tar.gz
+
+
+      - name: publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pip install twine
+          twine upload --skip-existing wheelhouse/*.whl dist/*.tar.gz
