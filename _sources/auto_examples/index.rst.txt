@@ -1,9 +1,5 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_examples:
-
 .. _general_examples:
 
 Examples Gallery
@@ -17,14 +13,110 @@ Examples Gallery
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The example runs the LassoCV scikit-learn like estimator using the Celer algorithm.">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_lasso_cv_thumb.png
-     :alt: Run LassoCV for cross-validation on the Leukemia dataset
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_lasso_cv_thumb.png
+    :alt: Run LassoCV for cross-validation on the Leukemia dataset
 
-     :ref:`sphx_glr_auto_examples_plot_lasso_cv.py`
+  :ref:`sphx_glr_auto_examples_plot_lasso_cv.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Run LassoCV for cross-validation on the Leukemia dataset</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm for the Lasso on the Leukemia dataset which is a dense dat...">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_leukemia_path_thumb.png
+    :alt: Lasso path computation on Leukemia dataset
+
+  :ref:`sphx_glr_auto_examples_plot_leukemia_path.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Lasso path computation on Leukemia dataset</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compare LogisticRegression solver with sklearn&#x27;s liblinear backend">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_logreg_timings_thumb.png
+    :alt: Compare LogisticRegression solver with sklearn's liblinear backend
+
+  :ref:`sphx_glr_auto_examples_plot_logreg_timings.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare LogisticRegression solver with sklearn's liblinear backend</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the MultitaskLassoCV scikit-learn like estimator.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_multitask_lasso_cv_thumb.png
+    :alt: Run MultitaskLassoCV and compare performance with scikit-learn
+
+  :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Run MultitaskLassoCV and compare performance with scikit-learn</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the GroupLasso scikit-learn like estimators.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_group_lasso_thumb.png
+    :alt: Run GroupLasso and GroupLasso CV for structured sparse recovery
+
+  :ref:`sphx_glr_auto_examples_plot_group_lasso.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Run GroupLasso and GroupLasso CV for structured sparse recovery</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on the Finance dataset which is a large sparse dataset.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_finance_path_thumb.png
+    :alt: Lasso path computation on Finance/log1p dataset
+
+  :ref:`sphx_glr_auto_examples_plot_finance_path.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Lasso path computation on Finance/log1p dataset</div>
+    </div>
+
 
 .. raw:: html
 
@@ -35,132 +127,24 @@ Examples Gallery
    :hidden:
 
    /auto_examples/plot_lasso_cv
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm for the Lasso on the Leukemia dataset which is a dense dat...">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_leukemia_path_thumb.png
-     :alt: Lasso path computation on Leukemia dataset
-
-     :ref:`sphx_glr_auto_examples_plot_leukemia_path.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_examples/plot_leukemia_path
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Compare LogisticRegression solver with sklearn&#x27;s liblinear backend">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_logreg_timings_thumb.png
-     :alt: Compare LogisticRegression solver with sklearn's liblinear backend
-
-     :ref:`sphx_glr_auto_examples_plot_logreg_timings.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_examples/plot_logreg_timings
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the MultitaskLassoCV scikit-learn like estimator.">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_multitask_lasso_cv_thumb.png
-     :alt: Run MultitaskLassoCV and compare performance with scikit-learn
-
-     :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_examples/plot_multitask_lasso_cv
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the GroupLasso scikit-learn like estimators.">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_group_lasso_thumb.png
-     :alt: Run GroupLasso and GroupLasso CV for structured sparse recovery
-
-     :ref:`sphx_glr_auto_examples_plot_group_lasso.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_examples/plot_group_lasso
+   /auto_examples/plot_finance_path
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs the Celer algorithm on the Finance dataset which is a large sparse dataset.">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_finance_path_thumb.png
-     :alt: Lasso path computation on Finance/log1p dataset
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
-     :ref:`sphx_glr_auto_examples_plot_finance_path.py`
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-.. raw:: html
+      :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
 
-    </div>
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_finance_path
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
-
-
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-    :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

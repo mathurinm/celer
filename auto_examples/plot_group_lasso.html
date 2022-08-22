@@ -2,10 +2,10 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Lasso path computation on Finance/log1p dataset" href="plot_finance_path.html" /><link rel="prev" title="Run MultitaskLassoCV and compare performance with scikit-learn" href="plot_multitask_lasso_cv.html" />
 
-    <meta name="generator" content="sphinx-5.0.2, furo 2022.06.21"/>
+    <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Run GroupLasso and GroupLasso CV for structured sparse recovery - celer 0.7.3dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -253,7 +253,6 @@ to download the full example code</p>
     <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">w_true</span><span class="o">=</span><span class="n">w_true</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>usetex mode requires TeX.
 </pre></div>
 </div>
@@ -282,8 +281,7 @@ to download the full example code</p>
 <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lasso</span></a> <span class="o">=</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">LassoCV</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_group_lasso_001.png" srcset="../_images/sphx_glr_plot_group_lasso_001.png" alt="plot group lasso" class = "sphx-glr-single-img"/><p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Estimated regularization parameter alpha: 0.27505498155700164
+<img src="../_images/sphx_glr_plot_group_lasso_001.png" srcset="../_images/sphx_glr_plot_group_lasso_001.png" alt="plot group lasso" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Estimated regularization parameter alpha: 0.27505498155700164
 </pre></div>
 </div>
 <p>Show optimal regression vector for prediction, obtained by cross validation</p>
@@ -304,8 +302,8 @@ to download the full example code</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_group_lasso_002.png" srcset="../_images/sphx_glr_plot_group_lasso_002.png" alt="plot group lasso" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.549 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-group-lasso-py">
+<img src="../_images/sphx_glr_plot_group_lasso_002.png" srcset="../_images/sphx_glr_plot_group_lasso_002.png" alt="plot group lasso" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.603 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-group-lasso-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/433d4b2ff389555700f26fe734f79b9a/plot_group_lasso.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_group_lasso.py</span></code></a></p>
 </div>

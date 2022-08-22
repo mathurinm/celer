@@ -2,10 +2,10 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Run GroupLasso and GroupLasso CV for structured sparse recovery" href="plot_group_lasso.html" />
 
-    <meta name="generator" content="sphinx-5.0.2, furo 2022.06.21"/>
+    <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Lasso path computation on Finance/log1p dataset - celer 0.7.3dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -256,8 +256,173 @@ implementation as it makes the example too long to run.</p>
 <span class="n">alphas</span> <span class="o">=</span> <span class="n">alpha_max</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">n_alphas</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>*** Warning: this example may take more than 5 minutes to run ***
+
+file_sizes:   0%|                                    | 0.00/246M [00:00&lt;?, ?B/s]
+file_sizes:   0%|                            | 24.6k/246M [00:00&lt;33:28, 122kB/s]
+file_sizes:   0%|                            | 49.2k/246M [00:00&lt;33:32, 122kB/s]
+file_sizes:   0%|                             | 106k/246M [00:00&lt;20:52, 196kB/s]
+file_sizes:   0%|                             | 221k/246M [00:00&lt;11:55, 343kB/s]
+file_sizes:   0%|                             | 451k/246M [00:01&lt;06:29, 629kB/s]
+file_sizes:   0%|1                           | 909k/246M [00:01&lt;03:26, 1.19MB/s]
+file_sizes:   1%|2                          | 1.83M/246M [00:01&lt;01:47, 2.28MB/s]
+file_sizes:   1%|4                          | 3.66M/246M [00:01&lt;00:54, 4.43MB/s]
+file_sizes:   2%|5                          | 5.23M/246M [00:01&lt;00:43, 5.48MB/s]
+file_sizes:   3%|7                          | 6.81M/246M [00:02&lt;00:38, 6.18MB/s]
+file_sizes:   3%|9                          | 8.38M/246M [00:02&lt;00:35, 6.67MB/s]
+file_sizes:   4%|#                          | 9.95M/246M [00:02&lt;00:33, 7.01MB/s]
+file_sizes:   5%|#2                         | 11.5M/246M [00:02&lt;00:32, 7.24MB/s]
+file_sizes:   5%|#4                         | 13.1M/246M [00:02&lt;00:31, 7.41MB/s]
+file_sizes:   6%|#6                         | 14.7M/246M [00:03&lt;00:39, 5.82MB/s]
+file_sizes:   7%|#7                         | 16.2M/246M [00:03&lt;00:36, 6.28MB/s]
+file_sizes:   7%|#8                         | 17.0M/246M [00:03&lt;00:40, 5.67MB/s]
+file_sizes:   8%|##                         | 18.6M/246M [00:03&lt;00:36, 6.25MB/s]
+file_sizes:   8%|##2                        | 20.2M/246M [00:04&lt;00:33, 6.68MB/s]
+file_sizes:   9%|##3                        | 21.7M/246M [00:04&lt;00:32, 7.00MB/s]
+file_sizes:   9%|##5                        | 23.3M/246M [00:04&lt;00:30, 7.23MB/s]
+file_sizes:  10%|##7                        | 24.9M/246M [00:04&lt;00:29, 7.39MB/s]
+file_sizes:  11%|##9                        | 26.5M/246M [00:04&lt;00:29, 7.51MB/s]
+file_sizes:  11%|###                        | 28.0M/246M [00:05&lt;00:28, 7.60MB/s]
+file_sizes:  12%|###2                       | 29.6M/246M [00:05&lt;00:28, 7.65MB/s]
+file_sizes:  13%|###4                       | 31.2M/246M [00:05&lt;00:27, 7.70MB/s]
+file_sizes:  13%|###5                       | 32.8M/246M [00:05&lt;00:27, 7.73MB/s]
+file_sizes:  14%|###7                       | 34.3M/246M [00:05&lt;00:27, 7.75MB/s]
+file_sizes:  15%|###9                       | 35.9M/246M [00:06&lt;00:27, 7.76MB/s]
+file_sizes:  15%|####1                      | 37.5M/246M [00:06&lt;00:26, 7.77MB/s]
+file_sizes:  16%|####2                      | 39.1M/246M [00:06&lt;00:26, 7.78MB/s]
+file_sizes:  17%|####4                      | 40.6M/246M [00:06&lt;00:26, 7.78MB/s]
+file_sizes:  17%|####6                      | 42.2M/246M [00:06&lt;00:26, 7.79MB/s]
+file_sizes:  18%|####8                      | 43.8M/246M [00:07&lt;00:25, 7.78MB/s]
+file_sizes:  18%|####9                      | 45.3M/246M [00:07&lt;00:25, 7.79MB/s]
+file_sizes:  19%|#####1                     | 46.9M/246M [00:07&lt;00:25, 7.79MB/s]
+file_sizes:  20%|#####3                     | 48.5M/246M [00:07&lt;00:25, 7.79MB/s]
+file_sizes:  20%|#####5                     | 50.1M/246M [00:07&lt;00:25, 7.79MB/s]
+file_sizes:  21%|#####6                     | 51.6M/246M [00:08&lt;00:24, 7.80MB/s]
+file_sizes:  22%|#####8                     | 53.2M/246M [00:08&lt;00:24, 7.80MB/s]
+file_sizes:  22%|######                     | 54.8M/246M [00:08&lt;00:24, 7.79MB/s]
+file_sizes:  23%|######1                    | 56.4M/246M [00:08&lt;00:24, 7.79MB/s]
+file_sizes:  24%|######3                    | 57.9M/246M [00:08&lt;00:24, 7.79MB/s]
+file_sizes:  24%|######5                    | 59.5M/246M [00:09&lt;00:23, 7.79MB/s]
+file_sizes:  25%|######7                    | 61.1M/246M [00:09&lt;00:23, 7.79MB/s]
+file_sizes:  25%|######8                    | 62.6M/246M [00:09&lt;00:23, 7.78MB/s]
+file_sizes:  26%|#######                    | 64.2M/246M [00:09&lt;00:23, 7.80MB/s]
+file_sizes:  27%|#######2                   | 65.8M/246M [00:09&lt;00:23, 7.79MB/s]
+file_sizes:  27%|#######4                   | 67.4M/246M [00:10&lt;00:22, 7.80MB/s]
+file_sizes:  28%|#######5                   | 68.4M/246M [00:10&lt;00:25, 7.07MB/s]
+file_sizes:  29%|#######7                   | 70.2M/246M [00:10&lt;00:22, 7.65MB/s]
+file_sizes:  29%|#######8                   | 71.8M/246M [00:10&lt;00:22, 7.70MB/s]
+file_sizes:  30%|########                   | 73.4M/246M [00:10&lt;00:22, 7.72MB/s]
+file_sizes:  31%|########2                  | 75.0M/246M [00:11&lt;00:22, 7.75MB/s]
+file_sizes:  31%|########4                  | 76.5M/246M [00:11&lt;00:21, 7.76MB/s]
+file_sizes:  32%|########5                  | 78.1M/246M [00:11&lt;00:21, 7.77MB/s]
+file_sizes:  32%|########7                  | 79.7M/246M [00:11&lt;00:21, 7.78MB/s]
+file_sizes:  33%|########9                  | 81.3M/246M [00:11&lt;00:21, 7.78MB/s]
+file_sizes:  34%|#########1                 | 82.8M/246M [00:12&lt;00:20, 7.79MB/s]
+file_sizes:  34%|#########2                 | 84.4M/246M [00:12&lt;00:20, 7.79MB/s]
+file_sizes:  35%|#########4                 | 86.0M/246M [00:12&lt;00:20, 7.79MB/s]
+file_sizes:  36%|#########6                 | 87.5M/246M [00:12&lt;00:20, 7.78MB/s]
+file_sizes:  36%|#########7                 | 89.1M/246M [00:12&lt;00:20, 7.78MB/s]
+file_sizes:  37%|#########9                 | 90.7M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  38%|##########1                | 92.3M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  38%|##########3                | 93.8M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  39%|##########4                | 95.4M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  39%|##########6                | 97.0M/246M [00:13&lt;00:19, 7.79MB/s]
+file_sizes:  40%|##########8                | 98.6M/246M [00:14&lt;00:18, 7.79MB/s]
+file_sizes:  41%|###########4                | 100M/246M [00:14&lt;00:18, 7.79MB/s]
+file_sizes:  41%|###########5                | 101M/246M [00:14&lt;00:20, 7.07MB/s]
+file_sizes:  42%|###########7                | 103M/246M [00:14&lt;00:18, 7.65MB/s]
+file_sizes:  43%|###########9                | 105M/246M [00:14&lt;00:18, 7.69MB/s]
+file_sizes:  43%|############                | 106M/246M [00:15&lt;00:18, 7.72MB/s]
+file_sizes:  44%|############2               | 108M/246M [00:15&lt;00:17, 7.75MB/s]
+file_sizes:  44%|############4               | 109M/246M [00:15&lt;00:17, 7.76MB/s]
+file_sizes:  45%|############6               | 111M/246M [00:15&lt;00:17, 7.77MB/s]
+file_sizes:  46%|############8               | 112M/246M [00:15&lt;00:17, 7.78MB/s]
+file_sizes:  46%|############9               | 114M/246M [00:16&lt;00:16, 7.78MB/s]
+file_sizes:  47%|#############1              | 116M/246M [00:16&lt;00:16, 7.79MB/s]
+file_sizes:  48%|#############3              | 117M/246M [00:16&lt;00:16, 7.79MB/s]
+file_sizes:  48%|#############5              | 119M/246M [00:16&lt;00:16, 7.79MB/s]
+file_sizes:  49%|#############7              | 120M/246M [00:16&lt;00:16, 7.79MB/s]
+file_sizes:  50%|#############8              | 122M/246M [00:17&lt;00:15, 7.79MB/s]
+file_sizes:  50%|##############              | 123M/246M [00:17&lt;00:15, 7.80MB/s]
+file_sizes:  51%|##############2             | 125M/246M [00:17&lt;00:15, 7.80MB/s]
+file_sizes:  51%|##############3             | 126M/246M [00:17&lt;00:16, 7.08MB/s]
+file_sizes:  52%|##############5             | 127M/246M [00:17&lt;00:17, 6.93MB/s]
+file_sizes:  53%|##############7             | 129M/246M [00:18&lt;00:15, 7.55MB/s]
+file_sizes:  53%|##############8             | 131M/246M [00:18&lt;00:15, 7.27MB/s]
+file_sizes:  54%|###############             | 132M/246M [00:18&lt;00:14, 7.78MB/s]
+file_sizes:  55%|###############2            | 134M/246M [00:18&lt;00:13, 8.13MB/s]
+file_sizes:  55%|###############4            | 136M/246M [00:18&lt;00:13, 8.03MB/s]
+file_sizes:  56%|###############6            | 137M/246M [00:19&lt;00:13, 7.96MB/s]
+file_sizes:  57%|###############8            | 139M/246M [00:19&lt;00:13, 7.91MB/s]
+file_sizes:  57%|################            | 141M/246M [00:19&lt;00:13, 7.88MB/s]
+file_sizes:  58%|################1           | 142M/246M [00:19&lt;00:13, 7.86MB/s]
+file_sizes:  58%|################3           | 144M/246M [00:19&lt;00:13, 7.84MB/s]
+file_sizes:  59%|################5           | 145M/246M [00:20&lt;00:12, 7.82MB/s]
+file_sizes:  60%|################7           | 147M/246M [00:20&lt;00:12, 7.81MB/s]
+file_sizes:  60%|################9           | 148M/246M [00:20&lt;00:12, 7.81MB/s]
+file_sizes:  61%|#################           | 150M/246M [00:20&lt;00:12, 7.81MB/s]
+file_sizes:  61%|#################2          | 151M/246M [00:20&lt;00:13, 7.09MB/s]
+file_sizes:  62%|#################3          | 152M/246M [00:21&lt;00:13, 6.94MB/s]
+file_sizes:  63%|#################5          | 154M/246M [00:21&lt;00:12, 7.57MB/s]
+file_sizes:  63%|#################7          | 155M/246M [00:21&lt;00:12, 7.27MB/s]
+file_sizes:  64%|#################9          | 157M/246M [00:21&lt;00:11, 7.78MB/s]
+file_sizes:  65%|##################          | 159M/246M [00:21&lt;00:11, 7.43MB/s]
+file_sizes:  65%|##################2         | 160M/246M [00:22&lt;00:10, 7.89MB/s]
+file_sizes:  66%|##################4         | 162M/246M [00:22&lt;00:11, 7.51MB/s]
+file_sizes:  67%|##################6         | 164M/246M [00:22&lt;00:10, 7.95MB/s]
+file_sizes:  67%|##################7         | 165M/246M [00:22&lt;00:10, 7.55MB/s]
+file_sizes:  68%|##################9         | 167M/246M [00:22&lt;00:09, 7.98MB/s]
+file_sizes:  68%|###################1        | 168M/246M [00:23&lt;00:10, 7.57MB/s]
+file_sizes:  69%|###################3        | 170M/246M [00:23&lt;00:09, 7.99MB/s]
+file_sizes:  70%|###################5        | 171M/246M [00:23&lt;00:09, 7.58MB/s]
+file_sizes:  70%|###################7        | 173M/246M [00:23&lt;00:09, 8.00MB/s]
+file_sizes:  71%|###################8        | 174M/246M [00:24&lt;00:09, 7.58MB/s]
+file_sizes:  72%|####################        | 176M/246M [00:24&lt;00:08, 7.99MB/s]
+file_sizes:  72%|####################2       | 177M/246M [00:24&lt;00:09, 7.58MB/s]
+file_sizes:  73%|####################4       | 179M/246M [00:24&lt;00:08, 8.00MB/s]
+file_sizes:  74%|####################6       | 181M/246M [00:24&lt;00:08, 7.94MB/s]
+file_sizes:  74%|####################7       | 182M/246M [00:25&lt;00:08, 7.90MB/s]
+file_sizes:  75%|####################9       | 184M/246M [00:25&lt;00:07, 7.87MB/s]
+file_sizes:  76%|#####################1      | 186M/246M [00:25&lt;00:07, 7.85MB/s]
+file_sizes:  76%|#####################3      | 187M/246M [00:25&lt;00:07, 7.83MB/s]
+file_sizes:  77%|#####################5      | 189M/246M [00:25&lt;00:07, 7.82MB/s]
+file_sizes:  77%|#####################6      | 190M/246M [00:26&lt;00:07, 7.82MB/s]
+file_sizes:  78%|#####################8      | 191M/246M [00:26&lt;00:07, 7.09MB/s]
+file_sizes:  79%|######################      | 193M/246M [00:26&lt;00:06, 7.66MB/s]
+file_sizes:  79%|######################1     | 195M/246M [00:26&lt;00:06, 7.34MB/s]
+file_sizes:  80%|######################3     | 196M/246M [00:26&lt;00:06, 7.84MB/s]
+file_sizes:  80%|######################5     | 198M/246M [00:27&lt;00:06, 7.47MB/s]
+file_sizes:  81%|######################7     | 199M/246M [00:27&lt;00:05, 7.92MB/s]
+file_sizes:  82%|######################8     | 201M/246M [00:27&lt;00:05, 7.52MB/s]
+file_sizes:  82%|#######################     | 203M/246M [00:27&lt;00:05, 7.96MB/s]
+file_sizes:  83%|#######################2    | 204M/246M [00:27&lt;00:05, 7.55MB/s]
+file_sizes:  84%|#######################4    | 206M/246M [00:28&lt;00:05, 7.98MB/s]
+file_sizes:  84%|#######################6    | 207M/246M [00:28&lt;00:04, 7.92MB/s]
+file_sizes:  85%|#######################8    | 209M/246M [00:28&lt;00:04, 7.89MB/s]
+file_sizes:  86%|#######################9    | 210M/246M [00:28&lt;00:04, 7.86MB/s]
+file_sizes:  86%|########################1   | 212M/246M [00:28&lt;00:04, 7.83MB/s]
+file_sizes:  87%|########################3   | 214M/246M [00:29&lt;00:04, 7.82MB/s]
+file_sizes:  88%|########################5   | 215M/246M [00:29&lt;00:03, 7.81MB/s]
+file_sizes:  88%|########################7   | 217M/246M [00:29&lt;00:03, 7.81MB/s]
+file_sizes:  89%|########################8   | 218M/246M [00:29&lt;00:03, 7.81MB/s]
+file_sizes:  89%|#########################   | 220M/246M [00:29&lt;00:03, 7.45MB/s]
+file_sizes:  90%|#########################2  | 222M/246M [00:30&lt;00:03, 7.91MB/s]
+file_sizes:  91%|#########################3  | 223M/246M [00:30&lt;00:03, 7.52MB/s]
+file_sizes:  91%|#########################6  | 225M/246M [00:30&lt;00:02, 7.96MB/s]
+file_sizes:  92%|#########################7  | 226M/246M [00:30&lt;00:02, 7.55MB/s]
+file_sizes:  92%|#########################8  | 227M/246M [00:30&lt;00:02, 7.27MB/s]
+file_sizes:  93%|##########################1 | 229M/246M [00:31&lt;00:02, 7.78MB/s]
+file_sizes:  94%|##########################2 | 231M/246M [00:31&lt;00:01, 7.78MB/s]
+file_sizes:  95%|##########################4 | 232M/246M [00:31&lt;00:01, 7.79MB/s]
+file_sizes:  95%|##########################6 | 234M/246M [00:31&lt;00:01, 7.80MB/s]
+file_sizes:  96%|##########################8 | 235M/246M [00:31&lt;00:01, 7.79MB/s]
+file_sizes:  96%|########################### | 237M/246M [00:32&lt;00:01, 7.79MB/s]
+file_sizes:  97%|###########################1| 239M/246M [00:32&lt;00:00, 7.80MB/s]
+file_sizes:  98%|###########################3| 240M/246M [00:32&lt;00:00, 7.44MB/s]
+file_sizes:  98%|###########################5| 242M/246M [00:32&lt;00:00, 7.91MB/s]
+file_sizes:  99%|###########################6| 243M/246M [00:32&lt;00:00, 7.51MB/s]
+file_sizes: 100%|###########################9| 245M/246M [00:33&lt;00:00, 7.96MB/s]
+file_sizes: 100%|############################| 246M/246M [00:33&lt;00:00, 7.42MB/s]
 Dataset size: 16087 samples, 4272227 features
 </pre></div>
 </div>
@@ -287,8 +452,7 @@ Dataset size: 16087 samples, 4272227 features
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_finance_path_001.png" srcset="../_images/sphx_glr_plot_finance_path_001.png" alt="plot finance path" class = "sphx-glr-single-img"/><p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Starting path computation...
+<img src="../_images/sphx_glr_plot_finance_path_001.png" srcset="../_images/sphx_glr_plot_finance_path_001.png" alt="plot finance path" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Starting path computation...
 ##########################
 ##### Computing alpha 1/11
 ##########################
@@ -626,8 +790,8 @@ Early exit, gap: 1.22e-07 &lt; 4.00e-07
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_finance_path_003.png" srcset="../_images/sphx_glr_plot_finance_path_003.png" alt="plot finance path" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 5 minutes  4.978 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-finance-path-py">
+<img src="../_images/sphx_glr_plot_finance_path_003.png" srcset="../_images/sphx_glr_plot_finance_path_003.png" alt="plot finance path" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 8 minutes  42.441 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-finance-path-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1e2b507d59f5c81fd7116ff6c187df47/plot_finance_path.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_finance_path.py</span></code></a></p>
 </div>

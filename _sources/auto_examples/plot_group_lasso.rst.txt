@@ -57,8 +57,6 @@ The example runs the GroupLasso scikit-learn like estimators.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -111,8 +109,6 @@ Get group Lasso's optimal alpha for prediction by cross validation
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
     Estimated regularization parameter alpha: 0.27505498155700164
@@ -159,28 +155,23 @@ Show optimal regression vector for prediction, obtained by cross validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.549 seconds)
+   **Total running time of the script:** ( 0 minutes  0.603 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_group_lasso.py <plot_group_lasso.py>`
 
-     :download:`Download Python source code: plot_group_lasso.py <plot_group_lasso.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_group_lasso.ipynb <plot_group_lasso.ipynb>`
+      :download:`Download Jupyter notebook: plot_group_lasso.ipynb <plot_group_lasso.ipynb>`
 
 
 .. only:: html
