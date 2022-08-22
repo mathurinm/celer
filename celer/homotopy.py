@@ -308,7 +308,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
                     X_data, X_indices, X_indptr, X_sparse_scaling,
                     weights, len(grp_ptr) - 1, np.zeros(1, dtype=np.int32),
                     X_sparse_scaling.any())
-            theta *= alpha * l1_ratio / scal
+
+            theta /= max(scal / (alpha * l1_ratio), n_samples)
 
         # celer modifies w, Xw, and theta in place:
         if pb == GRPLASSO:

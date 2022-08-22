@@ -249,5 +249,19 @@ def test_infinite_weights(pb):
     assert_array_equal(coefs[inf_indices], 0)
 
 
+def test_one_iteration_alpha_max():
+    n_samples, n_features = 100, 50
+    X, y = build_dataset(n_samples, n_features)
+
+    alpha_max = norm(X.T @ y, ord=np.inf) / n_samples
+    m = 5
+    model = Lasso(alpha=m*alpha_max, fit_intercept=False)
+    model.fit(X, y)
+
+    assert_array_equal(model.coef_, np.zeros(n_features))
+    # solver exits right after computing first duality gap:
+    np.testing.assert_equal(model.n_iter_, 1)
+
+
 if __name__ == "__main__":
     pass
