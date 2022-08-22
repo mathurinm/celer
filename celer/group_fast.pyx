@@ -53,7 +53,7 @@ cpdef floating dnorm_grp(
         floating[:] weights, int ws_size, int[:] C, bint center):
     """Dual norm in the group case, i.e. L2/infty ofter groups."""
     cdef floating Xj_theta, tmp
-    cdef floating dnorm = 0.
+    cdef floating dnorm_XTtheta = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, g, g_idx, k, startptr, endptr
     cdef int n_groups = grp_ptr.shape[0] - 1
@@ -85,7 +85,7 @@ cpdef floating dnorm_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            dnorm = max(dnorm, sqrt(tmp) / weights[g])
+            dnorm_XTtheta = max(dnorm_XTtheta, sqrt(tmp) / weights[g])
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
@@ -109,8 +109,8 @@ cpdef floating dnorm_grp(
                                     &inc)
                 tmp += Xj_theta ** 2
 
-            dnorm = max(dnorm, sqrt(tmp) / weights[g])
-    return dnorm
+            dnorm_XTtheta = max(dnorm_XTtheta, sqrt(tmp) / weights[g])
+    return dnorm_XTtheta
 
 
 @cython.boundscheck(False)
@@ -213,7 +213,7 @@ cpdef celer_grp(
     cdef floating[::1] theta_inner = np.zeros(n_samples, dtype=dtype)
     cdef floating[::1] thetacc = np.empty(n_samples, dtype=dtype)
 
-    cdef floating gap, p_obj, d_obj, dnorm, X_mean_j
+    cdef floating gap, p_obj, d_obj, dnorm_XTtheta, X_mean_j
     cdef floating gap_in, p_obj_in, d_obj_in, tol_in, d_obj_accel
     cdef floating d_obj_from_inner
     cdef floating highest_d_obj = 0.
@@ -237,24 +237,24 @@ cpdef celer_grp(
         tmp = 1. / n_samples
         fscal(&n_samples, &tmp, &theta[0], &inc)
 
-        dnorm = dnorm_grp(
+        dnorm_XTtheta = dnorm_grp(
             is_sparse, theta, grp_ptr, grp_indices, X, X_data, X_indices,
             X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
-        if dnorm > alpha:
-            theta_scaling = alpha / dnorm
+        if dnorm_XTtheta > alpha:
+            theta_scaling = alpha / dnorm_XTtheta
             fscal(&n_samples, &theta_scaling, &theta[0], &inc)
 
         d_obj = dual(pb, n_samples, alpha, l1_ratio, norm_y2, norm_w2, &theta[0], &y[0])
 
         if t > 0:
             # also test dual point returned by inner solver after 1st iter:
-            dnorm = dnorm_grp(
+            dnorm_XTtheta = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, weights, n_groups, dummy_C, center)
 
-            if dnorm > alpha:
-                theta_scaling = alpha / dnorm
+            if dnorm_XTtheta > alpha:
+                theta_scaling = alpha / dnorm_XTtheta
                 fscal(&n_samples, &theta_scaling, &theta_inner[0], &inc)
 
             d_obj_from_inner = dual(
@@ -341,12 +341,12 @@ cpdef celer_grp(
                 tmp = 1. / n_samples
                 fscal(&n_samples, &tmp, &theta_inner[0], &inc)
 
-                dnorm = dnorm_grp(
+                dnorm_XTtheta = dnorm_grp(
                     is_sparse, theta_inner, grp_ptr, grp_indices, X, X_data,
                     X_indices, X_indptr, X_mean, weights, ws_size, C, center)
 
-                if dnorm > alpha:
-                    theta_scaling = alpha / dnorm
+                if dnorm_XTtheta > alpha:
+                    theta_scaling = alpha / dnorm_XTtheta
                     fscal(&n_samples, &theta_scaling, &theta_inner[0], &inc)
 
                 # dual value is the same as for the Lasso
@@ -362,13 +362,13 @@ cpdef celer_grp(
                     #     print("linear system solving failed")
 
                     if epoch // gap_freq >= K:
-                        dnorm = dnorm_grp(
+                        dnorm_XTtheta = dnorm_grp(
                             is_sparse, thetacc, grp_ptr, grp_indices, X,
                             X_data, X_indices, X_indptr, X_mean, weights,
                             ws_size, C, center)
 
-                        if dnorm > alpha:
-                            theta_scaling = alpha / dnorm
+                        if dnorm_XTtheta > alpha:
+                            theta_scaling = alpha / dnorm_XTtheta
                             fscal(&n_samples, &theta_scaling, &thetacc[0], &inc)
 
                         d_obj_accel = dual(pb, n_samples, alpha, l1_ratio, norm_y2,

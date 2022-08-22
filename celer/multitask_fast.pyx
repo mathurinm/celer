@@ -38,7 +38,7 @@ cdef floating dual_scaling_mtl(
     cdef int ind, j, k
     cdef int inc = 1
     cdef floating tmp
-    cdef floating dnorm = 0.
+    cdef floating dnorm_XTtheta = 0.
 
     if ws_size == n_features:
         for j in range(n_features):
@@ -47,17 +47,17 @@ cdef floating dual_scaling_mtl(
             for k in range(n_tasks):
                 Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
             tmp = fnrm2(&n_tasks, &Xj_theta[0], &inc)
-            if tmp > dnorm:
-                dnorm = tmp
+            if tmp > dnorm_XTtheta:
+                dnorm_XTtheta = tmp
     else:
         for ind in range(ws_size):
             j = C[ind]
             for k in range(n_tasks):
                 Xj_theta[k] = fdot(&n_samples, &theta[0, k], &inc, &X[0, j], &inc)
             tmp = fnrm2(&n_tasks, &Xj_theta[0], &inc)
-            if tmp > dnorm:
-                dnorm = tmp
-    return dnorm
+            if tmp > dnorm_XTtheta:
+                dnorm_XTtheta = tmp
+    return dnorm_XTtheta
 
 
 @cython.boundscheck(False)
@@ -163,8 +163,7 @@ def celer_mtl(
     cdef int n_obs = n_samples * n_tasks
     cdef int ws_size
     cdef int nnz = 0
-    cdef floating p_obj, d_obj, highes_d_obj, gap, radius
-    cdef floating dnorm
+    cdef floating p_obj, d_obj, highes_d_obj, gap, radius, dnorm_XTtheta
     cdef int n_screened = 0
     cdef floating[:] prios = np.empty(n_features, dtype=dtype)
     cdef int[:] screened = np.zeros(n_features, dtype=np.int32)
@@ -190,22 +189,22 @@ def celer_mtl(
         # theta = R :
         fcopy(&n_obs, &R[0, 0], &inc, &theta[0, 0], &inc)
 
-        dnorm = dual_scaling_mtl(
+        dnorm_XTtheta = dual_scaling_mtl(
             n_features, n_samples, n_tasks, theta, X, n_features,
             &dummy_C[0], &screened[0], &Xj_theta[0])
 
-        if dnorm > alpha:
-            theta_scaling = alpha / dnorm
+        if dnorm_XTtheta > alpha:
+            theta_scaling = alpha / dnorm_XTtheta
             fscal(&n_obs, &theta_scaling, &theta[0, 0], &inc)
         d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2)
 
         if t > 0:
-            dnorm = dual_scaling_mtl(
+            dnorm_XTtheta = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta_inner, X,
                 n_features, &dummy_C[0], &screened[0], &Xj_theta[0])
 
-            if dnorm > alpha:
-                theta_scaling = alpha / dnorm
+            if dnorm_XTtheta > alpha:
+                theta_scaling = alpha / dnorm_XTtheta
                 fscal(&n_obs, &theta_scaling, &theta_inner[0, 0], &inc)
             d_obj_from_inner = dual_mtl(
                 n_samples, n_tasks, theta_inner, Y, norm_Y2)
@@ -300,7 +299,7 @@ cpdef void inner_solver(
     cdef floating[:] old_Wj = np.empty(n_tasks, dtype=dtype)
     cdef int inc = 1
     cdef int n_obs = n_samples * n_tasks
-    cdef floating tmp, dnorm, theta_scaling
+    cdef floating tmp, dnorm_XTtheta, theta_scaling
     cdef int[:] dummy_screened = np.zeros(1, dtype=np.int32)
     cdef floating[:] Xj_theta = np.empty(n_tasks, dtype=dtype)
 
@@ -329,12 +328,12 @@ cpdef void inner_solver(
             tmp = 1. / n_samples
             fscal(&n_obs, &tmp, &theta[0, 0], &inc)
 
-            dnorm = dual_scaling_mtl(
+            dnorm_XTtheta = dual_scaling_mtl(
                 n_features, n_samples, n_tasks, theta, X, ws_size,
                 &C[0], &dummy_screened[0], &Xj_theta[0])
 
-            if dnorm > alpha:
-                theta_scaling = alpha / dnorm
+            if dnorm_XTtheta > alpha:
+                theta_scaling = alpha / dnorm_XTtheta
                 fscal(&n_obs, &theta_scaling, &theta[0, 0], &inc)
             d_obj = dual_mtl(n_samples, n_tasks, theta, Y, norm_Y2)
 
@@ -347,12 +346,12 @@ cpdef void inner_solver(
                 tmp = n_tasks
                 fscal(&n_obs, &tmp, &theta_acc[0, 0], &inc)
                 if epoch // gap_freq >= K:
-                    dnorm = dual_scaling_mtl(
+                    dnorm_XTtheta = dual_scaling_mtl(
                         n_features, n_samples, n_tasks, theta_acc, X, ws_size,
                         &C[0], &dummy_screened[0], &Xj_theta[0])
 
-                    if dnorm > alpha:
-                        theta_scaling = alpha / dnorm
+                    if dnorm_XTtheta > alpha:
+                        theta_scaling = alpha / dnorm_XTtheta
                         fscal(&n_obs, &theta_scaling, &theta_acc[0, 0], &inc)
                     d_obj_acc = dual_mtl(
                         n_samples, n_tasks, theta_acc, Y, norm_Y2)

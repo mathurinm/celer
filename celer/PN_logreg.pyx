@@ -115,7 +115,7 @@ def newton_celer(
             screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
         if dnorm_XTtheta > alpha:
-            theta_scaling = alpha / dnorm
+            theta_scaling = alpha / dnorm_XTtheta
             fscal(&n_samples, &theta_scaling, &theta[0], &inc)
 
         d_obj = dual(LOGREG, n_samples, alpha, l1_ratio, 0., norm_w2, &theta[0], &y[0])
