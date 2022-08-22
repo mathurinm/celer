@@ -47,7 +47,7 @@ def newton_celer(
 
     cdef int t = 0
     cdef int i, j, k
-    cdef floating p_obj, d_obj, dnorm, theta_scaling
+    cdef floating p_obj, d_obj, dnorm_XTtheta, theta_scaling
     cdef floating gap = -1  # initialized for the warning if max_iter=0
     cdef int info_dposv
     cdef int ws_size
@@ -110,11 +110,11 @@ def newton_celer(
 
         # theta = y * sigmoid(-y * Xw)
         create_dual_pt(LOGREG, n_samples, &theta[0], &Xw[0], &y[0])
-        dnorm = dnorm_enet(
+        dnorm_XTtheta = dnorm_enet(
             is_sparse, theta, w, X, X_data, X_indices, X_indptr,
             screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
-        if dnorm> alpha:
+        if dnorm_XTtheta > alpha:
             theta_scaling = alpha / dnorm
             fscal(&n_samples, &theta_scaling, &theta[0], &inc)
 
@@ -169,12 +169,12 @@ def newton_celer(
             for i in range(n_samples):
                 exp_Xw[i] = exp(Xw[i])
 
-            dnorm = dnorm_enet(
+            dnorm_XTtheta = dnorm_enet(
                 is_sparse, theta_acc, w, X, X_data, X_indices, X_indptr,
                 screened, X_mean, weights_pen, center, positive, alpha, l1_ratio)
 
-            if dnorm > alpha:
-                theta_scaling = alpha / dnorm
+            if dnorm_XTtheta > alpha:
+                theta_scaling = alpha / dnorm_XTtheta
                 fscal(&n_samples, &theta_scaling, &theta_acc[0], &inc)
 
             d_obj_acc = dual(LOGREG, n_samples, alpha, l1_ratio, 0., norm_w2, &theta_acc[0], &y[0])
@@ -289,7 +289,7 @@ cpdef int PN_logreg(
     cdef floating prob
 
     cdef int start_ptr, end_ptr
-    cdef floating  gap, p_obj, d_obj, dnorm
+    cdef floating  gap, p_obj, d_obj, dnorm_XTtheta
     cdef floating tmp, theta_scaling, new_value, old_value, diff
 
     cdef int[:] notin_WS = np.ones(n_features, dtype=np.int32)
@@ -369,20 +369,20 @@ cpdef int PN_logreg(
 
                 pn_grad_diff += diff ** 2
 
-            dnorm = 0.
+            dnorm_XTtheta = 0.
             for ind in range(ws_size):
                 theta_scaling = fabs(pn_grad_cache[ind])
-                if theta_scaling > dnorm:
-                    dnorm = theta_scaling
+                if theta_scaling > dnorm_XTtheta:
+                    dnorm_XTtheta = theta_scaling
 
         else:
             # rescale aux to create dual point
-            dnorm = dnorm_enet(
+            dnorm_XTtheta = dnorm_enet(
                 is_sparse, aux, w, X, X_data, X_indices, X_indptr,
                 notin_WS, X_mean, weights_pen, center, 0, alpha, l1_ratio)
 
         for i in range(n_samples):
-            aux[i] /= max(1, dnorm / alpha)
+            aux[i] /= max(1, dnorm_XTtheta / alpha)
 
         d_obj = dual(LOGREG, n_samples, alpha, l1_ratio, 0., norm_w2, &aux[0], &y[0])
         p_obj = primal(LOGREG, alpha, l1_ratio, Xw, y, w, weights_pen)
