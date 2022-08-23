@@ -111,7 +111,7 @@ cdef inline floating Nh(floating x) nogil:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef floating fweighted_norm_w2(floating[:] w, floating[:] weights) nogil: 
+cdef floating fweighted_norm_w2(floating[:] w, floating[:] weights) nogil:
     cdef floating weighted_norm = 0.
     cdef int n_features = w.shape[0]
     cdef int j
@@ -391,7 +391,7 @@ cpdef floating dnorm_enet(
     cdef int n_samples = theta.shape[0]
     cdef int n_features = skip.shape[0]
     cdef floating Xj_theta
-    cdef floating scal = 0.
+    cdef floating dnorm_XTtheta = 0.
     cdef floating theta_sum = 0.
     cdef int i, j, Cj, startptr, endptr
 
@@ -422,8 +422,8 @@ cpdef floating dnorm_enet(
 
         if not positive:
             Xj_theta = fabs(Xj_theta)
-        scal = max(scal, Xj_theta / weights[j])
-    return scal
+        dnorm_XTtheta = max(dnorm_XTtheta, Xj_theta / weights[j])
+    return dnorm_XTtheta
 
 
 @cython.boundscheck(False)
@@ -457,9 +457,9 @@ cdef void set_prios(
 
         norms_X_col_j = norms_X_col[j]
         if l1_ratio != 1:
-            Xj_theta -= alpha * (1 - l1_ratio) * weights[j] * w[j] 
+            Xj_theta -= alpha * (1 - l1_ratio) * weights[j] * w[j]
 
-            norms_X_col_j = norms_X_col_j ** 2 
+            norms_X_col_j = norms_X_col_j ** 2
             norms_X_col_j += sqrt(norms_X_col_j + alpha * (1 - l1_ratio) * weights[j])
 
         if positive:
