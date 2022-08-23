@@ -20,12 +20,16 @@ from celer.dropin_sklearn import Lasso, LassoCV
 from celer.utils.testing import build_dataset
 
 
-@pytest.mark.parametrize("sparse_X, alphas, pb",
+@pytest.mark.parametrize("sparse_X, alphas, pb, dtype",
                          product([False, True], [None, 1],
-                                 ["lasso", "logreg"]))
-def test_celer_path(sparse_X, alphas, pb):
+                                 ["lasso", "logreg"],
+                                 [np.float32, np.float64]))
+def test_celer_path(sparse_X, alphas, pb, dtype):
     """Test Lasso path convergence."""
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
+    X = X.astype(dtype)
+    y = y.astype(dtype)
+
     tol = 1e-6
     if pb == "logreg":
         y = np.sign(y)
@@ -243,6 +247,20 @@ def test_infinite_weights(pb):
         assert_array_less(dual_gaps[0], tol * norm(y) ** 2 / 2.)
 
     assert_array_equal(coefs[inf_indices], 0)
+
+
+def test_one_iteration_alpha_max():
+    n_samples, n_features = 100, 50
+    X, y = build_dataset(n_samples, n_features)
+
+    alpha_max = norm(X.T @ y, ord=np.inf) / n_samples
+    m = 5
+    model = Lasso(alpha=m*alpha_max, fit_intercept=False)
+    model.fit(X, y)
+
+    assert_array_equal(model.coef_, np.zeros(n_features))
+    # solver exits right after computing first duality gap:
+    np.testing.assert_equal(model.n_iter_, 1)
 
 
 if __name__ == "__main__":

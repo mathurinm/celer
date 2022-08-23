@@ -17,7 +17,7 @@ if version is None:
 
 DISTNAME = 'celer'
 DESCRIPTION = descr
-with open('README.rst', 'r') as f:
+with open('README.md', 'r', encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'Mathurin Massias'
 MAINTAINER_EMAIL = 'mathurin.massias@gmail.com'
@@ -30,6 +30,7 @@ setup(name=DISTNAME,
       version=VERSION,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
+      long_description_content_type='text/markdown',
       license=LICENSE,
       maintainer=MAINTAINER,
       maintainer_email=MAINTAINER_EMAIL,

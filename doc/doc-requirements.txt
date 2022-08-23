@@ -1,5 +1,6 @@
 numpydoc
 pandas
 pillow
-sphinx-bootstrap-theme
+furo
+sphinx-copybutton
 sphinx-gallery
