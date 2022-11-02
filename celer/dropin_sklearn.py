@@ -16,6 +16,8 @@ from sklearn.multiclass import OneVsRestClassifier
 
 from .homotopy import celer_path, mtl_path
 
+from sklearn.utils._param_validation import Interval, Integral, Real
+
 
 class Lasso(Lasso_sklearn):
     r"""
@@ -104,6 +106,15 @@ class Lasso(Lasso_sklearn):
       "Celer: a Fast Solver for the Lasso wit Dual Extrapolation", ICML 2018,
       http://proceedings.mlr.press/v80/massias18a.html
     """
+
+    _parameter_constraints: dict = {
+        "alpha": [Interval(Real, 0, None, closed="left")],
+        "fit_intercept": ["boolean"],
+        "max_iter": [Interval(Integral, 1, None, closed="left"), None],
+        "tol": [Interval(Real, 0, None, closed="left")],
+        "warm_start": ["boolean"],
+        "positive": ["boolean"],
+    }
 
     def __init__(self, alpha=1., max_iter=100, max_epochs=50000, p0=10,
                  verbose=0, tol=1e-4, prune=True, fit_intercept=True,
