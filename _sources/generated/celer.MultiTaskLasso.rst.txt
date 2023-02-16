@@ -29,6 +29,7 @@
 
    .. autosummary::
    
+      ~MultiTaskLasso.param
       ~MultiTaskLasso.sparse_coef_
    
    

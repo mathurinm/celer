@@ -66,6 +66,8 @@ using the Celer algorithm.
 
     usetex mode requires TeX.
     Loading data...
+    /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:932: FutureWarning: The default value of `parser` will change from `'liac-arff'` to `'auto'` in 1.4. You can set `parser='auto'` to silence this warning. Therefore, an `ImportError` will be raised from 1.4 if the dataset is dense and pandas is not installed. Note that the pandas parser may return different data types. See the Notes Section in fetch_openml's API doc for details.
+      warn(
     Estimated regularization parameter alpha: 160.15306704065625
 
 
@@ -107,7 +109,7 @@ Display results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  39.390 seconds)
+   **Total running time of the script:** ( 0 minutes  10.699 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:
