@@ -1,8 +1,9 @@
 from setuptools.command.build_ext import build_ext
-from setuptools import dist, setup, Extension, find_packages
+from setuptools import setup, Extension, find_packages
+
 import os
-# dist.Distribution().fetch_build_eggs(['numpy>=1.12'])
-import numpy as np  # noqa
+import numpy as np
+
 
 descr = 'A fast algorithm with dual extrapolation for sparse problems'
 
