@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_logreg_timings.py>`
+        :ref:`Go to the end <sphx_glr_download_auto_examples_plot_logreg_timings.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -103,7 +103,7 @@ Compare LogisticRegression solver with sklearn's liblinear backend
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  57.677 seconds)
+   **Total running time of the script:** ( 1 minutes  5.685 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_logreg_timings.py:
@@ -111,6 +111,8 @@ Compare LogisticRegression solver with sklearn's liblinear backend
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

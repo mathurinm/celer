@@ -23,7 +23,7 @@ Examples Gallery
 .. only:: html
 
   .. image:: /auto_examples/images/thumb/sphx_glr_plot_lasso_cv_thumb.png
-    :alt: Run LassoCV for cross-validation on the Leukemia dataset
+    :alt:
 
   :ref:`sphx_glr_auto_examples_plot_lasso_cv.py`
 
@@ -40,7 +40,7 @@ Examples Gallery
 .. only:: html
 
   .. image:: /auto_examples/images/thumb/sphx_glr_plot_leukemia_path_thumb.png
-    :alt: Lasso path computation on Leukemia dataset
+    :alt:
 
   :ref:`sphx_glr_auto_examples_plot_leukemia_path.py`
 
@@ -57,7 +57,7 @@ Examples Gallery
 .. only:: html
 
   .. image:: /auto_examples/images/thumb/sphx_glr_plot_logreg_timings_thumb.png
-    :alt: Compare LogisticRegression solver with sklearn's liblinear backend
+    :alt:
 
   :ref:`sphx_glr_auto_examples_plot_logreg_timings.py`
 
@@ -74,7 +74,7 @@ Examples Gallery
 .. only:: html
 
   .. image:: /auto_examples/images/thumb/sphx_glr_plot_multitask_lasso_cv_thumb.png
-    :alt: Run MultitaskLassoCV and compare performance with scikit-learn
+    :alt:
 
   :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py`
 
@@ -91,7 +91,7 @@ Examples Gallery
 .. only:: html
 
   .. image:: /auto_examples/images/thumb/sphx_glr_plot_group_lasso_thumb.png
-    :alt: Run GroupLasso and GroupLasso CV for structured sparse recovery
+    :alt:
 
   :ref:`sphx_glr_auto_examples_plot_group_lasso.py`
 
@@ -108,7 +108,7 @@ Examples Gallery
 .. only:: html
 
   .. image:: /auto_examples/images/thumb/sphx_glr_plot_finance_path_thumb.png
-    :alt: Lasso path computation on Finance/log1p dataset
+    :alt:
 
   :ref:`sphx_glr_auto_examples_plot_finance_path.py`
 
