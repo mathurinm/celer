@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "'celer'"
+name = "celer"
 version = {attr = "celer.__version__"}
 dependencies =[
     'seaborn>=0.7', 'matplotlib>=2.0.0', 'libsvmdata>=0.3',
