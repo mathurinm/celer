@@ -1,43 +1,10 @@
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension, find_packages
 
-import os
 import numpy as np
 
 
-descr = 'A fast algorithm with dual extrapolation for sparse problems'
-
-version = None
-with open(os.path.join('celer', '__init__.py'), 'r') as fid:
-    for line in (line.strip() for line in fid):
-        if line.startswith('__version__'):
-            version = line.split('=')[1].strip().strip('\'')
-            break
-if version is None:
-    raise RuntimeError('Could not determine version')
-
-DISTNAME = 'celer'
-DESCRIPTION = descr
-with open('README.md', 'r', encoding='utf-8') as f:
-    LONG_DESCRIPTION = f.read()
-MAINTAINER = 'Mathurin Massias'
-MAINTAINER_EMAIL = 'mathurin.massias@gmail.com'
-LICENSE = 'BSD (3-clause)'
-DOWNLOAD_URL = 'https://github.com/mathurinm/celer.git'
-VERSION = version
-URL = 'https://mathurinm.github.io/celer'
-
-setup(name=DISTNAME,
-      version=VERSION,
-      description=DESCRIPTION,
-      long_description=LONG_DESCRIPTION,
-      long_description_content_type='text/markdown',
-      license=LICENSE,
-      maintainer=MAINTAINER,
-      maintainer_email=MAINTAINER_EMAIL,
-      url=URL,
-      download_url=DOWNLOAD_URL,
-      packages=find_packages(),
+setup(packages=find_packages(),
       cmdclass={'build_ext': build_ext},
       ext_modules=[
           Extension('celer.lasso_fast',
@@ -65,5 +32,5 @@ setup(name=DISTNAME,
                     language='c++',
                     include_dirs=[np.get_include()],
                     extra_compile_args=["-O3"]),
-      ],
-      )
+],
+)
