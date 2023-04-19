@@ -25,3 +25,10 @@ version = {attr = "celer.__version__"}
 [project.urls]
 documentation = "https://mathurinm.github.io/celer/"
 repository = "https://github.com/mathurinm/celer.git"
+
+
+[project.optional-dependencies]
+doc = [
+    "numpydoc", "pandas", "pillow",
+    "furo", "sphinx-copybutton", "sphinx-gallery"
+]

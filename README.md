@@ -91,7 +91,7 @@ pip install -e .
 
 ```shell
 cd doc
-pip install -r doc-requirements.txt
+pip install -e .[doc]
 make html
 ```
 

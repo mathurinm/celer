@@ -57,7 +57,7 @@ contribute with code or documentation to celer.
 .. code-block:: shell
 
     $ cd doc
-    $ pip install -r doc-requirements.txt
+    $ pip install -e .[doc]
     $ make html
 
 
