@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools", "numpy>=1.12", "scipy>=0.18.0", "Cython>=0.26"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "celer"
+dependencies =[
+    'seaborn>=0.7', 'matplotlib>=2.0.0', 'libsvmdata>=0.3',
+    'scikit-learn>=1.0', 'xarray', 'download', 'tqdm'
+]
+description = "A fast algorithm with dual extrapolation for sparse problems"
+authors = [
+    {name = "Mathurin Massias", email = "mathurin.massias@gmail.com"},
+]
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "BSD (3-clause)"}
+dynamic = ["version"]
+
+
+[tool.setuptools.dynamic]
+version = {attr = "celer.__version__"}
+
+
+[project.urls]
+documentation = "https://mathurinm.github.io/celer/"
+repository = "https://github.com/mathurinm/celer.git"
