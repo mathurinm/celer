@@ -1,6 +1,0 @@
-numpydoc
-pandas
-pillow
-furo
-sphinx-copybutton
-sphinx-gallery
