@@ -26,7 +26,7 @@ Currently, the package handles the following problems:
 ## Why ``celer``?
 
 ``celer`` is specially designed to handle Lasso-like problems which makes it a fast solver of such problems.
-``celer`` comes particularly with
+In particular it comes with tools such as:
 
 - automated parallel cross-validation
 - support of sparse and dense data
