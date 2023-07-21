@@ -15,11 +15,14 @@
    
       ~LassoCV.__init__
       ~LassoCV.fit
+      ~LassoCV.get_metadata_routing
       ~LassoCV.get_params
       ~LassoCV.path
       ~LassoCV.predict
       ~LassoCV.score
+      ~LassoCV.set_fit_request
       ~LassoCV.set_params
+      ~LassoCV.set_score_request
    
    
 

@@ -15,11 +15,14 @@
    
       ~ElasticNetCV.__init__
       ~ElasticNetCV.fit
+      ~ElasticNetCV.get_metadata_routing
       ~ElasticNetCV.get_params
       ~ElasticNetCV.path
       ~ElasticNetCV.predict
       ~ElasticNetCV.score
+      ~ElasticNetCV.set_fit_request
       ~ElasticNetCV.set_params
+      ~ElasticNetCV.set_score_request
    
    
 

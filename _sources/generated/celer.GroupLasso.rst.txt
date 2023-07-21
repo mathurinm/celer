@@ -15,11 +15,14 @@
    
       ~GroupLasso.__init__
       ~GroupLasso.fit
+      ~GroupLasso.get_metadata_routing
       ~GroupLasso.get_params
       ~GroupLasso.path
       ~GroupLasso.predict
       ~GroupLasso.score
+      ~GroupLasso.set_fit_request
       ~GroupLasso.set_params
+      ~GroupLasso.set_score_request
    
    
 

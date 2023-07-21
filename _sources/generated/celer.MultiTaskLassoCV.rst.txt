@@ -15,11 +15,14 @@
    
       ~MultiTaskLassoCV.__init__
       ~MultiTaskLassoCV.fit
+      ~MultiTaskLassoCV.get_metadata_routing
       ~MultiTaskLassoCV.get_params
       ~MultiTaskLassoCV.path
       ~MultiTaskLassoCV.predict
       ~MultiTaskLassoCV.score
+      ~MultiTaskLassoCV.set_fit_request
       ~MultiTaskLassoCV.set_params
+      ~MultiTaskLassoCV.set_score_request
    
    
 

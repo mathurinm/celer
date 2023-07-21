@@ -15,11 +15,14 @@
    
       ~GroupLassoCV.__init__
       ~GroupLassoCV.fit
+      ~GroupLassoCV.get_metadata_routing
       ~GroupLassoCV.get_params
       ~GroupLassoCV.path
       ~GroupLassoCV.predict
       ~GroupLassoCV.score
+      ~GroupLassoCV.set_fit_request
       ~GroupLassoCV.set_params
+      ~GroupLassoCV.set_score_request
    
    
 

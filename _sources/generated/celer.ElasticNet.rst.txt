@@ -15,11 +15,14 @@
    
       ~ElasticNet.__init__
       ~ElasticNet.fit
+      ~ElasticNet.get_metadata_routing
       ~ElasticNet.get_params
       ~ElasticNet.path
       ~ElasticNet.predict
       ~ElasticNet.score
+      ~ElasticNet.set_fit_request
       ~ElasticNet.set_params
+      ~ElasticNet.set_score_request
    
    
 

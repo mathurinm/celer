@@ -15,11 +15,14 @@
    
       ~Lasso.__init__
       ~Lasso.fit
+      ~Lasso.get_metadata_routing
       ~Lasso.get_params
       ~Lasso.path
       ~Lasso.predict
       ~Lasso.score
+      ~Lasso.set_fit_request
       ~Lasso.set_params
+      ~Lasso.set_score_request
    
    
 
