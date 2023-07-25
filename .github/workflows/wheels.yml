@@ -40,7 +40,9 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.14.1
         env:
-          CIBW_BUILD: cp39-manylinux_x86_64
+          CIBW_BUILD: >
+            cp38-manylinux_x86_64
+            cp39-manylinux_x86_64
         with:
           package-dir: .
           output-dir: wheelhouse
