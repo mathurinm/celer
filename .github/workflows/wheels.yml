@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -41,12 +41,9 @@ jobs:
         uses: pypa/cibuildwheel@v2.14.1
         env:
           CIBW_BUILD: >
-            cp38-manylinux_x86_64
-            cp39-manylinux_x86_64
-            cp310-manylinux_x86_64
-            cp38-macosx_x86_64
-            cp39-macosx_x86_64
-            cp310-macosx_x86_64
+            cp38-manylinux_x86_64 cp39-manylinux_x86_64 cp310-manylinux_x86_64
+            cp38-macosx_x86_64    cp39-macosx_x86_64    cp310-macosx_x86_64
+            cp38-win_amd64        cp39-win_amd64        cp310-win_amd64
         with:
           package-dir: .
           output-dir: wheelhouse
