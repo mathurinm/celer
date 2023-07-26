@@ -35,7 +35,8 @@ jobs:
 
       - name: Build source dist
         run: |
-          python setup.py sdist
+          python3 -m pip install --upgrade build
+          python3 -m build --sdist
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.14.1
@@ -58,7 +59,6 @@ jobs:
         run: |
           pip install twine
           twine upload --skip-existing --repository testpypi wheelhouse/*.whl dist/*.tar.gz
-
 
       # - name: publish to PyPI
       #   env:
