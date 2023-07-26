@@ -3,8 +3,9 @@
 ![build](https://github.com/mathurinm/celer/workflows/build/badge.svg)
 ![coverage](https://codecov.io/gh/mathurinm/celer/branch/main/graphs/badge.svg?branch=main)
 ![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)
-![Downloads](https://pepy.tech/badge/celer/month)
-![PyPI version](https://badge.fury.io/py/celer.svg)
+[![Downloads](https://static.pepy.tech/badge/celer)](https://pepy.tech/project/celer)
+[![Downloads](https://pepy.tech/badge/celer/month)](https://pepy.tech/project/celer)
+[![PyPI version](https://badge.fury.io/py/celer.svg)](https://pypi.org/project/celer)
 
 
 ``celer`` is a Python package that solves Lasso-like problems and provides estimators that follow the ``scikit-learn`` API. Thanks to a tailored implementation, ``celer`` provides a fast solver that tackles large-scale datasets with millions of features **up to 100 times faster than ``scikit-learn``**.
@@ -25,7 +26,7 @@ Currently, the package handles the following problems:
 ## Why ``celer``?
 
 ``celer`` is specially designed to handle Lasso-like problems which makes it a fast solver of such problems.
-``celer`` comes particularly with
+In particular it comes with tools such as:
 
 - automated parallel cross-validation
 - support of sparse and dense data
@@ -90,7 +91,7 @@ pip install -e .
 
 ```shell
 cd doc
-pip install -r doc-requirements.txt
+pip install -e .[doc]
 make html
 ```
 
