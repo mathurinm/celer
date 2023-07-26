@@ -20,6 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: check conditionals
+        if: matrix.os == 'ubuntu-latest'
+        run: echo "Ubunto"
+
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -34,7 +38,7 @@ jobs:
           pip install -e .
 
       - name: Build source dist
-        if: matrix.os == ${{ 'ubuntu-latest' }}
+        if: matrix.os == 'ubuntu-latest'
         run: |
           python3 -m pip install --upgrade build
           python3 -m build --sdist
