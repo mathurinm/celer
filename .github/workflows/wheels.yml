@@ -20,10 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: check conditionals
-        if: matrix.os == 'ubuntu-latest'
-        run: echo "Ubunto"
-
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -37,11 +33,17 @@ jobs:
           pip install numpy==1.21
           pip install -e .
 
-      - name: Build source dist
-        if: matrix.os == 'ubuntu-latest'
+      - name: Build source dist for ubuntu and macOS
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           python3 -m pip install --upgrade build
           python3 -m build --sdist
+
+      - name: Build source dist for windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          py -m pip install --upgrade build
+          py -m build --sdist
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.14.1
