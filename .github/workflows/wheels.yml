@@ -51,13 +51,13 @@ jobs:
       - name: Inspect wheelhouse
         run: ls wheelhouse
 
-      # - name: publish to Test PyPI
-      #   env:
-      #     TWINE_USERNAME: __token__
-      #     TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      #   run: |
-      #     pip install twine
-      #     twine upload --skip-existing --repository testpypi wheelhouse/*.whl dist/*.tar.gz
+      - name: publish to Test PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          pip install twine
+          twine upload --skip-existing --repository testpypi wheelhouse/*.whl dist/*.tar.gz
 
 
       # - name: publish to PyPI
