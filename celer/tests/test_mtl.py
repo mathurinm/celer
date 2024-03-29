@@ -18,7 +18,7 @@ from celer.utils.testing import build_dataset
 
 
 @pytest.mark.parametrize("sparse_X, fit_intercept",
-                         itertools.product([0, 1], [0, 1]))
+                         itertools.product([0, 1], [False, True]))
 def test_GroupLasso_Lasso_equivalence(sparse_X, fit_intercept):
     """Check that GroupLasso with groups of size 1 gives Lasso."""
     n_features = 1000
