@@ -646,7 +646,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
                              % (n_samples, y.shape[0]))
 
         X, y, X_offset, y_offset, X_scale = _preprocess_data(
-            X, y, self.fit_intercept, copy=False)
+            X, y, fit_intercept=self.fit_intercept, copy=False)
 
         if not self.warm_start or not hasattr(self, "coef_"):
             self.coef_ = None
