@@ -89,10 +89,11 @@ cpdef floating dnorm_grp(
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
-            if weights[g_idx] == INFINITY:
+            g = C[g_idx]
+
+            if weights[g] == INFINITY:
                 continue
 
-            g = C[g_idx]
             tmp = 0
             for k in range(grp_ptr[g], grp_ptr[g + 1]):
                 j = grp_indices[k]
