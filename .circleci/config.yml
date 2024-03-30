@@ -45,8 +45,6 @@ jobs:
         - run:
             name: Get Python running
             command: |
-              pwd
-              ls
               python -m pip install --user --upgrade --progress-bar off pip
               python -m pip install --user -e .
               python -m pip install --user --upgrade --progress-bar off -e .[doc]
