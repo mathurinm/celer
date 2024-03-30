@@ -45,7 +45,8 @@ jobs:
         - run:
             name: Get Python running
             command: |
-              echo $(pwd)
+              pwd
+              ls
               python -m pip install --user --upgrade --progress-bar off pip
               python -m pip install --user --upgrade --progress-bar off -r requirements.txt
               python -m pip install --user --upgrade --progress-bar off -r doc/doc-requirements.txt
