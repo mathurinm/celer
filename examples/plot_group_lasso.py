@@ -60,8 +60,7 @@ lasso = LassoCV().fit(X, y)
 
 fig = plt.figure(figsize=(8, 3), constrained_layout=True)
 m, s, _ = plt.stem(np.where(w_true)[0], w_true[w_true != 0],
-                   label=r"true regression coefficients",
-                   use_line_collection=True)
+                   label=r"true regression coefficients")
 labels = ["LassoCV-estimated regression coefficients",
           "GroupLassoCV-estimated regression coefficients"]
 colors = [u'#ff7f0e', u'#2ca02c']
