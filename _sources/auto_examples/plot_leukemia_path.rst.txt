@@ -43,14 +43,14 @@ Running time is compared with the scikit-learn implementation.
 
 
     Loading data...
-    /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:303: UserWarning: Multiple active versions of the dataset matching the name leukemia exist. Versions may be fundamentally different, returning version 1.
+    /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:311: UserWarning: Multiple active versions of the dataset matching the name leukemia exist. Versions may be fundamentally different, returning version 1.
       warn(
-    /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:1002: FutureWarning: The default value of `parser` will change from `'liac-arff'` to `'auto'` in 1.4. You can set `parser='auto'` to silence this warning. Therefore, an `ImportError` will be raised from 1.4 if the dataset is dense and pandas is not installed. Note that the pandas parser may return different data types. See the Notes Section in fetch_openml's API doc for details.
+    /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:1022: FutureWarning: The default value of `parser` will change from `'liac-arff'` to `'auto'` in 1.4. You can set `parser='auto'` to silence this warning. Therefore, an `ImportError` will be raised from 1.4 if the dataset is dense and pandas is not installed. Note that the pandas parser may return different data types. See the Notes Section in fetch_openml's API doc for details.
       warn(
     Starting path computation...
-    Celer time: 0.06 s
-    Celer time: 0.17 s
-    Celer time: 0.50 s
+    Celer time: 0.03 s
+    Celer time: 0.12 s
+    Celer time: 0.31 s
 
 
 
@@ -59,7 +59,7 @@ Running time is compared with the scikit-learn implementation.
 
 |
 
-.. code-block:: default
+.. code-block:: Python
 
 
     import time
@@ -114,7 +114,7 @@ Running time is compared with the scikit-learn implementation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  8.430 seconds)
+   **Total running time of the script:** (1 minutes 19.831 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:
@@ -123,16 +123,13 @@ Running time is compared with the scikit-learn implementation.
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_leukemia_path.ipynb <plot_leukemia_path.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_leukemia_path.py <plot_leukemia_path.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_leukemia_path.ipynb <plot_leukemia_path.ipynb>`
 
 
 .. only:: html

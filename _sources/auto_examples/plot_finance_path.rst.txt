@@ -30,7 +30,7 @@ implementation as it makes the example too long to run.
 
 .. GENERATED FROM PYTHON SOURCE LINES 12-35
 
-.. code-block:: default
+.. code-block:: Python
 
 
     import time
@@ -65,6 +65,7 @@ implementation as it makes the example too long to run.
 
 
     *** Warning: this example may take more than 5 minutes to run ***
+    file_sizes:   0%|                                    | 0.00/246M [00:00<?, ?B/s]    file_sizes:   0%|                            | 24.6k/246M [00:00<32:55, 124kB/s]    file_sizes:   0%|                            | 49.2k/246M [00:00<32:56, 124kB/s]    file_sizes:   0%|                             | 106k/246M [00:00<20:29, 200kB/s]    file_sizes:   0%|                             | 221k/246M [00:00<11:42, 349kB/s]    file_sizes:   0%|                             | 451k/246M [00:00<06:22, 641kB/s]    file_sizes:   0%|                            | 909k/246M [00:01<03:22, 1.21MB/s]    file_sizes:   1%|▏                          | 1.83M/246M [00:01<01:45, 2.32MB/s]    file_sizes:   1%|▍                          | 3.66M/246M [00:01<00:54, 4.48MB/s]    file_sizes:   2%|▌                          | 5.23M/246M [00:01<00:43, 5.55MB/s]    file_sizes:   3%|▋                          | 6.81M/246M [00:01<00:37, 6.29MB/s]    file_sizes:   3%|▉                          | 8.38M/246M [00:02<00:34, 6.82MB/s]    file_sizes:   4%|█                          | 9.95M/246M [00:02<00:32, 7.19MB/s]    file_sizes:   5%|█▍                         | 12.6M/246M [00:02<00:26, 8.96MB/s]    file_sizes:   6%|█▌                         | 14.1M/246M [00:02<00:26, 8.71MB/s]    file_sizes:   7%|█▊                         | 16.8M/246M [00:02<00:22, 10.0MB/s]    file_sizes:   8%|██▏                        | 19.4M/246M [00:03<00:20, 11.0MB/s]    file_sizes:   9%|██▍                        | 22.0M/246M [00:03<00:19, 11.6MB/s]    file_sizes:  10%|██▋                        | 24.6M/246M [00:03<00:18, 12.1MB/s]    file_sizes:  11%|██▉                        | 27.3M/246M [00:03<00:17, 12.5MB/s]    file_sizes:  12%|███▎                       | 29.9M/246M [00:03<00:16, 12.8MB/s]    file_sizes:  13%|███▌                       | 32.8M/246M [00:04<00:15, 13.3MB/s]    file_sizes:  15%|███▉                       | 36.2M/246M [00:04<00:14, 14.4MB/s]    file_sizes:  16%|████▎                      | 39.1M/246M [00:04<00:14, 14.5MB/s]    file_sizes:  17%|████▋                      | 42.5M/246M [00:04<00:13, 15.2MB/s]    file_sizes:  18%|████▉                      | 45.3M/246M [00:04<00:13, 15.1MB/s]    file_sizes:  20%|█████▎                     | 48.2M/246M [00:05<00:13, 15.0MB/s]    file_sizes:  21%|█████▋                     | 51.6M/246M [00:05<00:12, 15.2MB/s]    file_sizes:  22%|█████▉                     | 54.5M/246M [00:05<00:12, 15.4MB/s]    file_sizes:  23%|██████▎                    | 57.7M/246M [00:05<00:12, 15.5MB/s]    file_sizes:  25%|██████▋                    | 60.8M/246M [00:05<00:11, 15.6MB/s]    file_sizes:  26%|███████                    | 64.0M/246M [00:06<00:11, 15.4MB/s]    file_sizes:  27%|███████▎                   | 66.8M/246M [00:06<00:11, 15.5MB/s]    file_sizes:  28%|███████▌                   | 68.4M/246M [00:06<00:11, 15.6MB/s]    file_sizes:  29%|███████▋                   | 70.5M/246M [00:06<00:10, 16.0MB/s]    file_sizes:  30%|████████                   | 73.1M/246M [00:06<00:11, 15.6MB/s]    file_sizes:  30%|████████▏                  | 74.7M/246M [00:06<00:11, 15.2MB/s]    file_sizes:  31%|████████▍                  | 76.8M/246M [00:07<00:11, 14.3MB/s]    file_sizes:  32%|████████▋                  | 79.4M/246M [00:07<00:10, 15.8MB/s]    file_sizes:  33%|████████▉                  | 81.5M/246M [00:07<00:10, 16.3MB/s]    file_sizes:  34%|█████████▏                 | 83.6M/246M [00:07<00:11, 14.3MB/s]    file_sizes:  35%|█████████▍                 | 86.2M/246M [00:07<00:11, 14.3MB/s]    file_sizes:  36%|█████████▊                 | 88.9M/246M [00:07<00:09, 16.6MB/s]    file_sizes:  37%|█████████▉                 | 90.7M/246M [00:07<00:09, 15.9MB/s]    file_sizes:  38%|██████████▏                | 92.8M/246M [00:08<00:10, 14.1MB/s]    file_sizes:  39%|██████████▌                | 95.7M/246M [00:08<00:10, 14.1MB/s]    file_sizes:  40%|██████████▊                | 98.6M/246M [00:08<00:09, 15.3MB/s]    file_sizes:  41%|███████████▌                | 101M/246M [00:08<00:08, 17.3MB/s]    file_sizes:  42%|███████████▊                | 103M/246M [00:08<00:08, 15.9MB/s]    file_sizes:  43%|███████████▉                | 105M/246M [00:08<00:10, 13.8MB/s]    file_sizes:  44%|████████████▎               | 108M/246M [00:09<00:09, 14.4MB/s]    file_sizes:  45%|████████████▋               | 111M/246M [00:09<00:09, 14.7MB/s]    file_sizes:  46%|████████████▉               | 114M/246M [00:09<00:08, 16.1MB/s]    file_sizes:  47%|█████████████▏              | 116M/246M [00:09<00:07, 16.9MB/s]    file_sizes:  48%|█████████████▍              | 118M/246M [00:09<00:08, 14.8MB/s]    file_sizes:  49%|█████████████▋              | 120M/246M [00:09<00:08, 15.0MB/s]    file_sizes:  50%|██████████████              | 123M/246M [00:10<00:08, 15.0MB/s]    file_sizes:  52%|██████████████▍             | 127M/246M [00:10<00:07, 15.1MB/s]    file_sizes:  53%|██████████████▊             | 130M/246M [00:10<00:07, 15.3MB/s]    file_sizes:  54%|███████████████▏            | 133M/246M [00:10<00:07, 15.2MB/s]    file_sizes:  55%|███████████████▌            | 136M/246M [00:10<00:06, 15.7MB/s]    file_sizes:  57%|███████████████▊            | 139M/246M [00:11<00:06, 15.4MB/s]    file_sizes:  58%|████████████████▏           | 142M/246M [00:11<00:06, 15.5MB/s]    file_sizes:  58%|████████████████▎           | 144M/246M [00:11<00:06, 15.4MB/s]    file_sizes:  59%|████████████████▌           | 145M/246M [00:11<00:06, 15.3MB/s]    file_sizes:  60%|████████████████▊           | 147M/246M [00:11<00:06, 16.4MB/s]    file_sizes:  61%|█████████████████           | 149M/246M [00:11<00:06, 14.3MB/s]    file_sizes:  62%|█████████████████▎          | 152M/246M [00:11<00:05, 15.7MB/s]    file_sizes:  63%|█████████████████▌          | 154M/246M [00:11<00:05, 16.3MB/s]    file_sizes:  63%|█████████████████▋          | 156M/246M [00:12<00:06, 14.2MB/s]    file_sizes:  64%|██████████████████          | 158M/246M [00:12<00:05, 14.6MB/s]    file_sizes:  66%|██████████████████▎         | 161M/246M [00:12<00:05, 16.5MB/s]    file_sizes:  66%|██████████████████▌         | 163M/246M [00:12<00:05, 16.2MB/s]    file_sizes:  67%|██████████████████▊         | 165M/246M [00:12<00:05, 13.9MB/s]    file_sizes:  68%|███████████████████▏        | 168M/246M [00:13<00:05, 14.4MB/s]    file_sizes:  70%|███████████████████▍        | 171M/246M [00:13<00:05, 14.3MB/s]    file_sizes:  71%|███████████████████▊        | 174M/246M [00:13<00:04, 16.0MB/s]    file_sizes:  72%|████████████████████        | 176M/246M [00:13<00:04, 17.3MB/s]    file_sizes:  73%|████████████████████▎       | 179M/246M [00:13<00:04, 15.7MB/s]    file_sizes:  73%|████████████████████▌       | 180M/246M [00:13<00:04, 13.7MB/s]    file_sizes:  75%|████████████████████▉       | 183M/246M [00:13<00:04, 15.3MB/s]    file_sizes:  76%|█████████████████████▏      | 186M/246M [00:14<00:04, 14.3MB/s]    file_sizes:  77%|█████████████████████▋      | 190M/246M [00:14<00:03, 15.1MB/s]    file_sizes:  78%|█████████████████████▉      | 192M/246M [00:14<00:03, 16.6MB/s]    file_sizes:  79%|██████████████████████▏     | 195M/246M [00:14<00:03, 16.5MB/s]    file_sizes:  80%|██████████████████████▍     | 197M/246M [00:14<00:03, 14.6MB/s]    file_sizes:  81%|██████████████████████▋     | 199M/246M [00:14<00:03, 14.7MB/s]    file_sizes:  82%|███████████████████████     | 202M/246M [00:15<00:02, 15.1MB/s]    file_sizes:  83%|███████████████████████▎    | 205M/246M [00:15<00:02, 15.0MB/s]    file_sizes:  85%|███████████████████████▋    | 208M/246M [00:15<00:02, 15.6MB/s]    file_sizes:  86%|████████████████████████    | 211M/246M [00:15<00:02, 15.3MB/s]    file_sizes:  87%|████████████████████████▍   | 214M/246M [00:15<00:02, 15.5MB/s]    file_sizes:  88%|████████████████████████▌   | 216M/246M [00:16<00:01, 15.4MB/s]    file_sizes:  89%|████████████████████████▊   | 218M/246M [00:16<00:01, 16.0MB/s]    file_sizes:  90%|█████████████████████████   | 220M/246M [00:16<00:01, 17.0MB/s]    file_sizes:  90%|█████████████████████████▎  | 222M/246M [00:16<00:01, 14.7MB/s]    file_sizes:  91%|█████████████████████████▌  | 224M/246M [00:16<00:01, 15.2MB/s]    file_sizes:  92%|█████████████████████████▊  | 227M/246M [00:16<00:01, 15.4MB/s]    file_sizes:  93%|██████████████████████████  | 229M/246M [00:16<00:01, 15.8MB/s]    file_sizes:  94%|██████████████████████████▎ | 231M/246M [00:17<00:01, 14.0MB/s]    file_sizes:  95%|██████████████████████████▌ | 234M/246M [00:17<00:00, 13.9MB/s]    file_sizes:  96%|██████████████████████████▉ | 237M/246M [00:17<00:00, 14.4MB/s]    file_sizes:  98%|███████████████████████████▎| 240M/246M [00:17<00:00, 14.5MB/s]    file_sizes:  99%|███████████████████████████▋| 243M/246M [00:17<00:00, 16.4MB/s]    file_sizes: 100%|███████████████████████████▉| 245M/246M [00:17<00:00, 17.2MB/s]    file_sizes: 100%|████████████████████████████| 246M/246M [00:17<00:00, 13.7MB/s]
     Dataset size: 16087 samples, 4272227 features
 
 
@@ -76,7 +77,7 @@ Run Celer on a grid of regularization parameters, for various tolerances:
 
 .. GENERATED FROM PYTHON SOURCE LINES 37-61
 
-.. code-block:: default
+.. code-block:: Python
 
     tols = [1e-2, 1e-4, 1e-6]
     results = np.zeros([1, len(tols)])
@@ -436,7 +437,7 @@ Measure the influence of regularization on the sparsity of the solutions:
 
 .. GENERATED FROM PYTHON SOURCE LINES 63-75
 
-.. code-block:: default
+.. code-block:: Python
 
 
     fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True)
@@ -468,7 +469,7 @@ Check convergence guarantees: gap is inferior to tolerance
 
 .. GENERATED FROM PYTHON SOURCE LINES 77-87
 
-.. code-block:: default
+.. code-block:: Python
 
 
     df = pd.DataFrame(gaps.T, columns=map(lambda x: r"tol=%.0e" % x, tols))
@@ -495,7 +496,7 @@ Check convergence guarantees: gap is inferior to tolerance
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 5 minutes  33.461 seconds)
+   **Total running time of the script:** (8 minutes 17.016 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_finance_path.py:
@@ -504,16 +505,13 @@ Check convergence guarantees: gap is inferior to tolerance
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_finance_path.ipynb <plot_finance_path.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_finance_path.py <plot_finance_path.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_finance_path.ipynb <plot_finance_path.ipynb>`
 
 
 .. only:: html

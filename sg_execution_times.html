@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Get started" href="get_started.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>celer 0.7.3dev0 documentation</title>
+        <title>Computation times - celer 0.7.3dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -129,7 +129,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">celer 0.7.3dev0 documentation</div></a>
+      <a href="index.html"><div class="brand">celer 0.7.3dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -140,7 +140,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,7 +149,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
   <span class="sidebar-brand-text">celer 0.7.3dev0 documentation</span>
@@ -217,120 +217,64 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="celer">
-<h1>celer<a class="headerlink" href="#celer" title="Permalink to this heading">#</a></h1>
-<section id="a-fast-solver-for-lasso-like-problems">
-<h2>A fast solver for Lasso-like problems<a class="headerlink" href="#a-fast-solver-for-lasso-like-problems" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">celer</span></code> is a Python package that solves Lasso-like problems and provides estimators
-that follow the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> API. Thanks to a tailored implementation,
-<code class="docutils literal notranslate"><span class="pre">celer</span></code> provides a fast solver that tackles large-scale datasets with millions of features
-<strong>up to 100 times faster than</strong> <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>.</p>
-<p>Currently, the package handles the following problems:</p>
-<div class="table-wrapper docutils container" id="id1">
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">The supported lasso-like problems</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+          <section id="computation-times">
+<span id="sphx-glr-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Permalink to this heading">#</a></h1>
+<p><strong>12:48.155</strong> total execution time for 6 files <strong>from all galleries</strong>:</p>
+<div class="docutils container">
+<style scoped>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+</style>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" class="init">
+$(document).ready( function () {
+    $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+} );
+</script><div class="table-wrapper table table-striped sg-datatable docutils container">
+<table class="table table-striped sg-datatable docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Problem</p></th>
-<th class="head"><p>Support of weights</p></th>
-<th class="head"><p>Native cross-validation</p></th>
+<tr class="row-odd"><th class="head"><p>Example</p></th>
+<th class="head"><p>Time</p></th>
+<th class="head"><p>Mem (MB)</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Lasso</p></td>
-<td><p>✓</p></td>
-<td><p>✓</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/plot_finance_path.html#sphx-glr-auto-examples-plot-finance-path-py"><span class="std std-ref">Lasso path computation on Finance/log1p dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_finance_path.py</span></code>)</p></td>
+<td><p>08:17.016</p></td>
+<td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>ElasticNet</p></td>
-<td><p>✓</p></td>
-<td><p>✓</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/plot_logreg_timings.html#sphx-glr-auto-examples-plot-logreg-timings-py"><span class="std std-ref">Compare LogisticRegression solver with sklearn’s liblinear backend</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_logreg_timings.py</span></code>)</p></td>
+<td><p>01:21.170</p></td>
+<td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Group Lasso</p></td>
-<td><p>✓</p></td>
-<td><p>✓</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/plot_leukemia_path.html#sphx-glr-auto-examples-plot-leukemia-path-py"><span class="std std-ref">Lasso path computation on Leukemia dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_leukemia_path.py</span></code>)</p></td>
+<td><p>01:19.831</p></td>
+<td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Multitask Lasso</p></td>
-<td><p>✕</p></td>
-<td><p>✓</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/plot_lasso_cv.html#sphx-glr-auto-examples-plot-lasso-cv-py"><span class="std std-ref">Run LassoCV for cross-validation on the Leukemia dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_lasso_cv.py</span></code>)</p></td>
+<td><p>01:04.590</p></td>
+<td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Sparse Logistic regression</p></td>
-<td><p>✕</p></td>
-<td><p>✕</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/plot_multitask_lasso_cv.html#sphx-glr-auto-examples-plot-multitask-lasso-cv-py"><span class="std std-ref">Run MultitaskLassoCV and compare performance with scikit-learn</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_multitask_lasso_cv.py</span></code>)</p></td>
+<td><p>00:44.876</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/plot_group_lasso.html#sphx-glr-auto-examples-plot-group-lasso-py"><span class="std std-ref">Run GroupLasso and GroupLasso CV for structured sparse recovery</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_group_lasso.py</span></code>)</p></td>
+<td><p>00:00.672</p></td>
+<td><p>0.0</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-</section>
-<section id="why-celer">
-<h2>Why <code class="docutils literal notranslate"><span class="pre">celer</span></code>?<a class="headerlink" href="#why-celer" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">celer</span></code> is specially designed to handle Lasso-like problems which enable it to solve them quickly.
-<code class="docutils literal notranslate"><span class="pre">celer</span></code> comes particularly with</p>
-<ul class="simple">
-<li><p>automated parallel cross-validation</p></li>
-<li><p>support of sparse and dense data</p></li>
-<li><p>optional feature centering and normalization</p></li>
-<li><p>unpenalized intercept fitting</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">celer</span></code> also provides easy-to-use estimators as it is designed under the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> API.</p>
-</section>
-<section id="install-celer">
-<h2>Install <code class="docutils literal notranslate"><span class="pre">celer</span></code><a class="headerlink" href="#install-celer" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">celer</span></code> can be easily installed through the Python package manager <code class="docutils literal notranslate"><span class="pre">pip</span></code>.
-To get the laster version of the package, run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -U celer
-</pre></div>
 </div>
-<p>Head directly to the <a class="reference internal" href="get_started.html#get-started"><span class="std std-ref">Get started</span></a> page to get a hands-on example of how to use <code class="docutils literal notranslate"><span class="pre">celer</span></code>.</p>
-</section>
-<section id="cite">
-<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">celer</span></code> is an open source package licensed under
-the <a class="reference external" href="https://github.com/mathurinm/celer/blob/main/LICENSE">BSD 3-Clause License</a>.
-Hence, you are free to use it. And if you do so, do not forget to cite:</p>
-<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@InProceedings</span><span class="p">{</span><span class="nl">pmlr-v80-massias18a</span><span class="p">,</span>
-<span class="w">  </span><span class="na">title</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{Celer: a Fast Solver for the Lasso with Dual Extrapolation}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">author</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{Massias, Mathurin and Gramfort, Alexandre and Salmon, Joseph}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">booktitle</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Proceedings of the 35th International Conference on Machine Learning}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">pages</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{3321--3330}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">year</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">{2018}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">volume</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{80}</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">massias2020dual</span><span class="p">,</span>
-<span class="w">  </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Mathurin Massias and Samuel Vaiter and Alexandre Gramfort and Joseph Salmon}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{Dual Extrapolation for Sparse GLMs}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Journal of Machine Learning Research}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2020}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">volume</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{21}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">number</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{234}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">pages</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{1-33}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{http://jmlr.org/papers/v21/19-587.html}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">celer</span></code> is a outcome of perseverant research. Here are the links to the original papers:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://arxiv.org/abs/1802.07481">Celer: a Fast Solver for the Lasso with Dual Extrapolation</a></p></li>
-<li><p><a class="reference external" href="https://arxiv.org/abs/1907.05830">Dual Extrapolation for Sparse GLMs</a></p></li>
-</ul>
-</section>
-<section id="explore-the-documentation">
-<h2>Explore the documentation<a class="headerlink" href="#explore-the-documentation" title="Permalink to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="get_started.html">Get started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contribute.html">Become a contributor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples Gallery</a></li>
-</ul>
-</div>
-</section>
 </section>
 
         </article>
@@ -338,15 +282,7 @@ Hence, you are free to use it. And if you do so, do not forget to cite:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="get_started.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Get started</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
+          
           
         </div>
         <div class="bottom-of-page">
@@ -373,31 +309,8 @@ Hence, you are free to use it. And if you do so, do not forget to cite:</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">celer</a><ul>
-<li><a class="reference internal" href="#a-fast-solver-for-lasso-like-problems">A fast solver for Lasso-like problems</a></li>
-<li><a class="reference internal" href="#why-celer">Why <code class="docutils literal notranslate"><span class="pre">celer</span></code>?</a></li>
-<li><a class="reference internal" href="#install-celer">Install <code class="docutils literal notranslate"><span class="pre">celer</span></code></a></li>
-<li><a class="reference internal" href="#cite">Cite</a></li>
-<li><a class="reference internal" href="#explore-the-documentation">Explore the documentation</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

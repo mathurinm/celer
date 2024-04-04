@@ -26,7 +26,7 @@ The example runs the MultitaskLassoCV scikit-learn like estimator.
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-19
 
-.. code-block:: default
+.. code-block:: Python
 
     import time
     import numpy as np
@@ -52,7 +52,7 @@ Generate some 2D coefficients with sine waves with random frequency and phase
 
 .. GENERATED FROM PYTHON SOURCE LINES 21-35
 
-.. code-block:: default
+.. code-block:: Python
 
     n_samples, n_features, n_tasks = 100, 500, 50
     n_relevant_features = 50
@@ -81,7 +81,7 @@ Fit with sklearn and celer, using the same API
 
 .. GENERATED FROM PYTHON SOURCE LINES 37-46
 
-.. code-block:: default
+.. code-block:: Python
 
     params = dict(tol=1e-6, cv=4, n_jobs=1, n_alphas=20)
     t0 = time.perf_counter()
@@ -105,7 +105,7 @@ Celer is faster
 
 .. GENERATED FROM PYTHON SOURCE LINES 48-51
 
-.. code-block:: default
+.. code-block:: Python
 
     print("Time for celer  : %.2f s" % t_celer)
     print("Time for sklearn: %.2f s" % t_sklearn)
@@ -118,8 +118,8 @@ Celer is faster
 
  .. code-block:: none
 
-    Time for celer  : 20.64 s
-    Time for sklearn: 25.11 s
+    Time for celer  : 20.37 s
+    Time for sklearn: 24.21 s
 
 
 
@@ -130,7 +130,7 @@ Both packages find the same solution
 
 .. GENERATED FROM PYTHON SOURCE LINES 53-59
 
-.. code-block:: default
+.. code-block:: Python
 
     print("Celer's optimal regularizer  : %s" % clf.alpha_)
     print("Sklearn's optimal regularizer: %s" % clf_sklearn.alpha_)
@@ -155,7 +155,7 @@ Both packages find the same solution
 
 .. GENERATED FROM PYTHON SOURCE LINES 60-72
 
-.. code-block:: default
+.. code-block:: Python
 
     fig, axarr = plt.subplots(2, 1, constrained_layout=True)
     axarr[0].spy(clf.coef_, aspect="auto")
@@ -184,7 +184,7 @@ Both packages find the same solution
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  46.108 seconds)
+   **Total running time of the script:** (0 minutes 44.876 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_multitask_lasso_cv.py:
@@ -193,16 +193,13 @@ Both packages find the same solution
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_multitask_lasso_cv.ipynb <plot_multitask_lasso_cv.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_multitask_lasso_cv.py <plot_multitask_lasso_cv.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_multitask_lasso_cv.ipynb <plot_multitask_lasso_cv.ipynb>`
 
 
 .. only:: html
