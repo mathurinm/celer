@@ -60,15 +60,13 @@ lasso = LassoCV().fit(X, y)
 
 fig = plt.figure(figsize=(8, 3), constrained_layout=True)
 m, s, _ = plt.stem(np.where(w_true)[0], w_true[w_true != 0],
-                   label=r"true regression coefficients",
-                   use_line_collection=True)
+                   label=r"true regression coefficients")
 labels = ["LassoCV-estimated regression coefficients",
           "GroupLassoCV-estimated regression coefficients"]
 colors = [u'#ff7f0e', u'#2ca02c']
 
 for w, label, color in zip([lasso.coef_, group_lasso.coef_], labels, colors):
-    m, s, _ = plt.stem(np.where(w)[0], w[w != 0], label=label,
-                       markerfmt='x', use_line_collection=True)
+    m, s, _ = plt.stem(np.where(w)[0], w[w != 0], label=label, markerfmt='x')
     plt.setp([m, s], color=color)
 plt.xlabel("feature index")
 plt.legend(fontsize=12)
