@@ -89,10 +89,11 @@ cpdef floating dnorm_grp(
 
     else:  # scaling only with features in C
         for g_idx in range(ws_size):
+            g = C[g_idx]
+
             if weights[g] == INFINITY:
                 continue
 
-            g = C[g_idx]
             tmp = 0
             for k in range(grp_ptr[g], grp_ptr[g + 1]):
                 j = grp_indices[k]
@@ -418,8 +419,11 @@ cpdef celer_grp(
                                     &inc) / lc_groups[g]
                     norm_wg += w[j] ** 2
                 norm_wg = sqrt(norm_wg)
-                bst_scal = max(0.,
+                if norm_wg != 0.:
+                    bst_scal = max(0.,
                                1. - alpha * weights[g] / lc_groups[g] * n_samples / norm_wg)
+                else:
+                    bst_scal = 0.
 
                 for k in range(grp_ptr[g + 1] - grp_ptr[g]):
                     j = grp_indices[grp_ptr[g] + k]
@@ -448,5 +452,3 @@ cpdef celer_grp(
             'Fitting data with very small alpha causes precision issues.',
             ConvergenceWarning)
     return np.asarray(w), np.asarray(theta), np.asarray(gaps[:t + 1])
-
-
