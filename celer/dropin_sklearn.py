@@ -243,6 +243,7 @@ class LassoCV(RegressorMixin, LinearModelCV):
         self.p0 = p0
         self.prune = prune
         self.positive = positive
+        self.precompute = precompute
 
     def path(self, X, y, alphas, coef_init=None, **kwargs):
         """Compute Lasso path with Celer."""
