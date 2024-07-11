@@ -30,7 +30,7 @@ jobs:
         pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
         codecov
     - name: codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v4.0.1
       with:
         files: .coveragerc
         flags: unittests
