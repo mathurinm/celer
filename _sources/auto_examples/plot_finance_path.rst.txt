@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_auto_examples_plot_finance_path.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -495,7 +495,7 @@ Check convergence guarantees: gap is inferior to tolerance
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (4 minutes 49.475 seconds)
+   **Total running time of the script:** (4 minutes 59.503 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_finance_path.py:

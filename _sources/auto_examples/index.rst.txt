@@ -15,6 +15,7 @@ Examples Gallery
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -117,6 +118,8 @@ Examples Gallery
       <div class="sphx-glr-thumbnail-title">Lasso path computation on Finance/log1p dataset</div>
     </div>
 
+
+.. thumbnail-parent-div-close
 
 .. raw:: html
 
