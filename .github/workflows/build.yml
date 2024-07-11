@@ -26,12 +26,13 @@ jobs:
 
     - name: test
       run: |
-        pip install pytest pytest-cov coverage numpydoc codecov
+        pip install pytest pytest-cov coverage numpydoc
         pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
-        codecov
     - name: codecov
       uses: codecov/codecov-action@v4.0.1
       with:
+        slug: mathurinm/celer
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: .coveragerc
         flags: unittests
         fail_ci_if_error: true
