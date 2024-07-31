@@ -129,3 +129,8 @@ If you do so, please cite:
 - https://mathurinm.github.io/celer/
 - https://arxiv.org/abs/1802.07481
 - https://arxiv.org/abs/1907.05830
+
+## Other models
+
+Need fast estimators for sparse GLMs? More models like Sparse Group Lasso are available
+in `skglm` : https://github.com/scikit-learn-contrib/skglm
