@@ -153,7 +153,7 @@ Show optimal regression vector for prediction, obtained by cross validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.868 seconds)
+   **Total running time of the script:** (0 minutes 0.716 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:
@@ -169,6 +169,10 @@ Show optimal regression vector for prediction, obtained by cross validation
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_group_lasso.py <plot_group_lasso.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: plot_group_lasso.zip <plot_group_lasso.zip>`
 
 
 .. only:: html

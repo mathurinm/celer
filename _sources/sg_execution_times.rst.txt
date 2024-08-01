@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**09:36.747** total execution time for 6 files **from all galleries**:
+**12:26.746** total execution time for 6 files **from all galleries**:
 
 .. container::
 
@@ -33,20 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_finance_path.py` (``../examples/plot_finance_path.py``)
-     - 04:59.503
+     - 07:53.947
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_leukemia_path.py` (``../examples/plot_leukemia_path.py``)
-     - 01:36.222
-     - 0.0
-   * - :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``../examples/plot_lasso_cv.py``)
-     - 01:12.269
+     - 01:24.256
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_logreg_timings.py` (``../examples/plot_logreg_timings.py``)
-     - 01:00.973
+     - 01:15.702
+     - 0.0
+   * - :ref:`sphx_glr_auto_examples_plot_lasso_cv.py` (``../examples/plot_lasso_cv.py``)
+     - 01:07.484
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_multitask_lasso_cv.py` (``../examples/plot_multitask_lasso_cv.py``)
-     - 00:46.912
+     - 00:44.641
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_group_lasso.py` (``../examples/plot_group_lasso.py``)
-     - 00:00.868
+     - 00:00.716
      - 0.0
