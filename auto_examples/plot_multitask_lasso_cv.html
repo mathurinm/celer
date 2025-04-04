@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Run GroupLasso and GroupLasso CV for structured sparse recovery" href="plot_group_lasso.html" /><link rel="prev" title="Compare LogisticRegression solver with sklearn’s liblinear backend" href="plot_logreg_timings.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2024.07.18 -->
-        <title>Run MultitaskLassoCV and compare performance with scikit-learn - celer 0.7.3dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=613ab9ff" />
+    <!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
+        <title>Run MultitaskLassoCV and compare performance with scikit-learn - celer 0.7.5dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=82a353df" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">celer 0.7.3dev0 documentation</div></a>
+      <a href="../index.html"><div class="brand">celer 0.7.5dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -196,7 +196,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">celer 0.7.3dev0 documentation</span>
+  <span class="sidebar-brand-text">celer 0.7.5dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -281,14 +281,14 @@ to download the full example code.</p>
 <section class="sphx-glr-example-title" id="run-multitasklassocv-and-compare-performance-with-scikit-learn">
 <span id="sphx-glr-auto-examples-plot-multitask-lasso-cv-py"></span><h1>Run MultitaskLassoCV and compare performance with scikit-learn<a class="headerlink" href="#run-multitasklassocv-and-compare-performance-with-scikit-learn" title="Permalink to this heading">¶</a></h1>
 <p>The example runs the MultitaskLassoCV scikit-learn like estimator.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">celer</span> <span class="kn">import</span> <a href="../generated/celer.MultiTaskLassoCV.html#celer.MultiTaskLassoCV" title="celer.MultiTaskLassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">MultiTaskLassoCV</span></a>
-<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html#sklearn.utils.check_random_state" title="sklearn.utils.check_random_state" class="sphx-glr-backref-module-sklearn-utils sphx-glr-backref-type-py-function"><span class="n">check_random_state</span></a>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celer</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/celer.MultiTaskLassoCV.html#celer.MultiTaskLassoCV" title="celer.MultiTaskLassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">MultiTaskLassoCV</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html#sklearn.utils.check_random_state" title="sklearn.utils.check_random_state" class="sphx-glr-backref-module-sklearn-utils sphx-glr-backref-type-py-function"><span class="n">check_random_state</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span>
 
 <span class="n">rng</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html#sklearn.utils.check_random_state" title="sklearn.utils.check_random_state" class="sphx-glr-backref-module-sklearn-utils sphx-glr-backref-type-py-function"><span class="n">check_random_state</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -324,8 +324,8 @@ to download the full example code.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time for sklearn: </span><span class="si">%.2f</span><span class="s2"> s&quot;</span> <span class="o">%</span> <span class="n">t_sklearn</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time for celer  : 20.63 s
-Time for sklearn: 23.65 s
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time for celer  : 22.02 s
+Time for sklearn: 28.74 s
 </pre></div>
 </div>
 <p>Both packages find the same solution</p>
@@ -355,7 +355,7 @@ Relative norm difference between optimal coefs: 0.00 %
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_multitask_lasso_cv_001.png" srcset="../_images/sphx_glr_plot_multitask_lasso_cv_001.png" alt="Sparsity patterns, celer, sklearn" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 44.641 seconds)</p>
+<img src="../_images/sphx_glr_plot_multitask_lasso_cv_001.png" srcset="../_images/sphx_glr_plot_multitask_lasso_cv_001.png" alt="Sparsity patterns, celer, sklearn" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 51.081 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-multitask-lasso-cv-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf88fe312b799c4085175b0c7d17e31d/plot_multitask_lasso_cv.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_multitask_lasso_cv.ipynb</span></code></a></p>
@@ -426,7 +426,7 @@ Relative norm difference between optimal coefs: 0.00 %
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=e4cc51f8"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=867fd8af"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

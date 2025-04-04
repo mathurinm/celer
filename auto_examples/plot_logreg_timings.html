@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Run MultitaskLassoCV and compare performance with scikit-learn" href="plot_multitask_lasso_cv.html" /><link rel="prev" title="Lasso path computation on Leukemia dataset" href="plot_leukemia_path.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2024.07.18 -->
-        <title>Compare LogisticRegression solver with sklearn’s liblinear backend - celer 0.7.3dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=613ab9ff" />
+    <!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
+        <title>Compare LogisticRegression solver with sklearn’s liblinear backend - celer 0.7.5dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=82a353df" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">celer 0.7.3dev0 documentation</div></a>
+      <a href="../index.html"><div class="brand">celer 0.7.5dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -196,7 +196,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">celer 0.7.3dev0 documentation</span>
+  <span class="sidebar-brand-text">celer 0.7.5dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -280,41 +280,15 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="compare-logisticregression-solver-with-sklearn-s-liblinear-backend">
 <span id="sphx-glr-auto-examples-plot-logreg-timings-py"></span><h1>Compare LogisticRegression solver with sklearn’s liblinear backend<a class="headerlink" href="#compare-logisticregression-solver-with-sklearn-s-liblinear-backend" title="Permalink to this heading">¶</a></h1>
-<img src="../_images/sphx_glr_plot_logreg_timings_001.png" srcset="../_images/sphx_glr_plot_logreg_timings_001.png" alt="plot logreg timings" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>file_sizes:   0%|                                   | 0.00/26.8M [00:00&lt;?, ?B/s]
-file_sizes:   0%|                           | 24.6k/26.8M [00:00&lt;03:37, 123kB/s]
-file_sizes:   0%|                           | 49.2k/26.8M [00:00&lt;03:38, 122kB/s]
-file_sizes:   0%|                            | 106k/26.8M [00:00&lt;02:15, 196kB/s]
-file_sizes:   1%|▏                           | 221k/26.8M [00:00&lt;01:17, 343kB/s]
-file_sizes:   2%|▍                           | 451k/26.8M [00:01&lt;00:41, 629kB/s]
-file_sizes:   3%|▉                          | 909k/26.8M [00:01&lt;00:21, 1.19MB/s]
-file_sizes:   7%|█▊                        | 1.83M/26.8M [00:01&lt;00:10, 2.27MB/s]
-file_sizes:  14%|███▌                      | 3.66M/26.8M [00:01&lt;00:05, 4.41MB/s]
-file_sizes:  20%|█████                     | 5.23M/26.8M [00:01&lt;00:03, 5.47MB/s]
-file_sizes:  25%|██████▌                   | 6.81M/26.8M [00:02&lt;00:03, 6.19MB/s]
-file_sizes:  35%|█████████▏                | 9.43M/26.8M [00:02&lt;00:02, 8.16MB/s]
-file_sizes:  41%|██████████▋               | 11.0M/26.8M [00:02&lt;00:01, 8.08MB/s]
-file_sizes:  47%|████████████▏             | 12.6M/26.8M [00:02&lt;00:01, 8.02MB/s]
-file_sizes:  53%|█████████████▋            | 14.1M/26.8M [00:02&lt;00:01, 7.98MB/s]
-file_sizes:  63%|████████████████▎         | 16.8M/26.8M [00:03&lt;00:01, 9.40MB/s]
-file_sizes:  68%|█████████████████▊        | 18.3M/26.8M [00:03&lt;00:00, 8.98MB/s]
-file_sizes:  76%|███████████████████▊      | 20.4M/26.8M [00:03&lt;00:00, 9.39MB/s]
-file_sizes:  86%|██████████████████████▍   | 23.1M/26.8M [00:03&lt;00:00, 10.4MB/s]
-file_sizes:  92%|███████████████████████▉  | 24.6M/26.8M [00:03&lt;00:00, 9.72MB/s]
-file_sizes: 100%|██████████████████████████| 26.8M/26.8M [00:03&lt;00:00, 6.94MB/s]
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
-<span class="kn">from</span> <span class="nn">libsvmdata</span> <span class="kn">import</span> <span class="n">fetch_libsvm</span>
+<img src="../_images/sphx_glr_plot_logreg_timings_001.png" srcset="../_images/sphx_glr_plot_logreg_timings_001.png" alt="plot logreg timings" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">libsvmdata</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_libsvm</span>
 
-<span class="kn">from</span> <span class="nn">celer</span> <span class="kn">import</span> <a href="../generated/celer.LogisticRegression.html#celer.LogisticRegression" title="celer.LogisticRegression" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celer</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/celer.LogisticRegression.html#celer.LogisticRegression" title="celer.LogisticRegression" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Objective did not converge&quot;</span><span class="p">)</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Liblinear failed to converge&quot;</span><span class="p">)</span>
@@ -325,7 +299,7 @@ file_sizes: 100%|█████████████████████
 <span class="n">C</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">C_min</span>
 
 
-<span class="k">def</span> <span class="nf">pobj_logreg</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pobj_logreg</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">w</span><span class="p">))))</span> <span class="o">+</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">C</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 
@@ -369,7 +343,7 @@ file_sizes: 100%|█████████████████████
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 15.702 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 13.707 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-logreg-timings-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/687bf87bab3c765bf6961ca4bfb45705/plot_logreg_timings.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_logreg_timings.ipynb</span></code></a></p>
@@ -440,7 +414,7 @@ file_sizes: 100%|█████████████████████
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=e4cc51f8"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=867fd8af"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

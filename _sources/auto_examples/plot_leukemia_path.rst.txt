@@ -48,9 +48,9 @@ Running time is compared with the scikit-learn implementation.
     /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:1022: FutureWarning: The default value of `parser` will change from `'liac-arff'` to `'auto'` in 1.4. You can set `parser='auto'` to silence this warning. Therefore, an `ImportError` will be raised from 1.4 if the dataset is dense and pandas is not installed. Note that the pandas parser may return different data types. See the Notes Section in fetch_openml's API doc for details.
       warn(
     Starting path computation...
-    Celer time: 0.03 s
-    Celer time: 0.12 s
-    Celer time: 0.31 s
+    Celer time: 0.04 s
+    Celer time: 0.13 s
+    Celer time: 0.32 s
 
 
 
@@ -114,7 +114,7 @@ Running time is compared with the scikit-learn implementation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 24.256 seconds)
+   **Total running time of the script:** (1 minutes 35.004 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_leukemia_path.py:
