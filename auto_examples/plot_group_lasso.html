@@ -286,10 +286,8 @@ to download the full example code.</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">celer</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/celer.GroupLassoCV.html#celer.GroupLassoCV" title="celer.GroupLassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">GroupLassoCV</span></a><span class="p">,</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">LassoCV</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">celer.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/celer.datasets.make_correlated_data.html#celer.datasets.make_correlated_data" title="celer.datasets.make_correlated_data" class="sphx-glr-backref-module-celer-datasets sphx-glr-backref-type-py-function"><span class="n">make_correlated_data</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">celer.plot_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_plt</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
-<span class="n">configure_plt</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
 <span class="c1"># Generating X, y, and true regression coefs with 4 groups of 5 non-zero values</span>
 
@@ -302,9 +300,6 @@ to download the full example code.</p>
 <span class="n">w_true</span><span class="p">[</span><span class="mi">45</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_true</span> <span class="o">=</span> <a href="../generated/celer.datasets.make_correlated_data.html#celer.datasets.make_correlated_data" title="celer.datasets.make_correlated_data" class="sphx-glr-backref-module-celer-datasets sphx-glr-backref-type-py-function"><span class="n">make_correlated_data</span></a><span class="p">(</span>
     <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">w_true</span><span class="o">=</span><span class="n">w_true</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>usetex mode requires TeX.
 </pre></div>
 </div>
 <p>Get group Lasso’s optimal alpha for prediction by cross validation</p>
@@ -351,7 +346,7 @@ to download the full example code.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_group_lasso_002.png" srcset="../_images/sphx_glr_plot_group_lasso_002.png" alt="plot group lasso" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.838 seconds)</p>
+<img src="../_images/sphx_glr_plot_group_lasso_002.png" srcset="../_images/sphx_glr_plot_group_lasso_002.png" alt="plot group lasso" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.687 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-group-lasso-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/d9eb92dfee59a65a789fccd58fdc9de1/plot_group_lasso.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_group_lasso.ipynb</span></code></a></p>

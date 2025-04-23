@@ -24,7 +24,7 @@ Run GroupLasso and GroupLasso CV for structured sparse recovery
 
 The example runs the GroupLasso scikit-learn like estimators.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-31
+.. GENERATED FROM PYTHON SOURCE LINES 8-29
 
 .. code-block:: Python
 
@@ -34,10 +34,8 @@ The example runs the GroupLasso scikit-learn like estimators.
 
     from celer import GroupLassoCV, LassoCV
     from celer.datasets import make_correlated_data
-    from celer.plot_utils import configure_plt
 
     print(__doc__)
-    configure_plt(fontsize=16)
 
     # Generating X, y, and true regression coefs with 4 groups of 5 non-zero values
 
@@ -55,21 +53,14 @@ The example runs the GroupLasso scikit-learn like estimators.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    usetex mode requires TeX.
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 32-33
+.. GENERATED FROM PYTHON SOURCE LINES 30-31
 
 Get group Lasso's optimal alpha for prediction by cross validation
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-58
+.. GENERATED FROM PYTHON SOURCE LINES 31-56
 
 .. code-block:: Python
 
@@ -116,11 +107,11 @@ Get group Lasso's optimal alpha for prediction by cross validation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-60
+.. GENERATED FROM PYTHON SOURCE LINES 57-58
 
 Show optimal regression vector for prediction, obtained by cross validation
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-74
+.. GENERATED FROM PYTHON SOURCE LINES 58-72
 
 .. code-block:: Python
 
@@ -153,7 +144,7 @@ Show optimal regression vector for prediction, obtained by cross validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.838 seconds)
+   **Total running time of the script:** (0 minutes 0.687 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_group_lasso.py:

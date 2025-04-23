@@ -25,7 +25,7 @@ Run LassoCV for cross-validation on the Leukemia dataset
 The example runs the LassoCV scikit-learn like estimator
 using the Celer algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-35
+.. GENERATED FROM PYTHON SOURCE LINES 9-33
 
 .. code-block:: Python
 
@@ -37,10 +37,8 @@ using the Celer algorithm.
     from sklearn.model_selection import KFold
 
     from celer import LassoCV
-    from celer.plot_utils import configure_plt
 
     print(__doc__)
-    configure_plt()
 
     print("Loading data...")
     dataset = fetch_openml("leukemia")
@@ -64,7 +62,6 @@ using the Celer algorithm.
  .. code-block:: none
 
 
-    usetex mode requires TeX.
     Loading data...
     /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:311: UserWarning: Multiple active versions of the dataset matching the name leukemia exist. Versions may be fundamentally different, returning version 1.
       warn(
@@ -75,11 +72,11 @@ using the Celer algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-37
+.. GENERATED FROM PYTHON SOURCE LINES 34-35
 
 Display results
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-50
+.. GENERATED FROM PYTHON SOURCE LINES 35-48
 
 .. code-block:: Python
 
@@ -111,7 +108,7 @@ Display results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 44.668 seconds)
+   **Total running time of the script:** (1 minutes 11.174 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lasso_cv.py:

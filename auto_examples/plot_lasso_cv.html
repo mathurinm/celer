@@ -289,10 +289,8 @@ using the Celer algorithm.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html#sklearn.model_selection.KFold" title="sklearn.model_selection.KFold" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">KFold</span></a>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">celer</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class"><span class="n">LassoCV</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">celer.plot_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_plt</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
-<span class="n">configure_plt</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading data...&quot;</span><span class="p">)</span>
 <a href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.Bunch.html#sklearn.utils.Bunch" title="sklearn.utils.Bunch" class="sphx-glr-backref-module-sklearn-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_openml.html#sklearn.datasets.fetch_openml" title="sklearn.datasets.fetch_openml" class="sphx-glr-backref-module-sklearn-datasets sphx-glr-backref-type-py-function"><span class="n">fetch_openml</span></a><span class="p">(</span><span class="s2">&quot;leukemia&quot;</span><span class="p">)</span>
@@ -308,8 +306,7 @@ using the Celer algorithm.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Estimated regularization parameter alpha: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <a href="../generated/celer.LassoCV.html#celer.LassoCV" title="celer.LassoCV" class="sphx-glr-backref-module-celer sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">alpha_</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>usetex mode requires TeX.
-Loading data...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading data...
 /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:311: UserWarning: Multiple active versions of the dataset matching the name leukemia exist. Versions may be fundamentally different, returning version 1.
   warn(
 /home/circleci/.local/lib/python3.8/site-packages/sklearn/datasets/_openml.py:1022: FutureWarning: The default value of `parser` will change from `&#39;liac-arff&#39;` to `&#39;auto&#39;` in 1.4. You can set `parser=&#39;auto&#39;` to silence this warning. Therefore, an `ImportError` will be raised from 1.4 if the dataset is dense and pandas is not installed. Note that the pandas parser may return different data types. See the Notes Section in fetch_openml&#39;s API doc for details.
@@ -332,7 +329,7 @@ Estimated regularization parameter alpha: 160.15306704065625
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_lasso_cv_001.png" srcset="../_images/sphx_glr_plot_lasso_cv_001.png" alt="plot lasso cv" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 44.668 seconds)</p>
+<img src="../_images/sphx_glr_plot_lasso_cv_001.png" srcset="../_images/sphx_glr_plot_lasso_cv_001.png" alt="plot lasso cv" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 11.174 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-lasso-cv-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/79b933f34eba236a5624feb32e6831e6/plot_lasso_cv.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_lasso_cv.ipynb</span></code></a></p>
