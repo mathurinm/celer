@@ -5,7 +5,6 @@ branch = True
 source = celer
 include = */celer/*
 omit = */setup.py
-       */celer/plot_utils.py
 
 [report]
 exclude_lines =

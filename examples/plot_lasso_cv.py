@@ -14,10 +14,8 @@ from sklearn.datasets import fetch_openml
 from sklearn.model_selection import KFold
 
 from celer import LassoCV
-from celer.plot_utils import configure_plt
 
 print(__doc__)
-configure_plt()
 
 print("Loading data...")
 dataset = fetch_openml("leukemia")

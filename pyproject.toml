@@ -6,8 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "celer"
 dependencies =[
-    'seaborn>=0.7', 'matplotlib>=2.0.0', 'libsvmdata>=0.3',
-    'scikit-learn>=1.0', 'xarray', 'download', 'tqdm'
+    'libsvmdata>=0.3', 'scikit-learn>=1.0', 'xarray', 'download', 'tqdm'
 ]
 description = "A fast algorithm with dual extrapolation for sparse problems"
 authors = [
@@ -29,6 +28,6 @@ repository = "https://github.com/mathurinm/celer.git"
 
 [project.optional-dependencies]
 doc = [
-    "numpydoc", "pandas", "pillow",
+    "numpydoc", "pandas", "pillow", "matplotlib",
     "furo", "sphinx-copybutton", "sphinx-gallery"
 ]

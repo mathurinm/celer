@@ -11,10 +11,8 @@ import matplotlib.pyplot as plt
 
 from celer import GroupLassoCV, LassoCV
 from celer.datasets import make_correlated_data
-from celer.plot_utils import configure_plt
 
 print(__doc__)
-configure_plt(fontsize=16)
 
 # Generating X, y, and true regression coefs with 4 groups of 5 non-zero values
 
