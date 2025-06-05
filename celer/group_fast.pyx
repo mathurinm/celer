@@ -7,9 +7,8 @@ import numpy as np
 cimport numpy as np
 import warnings
 
-from numpy.math cimport INFINITY
 from cython cimport floating
-from libc.math cimport fabs, sqrt
+from libc.math cimport fabs, sqrt, INFINITY
 from sklearn.exceptions import ConvergenceWarning
 
 from .cython_utils cimport (fdot, fasum, faxpy, fnrm2, fcopy, fscal, dual,
