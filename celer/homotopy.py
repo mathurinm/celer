@@ -22,7 +22,7 @@ LOGREG = 1
 GRPLASSO = 2
 
 
-def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
+def celer_path(X, y, pb, eps=1e-3, alphas=100, l1_ratio=1.0,
                coef_init=None, max_iter=20, max_epochs=50000,
                p0=10, verbose=0, tol=1e-6, prune=0, weights=None,
                groups=None, return_thetas=False, use_PN=False, X_offset=None,
@@ -76,12 +76,9 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
         Length of the path. ``eps=1e-3`` means that
         ``alpha_min = 1e-3 * alpha_max``.
 
-    n_alphas : int, optional
-        Number of alphas along the regularization path.
-
-    alphas : ndarray, optional
+    alphas : array-like or int, default=100
         List of alphas where to compute the models.
-        If ``None`` alphas are set automatically.
+        If int, alphas are set automatically.
 
     l1_ratio : float, optional
         The ElasticNet mixing parameter, with ``0 < l1_ratio <= 1``.
@@ -211,7 +208,8 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
     # to prevent ref before assignment in dnorm_enet
     w = np.zeros(n_features, dtype=X.dtype)
 
-    if alphas is None:
+    if isinstance(alphas, int):
+        n_alphas = alphas
         if pb == LASSO:
             alpha_max = dnorm_enet(X, y, w, weights, X_sparse_scaling,
                                    positive) / n_samples
@@ -228,7 +226,7 @@ def celer_path(X, y, pb, eps=1e-3, n_alphas=100, alphas=None, l1_ratio=1.0,
 
         alphas = alpha_max / l1_ratio * np.geomspace(1, eps, n_alphas, dtype=X.dtype)
     else:
-        alphas = np.sort(alphas)[::-1]
+        alphas = np.sort(alphas)[::-1].astype(X.dtype)
 
     n_alphas = len(alphas)
 
@@ -395,7 +393,7 @@ def dnorm_enet(X, theta, w, weights, X_sparse_scaling,
 def _alpha_max_grp(X, y, groups, center=False, normalize=False):
     """This costly function (copies X) should only be used for debug."""
     grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
-    X, y, X_offset, _, X_scale = _preprocess_data(
+    X, y, X_offset, _, X_scale, _ = _preprocess_data(
         X, y, center, normalize, copy=True)
 
     X_mean = X_offset / X_scale
@@ -430,7 +428,7 @@ def _grp_converter(groups, n_features):
 
 
 def mtl_path(
-        X, Y, eps=1e-2, n_alphas=100, alphas=None, max_iter=100,
+        X, Y, eps=1e-2, alphas=100, max_iter=100,
         max_epochs=50_000, p0=10, verbose=0, tol=1e-6,
         prune=True, return_thetas=False, coef_init=None):
     X = check_array(X, "csc", dtype=[
@@ -439,7 +437,8 @@ def mtl_path(
         np.float64, np.float32], order="F", copy=False)
     n_samples, n_features = X.shape
     n_tasks = Y.shape[1]
-    if alphas is None:
+    if isinstance(alphas, int):
+        n_alphas = alphas
         alpha_max = np.max(norm(X.T @ Y, ord=2, axis=1)) / n_samples
         alphas = alpha_max * \
             np.geomspace(1, eps, n_alphas, dtype=X.dtype)

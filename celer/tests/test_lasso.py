@@ -21,7 +21,7 @@ from celer.utils.testing import build_dataset
 
 
 @pytest.mark.parametrize("sparse_X, alphas, pb, dtype",
-                         product([False, True], [None, 1],
+                         product([False, True], [10, 1],
                                  ["lasso", "logreg"],
                                  [np.float32, np.float64]))
 def test_celer_path(sparse_X, alphas, pb, dtype):
@@ -37,11 +37,6 @@ def test_celer_path(sparse_X, alphas, pb, dtype):
     else:
         tol_scaled = tol * norm(y) ** 2 / len(y)
     n_samples = X.shape[0]
-    if alphas is not None:
-        alpha_max = np.max(np.abs(X.T.dot(y))) / n_samples
-        n_alphas = 10
-        alphas = alpha_max * np.logspace(0, -2, n_alphas)
-
     alphas, _, gaps, _, n_iters = celer_path(
         X, y, pb, alphas=alphas, tol=tol, return_thetas=True,
         verbose=1, return_n_iter=True)
@@ -70,7 +65,7 @@ def test_celer_path_vs_lasso_path(sparse_X, prune):
     X, y = build_dataset(n_samples=30, n_features=50, sparse_X=sparse_X)
 
     tol = 1e-14
-    params = dict(eps=1e-3, n_alphas=10, tol=tol)
+    params = dict(eps=1e-3, alphas=10, tol=tol)
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", return_thetas=False, verbose=1, prune=prune,
         max_iter=30, **params)
@@ -89,7 +84,7 @@ def test_LassoCV(sparse_X, fit_intercept, positive):
     """Test that our LassoCV behaves like sklearn's LassoCV."""
 
     X, y = build_dataset(n_samples=20, n_features=30, sparse_X=sparse_X)
-    params = dict(eps=0.05, n_alphas=10, tol=1e-10, cv=2,
+    params = dict(eps=0.05, alphas=10, tol=1e-10, cv=2,
                   fit_intercept=fit_intercept, positive=positive, n_jobs=-1)
 
     clf = LassoCV(**params)
@@ -195,7 +190,7 @@ def test_weights_lasso():
     weights = np.abs(np.random.randn(X.shape[1]))
 
     tol = 1e-14
-    params = {'n_alphas': 10, 'tol': tol}
+    params = {'alphas': 10, 'tol': tol}
     alphas1, coefs1, gaps1 = celer_path(
         X, y, "lasso", weights=weights, verbose=1, **params)
 
