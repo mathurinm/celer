@@ -226,7 +226,7 @@ def celer_path(X, y, pb, eps=1e-3, alphas=100, l1_ratio=1.0,
 
         alphas = alpha_max / l1_ratio * np.geomspace(1, eps, n_alphas, dtype=X.dtype)
     else:
-        alphas = np.sort(alphas)[::-1]
+        alphas = np.sort(alphas)[::-1].astype(X.dtype)
 
     n_alphas = len(alphas)
 
@@ -393,7 +393,7 @@ def dnorm_enet(X, theta, w, weights, X_sparse_scaling,
 def _alpha_max_grp(X, y, groups, center=False, normalize=False):
     """This costly function (copies X) should only be used for debug."""
     grp_ptr, grp_indices = _grp_converter(groups, X.shape[1])
-    X, y, X_offset, _, X_scale = _preprocess_data(
+    X, y, X_offset, _, X_scale, _ = _preprocess_data(
         X, y, center, normalize, copy=True)
 
     X_mean = X_offset / X_scale

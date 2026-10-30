@@ -258,8 +258,11 @@ class LassoCV(RegressorMixin, LinearModelCV):
     def _is_multitask(self):
         return False
 
-    def _more_tags(self):
-        return {'multioutput': False}
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.target_tags.single_output = True
+        tags.target_tags.multi_output = False
+        return tags
 
 
 class ElasticNet(ElasticNet_sklearn):
@@ -536,8 +539,11 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
     def _is_multitask(self):
         return False
 
-    def _more_tags(self):
-        return {"multioutput": False}
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.target_tags.single_output = True
+        tags.target_tags.multi_output = False
+        return tags
 
 
 class MultiTaskLasso(MultiTaskLasso_sklearn):
@@ -627,8 +633,8 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         check_X_params = dict(dtype=[np.float64, np.float32], order='F',
                               copy=self.copy_X and self.fit_intercept)
         check_y_params = dict(ensure_2d=False, order='F')
-        X, y = validate_data(X, y, validate_separately=(check_X_params,
-                                                        check_y_params))
+        X, y = validate_data(self, X, y, validate_separately=(check_X_params,
+                                                              check_y_params))
         y = y.astype(X.dtype)
 
         if y.ndim == 1:
@@ -640,7 +646,7 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
             raise ValueError("X and y have inconsistent dimensions (%d != %d)"
                              % (n_samples, y.shape[0]))
 
-        X, y, X_offset, y_offset, X_scale = _preprocess_data(
+        X, y, X_offset, y_offset, X_scale, _ = _preprocess_data(
             X, y, fit_intercept=self.fit_intercept, copy=False)
 
         if not self.warm_start or not hasattr(self, "coef_"):
@@ -777,8 +783,11 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
     def _is_multitask(self):
         return True
 
-    def _more_tags(self):
-        return {'multioutput_only': True}
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.target_tags.single_output = False
+        tags.target_tags.multi_output = True
+        return tags
 
 
 class LogisticRegression(LogReg_sklearn):

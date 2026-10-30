@@ -5,9 +5,11 @@ import numpy as np
 from numpy.linalg import norm
 
 from numpy.testing import assert_allclose, assert_array_less
-from sklearn.linear_model._logistic import _logistic_regression_path
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.linear_model._logistic import _logistic_regression_path
 from sklearn.linear_model import LogisticRegression as sklearn_Logreg
+
 
 from celer import celer_path
 from celer.dropin_sklearn import LogisticRegression
@@ -23,9 +25,11 @@ def test_celer_path_logreg(solver):
     alphas = alpha_max * np.geomspace(1, 1e-2, 10)
 
     tol = 1e-11
+    classes = np.unique(y)
     coefs, Cs, n_iters = _logistic_regression_path(
         X, y, Cs=1. / alphas, fit_intercept=False, penalty='l1',
-        solver='liblinear', tol=tol, max_iter=1000, random_state=0)
+        solver='liblinear', tol=tol, max_iter=1000, random_state=0,
+        classes=classes)
 
     _, coefs_c, gaps = celer_path(
         X, y, "logreg", alphas=alphas, tol=tol, verbose=0,
@@ -57,8 +61,8 @@ def test_binary(sparse_X):
     assert_allclose(clf.coef_, clf_sk.coef_, rtol=1e-3, atol=1e-5)
 
 
-@pytest.mark.parametrize("sparse_X", [True, False])
 def test_multinomial(sparse_X):
+    # we do one vs rest, so we compare against sklearn one vs rest
     np.random.seed(1409)
     X, y = build_dataset(
         n_samples=30, n_features=60, sparse_X=sparse_X)
@@ -67,10 +71,11 @@ def test_multinomial(sparse_X):
     clf = LogisticRegression(C=1, tol=tol, verbose=0)
     clf.fit(X, y)
 
-    clf_sk = sklearn_Logreg(
-        C=1, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol)
+    clf_sk = OneVsRestClassifier(sklearn_Logreg(
+        C=1, penalty='l1', solver='liblinear', fit_intercept=False, tol=tol))
     clf_sk.fit(X, y)
-    assert_allclose(clf.coef_, clf_sk.coef_, rtol=1e-3, atol=1e-3)
+    coef_sk = np.vstack([est.coef_ for est in clf_sk.estimators_])
+    assert_allclose(clf.coef_, coef_sk, rtol=1e-3, atol=1e-3)
 
 
 @pytest.mark.parametrize("solver", ["celer-pn"])
