@@ -76,11 +76,11 @@ def test_sk_enet_path_equivalence(prune):
     # many alphas
     n_alphas = 20
     alphas1, coefs1, gaps1 = celer_path(
-        X, y, "lasso", n_alphas=n_alphas,
+        X, y, "lasso", alphas=n_alphas,
         prune=prune, max_iter=30, **params)
 
     alphas2, coefs2, _ = enet_path(X, y, max_iter=10000,
-                                   n_alphas=n_alphas, **params)
+                                   alphas=n_alphas, **params)
 
     assert_allclose(alphas1, alphas2)
     assert_array_less(gaps1, tol * norm(y) ** 2 / n_samples)
@@ -155,7 +155,7 @@ def test_ElasticNetCV(fit_intercept):
     n_samples, n_features = 30, 100
     X, y = build_dataset(n_samples, n_features, sparse_X=False)
 
-    params = dict(l1_ratio=[0.7, 0.8, 0.5], eps=0.05, n_alphas=10, tol=1e-10, cv=2,
+    params = dict(l1_ratio=[0.7, 0.8, 0.5], eps=0.05, alphas=10, tol=1e-10, cv=2,
                   fit_intercept=fit_intercept, n_jobs=-1)
 
     clf = ElasticNetCV(**params)

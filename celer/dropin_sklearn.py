@@ -3,7 +3,7 @@ import numbers
 import numpy as np
 
 from sklearn.base import RegressorMixin, MultiOutputMixin
-from sklearn.utils.validation import check_X_y
+from sklearn.utils.validation import check_X_y, validate_data
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.linear_model import (ElasticNet as ElasticNet_sklearn,
                                   Lasso as Lasso_sklearn,
@@ -149,12 +149,9 @@ class LassoCV(RegressorMixin, LinearModelCV):
         Length of the path. ``eps=1e-3`` means that
         ``alpha_min / alpha_max = 1e-3``.
 
-    n_alphas : int, optional
-        Number of alphas along the regularization path.
-
-    alphas : numpy array, optional
+    alphas : array-like or int, default=100
         List of alphas where to compute the models.
-        If ``None`` alphas are set automatically
+        If int, alphas are set automatically
 
     fit_intercept : boolean, default True
         whether to calculate the intercept for this model. If set
@@ -231,12 +228,12 @@ class LassoCV(RegressorMixin, LinearModelCV):
     Lasso
     """
 
-    def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
+    def __init__(self, eps=1e-3, alphas=100,
                  fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
         super(LassoCV, self).__init__(
-            eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
+            eps=eps, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.max_epochs = max_epochs
@@ -426,12 +423,9 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
         Length of the path. ``eps=1e-3`` means that
         ``alpha_min / alpha_max = 1e-3``.
 
-    n_alphas : int, optional
-        Number of alphas along the regularization path.
-
-    alphas : numpy array, optional
+    alphas : array-like or int, default=100
         List of alphas where to compute the models
-        If ``None`` ``alphas`` are set automatically.
+        If int, ``alphas`` are set automatically.
 
     fit_intercept : boolean, default True
         whether to calculate the intercept for this model. If set
@@ -512,12 +506,12 @@ class ElasticNetCV(RegressorMixin, LinearModelCV):
     Lasso
     """
 
-    def __init__(self, l1_ratio=1., eps=1e-3, n_alphas=100, alphas=None,
+    def __init__(self, l1_ratio=1., eps=1e-3, alphas=100,
                  fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
         super(ElasticNetCV, self).__init__(
-            eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
+            eps=eps, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.l1_ratio = l1_ratio
@@ -633,8 +627,8 @@ class MultiTaskLasso(MultiTaskLasso_sklearn):
         check_X_params = dict(dtype=[np.float64, np.float32], order='F',
                               copy=self.copy_X and self.fit_intercept)
         check_y_params = dict(ensure_2d=False, order='F')
-        X, y = self._validate_data(X, y, validate_separately=(check_X_params,
-                                                              check_y_params))
+        X, y = validate_data(X, y, validate_separately=(check_X_params,
+                                                        check_y_params))
         y = y.astype(X.dtype)
 
         if y.ndim == 1:
@@ -680,12 +674,9 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
         Length of the path. ``eps=1e-3`` means that
         ``alpha_min / alpha_max = 1e-3``.
 
-    n_alphas : int, optional
-        Number of alphas along the regularization path.
-
-    alphas : numpy array, optional
+    alphas : array-like or int, default=100
         List of alphas where to compute the models.
-        If ``None`` alphas are set automatically
+        If int, alphas are set automatically
 
     fit_intercept : boolean, default True
         whether to calculate the intercept for this model. If set
@@ -757,13 +748,13 @@ class MultiTaskLassoCV(RegressorMixin, LinearModelCV):
     MultiTaskLasso
     """
 
-    def __init__(self, eps=1e-3, n_alphas=100, alphas=None,
+    def __init__(self, eps=1e-3, alphas=100,
                  fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0,
                  max_epochs=50000, p0=10, prune=True, precompute='auto',
                  n_jobs=1):
         super().__init__(
-            eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
+            eps=eps, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.max_epochs = max_epochs
@@ -1145,12 +1136,9 @@ class GroupLassoCV(LassoCV, LinearModelCV):
         Length of the path. ``eps=1e-3`` means that
         ``alpha_min / alpha_max = 1e-3``.
 
-    n_alphas : int, optional
-        Number of alphas along the regularization path.
-
-    alphas : numpy array, optional
+    alphas : array-like or int, default=100
         List of alphas where to compute the models.
-        If ``None`` alphas are set automatically
+        If int, alphas are set automatically
 
     fit_intercept : boolean, default True
         whether to calculate the intercept for this model. If set
@@ -1227,12 +1215,12 @@ class GroupLassoCV(LassoCV, LinearModelCV):
     GroupLasso
     """
 
-    def __init__(self, groups=None, eps=1e-3, n_alphas=100, alphas=None,
+    def __init__(self, groups=None, eps=1e-3, alphas=100,
                  fit_intercept=True, max_iter=100,
                  tol=1e-4, cv=None, verbose=0, max_epochs=50000, p0=10,
                  prune=True, precompute='auto', positive=False, n_jobs=None):
         super(GroupLassoCV, self).__init__(
-            eps=eps, n_alphas=n_alphas, alphas=alphas, max_iter=max_iter,
+            eps=eps, alphas=alphas, max_iter=max_iter,
             tol=tol, cv=cv, fit_intercept=fit_intercept,
             verbose=verbose, n_jobs=n_jobs)
         self.groups = groups

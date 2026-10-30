@@ -98,7 +98,7 @@ def test_convert_groups():
 def test_mtl_path():
     X, Y = build_dataset(n_targets=3)
     tol = 1e-12
-    params = dict(eps=0.01, tol=tol, n_alphas=10)
+    params = dict(eps=0.01, tol=tol, alphas=10)
     alphas, coefs, gaps = mtl_path(X, Y, **params)
     np.testing.assert_array_less(gaps, tol * norm(Y) ** 2 / len(Y))
 
@@ -112,7 +112,7 @@ def test_MultiTaskLassoCV():
     """Test that our MultitaskLassoCV behaves like sklearn's."""
     X, y = build_dataset(n_samples=30, n_features=50, n_targets=3)
 
-    params = dict(eps=1e-2, n_alphas=10, tol=1e-12, cv=2, n_jobs=1,
+    params = dict(eps=1e-2, alphas=10, tol=1e-12, cv=2, n_jobs=1,
                   fit_intercept=False, verbose=0)
 
     clf = MultiTaskLassoCV(**params)
@@ -166,7 +166,7 @@ def test_group_lasso_path(sparse_X):
         n_samples=11, n_features=n_features, sparse_X=sparse_X)
 
     alphas, coefs, gaps = celer_path(
-        X, y, "grouplasso", groups=5, eps=1e-2, n_alphas=10, tol=1e-8)
+        X, y, "grouplasso", groups=5, eps=1e-2, alphas=10, tol=1e-8)
     tol = 1e-8
     np.testing.assert_array_less(gaps, tol * norm(y) ** 2 / len(y))
 
@@ -213,7 +213,7 @@ def test_weights_group_lasso():
     weights = np.abs(np.random.randn(n_groups))
 
     tol = 1e-14
-    params = {'n_alphas': 10, 'tol': tol, 'verbose': 1}
+    params = {'alphas': 10, 'tol': tol, 'verbose': 1}
     augmented_weights = np.repeat(weights, groups)
 
     alphas1, coefs1, gaps1 = celer_path(
